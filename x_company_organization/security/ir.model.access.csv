@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_org_categ_all,access.org.categ.all,model_x_x_company_organization_res_org_categ,,1,0,0,0
+access_org_categ_hr,access.org.categ.hr,model_x_x_company_organization_res_org_categ,hr.group_hr_user,1,1,1,0
+access_org_categ_admin,access.org.categ.admin,model_x_x_company_organization_res_org_categ,base.group_erp_manager,1,1,1,1
+access_org_all,access.org.all,model_x_x_company_organization_res_org,,1,0,0,0
+access_org_hr,access.org.hr,model_x_x_company_organization_res_org,hr.group_hr_user,1,1,1,0
+access_org_admin,access.org.admin,model_x_x_company_organization_res_org,base.group_erp_manager,1,1,1,1

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <record id="department_sale" model="hr.department">
+            <field name="name">Sales</field>
+        </record>
+
+        <record id="department_purchase" model="hr.department">
+            <field name="name">Purchase</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <record id="view_company_tree" model="ir.ui.view">
+            <field name="name">res.company.view.tree.inherit</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_tree" />
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="x_code" />
+                </field>
+            </field>
+        </record>
+
+        <record id="view_company_form" model="ir.ui.view">
+            <field name="name">res.company.view.form.inherit</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form" />
+            <field name="arch" type="xml">
+                <div class="oe_title" position="after">
+                    <group>
+                        <group>
+                            <field name="x_code" />
+                        </group>
+                    </group>
+                </div>
+            </field>
+        </record>
+
+        <record id="res_company_view_search" model="ir.ui.view">
+            <field name="name">res.company.view.search</field>
+            <field name="model">res.company</field>
+            <field name="arch" type="xml">
+                <search string="Search Company">
+                    <field name="name" />
+                    <field name="x_code" />
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,202 @@
+<odoo>
+    <data>
+        <record id="x_partner_newrequest_list_view" model="ir.ui.view">
+            <field name="name">newrequest_list_view</field>
+            <field name="model">x.res.partner.newrequest</field>
+            <field name="arch" type="xml">
+                <tree string="Partner Request">
+                    <field name="name"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="x_partner_newrequest_form_view" model="ir.ui.view">
+            <field name="name">x_partner_newrequest_form_view</field>
+            <field name="model">x.res.partner.newrequest</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <form string="Partner Request">
+                    <header>
+                        <button name="emp_confirm_partner_request" type="object" string="承認申請" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="branch_manager_confirm_partner_request" type="object" string="branch manager"
+                                class="oe_highlight" attrs="{'invisible': [('state', '!=', 'employee_send')]}"/>
+                        <button name="branch_manager_remand_partner_request" type="object"
+                                string="branch manager remand"
+                                attrs="{'invisible': [('state', '!=', 'employee_send')]}"/>
+                        <button name="sale_head_confirm_partner_request" type="object" string="sale head"
+                                class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'branch_manager_approval')]}"/>
+                        <button name="sale_head_remand_partner_request" type="object" string="sale head remand"
+                                attrs="{'invisible': [('state', '!=', 'branch_manager_approval')]}"/>
+                        <button name="account_head_confirm_partner_request" type="object" string="account head"
+                                class="oe_highlight" attrs="{'invisible': [('state', '!=', 'sale_head_approval')]}"/>
+                        <button name="account_head_remand_partner_request" type="object" string="account head remand"
+                                attrs="{'invisible': [('state', '!=', 'sale_head_approval')]}"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,employee_send,branch_manager_approval,sale_head_approval,account_head_approval"/>
+                    </header>
+
+                    <sheet>
+                        <div style="font-weight:bold;font-size:25px">
+                            <field name="name"/>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="app_classification" options="{'horizontal': true}" widget="radio"/>
+                                <field name="partner_classification" options="{'horizontal': true}" widget="radio"/>
+                                <field name="transaction_classification" required="1"/>
+                                <field name="department_classification" widget="radio"/>
+                            </group>
+                            <group>
+                                <field name="apply_date"/>
+                                <!--                            <field name="apply_branch_id" required="1"/>-->
+                                <!--                            <field name="employee_id" required="1"/>-->
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="customer_code" placeholder="最後の承認段階で、本社経理部により登録" required="1"/>
+                                <field name="customer_name" required="1"/>
+                                <field name="furigana_cusname"/>
+                                <label for="street" string="取引先住所"/>
+                                <div class="o_address_format">
+                                    <field name="zip" class="o_address_zip" style="width:30%"/>
+                                    <field name="state_id" class="o_address_state" style="width:33%"
+                                           context="{'country_id': country_id, 'default_country_id': country_id, 'zip': zip}"/>
+                                    <field name="city" class="o_address_city" style="width:33%"/>
+                                    <field name="street" class="o_address_street"/>
+                                    <field name="street2" class="o_address_street"/>
+                                    <field name="country_id" placeholder="Country" class="o_address_country"/>
+                                </div>
+                            </group>
+                            <group>
+                                <field name="partner_tel_representative"/>
+                                <field name="partner_tel_direct"/>
+                                <field name="partner_fax_representative"/>
+                                <field name="partner_fax_payment"/>
+                                <field name="transaction_basic_contract"/>
+                                <field name="reason_description"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="取引先概要" name="">
+                                <group>
+                                    <group>
+                                        <field name="company_information"/>
+                                        <field name="found_year" required="1"/>
+                                        <field name="capital" required="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="sale_information_ids">
+                                            <tree string="業績情報">
+                                                <field name="fiscal_year"/>
+                                                <field name="amount_of_sales"/>
+                                                <field name="management_profit"/>
+                                            </tree>
+                                        </field>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="支払情報" name="">
+                                <group>
+                                    <label for="company_information"/>
+                                    <field style="width:50%" name="company_information"/>
+                                    <group string="支払条件" name="">
+                                        <field name="payment_terms" required="1" widget="radio"/>
+                                        <field name="other_payment_terms"
+                                               attrs="{'invisible': [('payment_terms', '!=', 'other')]}"/>
+                                        <field name="reason_change_payment_terms"
+                                               attrs="{'invisible': [('payment_terms', '!=', 'other')]}"/>
+                                    </group>
+                                    <group string="振込先情報">
+                                        <field name="bank_name" required="1"/>
+                                        <field name="branch_name" required="1"/>
+                                        <field name="account_number" required="1"/>
+                                        <field name="deposit_item" widget="radio"/>
+                                        <field name="account_holder" required="1"/>
+                                        <field name="furigana_accname" required="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="特記事項" name="">
+                                <label for="branch_information"/>
+                                <field style="width:40%" name="branch_information"/>
+                                <group>
+                                    <group string="取引動機" name="">
+                                        <field name="transaction_motive"/>
+                                        <field name="purchased_products"/>
+                                        <field name="monthly_purchase_amount"/>
+                                    </group>
+                                    <group string="">
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="購買情報" name="">
+                                <label for="organization_id"/>
+                                <field style="width:40%" name="organization_id"/>
+                                <group>
+                                    <group string="購買">
+                                        <field name="purchasing_person"/>
+                                        <field name="purchasing_area"/>
+                                        <field name="minimum_purchase_price"/>
+                                        <field name="delivery_place"/>
+                                    </group>
+                                    <group></group>
+                                </group>
+
+                            </page>
+                            <page string="承認管理" name="">
+                                <h3>承認者＆関係者</h3>
+                                <field name="authorizer_ids" nolabel="1">
+                                    <tree string="">
+                                        <field name="authorizer"/>
+                                        <field name="department"/>
+                                        <field name="update_date"/>
+                                        <field name="status"/>
+                                    </tree>
+                                </field>
+                                <field name="participants_ids" nolabel="1">
+                                    <tree string="">
+                                        <field name="participant"/>
+                                        <field name="department"/>
+                                        <field name="email"/>
+                                        <button name="send_email" type="object" string="送信"/>
+                                    </tree>
+                                </field>
+
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <!--                    <div class="oe_chatter">-->
+                    <!--                        <field name="message_follower_ids"/>-->
+                    <!--                        <field name="activity_ids"/>-->
+                    <!--                        <field name="message_ids"/>-->
+                    <!--                    </div>-->
+
+                </form>
+
+            </field>
+        </record>
+
+        <record id="partner_newrequest_menu_action" model="ir.actions.act_window">
+            <field name="name">Partner New Request</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">x.res.partner.newrequest</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <!--            <field name="context">{'default_flow_type': 'ga_quotation'}</field>-->
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                   (0, 0, {'view_mode': 'tree', 'view_id': ref('x_partner_approval_request.x_partner_newrequest_list_view')}),
+                   (0, 0, {'view_mode': 'form', 'view_id': ref('x_partner_approval_request.x_partner_newrequest_form_view')})]"/>
+        </record>
+
+        <menuitem id="partner_newrequest_menu" parent="contacts.menu_contacts"
+                  action="partner_newrequest_menu_action" sequence="1"/>
+
+    </data>
+</odoo>

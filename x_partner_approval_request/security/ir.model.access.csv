@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_x_partner_partnernewrequest,access_x_partner_partnernewrequest,model_x_res_partner_newrequest,,1,1,1,1
+access_x_partner_sales_information,access_x_partner_sales_information,model_x_partner_sales_information,,1,1,1,1
+access_x_partner_authorizer,access_x_partner_authorizer,model_x_partner_authorizer,,1,1,1,1
+access_x_partner_participants,access_x_partner_participants,model_x_partner_participants,,1,1,1,1
