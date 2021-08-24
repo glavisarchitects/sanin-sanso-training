@@ -1,0 +1,1511 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* x_company_organization
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-24 10:51+0000\n"
+"PO-Revision-Date: 2021-08-24 10:51+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: x_company_organization
+#: model:res.groups,comment:x_company_organization.group_branch_manager
+msgid ""
+"\n"
+"                This group can access all records belong to his branch and descendant, can read all records of his company.\n"
+"            "
+msgstr ""
+
+#. module: x_company_organization
+#: model:res.groups,comment:x_company_organization.group_head_quarter
+msgid ""
+"\n"
+"                This group can access all records of his company.\n"
+"            "
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__supplier_invoice_count
+msgid "# Vendor Bills"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_account_payable_id
+msgid "Account Payable"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_account_receivable_id
+msgid "Account Receivable"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__active
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__active
+msgid "Active"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__active_lang_count
+msgid "Active Lang Count"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__additional_info
+msgid "Additional info"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__type
+msgid "Address Type"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__lang
+msgid ""
+"All the emails and documents sent to this contact will be translated in this"
+" language."
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_org_categ_view_form
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_org_categ_view_search
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_search
+msgid "Archived"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Assign"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__receipt_reminder_email
+msgid ""
+"Automatically send a confirmation email to the vendor X days before the "
+"expected receipt date, asking him to confirm the exact date."
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Avatar"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__bank_account_count
+msgid "Bank"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__bank_ids
+msgid "Banks"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__barcode
+msgid "Barcode"
+msgstr ""
+
+#. module: x_company_organization
+#: code:addons/x_company_organization/models/hr_department.py:0
+#, python-format
+msgid "Base Department can not be deleted!"
+msgstr ""
+
+#. module: x_company_organization
+#: code:addons/x_company_organization/models/hr_department.py:0
+#, python-format
+msgid "Base Department can not be in-activated!"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model,name:x_company_organization.model_hr_employee_base
+msgid "Basic Employee"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__is_blacklisted
+msgid "Blacklist"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__mobile_blacklisted
+msgid "Blacklisted Phone Is Mobile"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__phone_blacklisted
+msgid "Blacklisted Phone is Phone"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_bounce
+msgid "Bounce"
+msgstr ""
+
+#. module: x_company_organization
+#: model:res.groups,name:x_company_organization.group_branch_employee
+msgid "Branch Employee"
+msgstr ""
+
+#. module: x_company_organization
+#: model:res.groups,name:x_company_organization.group_branch_manager
+msgid "Branch Manager"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_organization_categ_id
+msgid "Category of this organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__channel_ids
+msgid "Channels"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__is_company
+msgid "Check if the contact is a company, otherwise it is a person"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__employee
+msgid "Check this box if this contact is an Employee."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__city
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "City"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.actions.act_window,help:x_company_organization.action_org_categ
+msgid "Click to create a New Organization Category."
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.actions.act_window,help:x_company_organization.action_organizations
+msgid "Click to create a New Organization."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__color
+msgid "Color Index"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__commercial_partner_id
+msgid "Commercial Entity"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model,name:x_company_organization.model_res_company
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_search
+msgid "Companies"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__ref_company_ids
+msgid "Companies that refers to partner"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__company_id
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__company_id
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_org_categ_view_search
+msgid "Company"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__x_company_code
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_base__x_company_code
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_public__x_company_code
+#: model:ir.model.fields,field_description:x_company_organization.field_res_company__x_code
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_company_code
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__x_company_code
+msgid "Company Code"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__x_company_name
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_base__x_company_name
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_public__x_company_name
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__company_name
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_company_name
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__x_company_name
+msgid "Company Name"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__commercial_company_name
+msgid "Company Name Entity"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__company_type
+msgid "Company Type"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__partner_gid
+msgid "Company database ID"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.constraint,message:x_company_organization.constraint_res_company_code_uniq
+msgid "Company's Abbreviation Name Should Be Unique!"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_hr_employee__x_company_code
+#: model:ir.model.fields,help:x_company_organization.field_hr_employee_base__x_company_code
+#: model:ir.model.fields,help:x_company_organization.field_hr_employee_public__x_company_code
+#: model:ir.model.fields,help:x_company_organization.field_res_company__x_code
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_company_code
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org_categ__x_company_code
+msgid "Company's abbreviation name for internal purpose."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__contact_address
+msgid "Complete Address"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__partner_id
+msgid "Contact"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__child_ids
+msgid "Contains Organizations"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__payment_token_count
+msgid "Count Payment Token"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__message_bounce
+msgid "Counter of the number of bounced emails for this contact"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__country_id
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Country"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__create_uid
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__create_date
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__credit_limit
+msgid "Credit Limit"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_stock_customer
+msgid "Customer Location"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_payment_term_id
+msgid "Customer Payment Terms"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__customer_rank
+msgid "Customer Rank"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__date
+msgid "Date"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__reminder_date_before_receipt
+msgid "Days Before Receipt"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__trust
+msgid "Degree of trust you have in this debtor"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model,name:x_company_organization.model_hr_department
+msgid "Department"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_department__display_name
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_base__display_name
+#: model:ir.model.fields,field_description:x_company_organization.field_res_company__display_name
+#: model:ir.model.fields,field_description:x_company_organization.field_res_users__display_name
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_org_mixin__display_name
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__display_name
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__partner_share
+msgid ""
+"Either customer (not a user), either shared user. Indicated the current "
+"partner is a customer without access or with a limited access created for "
+"sharing data."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__email
+msgid "Email"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model,name:x_company_organization.model_hr_employee
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__employee
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_employee_ids
+msgid "Employee"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__x_employee_number
+msgid "Employee Number"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.constraint,message:x_company_organization.constraint_hr_employee_employee_number_company_uniq
+msgid "Employee Number should be unique in company!"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Employees"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_fax_number
+msgid "Fax Number"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__phone_sanitized
+msgid ""
+"Field used to store sanitized phone number. Helps speeding up searches and "
+"comparisons."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_account_position_id
+msgid "Fiscal Position"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_channel_ids
+msgid "Followers (Channels)"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__email_formatted
+msgid "Format email address \"Name <email@domain>\""
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__email_formatted
+msgid "Formatted Email"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "General Information"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__partner_latitude
+msgid "Geo Latitude"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__partner_longitude
+msgid "Geo Longitude"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_org_categ_view_search
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__has_unreconciled_entries
+msgid "Has Unreconciled Entries"
+msgstr ""
+
+#. module: x_company_organization
+#: model:res.groups,name:x_company_organization.group_head_quarter
+msgid "Head Quarter"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_department__id
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__id
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_base__id
+#: model:ir.model.fields,field_description:x_company_organization.field_res_company__id
+#: model:ir.model.fields,field_description:x_company_organization.field_res_users__id
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_org_mixin__id
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__id
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__id
+msgid "ID"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__im_status
+msgid "IM Status"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__message_needaction
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__message_unread
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__message_has_error
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__team_id
+msgid ""
+"If set, this Sales Team will be used for sales and assignments related to "
+"this partner"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__is_blacklisted
+msgid ""
+"If the email address is on the blacklist, the contact won't receive mass "
+"mailing anymore, from any list"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__phone_sanitized_blacklisted
+msgid ""
+"If the sanitized phone number is on the blacklist, the contact won't receive"
+" mass mailing sms anymore, from any list"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__image_1920
+msgid "Image"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__image_1024
+msgid "Image 1024"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__image_128
+msgid "Image 128"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__image_256
+msgid "Image 256"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__image_512
+msgid "Image 512"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__mobile_blacklisted
+msgid ""
+"Indicates if a blacklisted sanitized phone number is a mobile number. Helps "
+"distinguish which number is blacklisted             when there is both a "
+"mobile and phone field in a model."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__phone_blacklisted
+msgid ""
+"Indicates if a blacklisted sanitized phone number is a phone number. Helps "
+"distinguish which number is blacklisted             when there is both a "
+"mobile and phone field in a model."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__industry_id
+msgid "Industry"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__invoice_warn
+msgid "Invoice"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__type
+msgid ""
+"Invoice & Delivery addresses are used in sales orders. Private addresses are"
+" only visible by authorized users."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__invoice_ids
+msgid "Invoices"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__is_company
+msgid "Is a Company"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__function
+msgid "Job Position"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__journal_item_count
+msgid "Journal Items"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__lang
+msgid "Language"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_department____last_update
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee____last_update
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_base____last_update
+#: model:ir.model.fields,field_description:x_company_organization.field_res_company____last_update
+#: model:ir.model.fields,field_description:x_company_organization.field_res_users____last_update
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_org_mixin____last_update
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org____last_update
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__write_uid
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__write_date
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__last_time_entries_checked
+msgid ""
+"Last time the invoices & payments matching was performed for this partner. "
+"It is set either if there's not at least an unreconciled debit and an "
+"unreconciled credit or if you click the \"Done\" button."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__last_time_entries_checked
+msgid "Latest Invoices & Payments Matching Date"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_sale_stock_location_id
+msgid "Location"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Location of Delivery"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_organization_manager_id
+msgid "Manager of this organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__invoice_warn_msg
+msgid "Message for Invoice"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__purchase_warn_msg
+msgid "Message for Purchase Order"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__sale_warn_msg
+msgid "Message for Sales Order"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__picking_warn_msg
+msgid "Message for Stock Picking"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__mobile
+msgid "Mobile"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.module.category,description:x_company_organization.module_category_organization
+msgid "Multiple Branches, Teams and Organizations Management"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__name
+msgid "Name"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org_categ__name
+msgid "Name of organization category"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__email_normalized
+msgid "Normalized Email"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_search
+msgid "Not Have Manager"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__comment
+msgid "Notes"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__reminder_date_before_receipt
+msgid "Number of days to send reminder email before the promised receipt date"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__message_unread_counter
+msgid "Number of unread messages"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__on_time_rate
+msgid "On-Time Delivery Rate"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.ui.menu,name:x_company_organization.menu_organization_category_hr_config
+#: model:ir.ui.menu,name:x_company_organization.menu_organization_category_setting
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_search
+msgid "Org. Categories"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__x_organization_id
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_base__x_organization_id
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_public__x_organization_id
+#: model:ir.model.fields,field_description:x_company_organization.field_res_users__x_organization_id
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_org_mixin__x_organization_id
+#: model:ir.module.category,name:x_company_organization.module_category_organization
+msgid "Organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model,name:x_company_organization.model_x_x_company_organization_res_org
+msgid "Organization - Branch"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.actions.act_window,name:x_company_organization.action_org_categ
+msgid "Organization Categories"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model,name:x_company_organization.model_x_x_company_organization_res_org_categ
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_organization_categ_id
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org_categ__name
+msgid "Organization Category"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.constraint,message:x_company_organization.constraint_x_x_company_organization_res_org_categ_name_uniq
+msgid "Organization Category Name Should Be Unique!"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__x_organization_code
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_base__x_organization_code
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_public__x_organization_code
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_code
+msgid "Organization Code"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_fax_number
+msgid "Organization Fax Number."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model,name:x_company_organization.model_x_x_company_organization_org_mixin
+msgid "Organization Mixin"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__x_organization_name
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_base__x_organization_name
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_public__x_organization_name
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Organization Name"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Organization location Address"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_hr_employee__x_organization_id
+#: model:ir.model.fields,help:x_company_organization.field_hr_employee_base__x_organization_id
+#: model:ir.model.fields,help:x_company_organization.field_hr_employee_public__x_organization_id
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_org_mixin__x_organization_id
+msgid "Organization which create this record."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.actions.act_window,name:x_company_organization.action_organizations
+#: model:ir.ui.menu,name:x_company_organization.menu_organization_hr_config
+#: model:ir.ui.menu,name:x_company_organization.menu_organization_settings
+msgid "Organizations"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__on_time_rate
+msgid ""
+"Over the past 12 months; the number of products received on time divided by "
+"the number of ordered products."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__parent_id
+msgid "Parent Organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__parent_name
+msgid "Parent name"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__contract_ids
+msgid "Partner Contracts"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__same_vat_partner_id
+msgid "Partner with same Tax ID"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__debit_limit
+msgid "Payable Limit"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_payment_method_id
+msgid "Payment Method"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__payment_token_ids
+msgid "Payment Tokens"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_organization_manager_id
+msgid "Person In Charge"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_purchase_pic_ids
+msgid "Person in charge of purchases for this organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_sale_pic_ids
+msgid "Person in charge of sales for this organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__phone
+msgid "Phone"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__phone_sanitized_blacklisted
+msgid "Phone Blacklisted"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_purchase_stock_location_id
+msgid "Place Of Delivery"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Place of Recepit"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_payment_method_id
+msgid ""
+"Preferred payment method when paying this vendor. This is used to filter "
+"vendor bills by preferred payment method to register payments in mass. Use "
+"cases: create bank files for batch wires, check runs."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_product_pricelist
+msgid "Pricelist"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_purchase_area
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Purchase Area"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Purchase Information"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__purchase_line_ids
+msgid "Purchase Lines"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__purchase_warn
+msgid "Purchase Order"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__purchase_order_count
+msgid "Purchase Order Count"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_purchase_pic_ids
+msgid "Purchase Person In Charge"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_purchase_tic_id
+msgid "Purchase Team In Charge"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_purchase_area
+msgid "Purchase area for this organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Purchase person"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_purchase_stock_location_id
+msgid "Purchase products storage location for this organization."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_purchase_stock_warehouse_id
+msgid "Purchase products storage warehouse for this organization."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__receipt_reminder_email
+msgid "Receipt Reminder"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__ref
+msgid "Reference"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__x_crm_team_id
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_base__x_crm_team_id
+#: model:ir.model.fields,field_description:x_company_organization.field_hr_employee_public__x_crm_team_id
+msgid "Responsible Team"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_sale_area
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Sale Area"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Sale Information"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__sale_order_count
+msgid "Sale Order Count"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_sale_area
+msgid "Sale area for this organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_sale_stock_location_id
+msgid "Sale products storage location for this organization."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_sale_stock_warehouse_id
+msgid "Sale products storage warehouse for this organization."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__sale_order_ids
+msgid "Sales Order"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__team_id
+msgid "Sales Team"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_sale_tic_id
+msgid "Sales Team In Charge"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__sale_warn
+msgid "Sales Warnings"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_sale_pic_ids
+msgid "Salesman In Charge"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__user_id
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Salesperson"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__phone_sanitized
+msgid "Sanitized Number"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_company_view_search
+msgid "Search Company"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__invoice_warn
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__picking_warn
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__purchase_warn
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__sale_warn
+msgid ""
+"Selecting the \"Warning\" option will notify user with the message, "
+"Selecting \"Blocking Message\" will throw an exception with the message and "
+"block the flow. The Message has to be written in the next field."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__self
+msgid "Self"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__partner_share
+msgid "Share Partner"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__signup_expiration
+msgid "Signup Expiration"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__signup_token
+msgid "Signup Token"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__signup_type
+msgid "Signup Token Type"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__signup_valid
+msgid "Signup Token is Valid"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__signup_url
+msgid "Signup URL"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__state_id
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "State"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__picking_warn
+msgid "Stock Picking"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__street
+msgid "Street"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Street 2..."
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "Street..."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__street2
+msgid "Street2"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_purchase_currency_id
+msgid "Supplier Currency"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__supplier_rank
+msgid "Supplier Rank"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__category_id
+msgid "Tags"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__vat
+msgid "Tax ID"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_purchase_tic_id
+msgid "Team in charge of purchases for this organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__x_sale_tic_id
+msgid "Team in charge of sales for this organization"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__vat
+msgid ""
+"The Tax Identification Number. Complete it if the contact is subjected to "
+"government taxes. Used in some legal statements."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_account_position_id
+msgid ""
+"The fiscal position determines the taxes/accounts used for this contact."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__user_id
+msgid "The internal user in charge of this contact."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__has_unreconciled_entries
+msgid ""
+"The partner has at least one unreconciled debit and credit since last time "
+"the invoices & payments matching was performed."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_stock_customer
+msgid ""
+"The stock location used as destination when sending goods to this contact."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_stock_supplier
+msgid ""
+"The stock location used as source when receiving goods from this contact."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_account_payable_id
+msgid ""
+"This account will be used instead of the default one as the payable account "
+"for the current partner"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_account_receivable_id
+msgid ""
+"This account will be used instead of the default one as the receivable "
+"account for the current partner"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_purchase_currency_id
+msgid ""
+"This currency will be used, instead of the default one, for purchases from "
+"the current partner"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__email_normalized
+msgid ""
+"This field is used to search on email address as the primary email field can"
+" contain more than strictly an email address."
+msgstr ""
+
+#. module: x_company_organization
+#: model:res.groups,comment:x_company_organization.group_branch_employee
+msgid "This group can access all records belong to his branch and descendant."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_supplier_payment_term_id
+msgid ""
+"This payment term will be used instead of the default one for purchase "
+"orders and vendor bills"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_payment_term_id
+msgid ""
+"This payment term will be used instead of the default one for sales orders "
+"and customer invoices"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__property_product_pricelist
+msgid ""
+"This pricelist will be used, instead of the default one, for sales to the "
+"current partner"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__tz
+msgid "Timezone"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__tz_offset
+msgid "Timezone offset"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__title
+msgid "Title"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__total_invoiced
+msgid "Total Invoiced"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__debit
+msgid "Total Payable"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__credit
+msgid "Total Receivable"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__credit
+msgid "Total amount this customer owes you."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__debit
+msgid "Total amount you have to pay to this vendor."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_hr_employee__x_employee_number
+msgid "Unique Number for this employee!"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_unread
+msgid "Unread Messages"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__barcode
+msgid "Use a barcode to identify this contact."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model,name:x_company_organization.model_res_users
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__user_ids
+msgid "Users"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__currency_id
+msgid "Utility field to express amount currency"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_stock_supplier
+msgid "Vendor Location"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__property_supplier_payment_term_id
+msgid "Vendor Payment Terms"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_purchase_stock_warehouse_id
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__x_sale_stock_warehouse_id
+msgid "Warehouse"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__website
+msgid "Website Link"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_x_x_company_organization_res_org__tz
+msgid ""
+"When printing documents and exporting/importing data, time values are computed according to this timezone.\n"
+"If the timezone is not set, UTC (Coordinated Universal Time) is used.\n"
+"Anywhere else, time values are computed according to the time offset of your web client."
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,help:x_company_organization.field_res_users__x_organization_id
+msgid "Working organization of this user"
+msgstr ""
+
+#. module: x_company_organization
+#: model_terms:ir.ui.view,arch_db:x_company_organization.res_organization_view_form
+msgid "ZIP"
+msgstr ""
+
+#. module: x_company_organization
+#: model:ir.model.fields,field_description:x_company_organization.field_x_x_company_organization_res_org__zip
+msgid "Zip"
+msgstr ""

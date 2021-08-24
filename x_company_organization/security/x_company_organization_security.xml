@@ -26,6 +26,15 @@
             </field>
         </record>
 
+        <!-- <record id="group_division" model="res.groups">
+            <field name="name">Division</field>
+            <field name="category_id" ref="module_category_organization" />
+            <field name="implied_ids" eval="[(4, ref('group_branch_manager'))]" />
+            <field name="comment">
+                This group can read all records belongs to his division.
+            </field>
+        </record> -->
+
         <record id="group_head_quarter" model="res.groups">
             <field name="name">Head Quarter</field>
             <field name="category_id" ref="module_category_organization" />

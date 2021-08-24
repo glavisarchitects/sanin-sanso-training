@@ -11,6 +11,16 @@
                     <sheet>
                         <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
                             attrs="{'invisible': [('active', '=', True)]}"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object" name="action_view_organizations"
+                                class="oe_stat_button" icon="fa-building"
+                                groups="base.group_no_one,base.group_erp_manager,hr.group_hr_user"
+                                attrs="{'invisible': [('x_organization_count', '&lt;=', 0)]}">
+                                <field name="x_organization_count" string="Organizations"
+                                    groups="base.group_no_one,base.group_erp_manager,hr.group_hr_user"
+                                    widget="statinfo" />
+                            </button>
+                        </div>
                         <div class="oe_title">
                             <h1>
                                 <field name="name" required="1" />
