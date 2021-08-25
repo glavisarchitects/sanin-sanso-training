@@ -8,3 +8,6 @@ class ResUsers(models.Model):
         "x.x_company_organization.res_org", string="Organization",
         help="Working organization of this user"
     )
+    x_employee_number = fields.Char(
+        related="employee_id.x_employee_number"
+    )

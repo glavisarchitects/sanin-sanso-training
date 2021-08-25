@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <record id="view_users_form" model="ir.ui.view">
+            <field name="name">res.users.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('oe_title')]/group" position="inside">
+                    <field name="x_employee_number"
+                        attrs="{'invisible': [('x_employee_number', '=', False)]}" />
+                </xpath>
+            </field>
+        </record>
+
+        <record id="res_users_view_form_profile" model="ir.ui.view">
+            <field name="name">res.users.profile.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="hr.res_users_view_form_profile" />
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='public']//div[@id='o_work_employee_main']" position="inside">
+                    <group string="Employee Number">
+                        <field name="x_employee_number"
+                            attrs="{'invisible': [('x_employee_number', '=', False)]}" />
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

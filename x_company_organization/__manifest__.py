@@ -35,6 +35,7 @@ Supported Editions
         "views/res_company_views.xml",
         "views/res_organization_category_views.xml",
         "views/res_organization_views.xml",
+        "views/res_users_views.xml",
     ],
     "installable": True,
     "auto_install": False,

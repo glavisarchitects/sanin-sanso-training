@@ -8,16 +8,17 @@
 
     'author': "SGVN",
     'website': "http://www.yourcompany.com",
-    
+
     'category': 'Uncategorized',
-    
+
     'version': '0.1',
 
-    'depends': ['base','sale'],
+    'depends': ['base', 'sale'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
+        # 'winzards/approval_winzard.xml',
         'views/sale_order_views.xml',
     ],
 }

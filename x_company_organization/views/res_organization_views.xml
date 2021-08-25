@@ -99,7 +99,6 @@
                                                 <field name="job_title" />
                                             </tree>
                                         </field>
-                                        <field name="x_sale_tic_id" />
                                     </group>
                                     <group string="Place of Recepit">
                                         <field name="x_sale_stock_warehouse_id" />
@@ -107,7 +106,9 @@
                                     </group>
                                 </group>
                                 <group>
-                                    <group></group>
+                                    <group string="Team In Charge">
+                                        <field name="x_sale_tic_id" />
+                                    </group>
                                     <group string="Sale Area">
                                         <field name="x_sale_area" />
                                     </group>
@@ -123,7 +124,6 @@
                                                 <field name="job_title" />
                                             </tree>
                                         </field>
-                                        <field name="x_purchase_tic_id" />
                                     </group>
                                     <group string="Location of Delivery">
                                         <field name="x_purchase_stock_warehouse_id" />
@@ -131,7 +131,9 @@
                                     </group>
                                 </group>
                                 <group>
-                                    <group></group>
+                                    <group string="Team In Charge">
+                                        <field name="x_purchase_tic_id" />
+                                    </group>
                                     <group string="Purchase Area">
                                         <field name="x_purchase_area" />
                                     </group>

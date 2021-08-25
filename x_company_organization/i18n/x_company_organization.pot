@@ -427,6 +427,7 @@ msgstr ""
 
 #. module: x_company_organization
 #: model:ir.model.fields,field_description:x_company_organization.field_hr_employee__x_employee_number
+#: model:ir.model.fields,field_description:x_company_organization.field_res_users__x_employee_number
 msgid "Employee Number"
 msgstr ""
 

@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, _, api
 
 
 class SaleOrder(models.Model):
@@ -12,11 +12,11 @@ class SaleOrder(models.Model):
     # x_sales_organization = fields.One2many(string='販売組織', required=False)
     x_sales_organization = fields.Char(string='販売組織', required=False)
 
-    x_shipping_information = fields.Char(string='配送情報', required=False)
+    # x_shipping_information = fields.Char(string='配送情報', required=False)
 
-    x_campaign = fields.Char(string='キャンペーン', required=False)
+    # x_campaign = fields.Char(string='キャンペーン', required=False)
 
-    x_expected_delivery_date = fields.Char(string='納期予定日', default=fields.Date.today, required=True)
+    #x_expected_delivery_date = fields.Char(string='納期予定日', default=fields.Date.today, required=True)
 
     x_application_destination = fields.Char(string='申請先', required=False)
 
@@ -34,3 +34,6 @@ class SaleOrder(models.Model):
     x_reason = fields.Char(string='理由', required=False)
 
     x_decision = fields.Char(string='決定', required=False)
+
+    def x_request_rfq(self):
+        print("##########################################", self.x_reason)

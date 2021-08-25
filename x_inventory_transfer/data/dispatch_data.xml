@@ -19,5 +19,7 @@
             <field name="name">Vehicle Dispatch</field>
         </record>
 
+
+
     </data>
 </odoo>
