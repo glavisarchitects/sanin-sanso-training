@@ -35,5 +35,5 @@ class SaleOrder(models.Model):
 
     x_decision = fields.Char(string='決定', required=False)
 
-    def x_request_rfq(self):
+    def x_request_approval(self):
         print("##########################################", self.x_reason)

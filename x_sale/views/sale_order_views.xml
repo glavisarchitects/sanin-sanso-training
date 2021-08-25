@@ -8,9 +8,9 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//header" position="inside">
-                    <button name="x_request_rfq" type="object" string="Request" class="oe_highlight"/>
+                    <button name="x_request_approval" type="object" string="Request Approval" class="oe_highlight"/>
+                    <!--                    <button name="%(action_any_name_goes_here)d" string="Open Wizard" class="oe_edit_only"></button>-->
                 </xpath>
-
 
                 <!-- Line: product, description, quantity, unit, x_shipping_information,  price, tax, x_campaign-->
                 <xpath expr="//field[@name='validity_date']" position="before">

@@ -33,6 +33,25 @@ class StockPicking(models.Model):
 
         return res
 
+    @api.depends('move_ids_without_package')
+    def _compute_max_line_sequence(self):
+        for picking in self:
+            picking.max_line_sequence = (
+                    max(picking.mapped('move_ids_without_package.sequence') or
+                        [0]) + 1
+            )
+
+    max_line_sequence = fields.Integer(string='Max sequence in lines',
+                                       compute='_compute_max_line_sequence')
+
+
+    def _reset_sequence(self):
+        for rec in self:
+            current_sequence = 1
+            for line in rec.move_ids_without_package:
+                line.x_detail_no = current_sequence
+                current_sequence += 1
+
 
 
 

@@ -8,7 +8,8 @@
       <field name="inherit_id" ref="stock.vpicktree"/>
       <field name="arch" type="xml">
           <xpath expr="//field[@name='state']" position="after">
-            <field name="x_movement_type"/>
+              <field name="x_movement_type"
+                     invisible="context.get('menuitem_stock_transfer', False)" />
           </xpath>
 
       </field>
@@ -29,10 +30,16 @@
           <xpath expr="//field[@name='partner_id']" position="attributes">
               <attribute name="invisible">1</attribute>
           </xpath>
+
+<!--          <xpath expr="//label[@for='partner_id']" position="after">-->
+<!--              <label for="partner_id" invisible="context.get('menuitem_stock_transfer', False)"/>-->
+<!--          </xpath>-->
+<!--          <xpath expr="//field[@name='partner_id']" position="after">-->
+<!--              <field name="partner_id" invisible="context.get('menuitem_stock_transfer', False)"/>-->
+<!--          </xpath>-->
           <xpath expr="//field[@name='picking_type_id']" position="replace">
-              <field name="picking_type_id"
-                     domain="[('code','=','internal')]" />
-              <field name="x_movement_type"/>
+              <field name="picking_type_id" domain="[('code','=','internal')]" />
+              <field name="x_movement_type" invisible="context.get('menuitem_stock_transfer', False)" />
           </xpath>
           <xpath expr="//field[@name='location_dest_id']" position="after">
               <field name="x_dispatch_ids" widget="many2many_checkboxes" attrs="{'invisible': [('x_movement_type', '!=', 'between')]}"/>
@@ -44,13 +51,16 @@
           </xpath>
 
           <xpath expr="//field[@name='origin']" position="before">
-              <field name="date"/>
-              <field name="user_id"/>
+              <field name="date" invisible="context.get('menuitem_stock_transfer', False)" />
+              <field name="user_id" invisible="context.get('menuitem_stock_transfer', False)" />
               <field name="x_shipping_slip_number" attrs="{'invisible': [('x_movement_type', '!=', 'between')]}"/>
               <field name="x_inbound_slip_number" attrs="{'invisible': [('x_movement_type', '!=', 'between')]}"/>
           </xpath>
 
           <xpath expr="//field[@name='product_uom_qty']" position="attributes">
+              <attribute name="invisible">1</attribute>
+          </xpath>
+          <xpath expr="//field[@name='product_uom']" position="attributes">
               <attribute name="invisible">1</attribute>
           </xpath>
 
@@ -59,15 +69,15 @@
           </xpath>
 
           <xpath expr="//page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="replace">
-              <field name="x_detail_no"/>
+              <field name="x_detail_no" invisible="context.get('menuitem_stock_transfer', False)" />
               <field name="product_id" required="1"/>
-              <field name="x_lot_id" />
-              <field name="x_quantity"/>
-              <field name="product_uom"/>
-              <field name="x_package_qty" />
-              <field name="x_package_unit" />
-              <field name="location_id" attrs="{'invisible': [('parent.x_movement_type', '=', 'within')]}"/>
-              <field name="location_dest_id" attrs="{'invisible': [('parent.x_movement_type', '=', 'within')]}"/>
+              <field name="x_lot_id" invisible="context.get('menuitem_stock_transfer', False)" />
+              <field name="x_quantity" invisible="context.get('menuitem_stock_transfer', False)" />
+              <field name="product_uom" invisible="context.get('menuitem_stock_transfer', False)" />
+              <field name="x_package_qty" invisible="context.get('menuitem_stock_transfer', False)" />
+              <field name="x_package_unit" invisible="context.get('menuitem_stock_transfer', False)" />
+              <field name="location_id" invisible="context.get('menuitem_stock_transfer', False)" attrs="{'invisible': [('parent.x_movement_type', '!=', 'within')]}"/>
+              <field name="location_dest_id" invisible="context.get('menuitem_stock_transfer', False)" attrs="{'invisible': [('parent.x_movement_type', '!=', 'within')]}"/>
           </xpath>
       </field>
     </record>
@@ -85,6 +95,16 @@
                    (0, 0, {'view_mode': 'tree', 'view_id': ref('x_inventory_transfer.x_inventory_transfer_list')}),
                    (0, 0, {'view_mode': 'form', 'view_id': ref('x_inventory_transfer.x_inventory_transfer_form')})]"/>
     </record>
+
+
+    <record id="stock.action_picking_tree_all" model="ir.actions.act_window">
+      <field name="context" eval="{'menuitem_stock_transfer': True}"/>
+    </record>
+
+    <record id="stock.action_picking_form" model="ir.actions.act_window">
+      <field name="context" eval="{'menuitem_stock_transfer': True}"/>
+    </record>
+
 
     <!-- menu list -->
 
