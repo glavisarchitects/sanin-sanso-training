@@ -22,13 +22,13 @@ Supported Editions
     "license": "OPL-1",
     "depends": [
         "sale_purchase_stock",
-        "hr"
+        "hr",
+        "x_security_groups",
     ],
     "data": [
         # DATA
         "data/x_company_organization_data.xml",
         # SECURITY
-        "security/x_company_organization_security.xml",
         "security/ir.model.access.csv",
         # VIEWS
         "views/hr_employee_views.xml",

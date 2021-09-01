@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data>
+    <data noupdate="1">
 
         <record id="department_sale" model="hr.department">
             <field name="name">Sales</field>
@@ -8,6 +8,17 @@
 
         <record id="department_purchase" model="hr.department">
             <field name="name">Purchase</field>
+        </record>
+
+        <record id="res_organization_0" model="x.x_company_organization.res_org">
+            <field name="name">My Company</field>
+            <field name="x_code">001</field>
+            <field name="partner_id" ref="base.main_partner" />
+            <field name="parent_id" eval="False" />
+        </record>
+
+        <record id="base.main_company" model="res.company">
+            <field name="x_code">001</field>
         </record>
 
     </data>

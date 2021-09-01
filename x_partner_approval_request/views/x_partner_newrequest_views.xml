@@ -5,8 +5,12 @@
             <field name="model">x.res.partner.newrequest</field>
             <field name="arch" type="xml">
                 <tree string="Partner Request">
-                    <field name="name"/>
-                    <field name="state"/>
+                    <field name="name" string="申請No"/>
+                    <field name="partner_classification" string="取引先区分"/>
+                    <field name="customer_name" string="取引先名"/>
+                    <field name="x_organization_id" string="申請支店"/>
+                    <field name="apply_date" string="申請日"/>
+                    <field name="state" string="ステータス"/>
                 </tree>
             </field>
         </record>
@@ -46,18 +50,21 @@
                             <group>
                                 <field name="app_classification" options="{'horizontal': true}" widget="radio"/>
                                 <field name="partner_classification" options="{'horizontal': true}" widget="radio"/>
-                                <field name="transaction_classification" required="1"/>
-                                <field name="department_classification" widget="radio"/>
+                                <field name="transaction_classification" widget="many2many_checkboxes"/>
+                                <field name="department_classification" style="padding-top:10px"
+                                       widget="many2many_checkboxes"/>
                             </group>
                             <group>
-                                <field name="apply_date"/>
+                                <field name="apply_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <!--                            <field name="apply_branch_id" required="1"/>-->
                                 <!--                            <field name="employee_id" required="1"/>-->
                             </group>
                         </group>
                         <group>
                             <group>
-                                <field name="customer_code" placeholder="最後の承認段階で、本社経理部により登録" required="1"/>
+                                <field name="customer_id" domain="[('customer_rank', '>=', 0)]"
+                                       placeholder="最後の承認段階で、本社経理部により登録" required="1"/>
+                                <field name="customer_code" placeholder="最後の承認段階で、本社経理部により登録"/>
                                 <field name="customer_name" required="1"/>
                                 <field name="furigana_cusname"/>
                                 <label for="street" string="取引先住所"/>
@@ -68,7 +75,8 @@
                                     <field name="city" class="o_address_city" style="width:33%"/>
                                     <field name="street" class="o_address_street"/>
                                     <field name="street2" class="o_address_street"/>
-                                    <field name="country_id" placeholder="Country" class="o_address_country"/>
+                                    <field name="country_id" placeholder="Country" class="o_address_country"
+                                           readonly="1"/>
                                 </div>
                             </group>
                             <group>
@@ -77,7 +85,8 @@
                                 <field name="partner_fax_representative"/>
                                 <field name="partner_fax_payment"/>
                                 <field name="transaction_basic_contract"/>
-                                <field name="reason_description"/>
+                                <field name="reason_description"
+                                       attrs="{'invisible': [('transaction_basic_contract', '=', 'conclusion')]}"/>
                             </group>
                         </group>
 
@@ -85,7 +94,7 @@
                             <page string="取引先概要" name="">
                                 <group>
                                     <group>
-                                        <field name="company_information"/>
+                                        <field name="company_id"/>
                                         <field name="found_year" required="1"/>
                                         <field name="capital" required="1"/>
                                     </group>
@@ -102,8 +111,8 @@
                             </page>
                             <page string="支払情報" name="">
                                 <group>
-                                    <label for="company_information"/>
-                                    <field style="width:50%" name="company_information"/>
+                                    <!--                                    <label for="company_information"/>-->
+                                    <!--                                    <field style="width:50%" name="company_information"/>-->
                                     <group string="支払条件" name="">
                                         <field name="payment_terms" required="1" widget="radio"/>
                                         <field name="other_payment_terms"
@@ -188,15 +197,51 @@
             <field name="res_model">x.res.partner.newrequest</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[]</field>
-            <!--            <field name="context">{'default_flow_type': 'ga_quotation'}</field>-->
             <field name="view_ids"
                    eval="[(5, 0, 0),
                    (0, 0, {'view_mode': 'tree', 'view_id': ref('x_partner_approval_request.x_partner_newrequest_list_view')}),
                    (0, 0, {'view_mode': 'form', 'view_id': ref('x_partner_approval_request.x_partner_newrequest_form_view')})]"/>
         </record>
 
+        <!--                đã phê duyệt-->
+        <record id="partner_newrequest_approved_menu_action" model="ir.actions.act_window">
+            <field name="name">Partner Approved Request</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">x.res.partner.newrequest</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', '=', 'account_head_approval')]</field>
+        </record>
+
+        <!--        đang chờ phê duyệt-->
+        <record id="partner_newrequest_approving_menu_action" model="ir.actions.act_window">
+            <field name="name">Partner Approving Request</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">x.res.partner.newrequest</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', 'in', ('branch_manager_approval', 'sale_head_approval'))]</field>
+        </record>
+
+        <!--        đang xin phê duyệt-->
+        <record id="partner_newrequest_asking_approval_menu_action" model="ir.actions.act_window">
+            <field name="name">Partner Asking Approval Request</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">x.res.partner.newrequest</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', '=', 'employee_send')]</field>
+        </record>
+
         <menuitem id="partner_newrequest_menu" parent="contacts.menu_contacts"
                   action="partner_newrequest_menu_action" sequence="1"/>
+
+        <menuitem id="partner_asking_aproval_newrequest_menu" parent="partner_newrequest_menu"
+                  action="partner_newrequest_asking_approval_menu_action" sequence="1"/>
+
+        <menuitem id="partner_aproving_newrequest_menu" parent="partner_newrequest_menu"
+                  action="partner_newrequest_approving_menu_action" sequence="2"/>
+
+        <menuitem id="partner_aproved_newrequest_menu" parent="partner_newrequest_menu"
+                  action="partner_newrequest_approved_menu_action" sequence="3"/>
+
 
     </data>
 </odoo>

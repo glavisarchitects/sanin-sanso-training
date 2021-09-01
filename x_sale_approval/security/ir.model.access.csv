@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sale_quotation_approval_winzard,access.sale.quotation.approval.winzard,model_sale_quotation_approval_winzard,base.group_user,1,1,1,1
+access_sale_order_approval_winzard,access.sale.order.approval.winzard,model_sale_order_approval_winzard,base.group_user,1,1,1,1
+access_sale_order_approval,access.sale.order.approval,model_sale_order_approval,base.group_user,1,1,1,1

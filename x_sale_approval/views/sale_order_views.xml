@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+        <!-- Sale Order Custom FormView -->
+        <record id="view_sale_order_form" model="ir.ui.view">
+            <field name="name">sale.order.view.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//header" position="inside">
+                    <button name="x_request_quotation_approval" string="Request Quotation Approval" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="x_approval_quotation" string="Approval Quotation" type="object" attrs="{'invisible': [('state', '!=', 'sale')]}"/>
+                </xpath>
+
+                <!--Line: product, description, quantity, unit, x_shipping_information,  price, tax, x_campaign-->
+                <xpath expr="//field[@name='validity_date']" position="before">
+                    <field name="x_organization_id" string="支店名"/>
+                </xpath>
+
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="x_sale_quotation_state" widget="selection" readonly="0" />
+                </xpath>
+
+
+                <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                    <field name="x_shipping_information" widget="text"/>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='tax_id']" position="after">
+                    <field name="x_campaign"/>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='x_campaign']" position="after">
+                    <field name="x_expected_delivery_date"/>
+                </xpath>
+
+                <notebook position="inside">
+                    <page name="sale_order_approval" string="Sale Order Approval Process">
+                        <form>
+                            <sheet>
+                                <group string="Request Approval">
+                                    <field name="crm_team_id"/>
+                                    <field name="x_deadline"/>
+                                    <field name="x_remark" widget="text"/>
+                                </group>
+
+                                <group>
+                                    <div class="oe_button_box" style="border-bottom:solid 1px silver; margin:0px 10px;"></div>
+                                </group>
+
+                                <group string="Manager Approval" readonly="1">
+                                    <field name="x_state" widget="selection"/>
+                                    <field name="x_reason" widget="text"/>
+                                </group>
+                            </sheet>
+                        </form>
+                    </page>
+                </notebook>
+            </field>
+        </record><!-- end view_sale_order_form -->
+
+
+        <!-- Sale Order Custom TreeView -->
+        <record id="view_sale_order_tree" model="ir.ui.view">
+            <field name="name">sale.order.view.tree.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='create_date']" position="after">
+                    <field name="x_deadline"/>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="before">
+                    <field name="x_organization_id" string="支店名"/>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="x_sale_quotation_state"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

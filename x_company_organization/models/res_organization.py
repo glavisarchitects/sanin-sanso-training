@@ -8,6 +8,9 @@ class ResOrganization(models.Model):
     _description = "Organization - Branch"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _inherits = {"res.partner": "partner_id"}
+    _parent_store = True
+    _parent_name = "parent_id"
+    _rec_name = "x_complete_name"
 
     # Odoo standard fields
     company_id = fields.Many2one(
@@ -15,11 +18,15 @@ class ResOrganization(models.Model):
         ondelete="restrict", required=True, default=lambda self: self.env.company.id
     )
     partner_id = fields.Many2one(
-        comodel_name="res.partner", string="Contact", ondelete="restrict"
+        comodel_name="res.partner", string="Contact", ondelete="restrict", required=True
     )
     parent_id = fields.Many2one(
         comodel_name="x.x_company_organization.res_org", ondelete="restrict",
-        index=True, auto_join=True, string="Parent Organization"
+        index=True, auto_join=True, string="Parent Organization", copy=False,
+        default=lambda self: self.env.ref("x_company_organization.res_organization_0").id
+    )
+    parent_path = fields.Char(
+        string="Parent Path", index=True
     )
     child_ids = fields.One2many(
         comodel_name="x.x_company_organization.res_org", inverse_name="parent_id",
@@ -29,6 +36,9 @@ class ResOrganization(models.Model):
         string="Active", default=True
     )
     # Custom fields
+    x_complete_name = fields.Char(
+        string="Complete Name", compute="_compute_complete_name", store=True
+    )
     x_code = fields.Char(
         string="Organization Code", required=True, copy=False
     )
@@ -100,6 +110,18 @@ class ResOrganization(models.Model):
         help="Purchase products storage location for this organization."
     )
 
+    _sql_constraints = [
+        ("code_uniq", "UNIQUE(code)", "Organization Code Should Be Unique!")
+    ]
+
+    @api.depends("parent_id", "name")
+    def _compute_complete_name(self):
+        for r in self:
+            if not r.parent_id:
+                r.x_complete_name = r.name
+            else:
+                r.x_complete_name = "%s/ %s" % (r.parent_id.x_complete_name, r.name)
+
     @api.onchange("x_employee_ids")
     def _onchange_employee(self):
         self.update({
@@ -111,16 +133,22 @@ class ResOrganization(models.Model):
             self._update_purchase_person_in_charge()
 
     def copy(self):
+        random_string = generate_random_string()
         return super(ResOrganization, self).copy({
-            "name": "%s_%s" % (self.name, generate_random_string()),
-            "x_code": generate_random_string()
+            "name": "%s_%s" % (self.name, random_string),
+            "x_code": random_string
         })
 
-    def name_get(self):
-        res = []
-        for r in self:
-            res.append((r.id, "%s (%s)" % (r.name, r.x_code)))
-        return res
+    def write(self, vals):
+        if "active" in vals.keys() and\
+            self.env.ref("x_company_organization.res_organization_0") in self:
+            raise ValidationError(_("Base Organization can not be in-activated!"))
+        return super(ResOrganization, self).write(vals)
+
+    def unlink(self):
+        if self.env.ref("x_company_organization.res_organization_0") in self:
+            raise ValidationError(_("Base Organization can not be deleted!"))
+        return super(ResOrganization, self).unlink()
 
     def action_assign_manager(self):
         self.ensure_one()

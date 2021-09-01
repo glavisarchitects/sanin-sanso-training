@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="x_remand_checkbox_form" model="ir.ui.view">
+            <field name="name">x.remand.checkbox.form</field>
+            <field name="model">x.remand.checkbox</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <p>
+                            仕入先申請：差戻し
+                            仕入先申請を申請者へ差戻しますか？
+                            仕入先申請に対して差し戻しの理由記載
+                            　一部情報が不備であるため、差戻します。確認し再提出してください。
+
+                        </p>
+                        <footer>
+                            <button name="remand_request" string="差戻し" type="object" class="oe_highlight"/>
+                            <button string="取消" special="cancel"/>
+                        </footer>
+                    </group>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

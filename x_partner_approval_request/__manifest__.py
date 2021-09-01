@@ -26,7 +26,13 @@
 
         'views/x_partner_newrequest_views.xml',
 
+        # data
         'data/seq_data_partner_request.xml',
+        'data/master_data.xml',
+
+        # wizard
+        'wizards/approval_checkbox_views.xml',
+        'wizards/remand_checkbox_views.xml',
 
         # report
 
