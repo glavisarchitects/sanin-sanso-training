@@ -2,13 +2,8 @@
     "name": "Multi-level company security groups",
     "summary": "Keeps all security group in 1 module",
     "description":
-"""
-Supported Editions
-==================
-
-1. Community Edition.
-2. Enterprise Edition.
-""",
+    """
+    """,
     "author": "SystemGear VietNam",
     "website": "https://www.systemgear-vietnam.com/",
     "category": "Uncategorized",

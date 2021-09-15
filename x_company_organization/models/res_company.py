@@ -16,6 +16,6 @@ class ResCompany(models.Model):
     def name_get(self):
         res = []
         for r in self:
-            name = "%s (%s)" % (r.name, r.x_code) if r.x_code else r.name
+            name = "[%s] %s" % (r.x_code, r.name) if r.x_code else r.name
             res.append((r.id, name))
         return res

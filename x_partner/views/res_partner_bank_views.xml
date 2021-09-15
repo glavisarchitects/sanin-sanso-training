@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+    
+        <record id="view_partner_bank_tree" model="ir.ui.view">
+            <field name="name">res.partner.bank.view.tree.inherit</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="base.view_partner_bank_tree" />
+            <field name="arch" type="xml">
+                <field name="acc_number" position="before">
+                    <field name="x_branch_name" string="Branch name" />
+                </field>
+                <field name="bank_name" position="attributes">
+                    <attribute name="string">Bank</attribute>
+                </field>
+                <field name="partner_id" position="before">
+                    <field name="x_deposit_type" />
+                </field>
+                <field name="partner_id" position="after">
+                    <field name="x_furigana" />
+                </field>
+            </field>
+        </record>
+
+        <record id="view_partner_bank_form" model="ir.ui.view">
+            <field name="name">res.partner.bank.view.form.inherit</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="base.view_partner_bank_form" />
+            <field name="arch" type="xml">
+                <field name="acc_number" position="after">
+                    <field name="x_branch_name" />
+                    <field name="x_deposit_type" widget="radio" options="{'horizontal': true}" />
+                </field>
+                <field name="acc_holder_name" position="after">
+                    <field name="x_furigana" />
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>

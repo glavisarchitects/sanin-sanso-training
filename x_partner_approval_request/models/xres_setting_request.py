@@ -2,23 +2,29 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, SUPERUSER_ID, _
-from odoo.exceptions import AccessError, UserError, ValidationError
 
 
 class SettingRequest(models.Model):
     """
-    model request create new partner
+    model setting partner request
     """
-    _name = "x.res.partner.newrequest"
+    _name = "x.res.setting.request"
     _description = 'Setting Request'
 
-    state = fields.Selection([
-        ('draft', 'ドラフト'),
-        ('employee_send', '1次承認待ち'),
-        ('branch_manager_approval', '2次承認待ち'),
-        ('sale_head_approval', '3次承認待ち'),
-        ('account_head_approval', '承認済み'),
-    ], required=True, readonly=True, default='draft')
-    name = fields.Char(default='新規', readonly=True)
-    app_classification = fields.Selection([('new', '新規'), ('update', '更新'), ('branch_info', '支店の販売・購買情報')],
-                                          default='new', string='申請区分')
+    name = fields.Char()
+    step_approval = fields.Selection([('step1', '1次承認待ち'), ('step2', '2次承認待ち'), ('step3', '3次承認待ち')], string="承認ステップ設定")
+    branch_approver_id = fields.Many2one("hr.employee", string="1次承認者")
+    sale_hq_approver_ids = fields.Many2many("hr.employee", "sale_hq_approver_employee_rel", string="2次承認者")
+    account_hq_approver_ids = fields.Many2many("hr.employee", "account_hq_approver_employee_rel", string="最終承認者")
+
+    def show_list_aprover(self):
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Request Approval"),
+            "target": "new",
+            "res_model": "hr.employee",
+            "view_mode": "tree",
+            # "context": {
+            #     "default_x_partner_request_id": self.id,
+            # }
+        }

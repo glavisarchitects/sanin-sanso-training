@@ -1,24 +1,22 @@
 <odoo>
-    <data>
-    <record id="seq_transfer_internal" model="ir.sequence">
-        <field name="name">Transfer Sequence</field>
-        <field name="code">stock.picking</field>
-        <field name="prefix">I/</field>
-        <field eval="1" name="number_next"/>
-        <field eval="1" name="number_increment"/>
-        <field eval="False" name="company_id"/>
-        <field name="padding">4</field>
-    </record>
+    <data noupdate="1">
+        <record id="transfer_internal_sequence" model="ir.sequence">
+            <field name="name">Transfer Sequence</field>
+            <field name="code">transfer_internal_sequence</field>
+            <field name="prefix">INTERNAL/</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field name="padding">4</field>
+        </record>
 
-    <record id="seq_stock_move_internal" model="ir.sequence">
-        <field name="name">Stock Move Sequence</field>
-        <field name="code">stock.move</field>
-        <field name="prefix">I/0001-</field>
-        <field eval="1" name="number_next"/>
-        <field eval="1" name="number_increment"/>
-        <field eval="False" name="company_id"/>
-        <field name="padding">4</field>
-    </record>
+        <record id="seq_stock_move_internal_sequence" model="ir.sequence">
+            <field name="name">Stock Move Sequence</field>
+            <field name="code">seq_stock_move_internal_sequence</field>
+            <field name="prefix">I/0001-</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field name="padding">4</field>
+        </record>
 
 
     </data>

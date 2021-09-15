@@ -3,6 +3,7 @@ from odoo import models, fields
 from ..helpers import generate_random_string
 
 
+
 class EmployeeBase(models.AbstractModel):
     _name = "hr.employee.base"
     _inherit = ["hr.employee.base", "x.x_company_organization.org_mixin"]
@@ -52,3 +53,10 @@ class Employee(models.Model):
         return super(Employee, self).copy({
             "x_employee_number": generate_random_string(seq=string.digits, lengh=10)
         })
+
+    def _sync_user(self, user, employee_has_image=False):
+        res = super(Employee, self)._sync_user(user, employee_has_image)
+        res.update({
+            "x_organization_id": user.x_organization_id and user.x_organization_id.id
+        })
+        return res

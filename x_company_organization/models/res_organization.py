@@ -22,7 +22,7 @@ class ResOrganization(models.Model):
     )
     parent_id = fields.Many2one(
         comodel_name="x.x_company_organization.res_org", ondelete="restrict",
-        index=True, auto_join=True, string="Parent Organization", copy=False,
+        index=True, auto_join=True, string="親組織", copy=False,
         default=lambda self: self.env.ref("x_company_organization.res_organization_0").id
     )
     parent_path = fields.Char(
@@ -40,18 +40,18 @@ class ResOrganization(models.Model):
         string="Complete Name", compute="_compute_complete_name", store=True
     )
     x_code = fields.Char(
-        string="Organization Code", required=True, copy=False
+        string="組織コード", required=True, copy=False, size=6
     )
     x_organization_categ_id = fields.Many2one(
         comodel_name="x.x_company_organization.res_org_categ",
-        string="Organization Category", ondelete="restrict",
+        string="組織カテゴリ", ondelete="restrict",
         check_company=True, help="Category of this organization"
     )
     x_company_name = fields.Char(
-        string="Company Name", related="company_id.name"
+        string="会社名称", related="company_id.name"
     )
     x_company_code = fields.Char(
-        string="Company Code", related="company_id.x_code"
+        string="組織コード", related="company_id.x_code"
     )
     x_organization_manager_id = fields.Many2one(
         comodel_name="hr.employee", string="Person In Charge",
@@ -110,8 +110,32 @@ class ResOrganization(models.Model):
         help="Purchase products storage location for this organization."
     )
 
+    # S010 - 10092021
+    x_stock_pic_ids = fields.Many2many(
+        comodel_name="hr.employee", relation="stock_organization_rel",
+        column1="org_id", column2="stock_user_id", string="Inventory Person In Charge",
+        check_company=True, help="Person in charge of inventory for this organization"
+    )
+    x_arrival_location_ids = fields.Many2many(
+        comodel_name="stock.location", relation="arrival_loc_org_rel",
+        column1="org_id", column2="loc_id", string="Arrival Locations",
+        check_company=True
+    )
+    x_shipping_location_ids = fields.Many2many(
+        comodel_name="stock.location", relation="shipping_loc_org_rel",
+        column1="org_id", column2="loc_id", string="Shipping Locations",
+        check_company=True
+    )
+    x_profit_center_id = fields.Many2one(
+        comodel_name="hr.department", string="Profit Center", ondelete="restrict"
+    )
+    x_cost_center_id = fields.Many2one(
+        comodel_name="hr.department", string="Cost Center", ondelete="restrict"
+    )
+    x_evaluation_unit = fields.Boolean(string="Evaluation Unit", default=True)
+
     _sql_constraints = [
-        ("code_uniq", "UNIQUE(code)", "Organization Code Should Be Unique!")
+        ("code_uniq", "UNIQUE(x_code, company_id)", "Organization Code Should Be Unique!"),
     ]
 
     @api.depends("parent_id", "name")

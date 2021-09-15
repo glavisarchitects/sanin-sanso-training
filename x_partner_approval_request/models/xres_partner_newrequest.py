@@ -19,7 +19,7 @@ class PartnerRequest(models.Model):
     model request create new partner
     """
     _name = "x.res.partner.newrequest"
-    _inherit = "x.x_company_organization.org_mixin"
+    _inherit = ["x.x_company_organization.org_mixin", "x.x_partner.partner_request_abstract"]
     _description = 'Partner New Request'
 
     # _inherits = {'res.partner': 'partner_id'}
@@ -35,6 +35,8 @@ class PartnerRequest(models.Model):
 
     # partner_id = fields.Many2one('res.partner', required=True, ondelete='restrict', auto_join=True,
     #     string='Related Partner', help='Partner-related data of the user')
+
+    user_id = fields.Many2one('res.users', '申請者', default=lambda self: self.env.user)
     state = fields.Selection([
         ('draft', 'ドラフト'),
         ('employee_send', '1次承認待ち'),
@@ -43,11 +45,9 @@ class PartnerRequest(models.Model):
         ('account_head_approval', '承認済み'),
     ], required=True, readonly=True, default='draft')
     name = fields.Char(default='新規', readonly=True)
-    app_classification = fields.Selection([('new', '新規'), ('update', '更新'), ('branch_info', '支店の販売・購買情報')],
+    app_classification = fields.Selection([('new', '新規'), ('update', '更新'), ('branch_info', '支店の販売・購買情報追加')],
                                           default='new', string='申請区分')
 
-    partner_classification = fields.Selection([('customer', '得意先(顧客先)'), ('vendor', '仕入先(メーカー)')
-                                               ], default='customer', string='取引先区分')
     transaction_classification = fields.Many2many("x.transaction.classification",
                                                   default=default_transaction_classification,
                                                   string='取引区分')
@@ -65,9 +65,7 @@ class PartnerRequest(models.Model):
         TODO reconfirm customer_code on res_partner
     """
     customer_id = fields.Many2one("res.partner", string='取引先', )
-    customer_code = fields.Char(string='取引先コード')
     customer_name = fields.Char(string='取引先名', default=lambda self: self.customer_id.name)
-    furigana_cusname = fields.Char(string='フリガナ', )
     street = fields.Char(string='町名番地')
     street2 = fields.Char(string='町名番地2')
     zip = fields.Char(string='郵便番号', change_default=True)
@@ -75,29 +73,23 @@ class PartnerRequest(models.Model):
     state_id = fields.Many2one("res.country.state", string='都道府県', ondelete='restrict',
                                domain="[('country_id', '=?', country_id)]")
     country_id = fields.Many2one('res.country',
-                                 default=lambda self: self.env["res.country"].search([("code", "=", "JP")], limit=1),
+                                 default=lambda self: self.env.ref("base.jp").id,  # @nhatnm0612
                                  string='Country', ondelete='restrict')
 
     partner_tel_representative = fields.Integer(string='取引先 TEL代表')
     partner_tel_direct = fields.Integer(string='取引先 TEL直通')
-    partner_fax_representative = fields.Integer(string='取引先 FAX代表')
-    partner_fax_payment = fields.Integer(string='取引先 FAX支払通知書')
-    transaction_basic_contract = fields.Selection(
-        [('conclusion', '締結'), ('no_fastening', '締結しない'), ('not_applicable', '該当なし')], string='理由記載')
 
-    reason_description = fields.Text(string='理由記載')
+    request_organization_id = fields.Many2one(
+        comodel_name='x.x_company_organization.res_org',
+        string='申請組織',
+        required=False)
 
     # change_design_230821
     # company_information = fields.Char('会社情報')
     company_id = fields.Many2one("res.company", string="会社", default=lambda self: self.env.user.company_id)
-    found_year = fields.Char(string='創立年度')
-    capital = fields.Char(string='資本金')  # しほんきん
 
     # change_design_230821
-    payment_terms = fields.Selection([('company_rules', '当社規定'), ('other', 'その他')], string="支払条件")
     # our_payment_site = fields.Selection([('30_days_site', '30日サイト'), ('120_days_site', '120日サイト')], string='当社支払サイト')
-    other_payment_terms = fields.Char(string='その他支払条件')
-    reason_change_payment_terms = fields.Text(string='支払条件変動理由')
     # reason_fluctuation  = fields.Text(string='支払条件変動理由')
 
     """"TODO: Recheck bank_name,branch_name,account_number on res.partner"""
@@ -116,12 +108,11 @@ class PartnerRequest(models.Model):
     remarks = fields.Text("特記事項")
     contact_information = fields.Text("連絡事項")
 
-    organization_id = fields.Many2one(
-        "x.x_company_organization.res_org", string="支店名称", default=lambda self: self.env.user.x_organization_id,
-        help="Working organization of this user"
-    )
+    # organization_id = fields.Many2one( @nhatnm0612
+    #     "x.x_company_organization.res_org", string="支店名称", default=lambda self: self.env.user.x_organization_id, @nhatnm0612
+    #     help="Working organization of this user" @nhatnm0612
+    # ) @nhatnm0612
     purchasing_person = fields.Char("購買担当者")
-    purchasing_area = fields.Char("購買地域")
     minimum_purchase_price = fields.Char("最低仕入価格")
     delivery_place = fields.Char("納品場所")
 
@@ -147,6 +138,36 @@ class PartnerRequest(models.Model):
     #         if len(tran) == 2 and tran in self.env["x.department.classification"].search([("name", "=", "設備")]):
     #             self.department_classification = self.env['x.department.classification'].search(
     #                 [('name', '=', "器材")]).ids
+
+    @api.onchange('customer_id')
+    def _onchange_patner_id(self):
+        self.x_partner_code = self.customer_id.x_partner_code
+        self.customer_name = self.customer_id.name
+        self.transaction_classification = [(6, 0, self.customer_id.x_transaction_classification.ids)]
+        self.x_furigana_name = self.customer_id.x_furigana_name
+        self.street = self.customer_id.street
+        self.street2 = self.customer_id.street2
+        self.state_id = self.customer_id.state_id
+        self.city = self.customer_id.city
+        self.zip = self.customer_id.zip
+        self.partner_tel_representative = self.customer_id.phone
+        self.partner_tel_direct = self.customer_id.mobile
+        self.x_fax_number = self.customer_id.x_fax_number
+        self.x_payment_notice_fax_number = self.customer_id.x_payment_notice_fax_number
+        self.x_transaction_basic_contract = self.customer_id.x_transaction_basic_contract
+        self.x_contract_not_apply_reason = self.customer_id.x_contract_not_apply_reason
+        self.x_founding_year = self.customer_id.x_founding_year
+        self.x_capital = self.customer_id.x_capital
+        self.sale_information_ids = [(6, 0, self.customer_id.x_partner_performance.ids)]
+        self.x_payment_term_using = self.customer_id.x_payment_term_using
+        self.x_other_payment_term = self.customer_id.x_other_payment_term
+        if self.customer_id.bank_ids:
+            self.bank_name = self.customer_id.bank_ids[0].bank_name
+            self.branch_name = self.customer_id.bank_ids[0].x_branch_name
+            self.account_number = self.customer_id.bank_ids[0].acc_number
+            self.deposit_item = self.customer_id.bank_ids[0].x_deposit_type
+            self.account_holder = self.customer_id.bank_ids[0].acc_holder_name
+            self.furigana_accname = self.customer_id.bank_ids[0].x_furigana
 
     def emp_confirm_partner_request(self):
         if self.state == 'draft':
@@ -192,6 +213,91 @@ class PartnerRequest(models.Model):
                 },
             }
 
+    def write(self, vals):
+        if vals.get('state') == 'account_head_approval':
+            if self.app_classification == 'new':
+                action_create_new_partner()
+            else:
+                action_update_partner()
+        return super(PartnerRequest, self).write(vals)
+
+
+    def action_create_new_partner(self):
+        res_partner = self.env['res.partner']
+        res_partner.create(
+            {
+                'x_partner_code': self.x_partner_code,
+                'name': self.customer_name,
+                'x_transaction_classification': [(6, 0, self.transaction_classification.ids)],
+                'x_furigana_name': self.x_furigana_name,
+                'street': self.street,
+                'street2': self.street2,
+                'state_id': self.state_id,
+                'city': self.city,
+                'zip': self.zip,
+                'phone': self.partner_tel_representative,
+                'mobile': self.partner_tel_direct,
+                'x_fax_number': self.x_fax_number,
+                'x_payment_notice_fax_number': self.x_payment_notice_fax_number,
+                'x_transaction_basic_contract': self.x_transaction_basic_contract,
+                'x_contract_not_apply_reason': self.x_contract_not_apply_reason,
+                'x_founding_year': self.x_founding_year,
+                'x_capital': self.x_capital,
+                'x_partner_performance': [(6, 0, self.sale_information_ids.ids)],
+                'x_payment_term_using': self.x_payment_term_using,
+                'x_other_payment_term': self.x_other_payment_term,
+                'bank_ids': [
+                    (0, 0, {
+                        'bank_name': self.bank_name,
+                        'x_branch_name': self.branch_name,
+                        'acc_number': self.account_number,
+                        'x_deposit_type': self.deposit_item,
+                        'acc_holder_name': self.account_holder,
+                        'x_furigana': self.furigana_accname,
+                    }),
+                ],
+            }
+        )
+        return res_partner
+
+    def action_update_partner(self):
+        res_partner = self.customer_id
+        res_partner.update(
+            {
+                'x_partner_code': self.x_partner_code,
+                'name': self.customer_name,
+                'transaction_classification': [(6, 0, self.transaction_classification.ids)],
+                'x_furigana_name': self.x_furigana_name,
+                'street': self.street,
+                'street2': self.street2,
+                'state_id': self.state_id,
+                'city': self.city,
+                'zip': self.zip,
+                'phone': self.partner_tel_representative,
+                'mobile': self.partner_tel_direct,
+                'x_fax_number': self.x_fax_number,
+                'x_payment_notice_fax_number': self.x_payment_notice_fax_number,
+                'x_transaction_basic_contract': self.x_transaction_basic_contract,
+                'x_contract_not_apply_reason': self.x_contract_not_apply_reason,
+                'x_founding_year': self.x_founding_year,
+                'x_capital': self.x_capital,
+                'x_partner_performance': [(6, 0, self.sale_information_ids.ids)],
+                'x_payment_term_using': self.x_payment_term_using,
+                'x_other_payment_term': self.x_other_payment_term,
+                'bank_ids': [
+                    (1, 0, {
+                        'bank_name': self.bank_name,
+                        'x_branch_name': self.branch_name,
+                        'acc_number': self.account_number,
+                        'x_deposit_type': self.deposit_item,
+                        'acc_holder_name': self.account_holder,
+                        'x_furigana': self.furigana_accname,
+                    }),
+                ],
+            }
+        )
+        return res_partner
+
     def account_head_remand_partner_request(self):
         # self.write({
         #     'state': 'branch_manager_approval'
@@ -213,13 +319,9 @@ class PartnerSalesInformation(models.Model):
     """
     model sale information
     """
-    _name = "x.partner.sales.information"
-    _description = 'Sale information'
+    _inherit = "x.partner.sales.information"
 
     partner_request_id = fields.Many2one('x.res.partner.newrequest')
-    fiscal_year = fields.Char(string='決算期')
-    amount_of_sales = fields.Char(string='売上高')
-    management_profit = fields.Char(string='経営利益')
 
 
 class PartnerAuthorizer(models.Model):
@@ -252,25 +354,3 @@ class PartnerParticipants(models.Model):
     def send_email(self):
         """"TODO: re confirm action send_email"""
         self.email
-
-
-class XTransactionClassification(models.Model):
-    """
-    """
-    _name = "x.transaction.classification"
-    _description = ''
-
-    name = fields.Char("Transaction")
-    default = fields.Boolean("Default?")
-    description = fields.Char("Note fields")
-
-
-class XDepartmentClassification(models.Model):
-    """
-    """
-    _name = "x.department.classification"
-    _description = ''
-
-    name = fields.Char("Transaction")
-    default = fields.Boolean("Default?")
-    description = fields.Char("Note fields")

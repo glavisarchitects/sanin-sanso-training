@@ -12,7 +12,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/sale_order_views.xml',
-        'winzards/sale_quotation_approval_winzard.xml',
-        'winzards/sale_order_approval_winzard.xml',
+        'views/product_pricelist_view.xml',
+        'wizards/sale_quotation_approval_wizard.xml'
     ],
 }

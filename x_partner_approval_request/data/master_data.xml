@@ -1,25 +1,25 @@
 <odoo>
     <data>
 
-        <record id="transaction_selection1" model="x.transaction.classification">
-            <field name="name">ガス・設備</field>
-            <field name="default">False</field>
-        </record>
+<!--        <record id="transaction_selection1" model="x.transaction.classification">-->
+<!--            <field name="name">ガス・設備</field>-->
+<!--            <field name="default">False</field>-->
+<!--        </record>-->
 
-        <record id="transaction_selection2" model="x.transaction.classification">
-            <field name="name">工事</field>
-            <field name="default">False</field>
-        </record>
+<!--        <record id="transaction_selection2" model="x.transaction.classification">-->
+<!--            <field name="name">工事</field>-->
+<!--            <field name="default">False</field>-->
+<!--        </record>-->
 
-        <record id="department_selection1" model="x.department.classification">
-            <field name="name">産業ガス・医療ガス</field>
-            <field name="default">True</field>
-        </record>
+<!--        <record id="department_selection1" model="x.department.classification">-->
+<!--            <field name="name">産業ガス・医療ガス</field>-->
+<!--            <field name="default">True</field>-->
+<!--        </record>-->
 
-        <record id="department_selection2" model="x.department.classification">
-            <field name="name">LPガス</field>
-            <field name="default">False</field>
-        </record>
+<!--        <record id="department_selection2" model="x.department.classification">-->
+<!--            <field name="name">LPガス</field>-->
+<!--            <field name="default">False</field>-->
+<!--        </record>-->
 
     </data>
 </odoo>

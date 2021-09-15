@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_x_transaction_classification_all,access.x.transaction.classification.all,model_x_transaction_classification,,1,1,1,1
+access_x_department_classification_all,access.x.department.classification.all,model_x_department_classification,,1,1,1,1
+access_partner_sale_info_all,access.partner.sale.info.all,model_x_partner_sales_information,,1,1,1,1
+access_partner_construct_permit_all,access.partner.construct.permit.all,model_x_x_partner_partner_construction_permit,,1,1,1,1

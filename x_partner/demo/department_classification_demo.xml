@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="1">
+    
+        <record id="department_demo_0" model="x.department.classification">
+            <field name="name">Industrial Gas / Medical Gas</field>
+            <field name="transaction_classify_id" ref="transaction_classification_gas_equipment" />
+        </record>
+
+        <record id="department_demo_1" model="x.department.classification">
+            <field name="name">LP Gas</field>
+            <field name="transaction_classify_id" ref="transaction_classification_gas_equipment" />
+        </record>
+    
+    </data>
+    
+
+</odoo>

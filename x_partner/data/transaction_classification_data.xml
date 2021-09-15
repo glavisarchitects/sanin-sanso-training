@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="1">
+    
+        <record id="transaction_classification_gas_equipment" model="x.transaction.classification">
+            <field name="name">Gas / Equipment</field>
+            <field name="default">1</field>
+            <field name="description">Main transaction category which partner needs construction permit.</field>
+        </record>
+    
+    </data>
+    
+
+</odoo>

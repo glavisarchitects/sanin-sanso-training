@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Inventory Transfer",
+    'name': "X Inventory Transfer",
 
     'summary': """
-              Inventory Transfer""",
+            X Inventory Transfer""",
 
     'description': """
-            Inventory Transfer
+           X Inventory Transfer
     """,
 
-    'author': "SGVN",
+
+    'author': "Systemgear Vietnam",
+    'website': "https://www.systemgear-vietnam.com/",
 
     # any module necessary for this one to work correctly
-    'depends': ['stock'],
+    'depends': ['stock','x_company_organization'],
 
     # always loaded
     'data': [

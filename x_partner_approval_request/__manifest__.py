@@ -18,17 +18,20 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'contacts', 'x_company_organization'],
+    'depends': ['base', 'contacts', 'x_security_groups', 'x_company_organization', 'x_partner'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_partner_request.xml',
 
         'views/x_partner_newrequest_views.xml',
+        'views/x_setting_request_views.xml',
+        'views/m2m_selection_views.xml',
 
         # data
         'data/seq_data_partner_request.xml',
-        'data/master_data.xml',
+        # 'data/master_data.xml',
 
         # wizard
         'wizards/approval_checkbox_views.xml',

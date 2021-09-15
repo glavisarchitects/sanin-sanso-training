@@ -5,17 +5,8 @@
     Multiple Branches, Teams and Organizations Management
     """,
     "description":
-"""
-What it does
-============
-
-
-Supported Editions
-==================
-
-1. Community Edition.
-2. Enterprise Edition.
-""",
+    """
+    """,
     "author": "SystemGear Viet Nam",
     "version": "14.0.0.1.0",
     "category": "Human Resources/Employees",

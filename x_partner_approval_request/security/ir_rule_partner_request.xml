@@ -1,0 +1,49 @@
+<odoo>
+    <data>
+        <record id="branch_employee_partner_request_rule" model="ir.rule">
+            <field name="name">Staff branch can see record in draft state</field>
+            <field name="model_id" ref="x_partner_approval_request.model_x_res_partner_newrequest"/>
+            <field name="global" eval="False"/>
+            <field name="groups" eval="[(4, ref('x_security_groups.group_branch_employee'))]"/>
+            <field name="domain_force">[('state', '=', 'draft'), ('create_uid', '=', user.id)]</field>
+        </record>
+
+        <record id="branch_manager_partner_request_rule" model="ir.rule">
+            <field name="name">Branch manager see all record in branch and branch_manager_approval state</field>
+            <field name="model_id" ref="x_partner_approval_request.model_x_res_partner_newrequest"/>
+            <field name="global" eval="False"/>
+            <field name="perm_unlink" eval="0"/>
+            <field name="groups" eval="[(4, ref('x_security_groups.group_branch_manager'))]"/>
+            <field name="domain_force">[('state', 'in', ('employee_send', 'branch_manager_approval'))]</field>
+        </record>
+
+        <record id="sale_head_partner_request_rule" model="ir.rule">
+            <field name="name">Sale head see all record in sale_head_approval state</field>
+            <field name="model_id" ref="x_partner_approval_request.model_x_res_partner_newrequest"/>
+            <field name="global" eval="False"/>
+            <field name="perm_unlink" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="groups" eval="[(4, ref('x_security_groups.group_sale_head'))]"/>
+            <field name="domain_force">[('state', 'in', ('branch_manager_approval', 'sale_head_approval'))]</field>
+        </record>
+
+        <record id="account_head_partner_request_rule" model="ir.rule">
+            <field name="name">account see all record in sale_head_approval state</field>
+            <field name="model_id" ref="x_partner_approval_request.model_x_res_partner_newrequest"/>
+            <field name="global" eval="False"/>
+            <field name="perm_unlink" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="groups" eval="[(4, ref('x_security_groups.group_account_head'))]"/>
+            <field name="domain_force">[('state', 'in', ('sale_head_approval', 'account_head_approval'))]</field>
+        </record>
+
+        <!--        rule for admin see all-->
+        <record id="admin_partner_request_rule" model="ir.rule">
+            <field name="name">Admin see all</field>
+            <field name="model_id" ref="x_partner_approval_request.model_x_res_partner_newrequest"/>
+            <field name="global" eval="False"/>
+            <field name="groups" eval="[(4, ref('base.group_erp_manager')),(4, ref('base.group_system'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,27 @@
+<odoo>
+    <data>
+
+        <record id="transaction_classification_gas_equipment" model="x.transaction.classification">
+            <field name="name">ガス・器材</field>
+            <field name="default">False</field>
+        </record>
+
+        <record id="transaction_classification_construction" model="x.transaction.classification">
+            <field name="name">工事</field>
+            <field name="default">False</field>
+        </record>
+
+        <record id="department_selection1" model="x.department.classification">
+            <field name="name">産業ガス・医療ガス</field>
+            <field name="default">True</field>
+            <field name="transaction_classify_id" ref="transaction_classification_gas_equipment" />
+        </record>
+
+        <record id="department_selection2" model="x.department.classification">
+            <field name="name">LPガス</field>
+            <field name="default">False</field>
+            <field name="transaction_classify_id" ref="transaction_classification_gas_equipment" />
+        </record>
+
+    </data>
+</odoo>

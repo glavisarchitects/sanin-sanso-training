@@ -10,4 +10,11 @@ class ApprovalCheckbox(models.TransientModel):
 
     def confirm_request(self):
         if self.x_partner_request_id.state == "sale_head_approval":
-            self.x_partner_request_id.state = "branch_manager_approval"
+            self.x_partner_request_id.state = "account_head_approval"
+
+            # partner_fields = self.env['res.partner'].fields_get()
+            # print("####################3###",partner_fields)
+            # approval_partner = self.x_partner_request_id
+            # create_vals = {
+            #     'x_contact_classification': approval_partner.x_contact_classification,
+            # }
