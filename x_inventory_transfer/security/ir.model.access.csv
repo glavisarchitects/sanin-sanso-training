@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_x_dispatch,access_x_dispatch,x_inventory_transfer.model_x_dispatch_method,,1,1,1,1
-
