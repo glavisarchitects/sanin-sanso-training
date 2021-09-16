@@ -332,7 +332,11 @@ class PartnerAuthorizer(models.Model):
     _description = 'Partner Authorizer'
 
     partner_request_id = fields.Many2one('x.res.partner.newrequest')
-    authorizer = fields.Char("承認者")
+    # authorizer = fields.Char("承認者")
+    authorizer = fields.Many2one(
+        comodel_name='res.users',
+        string='承認者',
+        required=False)
     department = fields.Char(string='部署')
     update_date = fields.Date(string='更新日')
     """"TODO: re confirm status"""

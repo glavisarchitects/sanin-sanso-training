@@ -226,7 +226,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">x.res.partner.newrequest</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('authorizer_ids.user_id', '=', uid)]</field>
+            <field name="domain">[('authorizer_ids.authorizer', 'child_of', uid)]</field>
         </record>
 
         <!--        đang chờ phê duyệt-->
