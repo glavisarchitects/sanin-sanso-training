@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_normal_form_view_inherit_purchase" model="ir.ui.view">
+        <field name="name">product.product.purchase.order</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="purchase.product_normal_form_view_inherit_purchase"/>
+        <field name="arch" type="xml">
+            <group name="bill" position="after">
+                <group name="po-setting" string="Setting Purchase Order" >
+                    <field name="po_amount_confirm" widget='monetary' options="{'currency_field': 'currency_id'}" groups="x_purchase_order.group_warning_amount_product_purchase"/>
+                    <field name="po_qty_confirm" groups="x_purchase_order.group_warning_qty_product_purchase"/>
+                    <field name="po_uom_ids" widget="many2many_tags" groups="x_purchase_order.group_warning_unit_product_purchase"/>
+                </group>
+                <group name="po-empty">
+                </group>
+                <group name="po-info" string="Purchase Order Information">
+                    <field name="po_fixed_price" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                </group>
+
+            </group>
+        </field>
+    </record>
+
+</odoo>

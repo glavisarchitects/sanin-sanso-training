@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="x_transaction_classification_form">
+        <field name="name">x.transaction.classification.form</field>
+        <field name="model">x.transaction.classification</field>
+        <field name="inherit_id" ref="nama_modul.nama_model_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_order']" position="before">
+                <field name="note"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

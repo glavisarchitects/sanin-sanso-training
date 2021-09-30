@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend" name="Additional alert">
+        <xpath expr="link[last()]" position="after">
+            <script type="text/javascript" src="/x_rebate_management/static/src/js/views/basic/basic_controller.js"></script>
+        </xpath>
+    </template>
+</odoo>

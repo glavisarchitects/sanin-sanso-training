@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="purchase_order_confirm_wizard_view" model="ir.ui.view">
+        <field name="name">purchase.order.confirm.wizard</field>
+        <field name="model">purchase.order.confirm.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="msg" readonly="1" nolabel="1"/>
+                    <field name="po_id" readonly="1" invisible="1"/>
+                    <field name="type" readonly="1" invisible="1"/>
+                </group>
+                <footer>
+                    <button string="Return" class="oe_highlight" special="cancel"/>
+                    <button name="action_confirm" string="Confirm PO" type="object" class="oe_highlight" attrs="{'invisible': [('type', '!=', 'confirm')]}"/>
+                    <button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('type', '!=', 'cancel')]}"/>
+                    
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

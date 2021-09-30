@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <report 
+            id="action_report_purchaseorder"
+            string="Purchase order"
+            model="purchase.order" 
+            report_type="qweb-pdf"
+            file="x_purchase_order.report_purchaseorder" 
+            name="x_purchase_order.report_purchaseorder"
+            print_report_name="'PO - %s' % (object.name)"
+            paperformat="x_base.paperformat_purchaseorder_a4"
+        />
+        <report 
+            id="action_report_purchaseorder_construction"
+            string="Purchase order &lt;for construction&gt;"
+            model="purchase.order" 
+            report_type="qweb-pdf"
+            file="x_purchase_order.report_purchaseorder" 
+            name="x_purchase_order.report_purchaseorder"
+            print_report_name="'PO - %s' % (object.name)"
+            paperformat="x_base.paperformat_purchaseorder_a4"
+        />
+</odoo>
