@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-04 04:37+0000\n"
-"PO-Revision-Date: 2021-10-04 13:31+0700\n"
+"PO-Revision-Date: 2021-10-04 13:48+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -191,7 +191,7 @@ msgstr ""
 #: code:addons/x_purchase_quotation/models/purchase.py:0
 #, python-format
 msgid "Alert: Insufficient supplier transaction information"
-msgstr ""
+msgstr "仕入先の取引情報不備"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__construction_bills
@@ -201,7 +201,7 @@ msgstr "手形"
 #. module: x_purchase_quotation
 #: model:ir.model.fields.selection,name:x_purchase_quotation.selection__purchase_order__desired_delivery__separated
 msgid "Can be paid in installments"
-msgstr ""
+msgstr "分納可能"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__construction_cash
@@ -257,7 +257,7 @@ msgstr "現説日付"
 #. module: x_purchase_quotation
 #: model_terms:ir.ui.view,arch_db:x_purchase_quotation.report_estimate_request_document
 msgid "Dealine at the end of the month, payment at the"
-msgstr ""
+msgstr "（当社規定による、月末締切、翌月末支払い）"
 
 #. module: x_purchase_quotation
 #: code:addons/x_purchase_quotation/models/purchase.py:0
@@ -289,7 +289,7 @@ msgstr "直送先情報"
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__dest_address_infor
 msgid "Direct shipping information"
-msgstr ""
+msgstr "直送先情報"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__display_name
@@ -311,7 +311,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_res_company__estimated_subcontracting_work
 #: model_terms:ir.ui.view,arch_db:x_purchase_quotation.purchase_order_view_form_inherit
 msgid "Estimated price and estimated period for subcontracting work"
-msgstr ""
+msgstr "下請工事の予定価格と見積期間"
 
 #. module: x_purchase_quotation
 #: model_terms:ir.ui.view,arch_db:x_purchase_quotation.external_layout_standard
@@ -321,7 +321,7 @@ msgstr ""
 #. module: x_purchase_quotation
 #: model:ir.model.fields.selection,name:x_purchase_quotation.selection__purchase_order__desired_delivery__full
 msgid "Full payment request"
-msgstr ""
+msgstr "完納希望"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__id
@@ -448,12 +448,12 @@ msgstr ""
 #. module: x_purchase_quotation
 #: model:ir.actions.report,name:x_purchase_quotation.action_report_purchasequotation
 msgid "Quotation request form"
-msgstr ""
+msgstr "見積依頼書"
 
 #. module: x_purchase_quotation
 #: model:ir.actions.report,name:x_purchase_quotation.action_report_estimate_request
 msgid "Quotation request form <for construction>"
-msgstr ""
+msgstr "見積依頼書<工事用>"
 
 #. module: x_purchase_quotation
 #: model:mail.template,report_name:x_purchase_quotation.email_template_edi_purchase
@@ -533,6 +533,8 @@ msgid ""
 "The purchasing information for [Login User's Organization Name] does not exist for the selected supplier.\n"
 "Please complete the purchase information input / approval of the relevant supplier from the supplier application screen."
 msgstr ""
+"選択した仕入先では[ログインユーザーの組織名称]の購買情報が存在していません。\n"
+"取引先申請画面から当該仕入先の購買情報入力・承認を完了してください。"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,help:x_purchase_quotation.field_purchase_order__picking_type_id
@@ -558,7 +560,7 @@ msgstr "ローリー配送"
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order_line__product_uom_id
 msgid "Unit"
-msgstr ""
+msgstr "単位"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields.selection,name:x_purchase_quotation.selection__purchase_order__pres_abs_current_theory__explanation
