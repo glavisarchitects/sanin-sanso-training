@@ -7,11 +7,11 @@ from odoo.exceptions import ValidationError
 class ResOrganization(models.Model):
     _inherit = "x.x_company_organization.res_org"
 
-
     @api.model
     def _get_default_address_format(self):
-        return "%(street)s\n%(street2)s\n%(city)s %(state_name)s %(zip)s\n%(country_name)s"
-    
+        return "%(street)s\n%(street2)s\n%(city)s %(state_name)s %(zip)s\n\
+        %(country_name)s"
+
     def _display_address(self, without_company=False):
 
         address_format = self._get_default_address_format()
