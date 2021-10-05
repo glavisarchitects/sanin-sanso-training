@@ -9,7 +9,7 @@
                     </div>
                 </div>
                 <div  style="margin-top: 10px;" class="text-right">
-                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%B %d, %Y')" style="margin-right:5em;"/>
+                    <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y年%m月%d日')" style="margin-right:5em;"/>
                 </div>
             </div>
             <div class="row">

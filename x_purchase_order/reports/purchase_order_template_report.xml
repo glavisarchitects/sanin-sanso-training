@@ -10,7 +10,7 @@
             </t>
             <div class="row">
                 <div class="col-12 text-right">
-                    <div style="margin-left:5em;"><b>Purchasing Person:</b> <span t-esc="o.user_id.partner_id.parent_id and '%s - '%(o.user_id.partner_id.parent_id.name) or ''"/><span t-field="o.user_id"/></div>
+                    <div style="margin-left:5em;"><b>Purchasing Person:</b> <span t-esc="x_purchase_person_id and o.x_purchase_person_id.name or ''"/> <span t-esc="o.x_organization_id and o.x_organization_id.name or ''"/> <span t-field="o.user_id"/></div>
                 </div>
             </div>            
             <table class="table table-sm">
@@ -53,7 +53,7 @@
                                     <span t-field="order_line.fixed_price"/>
                                 </td>
                                 <td name="td_date_planned" class="text-center">
-                                    <span t-esc="o.date_planned and o.date_planned.strftime('%B %d, %Y') or ''"/>
+                                    <span t-esc="o.date_planned and o.date_planned.strftime('%Y年%m月%d日') or ''"/>
                                 </td>
                             </t>
                             <t t-else="">
@@ -144,7 +144,7 @@
                                     <span t-field="o.pres_abs_current_theory"/>
                                 </div>
                                 <div>
-                                    <span t-esc="o.construction_current_date and o.construction_current_date.strftime('%B %d, %Y') or ''"/>
+                                    <span t-esc="o.construction_current_date and o.construction_current_date.strftime('%Y年%m月%d日') or ''"/>
                                 </div>
                                 <div>
                                     <span t-field="o.construction_current_place"/>

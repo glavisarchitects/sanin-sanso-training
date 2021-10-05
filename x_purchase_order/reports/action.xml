@@ -10,6 +10,7 @@
             print_report_name="'PO - %s' % (object.name)"
             paperformat="x_base.paperformat_purchaseorder_a4"
         />
+
         <report 
             id="action_report_purchaseorder_construction"
             string="Purchase order &lt;for construction&gt;"
