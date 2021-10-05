@@ -20,7 +20,12 @@
                         </div>
                     </t>
                     <div style="margin-right:5em;">
-                        <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y年%m月%d日')"/>
+                        <t t-if="o.state in ['draft', 'sent']">
+                            <span t-esc="o.date_issuance and o.date_issuance.strftime('%Y年%m月%d日') or ''"/>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="o.date_issuance_order and o.date_issuance_order.strftime('%Y年%m月%d日') or ''"/>
+                        </t>
                     </div>
                 </div>
             </div>

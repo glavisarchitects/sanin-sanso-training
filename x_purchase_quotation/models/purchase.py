@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tools.translate import html_translate
 
 import logging
 
@@ -16,6 +17,10 @@ class PurchaseOrder(models.Model):
         for rec in self:
             rec.show_construction = True if self.trans_classify_id and self.trans_classify_id.code == 'construction' else False
 
+    def _default_content(self):
+        return '''
+            <p class="o_default_snippet_text">''' + _("Dropship") + '''</p>
+        '''
     trans_classify_id = fields.Many2one('x.transaction.classification', "Transaction classification")
     type = fields.Selection([
         ('normal', 'Normal purchase'),
@@ -28,7 +33,7 @@ class PurchaseOrder(models.Model):
     date_response = fields.Datetime("Response date", copy=False)
     date_issuance = fields.Date("Issuance date", copy=False, default=fields.Date.context_today)
     jurisdiction_id = fields.Many2one('crm.team', "Jurisdiction")
-    dest_address_infor = fields.Html("Direct shipping information", copy=False)
+    dest_address_infor = fields.Html("Direct shipping information", copy=False, default=_default_content, translate=html_translate, sanitize=False)
     # Displayed only when the transaction classification item of the slip is "Construction"
     show_construction = fields.Boolean("Show Construction", compute='_compute_show_construction')
     construction_name = fields.Char("Construction name")
@@ -58,19 +63,19 @@ class PurchaseOrder(models.Model):
     origin = fields.Char(string="Reference source")
     partner_id = fields.Many2one('res.partner', string="Supplier")
     user_id = fields.Many2one('res.users', string="Purchasing person")
-    create_date = fields.Datetime(string="Create date")
+    create_date = fields.Datetime(string="Create date", default=fields.Datetime.now, copy=False)
     create_uid = fields.Many2one('res.users', string='Slip creator',)
     picking_type_id = fields.Many2one('stock.picking.type', string='Delivery destination',)
     dest_address_id = fields.Many2one('res.partner', string='Direct delivery',)
     fiscal_position_id = fields.Many2one('account.fiscal.position', string='Accounting position',)
-    date_planned = fields.Datetime(string="Requested delivery date")
+    date_planned = fields.Datetime(string="Requested delivery date", copy=False)
 
     # TODO: Hide print with state
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(PurchaseOrder, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                          submenu=submenu)
-        # _logger.info('111111111111111 fields_view_get toolbar print: %s', res.get('toolbar', {}).get('print', []))
+        _logger.info('111111111111111 fields_view_get toolbar print: %s', res.get('toolbar', {}).get('print', []))
         return res
 
     @api.onchange('partner_id')
@@ -149,6 +154,8 @@ class PurchaseOrder(models.Model):
                 return False
             else:
                 return number
+    
+    
 
 
 class PurchaseOrderLine(models.Model):
