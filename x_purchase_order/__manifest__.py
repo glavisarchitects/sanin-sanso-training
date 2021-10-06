@@ -16,7 +16,7 @@
         "security/purchase_rule.xml",
         # DATA
         # VIEWS
-        "views/product_product_views.xml",
+        "views/product_template_views.xml",
         "views/purchase_views.xml",
         "views/res_config_settings_views.xml",
         # WIZARDS
