@@ -18,7 +18,7 @@
         # REPORTS
         "reports/layout.xml",
         "reports/paperformat.xml",
-
+        "views/transaction_classification_views.xml"
     ],
     "application": False,
     "installable": True,
