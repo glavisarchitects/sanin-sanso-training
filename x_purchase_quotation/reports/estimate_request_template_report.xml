@@ -116,18 +116,21 @@
                 <b>Remarks</b>
                 <p t-field="o.notes"/>
             </div>
-            <t t-if="o.is_dropshipping">
-                
-                <div class="row">
-                    <div class="col-8">
+            <div class="row">
+                <div class="col-8">
+                    <t t-if="o.is_dropshipping">
                         <b>Direct shipping information</b>
                         <t t-if="o.show_construction or len(o.order_line) > 5">
                             <p style="page-break-before:always;"> </p>
                         </t>
                         <p t-field="o.dest_address_infor"/>
-                    </div>
+                    </t>
+
+                    <div><b>Estimated price and estimated period for subcontracting work</b></div>
+                    <p t-field="o.estimated_subcontracting_work"/>
+                    
                 </div>
-            </t>
+            </div>
             <div class="oe_structure"/>
         </div>
     </t>

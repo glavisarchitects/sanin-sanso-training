@@ -163,6 +163,10 @@
                         </t>
                         <p t-field="o.dest_address_infor"/>
                     </t>
+
+                    <div><b>Estimated price and estimated period for subcontracting work</b></div>
+                    <p t-field="o.estimated_subcontracting_work"/>
+                    
                 </div>
                 <div class="col-4">
                     <b>Remarks</b>
