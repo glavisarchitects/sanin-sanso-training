@@ -25,6 +25,7 @@
                 <field name="origin" position="move"/>
                 <field name="desired_delivery"/>
                 <field name="show_construction" invisible="1"/>
+                <field name="is_dropshipping" invisible="1"/>
             </field>
 
             <xpath expr="//form/sheet/group[1]/group[2]/field[@name='date_order']" position="attributes">
@@ -74,7 +75,7 @@
 
             <xpath expr="//page[@name='purchase_delivery_invoice']" position="inside">
                 <group>
-                    <field name="dest_address_infor" attrs="{'invisible': [('default_location_dest_id_usage', '=', 'customer')], 'required': [('default_location_dest_id_usage', '!=', 'customer')]}"/>
+                    <field name="dest_address_infor" attrs="{'invisible': [('is_dropshipping', '=', False)], 'required': [('is_dropshipping', '=', True)]}"/>
                 </group>
             </xpath>
 

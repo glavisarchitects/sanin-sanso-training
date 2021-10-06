@@ -47,7 +47,7 @@
                         <div style="position: relative;left: 50px;">
                             <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 65px;" alt="Logo"/>
                         </div>
-                        <t t-if="x_organization_id">
+                        <t t-if="o.x_organization_id">
                             <div name="company_address" style="margin-left:5px;line-height:1.2; position: absolute;right: 0px;" class="text-center">
                                 <div><b t-esc="o.x_organization_id and o.x_organization_id.parent_id and o.x_organization_id.parent_id.name or ''"/></div>
                                 <div><b t-esc="o.x_organization_id and o.x_organization_id.name or ''"/></div>
