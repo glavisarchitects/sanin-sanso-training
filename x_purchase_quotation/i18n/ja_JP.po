@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-04 04:37+0000\n"
-"PO-Revision-Date: 2021-10-04 13:48+0700\n"
+"POT-Creation-Date: 2021-10-06 08:11+0000\n"
+"PO-Revision-Date: 2021-10-06 15:29+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Plural-Forms: \n"
 "Language: ja_JP\n"
 "X-Generator: Poedit 2.4.2\n"
+"X-Poedit-Bookmarks: -1,89,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #. module: x_purchase_quotation
 #: model:mail.template,subject:x_purchase_quotation.email_template_edi_purchase
@@ -32,7 +33,7 @@ msgstr ""
 #: model:ir.actions.report,print_report_name:x_purchase_quotation.action_report_estimate_request
 #: model:ir.actions.report,print_report_name:x_purchase_quotation.action_report_purchasequotation
 msgid "'Request for Quotation - %s' % (object.name)"
-msgstr ""
+msgstr "'見積依頼書 - %s' % (object.name)"
 
 #. module: x_purchase_quotation
 #: model_terms:ir.ui.view,arch_db:x_purchase_quotation.report_estimate_request_document
@@ -83,7 +84,7 @@ msgstr "<b>現説の有無</b>"
 #. module: x_purchase_quotation
 #: model_terms:ir.ui.view,arch_db:x_purchase_quotation.report_estimate_request_document
 #: model_terms:ir.ui.view,arch_db:x_purchase_quotation.report_purchasequotation_document
-msgid "<b>Purchasing Managers:</b>"
+msgid "<b>Purchasing Person:</b>"
 msgstr "<b>購買担当者</b>"
 
 #. module: x_purchase_quotation
@@ -242,7 +243,7 @@ msgstr "連絡先"
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__create_date
 msgid "Create date"
-msgstr ""
+msgstr "作成日"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__construction_current_place
@@ -255,12 +256,8 @@ msgid "Date of the current theory"
 msgstr "現説日付"
 
 #. module: x_purchase_quotation
-#: model_terms:ir.ui.view,arch_db:x_purchase_quotation.report_estimate_request_document
-msgid "Dealine at the end of the month, payment at the"
-msgstr "（当社規定による、月末締切、翌月末支払い）"
-
-#. module: x_purchase_quotation
 #: code:addons/x_purchase_quotation/models/purchase.py:0
+#: model_terms:ir.ui.view,arch_db:x_purchase_quotation.report_estimate_request_document
 #, python-format
 msgid "Dealine at the end of the month, payment at the end of the following month according to our regulations"
 msgstr "当社規定による、月末締切、翌月末支払い"
@@ -332,6 +329,11 @@ msgid "ID"
 msgstr ""
 
 #. module: x_purchase_quotation
+#: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__is_dropshipping
+msgid "Is dropship"
+msgstr ""
+
+#. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__date_issuance
 msgid "Issuance date"
 msgstr "見積依頼発行日"
@@ -352,12 +354,12 @@ msgstr "最終更新日"
 #. module: x_purchase_quotation
 #: model_terms:ir.ui.view,arch_db:x_purchase_quotation.external_layout_standard
 msgid "Logo"
-msgstr ""
+msgstr "ロゴ"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields.selection,name:x_purchase_quotation.selection__purchase_order__pres_abs_current_theory__none
 msgid "No"
-msgstr ""
+msgstr "無"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields.selection,name:x_purchase_quotation.selection__purchase_order__type__normal
@@ -435,7 +437,7 @@ msgstr "購買種別"
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__user_id
 msgid "Purchasing person"
-msgstr ""
+msgstr "購買担当者"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,help:x_purchase_quotation.field_purchase_order__dest_address_id
@@ -469,12 +471,12 @@ msgstr "この注文書リクエストを生成したドキュメントの参照
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__origin
 msgid "Reference source"
-msgstr ""
+msgstr "参照元"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__date_planned
 msgid "Requested delivery date"
-msgstr ""
+msgstr "要求納期"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__date_response
@@ -509,7 +511,7 @@ msgstr ""
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__partner_id
 msgid "Supplier"
-msgstr ""
+msgstr "仕入先"
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__construction_supplies
@@ -524,7 +526,7 @@ msgstr ""
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order_line__taxes_id
 msgid "Tax"
-msgstr ""
+msgstr "税"
 
 #. module: x_purchase_quotation
 #: code:addons/x_purchase_quotation/models/purchase.py:0
@@ -572,11 +574,6 @@ msgstr "有"
 #: model:ir.model.fields,help:x_purchase_quotation.field_purchase_order__partner_id
 msgid "You can find a vendor by its Name, TIN, Email or Internal Reference."
 msgstr "ベンダーは、名前、TIN、電子メール、または内部参照で見つけることができます。"
-
-#. module: x_purchase_quotation
-#: model_terms:ir.ui.view,arch_db:x_purchase_quotation.report_estimate_request_document
-msgid "end of the following month according to our regulations"
-msgstr ""
 
 #. module: x_purchase_quotation
 #: model:ir.model.fields,field_description:x_purchase_quotation.field_purchase_order__construction_others
