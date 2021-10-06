@@ -29,14 +29,14 @@
     </record>
 
     <record id="x_transaction_classification_action" model="ir.actions.act_window">
-        <field name="name">x.transaction.classification</field>
+        <field name="name">取引区分</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">x.transaction.classification</field>
         <field name="view_mode">tree,form</field>
     </record>
         <menuitem
             id="x_transaction_classification_action_menu"
-            name="Transaction Classification"
+            name="取引区分"
             action="x_transaction_classification_action"
             parent="purchase.menu_purchase_config"
             sequence="150"/>

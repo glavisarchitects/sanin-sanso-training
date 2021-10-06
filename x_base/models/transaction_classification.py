@@ -7,3 +7,6 @@ class TransactionClassification(models.Model):
     _inherit = 'x.transaction.classification'
 
     code = fields.Char('Code')
+    active = fields.Boolean(
+        string="Enable", default=True,
+        help="Set active to false to hide the transaction classification without removing it.")
