@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-06 08:11+0000\n"
-"PO-Revision-Date: 2021-10-06 15:29+0700\n"
+"POT-Creation-Date: 2021-10-07 04:13+0000\n"
+"PO-Revision-Date: 2021-10-07 11:24+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,44 @@ msgstr ""
 "Plural-Forms: \n"
 "Language: ja_JP\n"
 "X-Generator: Poedit 2.4.2\n"
-"X-Poedit-Bookmarks: -1,89,-1,-1,-1,-1,-1,-1,-1,-1\n"
+
+#. module: x_purchase_quotation
+#: code:addons/x_purchase_quotation/models/res_company.py:0
+#, python-format
+msgid ""
+"\n"
+"            <div>\n"
+"                <div>According to the construction outline and construction method \"attached design document\".</div>\n"
+"                <div>Construction conditions / scope According to \"Attachment design document\" and \"Construction plan"
+"\".</div>\n"
+"                <div>Estimated price and estimated period for subcontracting work.</div>\n"
+"            </div>"
+msgstr ""
+"\n"
+"            <div>\n"
+"                <div>工事概要、工法　「別添設計書」による。</div>\n"
+"                <div>施工条件・範囲　「別添設計書」、「施工計画書」による。</div>\n"
+"            </div>"
+
+#. module: x_purchase_quotation
+#: code:addons/x_purchase_quotation/models/res_company.py:0
+#, python-format
+msgid ""
+"\n"
+"            <div>\n"
+"                <div>Construction work less than 5 million yen for 1 day or more.</div>\n"
+"                <div>Construction work of 5 million yen or more and less than 50 million yen for 10 days or more.</"
+"div>\n"
+"                <div>Construction work of 50 million yen or more 15 days or more during.</div>\n"
+"            </div>"
+msgstr ""
+"\n"
+"            <div>\n"
+"                <div>工事予定価格　　　　　　　　　　　　　　　　　　見積期間</div>\n"
+"                <div>500万円に満たない工事　　　　　　　　　　　          中１日以上</div>\n"
+"                <div>500万円以上5,000万円に満たない工事　　                     中10日以上</div>\n"
+"                <div>5,000万円以上の工事　　　　　　　　　　　　　       中15日以上</div>\n"
+"            </div>"
 
 #. module: x_purchase_quotation
 #: model:mail.template,subject:x_purchase_quotation.email_template_edi_purchase

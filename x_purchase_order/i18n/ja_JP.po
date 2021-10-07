@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-04 06:54+0000\n"
-"PO-Revision-Date: 2021-10-04 14:39+0700\n"
+"POT-Creation-Date: 2021-10-07 04:10+0000\n"
+"PO-Revision-Date: 2021-10-07 11:18+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,6 @@ msgstr ""
 "Plural-Forms: \n"
 "Language: ja_JP\n"
 "X-Generator: Poedit 2.4.2\n"
-"X-Poedit-Bookmarks: -1,58,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #. module: x_purchase_order
 #: model:mail.template,subject:x_purchase_order.email_template_edi_purchase_done
@@ -39,9 +38,7 @@ msgstr ""
 msgid ""
 "<b>Construction conditions and range</b> According to a separate design "
 "document and construction plan"
-msgstr ""
-"<b>Construction conditions and range</b> According to a separate design "
-"document and construction plan"
+msgstr "<b>施工条件・範囲</b>別途設計書、施工計画書による"
 
 #. module: x_purchase_order
 #: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
@@ -70,18 +67,23 @@ msgstr "<b>直送先情報</b>"
 
 #. module: x_purchase_order
 #: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
+msgid "<b>Estimated price and estimated period for subcontracting work</b>"
+msgstr "<b>外注作業の見積価格および見積期間</b>"
+
+#. module: x_purchase_order
+#: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
 msgid "<b>Payment terms</b>"
 msgstr "<b>支払条件</b>"
 
 #. module: x_purchase_order
 #: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
 msgid "<b>Presence or absence of supplies</b>"
-msgstr ""
+msgstr "<b>支給品の有無</b>"
 
 #. module: x_purchase_order
 #: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
 msgid "<b>Presence or absence of the current theory</b>"
-msgstr ""
+msgstr "<b>現説の有無</b>"
 
 #. module: x_purchase_order
 #: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
@@ -145,7 +147,7 @@ msgstr "<strong>定価</strong>"
 #. module: x_purchase_order
 #: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
 msgid "<strong>Price unit</strong>"
-msgstr "<strong>Price unit</strong>"
+msgstr "<strong>単価</strong>"
 
 #. module: x_purchase_order
 #: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
@@ -231,11 +233,13 @@ msgstr ""
 
 #. module: x_purchase_order
 #: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
-msgid "Dealine at the end of the month, payment at the"
+msgid ""
+"Dealine at the end of the month, payment at the end of the following month "
+"according to our regulations"
 msgstr ""
 
 #. module: x_purchase_order
-#: model:ir.model.fields,field_description:x_purchase_order.field_product_product__display_name
+#: model:ir.model.fields,field_description:x_purchase_order.field_product_template__display_name
 #: model:ir.model.fields,field_description:x_purchase_order.field_purchase_order__display_name
 #: model:ir.model.fields,field_description:x_purchase_order.field_purchase_order_confirm_wizard__display_name
 #: model:ir.model.fields,field_description:x_purchase_order.field_purchase_order_line__display_name
@@ -256,7 +260,7 @@ msgid "Fixed price"
 msgstr ""
 
 #. module: x_purchase_order
-#: model:ir.model.fields,field_description:x_purchase_order.field_product_product__id
+#: model:ir.model.fields,field_description:x_purchase_order.field_product_template__id
 #: model:ir.model.fields,field_description:x_purchase_order.field_purchase_order__id
 #: model:ir.model.fields,field_description:x_purchase_order.field_purchase_order_confirm_wizard__id
 #: model:ir.model.fields,field_description:x_purchase_order.field_purchase_order_line__id
@@ -266,7 +270,7 @@ msgid "ID"
 msgstr ""
 
 #. module: x_purchase_order
-#: model:ir.model.fields,field_description:x_purchase_order.field_product_product____last_update
+#: model:ir.model.fields,field_description:x_purchase_order.field_product_template____last_update
 #: model:ir.model.fields,field_description:x_purchase_order.field_purchase_order____last_update
 #: model:ir.model.fields,field_description:x_purchase_order.field_purchase_order_confirm_wizard____last_update
 #: model:ir.model.fields,field_description:x_purchase_order.field_purchase_order_line____last_update
@@ -311,9 +315,9 @@ msgid "PO_${(object.name or '').replace('/','_')}"
 msgstr ""
 
 #. module: x_purchase_order
-#: model:ir.model,name:x_purchase_order.model_product_product
-msgid "Product"
-msgstr "プロダクト"
+#: model:ir.model,name:x_purchase_order.model_product_template
+msgid "Product Template"
+msgstr "プロダクトテンプレート"
 
 #. module: x_purchase_order
 #: model:ir.model,name:x_purchase_order.model_purchase_order_confirm_wizard
@@ -322,6 +326,7 @@ msgstr ""
 
 #. module: x_purchase_order
 #: model:ir.model.fields,field_description:x_purchase_order.field_product_product__po_fixed_price
+#: model:ir.model.fields,field_description:x_purchase_order.field_product_template__po_fixed_price
 msgid "Purchase Fixed price"
 msgstr ""
 
@@ -342,16 +347,19 @@ msgstr "購買オーダ明細"
 
 #. module: x_purchase_order
 #: model:ir.model.fields,field_description:x_purchase_order.field_product_product__po_uom_ids
+#: model:ir.model.fields,field_description:x_purchase_order.field_product_template__po_uom_ids
 msgid "Purchase Order Unit"
 msgstr ""
 
 #. module: x_purchase_order
 #: model:ir.model.fields,field_description:x_purchase_order.field_product_product__po_amount_confirm
+#: model:ir.model.fields,field_description:x_purchase_order.field_product_template__po_amount_confirm
 msgid "Purchase Order amount"
 msgstr ""
 
 #. module: x_purchase_order
 #: model:ir.model.fields,field_description:x_purchase_order.field_product_product__po_qty_confirm
+#: model:ir.model.fields,field_description:x_purchase_order.field_product_template__po_qty_confirm
 msgid "Purchase Order quantity"
 msgstr ""
 
@@ -467,9 +475,4 @@ msgstr ""
 #. module: x_purchase_order
 #: model:res.groups,name:x_purchase_order.group_warning_unit_product_purchase
 msgid "Unit warning in orders for products (Purchase)"
-msgstr ""
-
-#. module: x_purchase_order
-#: model_terms:ir.ui.view,arch_db:x_purchase_order.report_purchaseorder_document
-msgid "end of the following month according to our regulations"
 msgstr ""
