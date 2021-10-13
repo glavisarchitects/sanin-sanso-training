@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-12 07:16+0000\n"
-"PO-Revision-Date: 2021-10-12 14:24+0700\n"
+"POT-Creation-Date: 2021-10-13 07:30+0000\n"
+"PO-Revision-Date: 2021-10-13 14:33+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -63,6 +63,11 @@ msgstr ""
 #. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization_category__name
 msgid "Category name"
+msgstr "組織カテゴリ"
+
+#. module: ss_erp_master
+#: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__organization_category_id
+msgid "Category of this organization"
 msgstr ""
 
 #. module: ss_erp_master
@@ -73,7 +78,7 @@ msgstr "市区町村"
 #. module: ss_erp_master
 #: model_terms:ir.actions.act_window,help:ss_erp_master.action_organizations_category
 msgid "Click to create a New Organization Category."
-msgstr "新規組織カテゴリを作成"
+msgstr "新規組織カテゴリを作成する"
 
 #. module: ss_erp_master
 #: model_terms:ir.actions.act_window,help:ss_erp_master.action_organizations
@@ -194,7 +199,6 @@ msgstr ""
 
 #. module: ss_erp_master
 #: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__message_has_error
-#: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
@@ -257,11 +261,6 @@ msgid "Messages"
 msgstr ""
 
 #. module: ss_erp_master
-#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__my_activity_date_deadline
-msgid "My Activity Deadline"
-msgstr ""
-
-#. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__name
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_responsible_department__name
 msgid "Name"
@@ -308,6 +307,16 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: ss_erp_master
+#: model_terms:ir.ui.view,arch_db:ss_erp_master.nama_model_tree
+msgid "Org code"
+msgstr "組織コード"
+
+#. module: ss_erp_master
+#: model_terms:ir.ui.view,arch_db:ss_erp_master.nama_model_tree
+msgid "Org name"
+msgstr "組織名称"
+
+#. module: ss_erp_master
 #: model:ir.ui.menu,name:ss_erp_master.menu_organization_category_setting
 msgid "Org. Categories"
 msgstr "組織カテゴリ"
@@ -315,7 +324,6 @@ msgstr "組織カテゴリ"
 #. module: ss_erp_master
 #: model:ir.actions.act_window,name:ss_erp_master.action_organizations
 #: model:ir.model,name:ss_erp_master.model_ss_erp_organization
-#: model:ir.model,name:ss_erp_master.model_ss_erp_organization_category
 msgid "Organization"
 msgstr "組織"
 
@@ -325,14 +333,9 @@ msgid "Organization Address / City"
 msgstr ""
 
 #. module: ss_erp_master
-#: model:ir.actions.act_window,name:ss_erp_master.action_organizations_category
-msgid "Organization Category"
-msgstr "組織カテゴリ"
-
-#. module: ss_erp_master
 #: model:ir.model.constraint,message:ss_erp_master.constraint_ss_erp_organization_category_name_uniq
 msgid "Organization Category Name Should Be Unique!"
-msgstr "組織名称はユニックでなければなりません！"
+msgstr ""
 
 #. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__organization_code
@@ -375,24 +378,15 @@ msgid "Organization address / zip code"
 msgstr ""
 
 #. module: ss_erp_master
+#: model:ir.model,name:ss_erp_master.model_ss_erp_organization_category
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__organization_category_id
 msgid "Organization category"
 msgstr "組織カテゴリ"
 
 #. module: ss_erp_master
-#: model_terms:ir.ui.view,arch_db:ss_erp_master.nama_model_tree
-msgid "Organization code"
-msgstr "組織コード"
-
-#. module: ss_erp_master
 #: model_terms:ir.ui.view,arch_db:ss_erp_master.organization_view_form
 msgid "Organization location Address"
 msgstr "組織所在アドレス"
-
-#. module: ss_erp_master
-#: model_terms:ir.ui.view,arch_db:ss_erp_master.nama_model_tree
-msgid "Organization name"
-msgstr "組織名称"
 
 #. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__organization_phone
@@ -407,9 +401,19 @@ msgid "Organizations"
 msgstr "組織"
 
 #. module: ss_erp_master
+#: model:ir.actions.act_window,name:ss_erp_master.action_organizations_category
+msgid "Organizations category"
+msgstr "組織カテゴリ"
+
+#. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__parent_path
 msgid "Parent Path"
 msgstr ""
+
+#. module: ss_erp_master
+#: model_terms:ir.ui.view,arch_db:ss_erp_master.nama_model_tree
+msgid "Parent org code"
+msgstr "親組織コード"
 
 #. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__parent_id
@@ -430,11 +434,6 @@ msgstr ""
 #. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__activity_user_id
 msgid "Responsible User"
-msgstr ""
-
-#. module: ss_erp_master
-#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__message_has_sms_error
-msgid "SMS Delivery error"
 msgstr ""
 
 #. module: ss_erp_master
@@ -473,7 +472,7 @@ msgstr "町名番地"
 #: code:addons/ss_erp_master/models/responsible_department.py:0
 #, python-format
 msgid "The starting date cannot be after the ending date."
-msgstr "有効終了日は、開始日より過去の日付は選択できません。"
+msgstr "有効開始日は、終了日より先の日付は選択できません"
 
 #. module: ss_erp_master
 #: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__activity_exception_decoration
@@ -497,13 +496,11 @@ msgid "Valid start date"
 msgstr "有効開始日"
 
 #. module: ss_erp_master
-#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__website_message_ids
-msgid "Website Messages"
-msgstr ""
-
-#. module: ss_erp_master
-#: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__website_message_ids
-msgid "Website communication history"
+#: code:addons/ss_erp_master/models/organization_category.py:0
+#, python-format
+msgid ""
+"You can not delete organization category as other records still reference "
+"it. However, you can archive it."
 msgstr ""
 
 #. module: ss_erp_master
@@ -514,9 +511,4 @@ msgstr "郵便番号"
 #. module: ss_erp_master
 #: model:ir.model,name:ss_erp_master.model_ss_erp_responsible_department
 msgid "ss.erp.responsible.department"
-msgstr ""
-
-#. module: ss_erp_master
-#: model_terms:ir.ui.view,arch_db:ss_erp_master.organization_view_form
-msgid "組織名称"
 msgstr ""

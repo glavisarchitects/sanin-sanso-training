@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class OrganizationCategory(models.Model):
     _name = 'ss_erp.organization.category'
-    _description = 'Organization'
+    _description = 'Organization category'
 
     name = fields.Char(string='Category name')
     company_id = fields.Many2one(
@@ -45,3 +45,9 @@ class OrganizationCategory(models.Model):
         result["views"] = [(res and res.id or False, "form")]
         result["res_id"] = organization_ids.id
         return result
+
+    def unlink(self):
+        for record in self:
+            if self.env['ss_erp.organization'].search([('organization_category_id', '=', record.id)]):
+                raise UserError(_('You can not delete organization category as other records still reference it. However, you can archive it.'))
+        return super(OrganizationCategory, self).unlink()

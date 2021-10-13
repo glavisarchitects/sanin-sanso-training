@@ -5,7 +5,9 @@
         SS ERP Master
     """,
     "version": "14.0.1.0.0",
-    "category": "",
+    "category": "Master",
+    "website": "https://www.systemgear-vietnam.com/vn",
+    "author": "SystemGear Vietnam",
     "depends": [
         "mail"
     ],
