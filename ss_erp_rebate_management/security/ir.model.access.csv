@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_access_group_account_head,access_group_account_head,model_ss_erp_partner_rebate,,1,1,1,1
+access_access_group_account_head_wizard,access_group_all_wizard,model_partner_rebate_attachment_wizard,,1,1,1,1

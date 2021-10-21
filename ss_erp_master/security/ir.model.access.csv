@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_access_group_all,access_group_all,model_ss_erp_responsible_department,,1,1,1,1
 access_access_ss_erp_organization,access_ss_erp_organization,model_ss_erp_organization,,1,1,1,1
 access_access_ss_erp_organization_category,access_ss_erp_organization_category,model_ss_erp_organization_category,,1,1,1,1
+access_ss_erp_bis_category_all,access.ss.erp.bis.category.all,model_ss_erp_bis_category,,1,1,1,1

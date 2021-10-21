@@ -23,7 +23,7 @@ class Organization(models.Model):
     end_date = fields.Date(string="Expiration date", copy=False,
                            default=lambda self: fields.Date.today().replace(month=12, day=31, year=2099))
     child_ids = fields.One2many('ss_erp.organization', 'parent_id',
-                                string="Contains Organizations", ondelete="restrict",)
+                                string="Contains Organizations")
     parent_path = fields.Char(index=True)
     organization_code = fields.Char(
         string="Organization Code", required=True, copy=False)

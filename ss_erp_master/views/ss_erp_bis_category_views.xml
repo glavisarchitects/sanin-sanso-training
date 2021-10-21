@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ss_erp_bis_category_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.bis.category.view.tree</field>
+        <field name="model">ss_erp.bis.category</field>
+        <field name="arch" type="xml">
+            <tree string="Transaction Classifications" editable="top">
+                <field name="name" placeholder="ガス、器材、工事・・・" />
+                <field name="department" placeholder="LPガス、医療ガス、ハウジング・・・" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_bis_category_view_search" model="ir.ui.view">
+        <field name="name">ss_erp.bis.category.view.search</field>
+        <field name="model">ss_erp.bis.category</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="department" />
+                <group string="Group By" expand="0">
+                    <filter name="grp_department" string="Departments"
+                        context="{'group_by': 'department'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ss_erp_bis_category_action" model="ir.actions.act_window">
+        <field name="name">取引区分</field>
+        <field name="res_model">ss_erp.bis.category</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem
+        id="transaction_classification_menu"
+        name="取引区分"
+        action="ss_erp_bis_category_action"
+        parent="contacts.res_partner_menu_config"
+        sequence="7"/>
+
+</odoo>

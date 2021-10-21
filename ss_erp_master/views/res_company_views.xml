@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_company_form" model="ir.ui.view">
+        <field name="name">res.company.view.form.inherit</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="partner_id" position="after">
+                <field name="x_company_code" />
+            </field>
+            <xpath expr="//page[@name='general_info']" position="after">
+                <page name="company_rules" string="当社規定">
+                    <group>
+                        <field name="x_payment_terms"
+                            placeholder="仕入先への当社支払条件規定を入力" />
+                        <field name="x_construction_contract_notice" />
+                        <field name="x_construction_subcontract" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

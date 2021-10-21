@@ -3,7 +3,7 @@
     
     <record id="responsible_department_view_tree" model="ir.ui.view">
         <field name="name">ss.erp.responsible.department.view.tree</field>
-        <field name="model">ss.erp.responsible.department</field>
+        <field name="model">ss_erp.responsible.department</field>
         <field name="arch" type="xml">
             <tree string="Jurisdiction" editable="top">
                 <field name="sequence" widget="handle"/>
@@ -41,7 +41,7 @@
 
     <record id="responsible_department_view_search" model="ir.ui.view">
         <field name="name">ss.erp.responsible.department.view.search</field>
-        <field name="model">ss.erp.responsible.department</field>
+        <field name="model">ss_erp.responsible.department</field>
         <field name="arch" type="xml">
             <search string="Jurisdiction">
                 <field name="name"/>
@@ -52,7 +52,7 @@
     <record id="responsible_department_view_action" model="ir.actions.act_window">
         <field name="name">Jurisdiction</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">ss.erp.responsible.department</field>
+        <field name="res_model">ss_erp.responsible.department</field>
         <field name="view_mode">tree</field>
         <field name="domain">[]</field>
     </record>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="external_layout_standard">
+        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <div t-if="1">
+                <div class="row">
+                    <div class="col-12" style="text-align:center;font-weight:1000;font-size:22px;">
+                        <t t-if="o.state in ['draft', 'sent']">
+                            <b>REQUEST FOR QUOTATION</b>
+                        </t>
+                        <t t-else="">
+                            <b>PURCHASE ORDER</b>
+                        </t>
+                    </div>
+                </div>
+                <div  style="margin-top: 10px;" class="text-right">
+                    <t t-if="o.state not in ['draft', 'sent']">
+                        <div style="margin-right:5em;">
+                            Order No.<span t-esc="o.name"/>
+                        </div>
+                    </t>
+                    <div style="margin-right:5em;">
+                        <t t-if="o.state in ['draft', 'sent']">
+                            <span t-esc="o.x_rfq_issue_date and o.x_rfq_issue_date.strftime('%Y年%m月%d日') or ''"/>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="o.x_po_issue_date and o.x_po_issue_date.strftime('%Y年%m月%d日') or ''"/>
+                        </t>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px">
+                <div class="col-4">
+                    <div>
+                        <span t-esc="o.partner_id.name"/> 殿
+                    </div>
+                    <t t-if="o.state not in ['draft', 'sent']">
+                        <div>
+                            TEL: <span t-esc="o.partner_id.mobile"/> <span style="margin-left:4px;">FAX: <t t-esc="o.partner_id.x_fax_number"/> </span>
+                        </div>
+                    </t>
+                </div>
+                <div class="col-8">
+                    <div style="display: inline-block;" class="d-flex">
+                        <div style="position: relative;left: 50px;">
+                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 65px;" alt="Logo"/>
+                        </div>
+                        <t t-if="o.x_organization_id">
+                            <div name="company_address" style="margin-left:5px;line-height:1.2; position: absolute;right: 0px;" class="text-center">
+                                <div><b t-esc="o.x_organization_id and o.x_organization_id.parent_id and o.x_organization_id.parent_id.name or ''"/></div>
+                                <div><b t-esc="o.x_organization_id and o.x_organization_id.name or ''"/></div>
+                                <div style='word-wrap:break-word; width:400px'><b t-esc="o.x_organization_id and o.x_organization_id._display_address(True) or ''"/></div>
+                                <div style="font-size:16px">
+                                    <div>
+                                        TEL: <span t-esc="o.x_organization_id and o.x_organization_id.organization_phone or ''"/>
+                                    </div>
+                                    <div>
+                                        FAX: <span t-esc="o.x_organization_id and o.x_organization_id.organization_fax or ''"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                        
+                    </div>
+                </div>
+            </div>
+            <t t-if="o.state in ['draft', 'sent']">
+                <div class="d-flex">
+                    <hr  width="30%" size="5px" align="left" style="border-top: 1px solid black;" /><span class="text-left"></span>
+                </div>
+                <span>Request a quote for the following products</span>
+            </t>
+            <div class="pt-5">
+                <!-- This div ensures that the address is not cropped by the header. -->
+                <t t-call="web.address_layout"/>
+            </div>
+            <t t-raw="0"/>
+        </div>
+
+        <div t-attf-class="o_company_#{company.id}_layout footer o_background_footer">
+            <div class="text-center">
+                <ul class="list-inline">
+                    <li t-if="company.website" class="list-inline-item"><i class="fa fa-globe" role="img" aria-label="Website" title="Website"/> <span t-field="company.website"/></li>
+                </ul>
+                <div t-field="company.report_footer"/>
+                <div t-if="report_type == 'pdf'" class="text-muted">
+                    Page:
+                    <span class="page"/>
+                    of
+                    <span class="topage"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="external_layout">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+        <t t-if="not company">
+            <!-- Multicompany -->
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+
+        <t t-if="1" t-call="ss_erp_base.external_layout_standard">
+            <t t-raw="0"/>
+        </t>
+    </template>
+</odoo>

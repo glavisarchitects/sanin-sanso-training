@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="0">
+    
+        <record id="ss_erp_bis_category_data_0" model="ss_erp.bis.category">
+            <field name="name">Construction</field>
+            <field name="department"></field>
+        </record>
+
+    </data>
+</odoo>

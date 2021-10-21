@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List view for Quotation -->
+    <record id="purchase_order_kpis_tree" model="ir.ui.view">
+        <field name="name">purchase.order.inherit.purchase.order.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+        <field name="arch" type="xml">   
+            <field name="name" position="attributes">
+                <attribute name="string">Slip No.</attribute>
+            </field>  
+            <field name="name" position="after">
+                <field name="x_bis_categ_id" optional="show"/>
+                <field name="x_responsible_dept_id" optional="show"/>
+            </field>
+            <field name="partner_id" position="after">
+                <field name="x_organization_id" optional="show"/>
+            </field>
+            <field name="date_order" position="attributes"> 
+                <attribute name="string">Response date</attribute>
+                <attribute name="optional">show</attribute>
+                <attribute name="widget">date</attribute>
+            </field>
+            <field name="activity_ids" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="origin" position="attributes">
+                <attribute name="string">Reference source</attribute>
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="string">Purchasing person</attribute>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="string">Supplier</attribute>
+            </field>
+            <field name="invoice_status" position="attributes">
+                <attribute name="string">Invoice Status</attribute>
+            </field>
+            
+        </field>
+    </record>
+    
+
+    <!-- List view for Purchase Order -->
+    <record id="purchase_order_view_tree" model="ir.ui.view">
+        <field name="name">purchase.order.view.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
+        <field name="arch" type="xml">     
+            <field name="name" position="attributes">
+                <attribute name="string">Slip No.</attribute>
+            </field>
+            <field name="name" position="after">
+                <field name="x_bis_categ_id"/>
+                <field name="x_responsible_dept_id"/>
+            </field>
+            <field name="date_approve" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="partner_id" position="after">
+                <field name="x_organization_id"/>
+            </field>
+            <field name="date_planned" position="attributes">
+                <attribute name="string">Requested delivery date</attribute>
+                <attribute name="optional">show</attribute>
+            </field>
+            <field name="activity_ids" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="origin" position="attributes">
+                <attribute name="string">Reference source</attribute>
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="string">Purchasing person</attribute>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="string">Supplier</attribute>
+            </field>
+            <field name="invoice_status" position="before">
+                <field name="state"/>
+            </field>
+            <field name="invoice_status" position="attributes">
+                <attribute name="string">Invoice Status</attribute>
+                <attribute name="optional">hide</attribute>
+            </field>
+        </field>
+    </record>
+
+
+    <!-- Form view for Quotation -->
+    <record id="purchase_order_view_form_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase_stock.purchase_order_view_form_inherit"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </field>
+            <field name="partner_ref" position="attributes">
+                <attribute name="string">See supplier</attribute>
+            </field>
+            <!-- <field name="origin" position="attributes">
+                <attribute name="attrs"></attribute>
+            </field> -->
+            <field name="partner_ref" position="after">
+                <field name="x_bis_categ_id" options="{'no_create': True}"/>
+                <field name="x_po_type" required="1" readonly="0"/>
+                <field name="origin" position="move"/>
+            </field>
+
+            <xpath expr="//form/sheet/group[1]/group[2]/field[@name='date_order']" position="attributes">
+                <attribute name="string">Response date</attribute>
+                <attribute name="widget">date</attribute>
+
+            </xpath>
+            <xpath expr="//form/sheet/group[1]/group[2]/label[@for='receipt_reminder_email']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//form/sheet/group[1]/group[2]/div[@name='reminder']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//form/sheet/group[1]/group[2]/label[@for='date_planned']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//form/sheet/group[1]/group[2]/div[@name='date_planned_div']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//form/sheet/group[1]/group[2]/field[@name='date_order']" position="before">
+                <field name="create_date" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}" string="Created date" widget="date"/>
+                <field name="x_rfq_issue_date" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}" widget="date"/>
+            </xpath>
+
+            <xpath expr="//form/sheet/group[1]/group[2]/div[@name='date_planned_div']" position="after">
+                <field name="date_planned" string="Requested delivery date" widget="date"/>
+                <field name="x_desired_delivery" required="1"/>
+                <field name="user_id" domain="[('share', '=', False),('partner_id.organization_id', '=', x_organization_id)]" widget="many2one_avatar_user" position="move"/>
+            </xpath>
+            <xpath expr="//form/sheet/group[1]/group[2]/div[@name='date_approve']" position="after">
+                <field name="x_po_issue_date" attrs="{'invisible': [('state','!=','purchase')]}"/>
+            </xpath>
+            <xpath expr="//form/sheet/group[1]/group[2]/label[@for='date_approve']" position="attributes">
+                <attribute name="string">Order confirmation date</attribute>
+            </xpath>
+            <xpath expr="//page[@name='products']/field/tree/field[@name='name']" position="after">
+                <field name="x_fixed_cost" string="Fixed price"/>
+            </xpath>
+            <xpath expr="//page[@name='products']/field/tree/field[@name='product_uom']" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="string">Unit</attribute>
+            </xpath>
+            <field name="picking_type_id" position="attributes">
+                <attribute name="string">Arrival type</attribute>
+            </field>
+            <field name="dest_address_id" position="attributes">
+                <attribute name="string">Direct delivery</attribute>
+            </field>
+            <field name="incoterm_id" position="after">
+                <field name="x_dest_address_info" attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')]}"/>
+                <field name="x_truck_number"/>
+            </field>
+            
+            <field name="fiscal_position_id" position="attributes">
+                <attribute name="string">Accounting position</attribute>
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="domain">[('share', '=', False),('partner_id.organization_id', '=', x_organization_id)]</attribute>
+            </field>
+            <field name="fiscal_position_id" position="after">
+                <field name="x_organization_id" options="{'no_create': True}" required="1" readonly="0"/>
+                <field name="x_responsible_dept_id" options="{'no_create': True}" required="1" readonly="0"/>
+                <field name="x_mkt_user_id" options="{'no_create': True}" required="1" readonly="0"/>
+                <field name="x_is_construction" invisible="1"/>     
+                <field name="is_dropshipping" invisible="1"/>     
+            </field>
+            
+            <page name="purchase_delivery_invoice" position="after">
+                <page string="Construction information" name="construction_information" attrs="{'invisible': [('x_is_construction', '=', False)]}">
+                    <group>
+                        <group name="construction_info">
+                            <field name="x_construction_name"/>
+                            <field name="x_construction_sopt"/>
+                            <label for="x_construction_period_start"/>
+                            <div name="construction_period_div" class="o_row">
+                                <field name="x_construction_period_start"/>
+                                <h2> ~ </h2>
+                                <field name="x_construction_period_end"/>
+                            </div>
+                            <field name="x_supplies_check" widget="radio" options="{'horizontal': true}"/> 
+                            <field name="x_supplies_info" /> 
+                            
+                            
+                        </group>
+                        <group>
+                            <field name="x_explanation_check" widget="radio" options="{'horizontal': true}"/>
+                            <field name="x_explanation_date"/>
+                            <field name="x_explanation_spot"/>
+                            <field name="x_construction_other"/>    
+                            
+                        </group>
+                    </group>
+                    <group>
+                        <span>Construction payment conditions (deadline at the end of the month and payment at the end of the following month according to our regulations)</span>
+                    </group>
+                    <group>
+                        <group>
+                            <label for="x_construction_payment_cash"/>
+                            <div>
+                              <field name="x_construction_payment_cash" class="oe_inline" />
+                              <span class="o_form_label oe_inline">%</span>
+                            </div>
+                        </group>
+                        <group>
+                            <label for="x_construction_payment_bill"/>
+                            <div>
+                              <field name="x_construction_payment_bill" class="oe_inline" />
+                              <span class="o_form_label oe_inline">%</span>
+                            </div>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="group_contract" string="Notes on construction contract">
+                            <field name="x_construction_contract_notice" nolabel="1"/>
+                        </group>
+                        <group name="group_subcontract" string="Estimated price and estimated period for subcontracting work">
+                            <field name="x_construction_subcontract" nolabel="1"/>
+                        </group>
+                    </group>
+                </page>
+            </page> 
+        </field>
+    </record>
+
+</odoo>

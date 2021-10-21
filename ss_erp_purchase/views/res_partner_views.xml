@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_property_form" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="purchase.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <group name="purchase" position="inside">
+                <!-- <group name="purchase-email" class="mt48">
+                    <field name="email_quote_request"/>
+                    <field name="email_purchase"/>
+                </group> -->
+                <field name="x_email_quote_request"/>
+                <field name="x_email_purchase"/>
+            </group>
+        </field>
+    </record>
+
+</odoo>
