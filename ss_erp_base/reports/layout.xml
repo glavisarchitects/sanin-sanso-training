@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="external_layout_standard">
-        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout"
+             t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+             t-att-data-oe-lang="o and o.env.context.get('lang')">
             <div t-if="1">
                 <div class="row">
-                    <div class="col-12" style="text-align:center;font-weight:1000;font-size:22px;">
+                    <div class="col-12" style="text-align:center;font-weight:1000;font-size:40px;">
                         <t t-if="o.state in ['draft', 'sent']">
                             <b>REQUEST FOR QUOTATION</b>
                         </t>
@@ -13,7 +15,7 @@
                         </t>
                     </div>
                 </div>
-                <div  style="margin-top: 10px;" class="text-right">
+                <div style="margin-top: 10px;" class="text-right">
                     <t t-if="o.state not in ['draft', 'sent']">
                         <div style="margin-right:5em;">
                             Order No.<span t-esc="o.name"/>
@@ -36,40 +38,51 @@
                     </div>
                     <t t-if="o.state not in ['draft', 'sent']">
                         <div>
-                            TEL: <span t-esc="o.partner_id.mobile"/> <span style="margin-left:4px;">FAX: <t t-esc="o.partner_id.x_fax_number"/> </span>
+                            TEL: <span t-esc="o.partner_id.mobile"/> <span style="margin-left:4px;">FAX: <t
+                                t-esc="o.partner_id.x_fax_number"/></span>
                         </div>
+                        <span>Request a quote for the following products</span>
                     </t>
                 </div>
-                <div class="col-8">
+                <div class="col-4">
+                    <div style="position: relative;left: 50px;float: right;">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 65px;"
+                             alt="Logo"/>
+                    </div>
+                </div>
+                <div class="col-4">
                     <div style="display: inline-block;" class="d-flex">
-                        <div style="position: relative;left: 50px;">
-                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 65px;" alt="Logo"/>
-                        </div>
+
                         <t t-if="o.x_organization_id">
-                            <div name="company_address" style="margin-left:5px;line-height:1.2; position: absolute;right: 0px;" class="text-center">
+                            <div name="company_address"
+                                 style="margin-left:5px;line-height:1.2; position: absolute;right: 0px;"
+                                 class="text-center">
                                 <div><b t-esc="o.x_organization_id and o.x_organization_id.parent_id and o.x_organization_id.parent_id.name or ''"/></div>
                                 <div><b t-esc="o.x_organization_id and o.x_organization_id.name or ''"/></div>
-                                <div style='word-wrap:break-word; width:400px'><b t-esc="o.x_organization_id and o.x_organization_id._display_address(True) or ''"/></div>
+                                <div style='word-wrap:break-word; width:400px'><b
+                                        t-esc="o.x_organization_id and o.x_organization_id._display_address(True) or ''"/></div>
                                 <div style="font-size:16px">
                                     <div>
-                                        TEL: <span t-esc="o.x_organization_id and o.x_organization_id.organization_phone or ''"/>
+                                        TEL: <span
+                                            t-esc="o.x_organization_id and o.x_organization_id.organization_phone or ''"/>
                                     </div>
                                     <div>
-                                        FAX: <span t-esc="o.x_organization_id and o.x_organization_id.organization_fax or ''"/>
+                                        FAX: <span
+                                            t-esc="o.x_organization_id and o.x_organization_id.organization_fax or ''"/>
                                     </div>
                                 </div>
                             </div>
                         </t>
-                        
+
                     </div>
                 </div>
             </div>
             <t t-if="o.state in ['draft', 'sent']">
-				<!-- 
+                <!--
                 <div class="d-flex">
                     <hr  width="30%" size="5px" align="left" style="border-top: 1px solid black;" /><span class="text-left"></span>
                 </div>-->
-                <span>Request a quote for the following products</span>
+                <!--                <span>Request a quote for the following products</span>-->
             </t>
             <div class="pt-5">
                 <!-- This div ensures that the address is not cropped by the header. -->
@@ -81,7 +94,9 @@
         <div t-attf-class="o_company_#{company.id}_layout footer o_background_footer">
             <div class="text-center">
                 <ul class="list-inline">
-                    <li t-if="company.website" class="list-inline-item"><i class="fa fa-globe" role="img" aria-label="Website" title="Website"/> <span t-field="company.website"/></li>
+                    <li t-if="company.website" class="list-inline-item"><i class="fa fa-globe" role="img"
+                                                                           aria-label="Website" title="Website"/> <span
+                            t-field="company.website"/></li>
                 </ul>
                 <div t-field="company.report_footer"/>
                 <div t-if="report_type == 'pdf'" class="text-muted">
