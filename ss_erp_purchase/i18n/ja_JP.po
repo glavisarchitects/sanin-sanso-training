@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-20 08:19+0000\n"
-"PO-Revision-Date: 2021-10-20 16:08+0700\n"
+"POT-Creation-Date: 2021-10-21 03:29+0000\n"
+"PO-Revision-Date: 2021-10-21 10:36+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -31,6 +31,12 @@ msgid ""
 "subcontracting work.</div>\n"
 "            </div>"
 msgstr ""
+"\n"
+"            <div>\n"
+"                <div>工事概要、工法　「別添設計書」による。</div>\n"
+"                <div>施工条件・範囲　「別添設計書」、「施工計画書」による。"
+"</div>\n"
+"            </div>"
 
 #. module: ss_erp_purchase
 #: code:addons/ss_erp_purchase/models/res_company.py:0
@@ -46,6 +52,17 @@ msgid ""
 "more during.</div>\n"
 "            </div>"
 msgstr ""
+"\n"
+"            <div>\n"
+"                <div>工事予定価格　　　　　　　　　　　　　　　　　　見積期"
+"間</div>\n"
+"                <div>500万円に満たない工事　　　　　　　　　　　          中"
+"１日以上</div>\n"
+"                <div>500万円以上5,000万円に満たない工"
+"事　　                     中10日以上</div>\n"
+"                <div>5,000万円以上の工事　　　　　　　　　　　　　       中"
+"15日以上</div>\n"
+"            </div>"
 
 #. module: ss_erp_purchase
 #: model:mail.template,subject:ss_erp_purchase.email_template_edi_purchase
@@ -118,7 +135,7 @@ msgstr "<b>工事場所</b>"
 #: model_terms:ir.ui.view,arch_db:ss_erp_purchase.report_purchaseorder_document
 #: model_terms:ir.ui.view,arch_db:ss_erp_purchase.report_purchasequotation_document
 msgid "<b>Delivery destination:</b>"
-msgstr ""
+msgstr "<b>納品先</b>"
 
 #. module: ss_erp_purchase
 #: model_terms:ir.ui.view,arch_db:ss_erp_purchase.report_estimate_request_document
@@ -243,6 +260,14 @@ msgid "<span>Construction information</span>"
 msgstr "<span>工事情報</span>"
 
 #. module: ss_erp_purchase
+#: model_terms:ir.ui.view,arch_db:ss_erp_purchase.purchase_order_view_form_inherit
+msgid ""
+"<span>Construction payment conditions (deadline at the end of the month and "
+"payment at the end of the following month according to our regulations)</"
+"span>"
+msgstr "<span>工事支払条件（当社規定による、月末締切・翌月末支払）</span>"
+
+#. module: ss_erp_purchase
 #: model_terms:ir.ui.view,arch_db:ss_erp_purchase.report_purchasequotation_document
 msgid "<span>Quotation request details</span>"
 msgstr "<span>見積依頼明細</span>"
@@ -320,12 +345,6 @@ msgstr "入荷タイプ"
 #: model:ir.model.fields,field_description:ss_erp_purchase.field_purchase_order__x_construction_payment_bill
 msgid "Bills"
 msgstr "手形"
-
-#. module: ss_erp_purchase
-#: model:ir.model.fields.selection,name:ss_erp_purchase.selection__purchase_order__x_explanation_check__exist
-#: model:ir.model.fields.selection,name:ss_erp_purchase.selection__purchase_order__x_supplies_check__exist
-msgid "Can be"
-msgstr "有"
 
 #. module: ss_erp_purchase
 #: model:ir.model.fields.selection,name:ss_erp_purchase.selection__purchase_order__x_desired_delivery__separated
@@ -485,7 +504,7 @@ msgstr "最終更新日"
 #. module: ss_erp_purchase
 #: model:ir.model.fields.selection,name:ss_erp_purchase.selection__purchase_order__x_explanation_check__no
 #: model:ir.model.fields.selection,name:ss_erp_purchase.selection__purchase_order__x_supplies_check__no
-msgid "None"
+msgid "No"
 msgstr "無"
 
 #. module: ss_erp_purchase
@@ -705,6 +724,12 @@ msgstr "取引区分"
 #: model_terms:ir.ui.view,arch_db:ss_erp_purchase.purchase_order_view_form_inherit
 msgid "Unit"
 msgstr "単位"
+
+#. module: ss_erp_purchase
+#: model:ir.model.fields.selection,name:ss_erp_purchase.selection__purchase_order__x_explanation_check__exist
+#: model:ir.model.fields.selection,name:ss_erp_purchase.selection__purchase_order__x_supplies_check__exist
+msgid "Yes"
+msgstr "有"
 
 #. module: ss_erp_purchase
 #: model:ir.model.fields,field_description:ss_erp_purchase.field_purchase_order__x_construction_sopt
