@@ -72,7 +72,7 @@
 				</div>
                 <div class="col-6">
 					<b>Direct shipping information</b>
-                    <t t-if="o.is_dropshipping"                        
+                    <t t-if="o.is_dropshipping">                        
                         <t t-if="o.show_construction or len(o.order_line) > 5">
                             <p style="page-break-before:always;"> </p>
                         </t>

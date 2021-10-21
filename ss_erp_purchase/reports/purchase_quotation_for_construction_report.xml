@@ -58,7 +58,7 @@
             </table>
             <span>Construction information</span>
             <div class="row" style="border-bottom: 1px solid black;border-top: 1px solid black;">
-                <div class="col-8">
+                <div class="col-6">
                     <div><b>Construction name</b> <span style="padding-left: 20px;" t-field="o.x_construction_name"/></div>
                     <div><b>Construction site</b> <span style="padding-left: 20px;" t-field="o.x_construction_sopt"/></div>
                     <div class="d-flex">
@@ -73,7 +73,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-8">
+                <div class="col-6">
                     <div class="d-flex">
                         <div>
                             <b>Presence or absence of supplies</b>
