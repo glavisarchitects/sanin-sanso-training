@@ -37,15 +37,15 @@ class PurchaseOrder(models.Model):
     x_construction_period_start = fields.Date("Scheduled construction period start")
     x_construction_period_end = fields.Date("Scheduled construction period ends")
     x_supplies_check = fields.Selection([
-        ('no', 'No'),
         ('exist', 'Yes'),
+        ('no', 'No'),       
     ], string="Presence or absence of supplies", default='no')
     x_supplies_info = fields.Char("Supplies")
     x_construction_payment_term = fields.Char("Payment terms", readonly=True, default=_("Construction payment conditions (deadline at the end of the month and payment at the end of the following month according to our regulations)"))
 
     x_explanation_check = fields.Selection([
-        ('no', 'No'),
         ('exist', 'Yes'),
+        ('no', 'No'),        
     ], string="Presence or absence of the current theory", default='no')
     x_explanation_date = fields.Date("Current date")
     x_explanation_spot = fields.Char("Current theory place")

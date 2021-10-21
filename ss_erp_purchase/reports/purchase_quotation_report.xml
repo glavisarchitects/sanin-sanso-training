@@ -12,7 +12,9 @@
                     <div><b>Requested delivery date:</b> <span t-esc="o.date_planned and o.date_planned.strftime('%Y年%m月%d日') or ''"/></div>
                     <div><b>Response date: </b><span t-esc="o.date_order and o.date_order.strftime('%Y年%m月%d日') or ''"/></div>
                 </div>
-                <div class="col-8">
+				<div class="col-4">
+				</div>
+                <div class="col-4">
                     <div style="margin-left:5em;"><b>Purchasing Person:</b> <span t-field="o.user_id"/></div>
                     <t t-if="o.picking_type_id and o.picking_type_id.default_location_dest_id">
                         <div style="margin-left:5em;"><b>Delivery destination:</b> <span t-esc="o.picking_type_id.default_location_dest_id.display_name"/></div>
@@ -29,6 +31,7 @@
                         <th name="th_expected_date" ><strong>Product name</strong></th>
                         <!-- <th name="th_destination" ><strong>Delivery destination</strong></th> -->
                         <th name="th_quantity" ><strong>Quantity</strong></th>
+						<th name="th_uom" ><strong>UOM</strong></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,9 +48,11 @@
                                     <span t-field="order_line.location_dest_id"/>
                                 </td> -->
                                 <td>
-                                    <span t-field="order_line.product_qty"/>
-                                    <span t-field="order_line.product_uom" groups="uom.group_uom"/>
+                                    <span t-field="order_line.product_qty"/>                                    
                                 </td>
+								<td>
+									<span t-field="order_line.product_uom" groups="uom.group_uom"/>
+								</td>
                             </t>
                             <t t-else="">
                                 <td colspan="99" id="section">
@@ -59,14 +64,15 @@
                 </tbody>
             </table>
 
-            <div>
-                <b>Remarks</b>
-                <p t-field="o.notes"/>
-            </div>
+
             <div class="row">
-                <div class="col-8">
-                    <t t-if="o.is_dropshipping">
-                        <b>Direct shipping information</b>
+			    <div class="col-6">
+					<b>Remarks</b>
+					<p t-field="o.notes"/>
+				</div>
+                <div class="col-6">
+					<b>Direct shipping information</b>
+                    <t t-if="o.is_dropshipping"                        
                         <t t-if="o.show_construction or len(o.order_line) > 5">
                             <p style="page-break-before:always;"> </p>
                         </t>

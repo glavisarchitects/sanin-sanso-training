@@ -65,9 +65,10 @@
                 </div>
             </div>
             <t t-if="o.state in ['draft', 'sent']">
+				<!-- 
                 <div class="d-flex">
                     <hr  width="30%" size="5px" align="left" style="border-top: 1px solid black;" /><span class="text-left"></span>
-                </div>
+                </div>-->
                 <span>Request a quote for the following products</span>
             </t>
             <div class="pt-5">
