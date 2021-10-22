@@ -41,6 +41,8 @@
                             TEL: <span t-esc="o.partner_id.mobile"/> <span style="margin-left:4px;">FAX: <t
                                 t-esc="o.partner_id.x_fax_number"/></span>
                         </div>
+                    </t>
+                    <t t-else="">
                         <span>Request a quote for the following products</span>
                     </t>
                 </div>

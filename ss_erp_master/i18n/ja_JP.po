@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-13 07:30+0000\n"
-"PO-Revision-Date: 2021-10-13 14:33+0700\n"
+"POT-Creation-Date: 2021-10-20 07:58+0000\n"
+"PO-Revision-Date: 2021-10-20 14:59+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -68,7 +68,7 @@ msgstr "組織カテゴリ"
 #. module: ss_erp_master
 #: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__organization_category_id
 msgid "Category of this organization"
-msgstr ""
+msgstr "組織カテゴリ"
 
 #. module: ss_erp_master
 #: model_terms:ir.ui.view,arch_db:ss_erp_master.organization_view_form
@@ -91,6 +91,7 @@ msgid "Code"
 msgstr "コード"
 
 #. module: ss_erp_master
+#: model:ir.model,name:ss_erp_master.model_res_company
 #: model_terms:ir.ui.view,arch_db:ss_erp_master.organization_category_view_search
 msgid "Companies"
 msgstr "会社"
@@ -108,6 +109,11 @@ msgid "Complete Name"
 msgstr ""
 
 #. module: ss_erp_master
+#: model:ir.model,name:ss_erp_master.model_res_partner
+msgid "Contact"
+msgstr "連絡先"
+
+#. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__child_ids
 msgid "Contains Organizations"
 msgstr ""
@@ -118,6 +124,7 @@ msgid "Country"
 msgstr ""
 
 #. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_bis_category__create_uid
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__create_uid
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization_category__create_uid
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_responsible_department__create_uid
@@ -125,6 +132,7 @@ msgid "Created by"
 msgstr ""
 
 #. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_bis_category__create_date
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__create_date
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization_category__create_date
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_responsible_department__create_date
@@ -132,10 +140,18 @@ msgid "Created on"
 msgstr ""
 
 #. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_company__display_name
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_partner__display_name
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_bis_category__display_name
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__display_name
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization_category__display_name
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_responsible_department__display_name
 msgid "Display Name"
+msgstr "表示名"
+
+#. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_company__x_construction_subcontract
+msgid "Estimated price and estimated period for subcontracting work"
 msgstr ""
 
 #. module: ss_erp_master
@@ -143,6 +159,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_responsible_department__end_date
 msgid "Expiration date"
 msgstr "有効終了日"
+
+#. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_partner__x_fax_number
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_users__x_fax_number
+msgid "Fax Number"
+msgstr ""
 
 #. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__message_follower_ids
@@ -175,6 +197,9 @@ msgid "Hierarchy"
 msgstr "階層"
 
 #. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_company__id
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_partner__id
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_bis_category__id
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__id
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization_category__id
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_responsible_department__id
@@ -199,6 +224,7 @@ msgstr ""
 
 #. module: ss_erp_master
 #: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__message_has_error
+#: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
@@ -225,13 +251,17 @@ msgid "Jurisdiction"
 msgstr "管轄部門"
 
 #. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_company____last_update
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_partner____last_update
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_bis_category____last_update
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization____last_update
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization_category____last_update
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_responsible_department____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "最終更新日"
 
 #. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_bis_category__write_uid
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__write_uid
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization_category__write_uid
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_responsible_department__write_uid
@@ -239,6 +269,7 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_bis_category__write_date
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__write_date
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization_category__write_date
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_responsible_department__write_date
@@ -279,6 +310,11 @@ msgstr ""
 #. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__activity_type_id
 msgid "Next Activity Type"
+msgstr ""
+
+#. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_company__x_construction_contract_notice
+msgid "Notes on construction contract"
 msgstr ""
 
 #. module: ss_erp_master
@@ -413,7 +449,7 @@ msgstr ""
 #. module: ss_erp_master
 #: model_terms:ir.ui.view,arch_db:ss_erp_master.nama_model_tree
 msgid "Parent org code"
-msgstr "親組織コード"
+msgstr "親組織"
 
 #. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__parent_id
@@ -432,8 +468,18 @@ msgid "Recursion found in child server actions"
 msgstr ""
 
 #. module: ss_erp_master
+#: model:ir.model,name:ss_erp_master.model_ss_erp_responsible_department
+msgid "Responsible Department"
+msgstr ""
+
+#. module: ss_erp_master
 #: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__activity_user_id
 msgid "Responsible User"
+msgstr ""
+
+#. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__message_has_sms_error
+msgid "SMS Delivery error"
 msgstr ""
 
 #. module: ss_erp_master
@@ -472,7 +518,12 @@ msgstr "町名番地"
 #: code:addons/ss_erp_master/models/responsible_department.py:0
 #, python-format
 msgid "The starting date cannot be after the ending date."
-msgstr "有効開始日は、終了日より先の日付は選択できません"
+msgstr ""
+
+#. module: ss_erp_master
+#: model:ir.model,name:ss_erp_master.model_ss_erp_bis_category
+msgid "TransactionClassification"
+msgstr ""
 
 #. module: ss_erp_master
 #: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__activity_exception_decoration
@@ -496,6 +547,16 @@ msgid "Valid start date"
 msgstr "有効開始日"
 
 #. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_organization__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: ss_erp_master
+#: model:ir.model.fields,help:ss_erp_master.field_ss_erp_organization__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: ss_erp_master
 #: code:addons/ss_erp_master/models/organization_category.py:0
 #, python-format
 msgid ""
@@ -509,6 +570,21 @@ msgid "ZIP"
 msgstr "郵便番号"
 
 #. module: ss_erp_master
-#: model:ir.model,name:ss_erp_master.model_ss_erp_responsible_department
-msgid "ss.erp.responsible.department"
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_company__x_company_code
+msgid "会社コード"
+msgstr ""
+
+#. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_bis_category__name
+msgid "取引区分"
+msgstr ""
+
+#. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_res_company__x_payment_terms
+msgid "支払条件当社規定"
+msgstr ""
+
+#. module: ss_erp_master
+#: model:ir.model.fields,field_description:ss_erp_master.field_ss_erp_bis_category__department
+msgid "部門"
 msgstr ""

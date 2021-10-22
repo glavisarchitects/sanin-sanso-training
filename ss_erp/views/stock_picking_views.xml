@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="vpicktree_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.tree.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="attributes">
+                <attribute name="string">Manager</attribute>
+            </field>     
+            <field name="name" position="after">
+                <field name="x_organization_id"/>
+                <field name="user_id"/>
+                <field name="x_account_modify"/>
+                <field name="x_po_type"/>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="string">Contact address</attribute>
+            </field>
+            <field name="origin" position="attributes">
+                <attribute name="string">Reference source</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_picking_withcarrier_out_form" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="string">Arrival source</attribute>
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="string">Manager</attribute>
+            </field>  
+            <field name="backorder_id" position="before">
+                <field name="user_id" position="move"/>
+            </field>
+            <field name="origin" position="attributes">
+                <attribute name="string">Reference source</attribute>
+            </field>
+            <field name="origin" position="after">
+                <field name="x_account_modify"/>
+            </field>
+            <field name="carrier_id" position="attributes">
+                <attribute name="string">Shipping company</attribute>
+            </field>
+            <group name="carrier_data" position="inside">
+                <field name="location_dest_id_usage" invisible="1"/>
+                <field name="x_dest_address_info" attrs="{'invisible': [('location_dest_id_usage', '!=', 'customer')]}"/>
+            </group>
+            <field name="group_id" position="before">
+                <field name="x_organization_id" />
+                <field name="x_responsible_dept_id" />
+                <field name="x_mkt_user_id" />
+            </field>
+            <field name="move_type" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="group_id" position="after">
+                <field name="x_po_type" />
+                <!-- <field name="x_so_type" /> -->
+            </field>
+        </field>
+    </record>
+    
+</odoo>

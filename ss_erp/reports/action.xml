@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <report 
+            id="action_report_purchaseorder"
+            string="Purchase order"
+            model="purchase.order" 
+            report_type="qweb-pdf"
+            file="ss_erp.report_purchaseorder"
+            name="ss_erp.report_purchaseorder"
+            print_report_name="'PO - %s' % (object.name)"
+            paperformat="paperformat_purchaseorder_a4"
+        />
+
+<!--        <report -->
+<!--            id="action_report_purchaseorder_construction"-->
+<!--            string="Purchase order &lt;for construction&gt;"-->
+<!--            model="purchase.order" -->
+<!--            report_type="qweb-pdf"-->
+<!--            file="ss_erp.report_purchaseorder"-->
+<!--            name="ss_erp.report_purchaseorder"-->
+<!--            print_report_name="'PO - %s' % (object.name)"-->
+<!--            paperformat="paperformat_purchaseorder_a4"-->
+<!--        />-->
+        <report 
+            id="action_report_purchasequotation"
+            string="Quotation request form"
+            model="purchase.order" 
+            report_type="qweb-pdf"
+            file="ss_erp.report_purchasequotation"
+            name="ss_erp.report_purchasequotation"
+            print_report_name="'Request for Quotation - %s' % (object.name)"
+            paperformat="paperformat_purchasequotation_a4"
+        />
+
+<!--        <report -->
+<!--            id="action_report_estimate_request"-->
+<!--            string="Quotation request form &lt;for construction&gt;"-->
+<!--            model="purchase.order" -->
+<!--            report_type="qweb-pdf"-->
+<!--            file="ss_erp.report_estimate_request"-->
+<!--            name="ss_erp.report_estimate_request"-->
+<!--            print_report_name="'Request for Quotation - %s' % (object.name)"-->
+<!--            paperformat="paperformat_purchasequotation_a4"-->
+<!--        />-->
+</odoo>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="organization_category_view_tree">
+        <field name="name">ss_erp.organization.category.view.form</field>
+        <field name="model">ss_erp.organization.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="company_id" groups="base.group_no_one,base.group_erp_manager"/>
+                <field name="name"/>
+                <field name="hierarchy_number"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="organization_category_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.organization.category.view.form</field>
+        <field name="model">ss_erp.organization.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_view_organizations"
+                            class="oe_stat_button" icon="fa-building"
+                            groups="base.group_no_one,base.group_erp_manager"
+                            attrs="{'invisible': [('organization_count', '&lt;=', 0)]}">
+                            <field name="organization_count" string="Organizations"
+                                groups="base.group_no_one,base.group_erp_manager"
+                                widget="statinfo" />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" required="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_no_one,base.group_erp_manager" />
+                            <field name="hierarchy_number"/>
+                            <field name="active" invisible="1" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="organization_category_view_search" model="ir.ui.view">
+        <field name="name">ss_erp.organization.category.view.search</field>
+        <field name="model">ss_erp.organization.category</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="hierarchy_number" />
+                <separator />
+                <filter name="ftr_archived" string="Archived" domain="[('active', '=', False)]" />
+                <group string="Group By" expand="0">
+                    <filter name="grp_company" string="Companies"
+                        groups="base.group_multi_company" context="{'group_by': 'company_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_organizations_category" model="ir.actions.act_window">
+        <field name="name">Organizations category</field>
+        <field name="res_model">ss_erp.organization.category</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a New Organization Category.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_organization_category_setting" name="Org. Categories"
+            parent="base.menu_users" action="action_organizations_category" />
+
+</odoo>

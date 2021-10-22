@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="nama_model_tree">
+        <field name="name">ss_erp.organization.view.tree</field>
+        <field name="model">ss_erp.organization</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="company_id" groups="base.group_no_one,base.group_erp_manager"/>
+                <field name="organization_code" string="Org code"/>
+                <field name="name" string="Org name"/>
+                <field name="parent_organization_code" string="Parent org code"/>
+                <field name="parent_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="organization_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.organization.view.form</field>
+        <field name="model">ss_erp.organization</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id" groups="base.group_no_one,base.group_erp_manager"/>
+                            <field name="organization_category_id"/>
+                            <field name="parent_id"/>
+                        </group>
+                        <group>
+                            <field name="organization_code"/>
+                            <field name="active" invisible="1"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <label for="organization_street" string="Organization location Address"/>
+                            <div class="o_address_format">
+                                <field name="organization_street" placeholder="Street..." class="o_address_street"/>
+                                <field name="organization_street2" placeholder="Street 2..." class="o_address_street"/>
+                                <field name="organization_city" placeholder="City" class="o_address_city"/>
+                                <field name="organization_state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}" domain="[('country_id', '=', organization_country_id)]"/>
+                                <field name="organization_zip" placeholder="ZIP" class="o_address_zip"/>
+                                <field name="organization_country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="organization_phone" widget="phone"/>
+                            <field name="organization_fax"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- <record id="organization_view_search" model="ir.ui.view">
+        <field name="name">ss_erp.organization.view.search</field>
+        <field name="model">ss_erp.organization</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="code" />
+                <field name="organization_category_id" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <separator />
+                <filter name="ftr_archived" string="Archived" domain="[('active', '=', False)]" />
+                <group string="Group By" expand="0">
+                    <filter name="grp_org_categ" string="Org. Categories"
+                        context="{'group_by': 'organization_category_id'}" />
+                    <filter name="grp_company" string="Companies"
+                        groups="base.group_multi_company" context="{'group_by': 'company_id'}" />
+                </group>
+            </search>
+        </field>
+    </record> -->
+
+    <record id="action_organizations" model="ir.actions.act_window">
+        <field name="name">Organization</field>
+        <field name="res_model">ss_erp.organization</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a New Organization.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_organization_settings" name="Organizations"
+        parent="base.menu_users" action="action_organizations" />
+</odoo>

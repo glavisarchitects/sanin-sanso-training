@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <record id="responsible_department_view_tree" model="ir.ui.view">
+        <field name="name">ss.erp.responsible.department.view.tree</field>
+        <field name="model">ss_erp.responsible.department</field>
+        <field name="arch" type="xml">
+            <tree string="Jurisdiction" editable="top">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </tree>
+        </field>
+    </record>
+
+<!--     <record id="responsible_department_view_form" model="ir.ui.view">
+        <field name="name">ss.erp.responsible.department.view.form</field>
+        <field name="model">ss.erp.responsible.department</field>
+        <field name="arch" type="xml">
+            <form string="Jurisdiction">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company" string="Company infomation"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record> -->
+
+    <record id="responsible_department_view_search" model="ir.ui.view">
+        <field name="name">ss.erp.responsible.department.view.search</field>
+        <field name="model">ss_erp.responsible.department</field>
+        <field name="arch" type="xml">
+            <search string="Jurisdiction">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="responsible_department_view_action" model="ir.actions.act_window">
+        <field name="name">Jurisdiction</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ss_erp.responsible.department</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[]</field>
+    </record>
+    <menuitem id="responsible_department_view_action_menu" name="Jurisdiction" action="responsible_department_view_action" parent="base.menu_users" sequence="10"/>
+</odoo>
