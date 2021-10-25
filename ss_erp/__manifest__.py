@@ -14,6 +14,7 @@
     "data": [
         # SECURITY
         "security/ir.model.access.csv",
+        "security/x_security_groups_security.xml",
 
         # DATA
         "data/bis_category_data.xml",
