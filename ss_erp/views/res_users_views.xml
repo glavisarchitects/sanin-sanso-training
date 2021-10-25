@@ -5,10 +5,10 @@
         <field name="model">res.users</field>
         <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='access_rights']" position="inside">
-<!--                 <group string="Organization"> -->
+            <xpath expr="//field[@name='active_partner']" position="after">
+                <group string="Organization">
                     <field name="organization_id" />
-<!--                 </group> -->
+                </group>
             </xpath>
         </field>
     </record>
