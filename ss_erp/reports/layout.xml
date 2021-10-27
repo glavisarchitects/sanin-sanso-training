@@ -58,7 +58,7 @@
                 </div>
                 <div class="col-4">
                      <div>
-                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                            <img style="text-align: right" t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
                      </div>
                 </div>
                 <div class="col-4">
