@@ -119,7 +119,7 @@
                             <t t-if="o.x_is_construction or len(o.order_line) > 5">
                                 <p style="page-break-before:always;"></p>
                             </t>
-                            <p t-field="o.dest_address_info"/>
+                            <p t-field="o.x_dest_address_info"/>
                         </t>
                     </div>
                     <div class="col-6">
