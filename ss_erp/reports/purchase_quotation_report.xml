@@ -98,7 +98,7 @@
                             <table style="border-style:hidden">
                                 <tr>
                                     <td><b>Construction name</b></td>
-                                    <td style="width:10px;"></td>
+                                    <td style="width:5px;"></td>
                                     <td><span t-field="o.x_construction_name"/></td>
                                 </tr>
                                 <tr>
@@ -128,7 +128,7 @@
                             <table style="border-style:hidden">
                                 <tr>
                                     <td><b>Presence or absence of supplies</b></td>
-                                    <td style="width:10px;"></td>
+                                    <td style="width:5px;"></td>
                                     <td><span  t-field="o.x_supplies_check"/> <t t-if="o.x_supplies_info"> - <span
                                             t-field="o.x_supplies_info"/></t></td>
                                 </tr>
@@ -142,7 +142,7 @@
                                     <td></td>
                                     <td>
                                         <div>
-                                            <div style="word-wrap:break-word;">Dealine at the end of the month, payment at the end of the following month according to our regulations</div>
+                                            <div>Dealine at the end of the month, payment at the end of the following month according to our regulations</div>
                                             <div>
                                                 Cash <span t-field="o.x_construction_payment_cash"/> % Bills <span
                                                     t-field="o.x_construction_payment_bill"/> %
@@ -190,18 +190,20 @@
                 </div>
                 <br/>
                 <br/>
-                <t t-if="o.x_is_construction">
-                    <div class="row" style="margin-left:5px;">
-                        <div>
-                            <b>Estimated price and estimated period for subcontracting work</b>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-left:5px;">
-                        <div>
-                            <p t-field="o.x_construction_subcontract"/>
-                        </div>
-                    </div>
-                </t>
+				<div>
+					<t t-if="o.x_is_construction">
+						<div class="row" style="margin-left:5px;">
+							<div>
+								<b>Estimated price and estimated period for subcontracting work</b>
+							</div>
+						</div>
+						<div class="row" style="margin-left:5px;">
+							<div>
+								<p t-field="o.x_construction_subcontract"/>
+							</div>
+						</div>
+					</t>
+				</div>
                 <div class="oe_structure"/>
             </div>
         </t>
