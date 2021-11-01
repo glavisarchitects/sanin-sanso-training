@@ -19,7 +19,7 @@
                         <table style="border-style:hidden">
                             <tr>
                                 <td><b>Requested delivery date</b></td>
-                                <td style="width:15px;"></td>
+                                <td style="width:10px;"></td>
                                 <td><span t-esc="o.date_planned and o.date_planned.strftime('%Y年%m月%d日') or ''"/></td>
                             </tr>
                             <tr>
@@ -33,7 +33,7 @@
                         <table style="border-style:hidden">
                             <tr>
                                 <td><b>Purchasing Person</b></td>
-                                <td style="width:15px;"></td>
+                                <td style="width:10px;"></td>
                                 <td><span t-field="o.user_id"/></td>
                             </tr>
                             <tr>
@@ -98,7 +98,7 @@
                             <table style="border-style:hidden">
                                 <tr>
                                     <td><b>Construction name</b></td>
-                                    <td style="width:15px;"></td>
+                                    <td style="width:10px;"></td>
                                     <td><span t-field="o.x_construction_name"/></td>
                                 </tr>
                                 <tr>
