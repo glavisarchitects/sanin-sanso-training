@@ -10,7 +10,7 @@
              t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
              t-att-data-oe-lang="o and o.env.context.get('lang')">
             <div t-if="1">
-                <div class="row">
+                <div class="row" style="margin-top:20px;">
                     <div class="col-12" style="text-align:center;font-weight:1000;font-size:40px;">
                         <t t-if="o.state in ['draft', 'sent']">
                             <b>REQUEST FOR QUOTATION</b>
@@ -20,7 +20,7 @@
                         </t>
                     </div>
                 </div>
-                <div style="margin-top: 10px;" class="text-right">
+                <div style="margin-top: 10px;font-size:16px;" class="text-right">
                     <t t-if="o.state not in ['draft', 'sent']">
                         <div>
                             Order No.<span t-esc="o.name"/>
@@ -36,9 +36,9 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="font-size:16px;">
                 <t t-if="o.state in ['draft', 'sent']">
-                    <div class="col-4">
+                    <div class="col-6">
                         <div>
                             <span t-esc="o.partner_id.name"/> 殿
                         </div>
@@ -54,13 +54,13 @@
                             <span>Request a quote for the following products</span>
                         </div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
                         <div>
                             <img style="float: right;" t-if="company.logo" t-att-src="image_data_uri(company.logo)"
                                  alt="Logo"/>
                         </div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
                         <div>
                             <t t-if="o.x_organization_id">
                                 <div name="company_address"

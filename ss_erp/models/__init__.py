@@ -15,4 +15,4 @@ from . import res_users
 from . import purchase_order
 from . import responsible_department
 from . import stock_picking
-from . import hr_employee
+#from . import hr_employee

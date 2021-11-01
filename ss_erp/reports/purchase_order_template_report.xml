@@ -5,6 +5,7 @@
             <style type="text/css">
                             div{
                             font-family:meiryo;
+                            font-size:16px;
                             }
             </style>
             <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
