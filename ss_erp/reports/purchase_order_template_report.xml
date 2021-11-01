@@ -216,13 +216,14 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <span>
-                                            Cash <span t-field="o.x_construction_payment_cash"/> %
-                                        </span>
+  
                                     </td>
                                     <td></td>
                                     <td>
-                                        <span>
+									    <span>
+                                            Cash <span t-field="o.x_construction_payment_cash"/> %
+                                        </span>
+                                        <span style="margin-left:20px;">
                                             Bills <span t-field="o.x_construction_payment_bill"/> %
                                         </span>
                                     </td>
