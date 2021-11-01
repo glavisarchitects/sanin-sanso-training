@@ -5,7 +5,7 @@
             <style type="text/css">
                             div{
                             font-family:meiryo;
-                            font-size:16px;
+                            font-size:15px;
                             }
             </style>
             <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
@@ -216,7 +216,6 @@
                                 </tr>
                                 <tr>
                                     <td>
-  
                                     </td>
                                     <td></td>
                                     <td>
