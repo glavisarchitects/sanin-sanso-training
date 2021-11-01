@@ -38,7 +38,7 @@
             </div>
             <div class="row">
                 <t t-if="o.state in ['draft', 'sent']">
-                    <div class="col-5">
+                    <div class="col-4">
                         <div>
                             <span t-esc="o.partner_id.name"/> 殿
                         </div>
@@ -60,10 +60,10 @@
                                  alt="Logo"/>
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col-4">
                         <div>
                             <t t-if="o.x_organization_id">
-                                <div name="company_address" style="margin-left:60px;"
+                                <div name="company_address"
                                      class="text-left">
                                     <div><b t-esc="o.company_id.name"/></div>
                                     <div><b t-esc="o.x_organization_id.name"/></div>
