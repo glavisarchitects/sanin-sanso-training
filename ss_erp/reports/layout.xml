@@ -22,12 +22,11 @@
                 </div>
                 <div style="margin-top: 10px;" class="text-right">
                     <t t-if="o.state not in ['draft', 'sent']">
-                        <div style="margin-right:5em;">
+                        <div>
                             Order No.<span t-esc="o.name"/>
                         </div>
                     </t>
-                    <div style="margin-right:5em;text-align: right;">
-
+                    <div>
                         <t t-if="o.state in ['draft', 'sent']">
                             <span t-esc="o.x_rfq_issue_date and o.x_rfq_issue_date.strftime('%Y年%m月%d日') or ''"/>
                         </t>
@@ -38,11 +37,11 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-4">
-                    <div>
-                        <span t-esc="o.partner_id.name"/> 殿
-                    </div>
-                    <t t-if="o.state not in ['draft', 'sent']">
+                <t t-if="o.state in ['draft', 'sent']">
+                    <div class="col-5">
+                        <div>
+                            <span t-esc="o.partner_id.name"/> 殿
+                        </div>
                         <div>
                             <t t-if="o.partner_id.mobile">
                                 TEL: <span t-esc="o.partner_id.mobile"/>
@@ -51,21 +50,20 @@
                                 <span style="margin-left:4px;"> FAX: <t t-esc="o.partner_id.x_fax_number"/></span>
                             </t>
                         </div>
-                    </t>
-                    <t t-else="">
-                        <span>Request a quote for the following products</span>
-                    </t>
-                </div>
-                <div class="col-4">
-                     <div>
-                            <img style="float: right;" t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
-                     </div>
-                </div>
-                <div class="col-4">
-                    <div>
-                        <t t-if="o.state in ['draft', 'sent']">
+                        <div>
+                            <span>Request a quote for the following products</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div>
+                            <img style="float: right;" t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                                 alt="Logo"/>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div>
                             <t t-if="o.x_organization_id">
-                                <div name="company_address"
+                                <div name="company_address" style="margin-left:60px;"
                                      class="text-left">
                                     <div><b t-esc="o.company_id.name"/></div>
                                     <div><b t-esc="o.x_organization_id.name"/></div>
@@ -74,19 +72,37 @@
                                     <div style="margin-left:5px;font-size:16px">
                                         <t t-if="o.x_organization_id and o.x_organization_id.organization_phone">
                                             <div>
-                                                TEL: <span t-esc="o.x_organization_id and o.x_organization_id.organization_phone or ''"/>
+                                                TEL <span
+                                                    t-esc="o.x_organization_id and o.x_organization_id.organization_phone or ''"/>
                                             </div>
                                         </t>
                                         <t t-if="o.x_organization_id and o.x_organization_id.organization_fax">
                                             <div>
-                                                FAX: <span t-esc="o.x_organization_id and o.x_organization_id.organization_fax or ''"/>
+                                                FAX <span
+                                                    t-esc="o.x_organization_id and o.x_organization_id.organization_fax or ''"/>
                                             </div>
                                         </t>
                                     </div>
                                 </div>
                             </t>
-                        </t>
-                        <t t-else="">
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="col-7">
+                        <div>
+                            <span t-esc="o.partner_id.name"/> 殿
+                        </div>
+
+                    </div>
+                    <div class="col-2">
+                        <div>
+                            <img style="float: right;" t-if="company.logo" t-att-src="image_data_uri(company.logo)"
+                                 alt="Logo"/>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div>
                             <t t-if="o.x_organization_id">
                                 <div name="company_address"
                                      class="text-left">
@@ -97,18 +113,20 @@
                                     <div style="font-size:16px">
                                         <div>
                                             <t t-if="o.x_organization_id and o.x_organization_id.organization_phone">
-                                                TEL: <span t-esc="o.x_organization_id and o.x_organization_id.organization_phone or ''"/>
+                                                TEL <span
+                                                    t-esc="o.x_organization_id and o.x_organization_id.organization_phone or ''"/>
                                             </t>
                                             <t t-if="o.x_organization_id and o.x_organization_id.organization_fax">
-                                                FAX: <span t-esc="o.x_organization_id and o.x_organization_id.organization_fax or ''"/>
+                                                FAX <span
+                                                    t-esc="o.x_organization_id and o.x_organization_id.organization_fax or ''"/>
                                             </t>
                                         </div>
                                     </div>
                                 </div>
                             </t>
-                        </t>
+                        </div>
                     </div>
-                </div>
+                </t>
             </div>
             <div class="pt-5">
                 <!-- This div ensures that the address is not cropped by the header. -->

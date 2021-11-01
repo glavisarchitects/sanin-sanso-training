@@ -49,12 +49,12 @@
             </field>
             <group name="carrier_data" position="inside">
                 <field name="location_dest_id_usage" invisible="1"/>
-                <field name="x_dest_address_info" attrs="{'invisible': [('location_dest_id_usage', '!=', 'customer')]}"/>
+                <field name="x_dest_address_info" readonly="1" attrs="{'invisible': [('location_dest_id_usage', '!=', 'customer')]}"/>
             </group>
             <field name="group_id" position="before">
-                <field name="x_organization_id" />
-                <field name="x_responsible_dept_id" />
-                <field name="x_mkt_user_id" />
+                <field name="x_organization_id" readonly="1"/>
+                <field name="x_responsible_dept_id" readonly="1"/>
+                <field name="x_mkt_user_id" readonly="1"/>
             </field>
             <field name="move_type" position="attributes">
                 <attribute name="invisible">1</attribute>

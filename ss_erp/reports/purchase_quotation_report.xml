@@ -14,7 +14,7 @@
                 <h2><span t-field="o.name"/></h2>
 
                 <div class="row">
-                    <div class="col-8">
+                    <div class="col-9">
                         <table style="border-style:hidden">
                             <tr>
                                 <td><b>Requested delivery date</b></td>
@@ -28,7 +28,7 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
                         <table style="border-style:hidden">
                             <tr>
                                 <td><b>Purchasing Person</b></td>
@@ -171,6 +171,7 @@
                         </div>
                     </div>
                 </t>
+                <br/>
                 <div class="row">
                     <div class="col-6">
                         <b>Remarks</b>
@@ -193,7 +194,6 @@
                         <div>
                             <b>Estimated price and estimated period for subcontracting work</b>
                         </div>
-                        <br/>
                     </div>
                     <div class="row" style="margin-left:5px;">
                         <div>

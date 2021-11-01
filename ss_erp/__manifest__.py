@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "SANNIN SANSO DUNK",
+    "name": "山陰酸素工業",
     "summary": """
-        SANNIN SANSO DUNK
+        山陰酸素工業
     """,
     "version": "14.0.1",
     "category": "",
     "website": "https://www.systemgear-vietnam.com/",
     "author": "SGVN",
     "depends": [
-                "delivery","mail", "contacts", "purchase", "purchase_stock", "web"
+                "delivery","mail", "contacts", "purchase", "purchase_stock", "web", "account", "stock_dropshipping"
                 ],
     "data": [
         # SECURITY

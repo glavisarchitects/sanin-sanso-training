@@ -10,10 +10,10 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     x_account_modify = fields.Boolean("Inventory journal correction", index=True)
-    x_dest_address_info = fields.Html("Direct shipping address", related='purchase_id.x_dest_address_info')
-    x_organization_id = fields.Many2one('ss_erp.organization', string="Organization in charge", related='purchase_id.x_organization_id')
-    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string="Jurisdiction", related='purchase_id.x_responsible_dept_id')
-    x_mkt_user_id = fields.Many2one('res.users', string="Sales staff", related='purchase_id.x_mkt_user_id')
+    x_dest_address_info = fields.Html("Direct shipping address")
+    x_organization_id = fields.Many2one('ss_erp.organization', string="Organization in charge")
+    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string="Jurisdiction")
+    x_mkt_user_id = fields.Many2one('res.users', string="Sales staff")
     x_po_type = fields.Selection(related='purchase_id.x_po_type', string="Purchase type", index=True)
     # TODO
     # x_so_type = ields.Selection(related='sale_id.x_so_type', string="Sales type" )

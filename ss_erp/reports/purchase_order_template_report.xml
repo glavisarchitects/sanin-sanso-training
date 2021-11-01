@@ -15,14 +15,14 @@
                 </t>
 
                 <div class="row">
-                    <div class="col-8">
+                    <div class="col-9">
                         <t t-if="o.picking_type_id and o.picking_type_id.default_location_dest_id">
                             <div><b>Delivery destination:</b> <span
                                     t-esc="o.picking_type_id.display_name"/></div>
                             <div>* For direct delivery, refer to the direct delivery destination information at the bottom.</div>
                         </t>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
                         <table style="border-style:hidden">
                             <tr>
                                 <td><b>Purchasing Person</b></td>
@@ -111,7 +111,7 @@
                         </table>
                     </div>
                 </div>
-
+                <br/>
                 <div class="row">
                     <div class="col-6">
                         <b>Direct shipping information</b>
@@ -133,7 +133,7 @@
 
                 <t t-if="o.x_is_construction">
                     <b><span>Construction information</span></b>
-                    <div class="row" style="border-bottom: 1px solid black;border-top: 1px solid black;">
+                    <div class="row" style="border-bottom-style:hidden;border-top: 1px solid black;font-size: 13px;">
                         <div class="col-4">
                             <table style="border-style:hidden">
                                 <tr>

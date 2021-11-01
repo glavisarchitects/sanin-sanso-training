@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_employee_view_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.view.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_ids']" position="after">
+                <group>
+                    <field name="employee_number" />
+                    <field name="company_id" string="Company Name"/>
+                </group>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <group string="First organization (main manager)">
+                    <group>
+                        <field name="organization_first" string="Organization"/>
+                    </group>
+                    <group>
+                        <field name="department_jurisdiction_first" widget="many2many_tags" string="Jurisdiction"/>
+                    </group>
+                </group>
+                <group string="Second organization (concurrent post)">
+                    <group>
+                        <field name="organization_second" string="Organization"/>
+                    </group>
+                    <group>
+                        <field name="department_jurisdiction_second" widget="many2many_tags" string="Jurisdiction"/>
+                    </group>
+                </group>
+                <group string="Third organization (concurrent post)">
+                    <group>
+                        <field name="organization_third" string="Organization"/>
+                    </group>
+                    <group>
+                        <field name="department_jurisdiction_third" widget="many2many_tags" string="Jurisdiction"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

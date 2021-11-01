@@ -6,19 +6,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-25 02:59+0000\n"
-"PO-Revision-Date: 2021-10-25 02:59+0000\n"
+"POT-Creation-Date: 2021-10-29 06:59+0000\n"
+"PO-Revision-Date: 2021-10-29 16:04+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #. module: ss_erp
 #: model:ir.module.category,description:ss_erp.group_company
-#: model:res.groups,comment:ss_erp.group_account_head
-#: model:res.groups,comment:ss_erp.group_sale_head
+#: model:res.groups,comment:ss_erp.group_account_head model:res.groups,comment:ss_erp.group_sale_head
 msgid ""
 "\n"
 "                This group can access all records\n"
@@ -29,7 +30,8 @@ msgstr ""
 #: model:res.groups,comment:ss_erp.group_branch_manager
 msgid ""
 "\n"
-"                This group can access all records belong to his branch and descendant, can read all records of his\n"
+"                This group can access all records belong to his branch and descendant, can read all records "
+"of his\n"
 "                company.\n"
 "            "
 msgstr ""
@@ -66,20 +68,22 @@ msgstr "'見積依頼書 - %s' % (object.name)"
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchaseorder_document
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchasequotation_document
-msgid ""
-"* For direct delivery, refer to the direct delivery destination information "
-"at the bottom."
+msgid "* For direct delivery, refer to the direct delivery destination information at the bottom."
 msgstr "※直送は下部の直送先情報参照"
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_stock_picking__location_dest_id_usage
 msgid ""
 "* Vendor Location: Virtual location representing the source location for products coming from your vendors\n"
-"* View: Virtual location used to create a hierarchical structures for your warehouse, aggregating its child locations ; can't directly contain products\n"
+"* View: Virtual location used to create a hierarchical structures for your warehouse, aggregating its child "
+"locations ; can't directly contain products\n"
 "* Internal Location: Physical locations inside your own warehouses,\n"
-"* Customer Location: Virtual location representing the destination location for products sent to your customers\n"
-"* Inventory Loss: Virtual location serving as counterpart for inventory operations used to correct stock levels (Physical inventories)\n"
-"* Production: Virtual counterpart location for production operations: this location consumes the components and produces finished products\n"
+"* Customer Location: Virtual location representing the destination location for products sent to your "
+"customers\n"
+"* Inventory Loss: Virtual location serving as counterpart for inventory operations used to correct stock "
+"levels (Physical inventories)\n"
+"* Production: Virtual counterpart location for production operations: this location consumes the components "
+"and produces finished products\n"
 "* Transit Location: Counterpart location that should be used in inter-company or inter-warehouses operations"
 msgstr ""
 
@@ -162,7 +166,7 @@ msgstr "<b>支払条件</b>"
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchaseorder_document
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchasequotation_document
 msgid "<b>Presence or absence of supplies</b>"
-msgstr "<b>支給品の有無</b>"
+msgstr "<b>支給品有無</b>"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchaseorder_document
@@ -217,7 +221,8 @@ msgid ""
 "                        % if object.partner_ref:\n"
 "                        with reference: ${object.partner_ref}\n"
 "                        % endif\n"
-"                        amounting in <strong>${format_amount(object.amount_total, object.currency_id)}</strong>\n"
+"                        amounting in <strong>${format_amount(object.amount_total, object.currency_id)}</"
+"strong>\n"
 "                        from ${object.company_id.name}.\n"
 "                        <br/><br/>\n"
 "                        % if object.date_planned:\n"
@@ -269,22 +274,20 @@ msgstr "<span>別途設計書、施工計画書による</span>"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchasequotation_document
-msgid ""
-"<span>According to a separate design document and construction plan</span>"
+msgid "<span>According to a separate design document and construction plan</span>"
 msgstr "<span>別途設計書、施工計画書による</span>"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchaseorder_document
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchasequotation_document
 msgid "<span>According to a separate design document</span>"
-msgstr "別途設計書による"
+msgstr "<span>別途設計書による</span>"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid ""
-"<span>Construction payment conditions (deadline at the end of the month and "
-"payment at the end of the following month according to our "
-"regulations)</span>"
+"<span>Construction payment conditions (deadline at the end of the month and payment at the end of the "
+"following month according to our regulations)</span>"
 msgstr "<span>工事支払条件（当社規定による、月末締切・翌月末支払）</span>"
 
 #. module: ss_erp
@@ -361,7 +364,7 @@ msgid "Account Headquarters"
 msgstr ""
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Accounting position"
 msgstr "会計ポジション"
 
@@ -376,7 +379,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category__active
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__active
 msgid "Active"
-msgstr ""
+msgstr "有効"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__activity_ids
@@ -406,22 +409,22 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:ss_erp.organization_category_view_form
 #: model_terms:ir.ui.view,arch_db:ss_erp.organization_category_view_search
 msgid "Archived"
-msgstr ""
+msgstr "アーカイブ済"
 
 #. module: ss_erp
 #. openerp-web
 #: code:addons/ss_erp/static/src/js/view/basic/basic_controller.js:0
 #, python-format
 msgid "Are you sure you want to delete this record ?"
-msgstr ""
+msgstr "選択したレコードを削除しますか？"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.view_picking_withcarrier_out_form
 msgid "Arrival source"
-msgstr ""
+msgstr "入荷元"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Arrival type"
 msgstr "入荷タイプ"
 
@@ -463,12 +466,12 @@ msgstr "報奨金"
 #. module: ss_erp
 #: model:res.groups,name:ss_erp.group_branch_employee
 msgid "Branch Employee"
-msgstr ""
+msgstr "支店従業員"
 
 #. module: ss_erp
 #: model:res.groups,name:ss_erp.group_branch_manager
 msgid "Branch Manager"
-msgstr ""
+msgstr "支店マネージャー"
 
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__purchase_order__x_desired_delivery__separated
@@ -544,7 +547,7 @@ msgstr "会社"
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__complete_name
 msgid "Complete Name"
-msgstr ""
+msgstr "名称"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_partner_rebate_search
@@ -554,10 +557,10 @@ msgstr "期間満了"
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.partner_rebate_attachment_wizard_wizard
 msgid "Confirm"
-msgstr "発注確定"
+msgstr "確認"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Construction information"
 msgstr "工事情報"
 
@@ -570,9 +573,9 @@ msgstr "工事名称"
 #: code:addons/ss_erp/models/purchase_order.py:0
 #, python-format
 msgid ""
-"Construction payment conditions (deadline at the end of the month and "
-"payment at the end of the following month according to our regulations)"
-msgstr ""
+"Construction payment conditions (deadline at the end of the month and payment at the end of the following "
+"month according to our regulations)"
+msgstr "工事支払条件（当社規定による、月末締切・翌月末支払）"
 
 #. module: ss_erp
 #: model:ir.model,name:ss_erp.model_res_partner
@@ -620,7 +623,7 @@ msgid "Created by"
 msgstr "作成者"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Created date"
 msgstr "作成日"
 
@@ -652,15 +655,12 @@ msgstr "現説場所"
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchasequotation_document
 msgid ""
-"Dealine at the end of the month, payment at the end of the following month "
-"according to our regulations"
+"Dealine at the end of the month, payment at the end of the following month according to our regulations"
 msgstr "当社規定による、月末締切・翌月末支払"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchaseorder_document
-msgid ""
-"Dealine at the end of the payment at the end of the following month "
-"according to our regulations"
+msgid "Dealine at the end of the payment at the end of the following month according to our regulations"
 msgstr "当社規定による、月末締切・翌月末支払"
 
 #. module: ss_erp
@@ -680,7 +680,7 @@ msgstr "移動先ロケーション"
 
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__purchase_order__x_po_type__dropship
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Direct delivery"
 msgstr "直送"
 
@@ -724,7 +724,7 @@ msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_construction_subcontract
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Estimated price and estimated period for subcontracting work"
 msgstr "下請工事の予定価格と見積期間"
 
@@ -748,15 +748,15 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_partner_rebate_attachment_wizard__file
 msgid "File"
-msgstr ""
+msgstr "ファイル"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_partner_rebate_attachment_wizard__filename
 msgid "Filename"
-msgstr ""
+msgstr "ファイル名"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Fixed price"
 msgstr "定価"
 
@@ -789,7 +789,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_bis_category_view_search
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_partner_rebate_search
 msgid "Group By"
-msgstr ""
+msgstr "グループ化"
 
 #. module: ss_erp
 #: model:ir.module.category,name:ss_erp.group_company
@@ -861,9 +861,7 @@ msgstr ""
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_organization__active
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_organization_category__active
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_responsible_department__active
-msgid ""
-"If the active field is set to False, it will allow you to hide the payment "
-"terms without removing it."
+msgid "If the active field is set to False, it will allow you to hide the payment terms without removing it."
 msgstr ""
 
 #. module: ss_erp
@@ -987,12 +985,6 @@ msgid "Multiple Branches, Teams and Organizations Management"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__my_activity_date_deadline
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__my_activity_date_deadline
-msgid "My Activity Deadline"
-msgstr ""
-
-#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__name
 msgid "Name"
@@ -1020,7 +1012,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ss_erp.selection__purchase_order__x_explanation_check__no
 #: model:ir.model.fields.selection,name:ss_erp.selection__purchase_order__x_supplies_check__no
 msgid "No"
-msgstr ""
+msgstr "無"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__name
@@ -1035,7 +1027,7 @@ msgstr "通常購買"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_construction_contract_notice
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Notes on construction contract"
 msgstr "工事契約における注記事項"
 
@@ -1080,7 +1072,7 @@ msgid "Order No."
 msgstr "発注 No."
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Order confirmation date"
 msgstr "発注確定日"
 
@@ -1227,10 +1219,6 @@ msgid ""
 "                    of\n"
 "                    <span class=\"topage\"/>"
 msgstr ""
-"ページ:\n"
-"                    <span class=\"page\"/>\n"
-"                    of\n"
-"                    <span class=\"topage\"/>"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__parent_path
@@ -1260,7 +1248,7 @@ msgstr "支払条件"
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_supplies_check
 msgid "Presence or absence of supplies"
-msgstr "支給品の有無"
+msgstr "支給品有無"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_explanation_check
@@ -1371,14 +1359,14 @@ msgid "Remark"
 msgstr "備考"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 #: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_tree
 msgid "Requested delivery date"
 msgstr "要求納期"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_kpis_tree
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Response date"
 msgstr "回答期日"
 
@@ -1396,7 +1384,7 @@ msgstr "担当者"
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__rebate_standard
 msgid "Reward criteria"
-msgstr ""
+msgstr "報奨金の基準"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__message_has_sms_error
@@ -1412,17 +1400,17 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_mkt_user_id
 msgid "Sales representative"
-msgstr "営業作成者"
+msgstr "営業担当者"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_stock_picking__x_mkt_user_id
 msgid "Sales staff"
-msgstr "販売担当者"
+msgstr "営業担当"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_construction_period_end
 msgid "Scheduled construction period ends"
-msgstr "予定工期開始"
+msgstr "予定工期終了"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_construction_period_start
@@ -1430,7 +1418,7 @@ msgid "Scheduled construction period start"
 msgstr "予定工期"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "See supplier"
 msgstr "仕入先参照"
 
@@ -1445,12 +1433,12 @@ msgstr "シーケンス"
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_partner_rebate__active
 msgid "Set active to false to hide the rebate contract without removing it."
-msgstr "このアクティブ項目をFalseに設定すると、リベート契約は削除することなく非表示にすることができます。"
+msgstr ""
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.product_normal_form_view_inherit_purchase
 msgid "Setting Purchase Order"
-msgstr "購買発注設定"
+msgstr ""
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.view_picking_withcarrier_out_form
@@ -1532,22 +1520,15 @@ msgid "The goal"
 msgstr "目標"
 
 #. module: ss_erp
-#: code:addons/ss_erp/models/organization.py:0
-#: code:addons/ss_erp/models/partner_rebate.py:0
+#: code:addons/ss_erp/models/organization.py:0 code:addons/ss_erp/models/partner_rebate.py:0
 #: code:addons/ss_erp/models/responsible_department.py:0
 #, python-format
 msgid "The starting date cannot be after the ending date."
-msgstr ""
+msgstr "有効開始日は、終了日より先の日付は選択できません"
 
 #. module: ss_erp
 #: model:res.groups,comment:ss_erp.group_branch_employee
 msgid "This group can access all records belong to his branch and descendant."
-msgstr ""
-
-#. module: ss_erp
-#: code:addons/ss_erp/models/purchase_order.py:0
-#, python-format
-msgid "Total payment must be 100%%: Cash %s%% - Bills %s%%"
 msgstr ""
 
 #. module: ss_erp
@@ -1577,12 +1558,11 @@ msgid "Type of the exception activity on record."
 msgstr ""
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Unit"
 msgstr "単位"
 
 #. module: ss_erp
-#: code:addons/ss_erp/models/partner_rebate.py:0
 #: code:addons/ss_erp/models/partner_rebate.py:0
 #, python-format
 msgid "Unknown timezone {}"
@@ -1643,14 +1623,15 @@ msgstr "ベンダーは名称、TIN、メール、または内部参照で見つ
 #: code:addons/ss_erp/models/organization_category.py:0
 #, python-format
 msgid ""
-"You can not delete organization category as other records still reference "
-"it. However, you can archive it."
-msgstr "他のレコードがまだ参照しているため、組織カテゴリを削除することはできません。 ただし、アーカイブすることはできます。"
+"You can not delete organization category as other records still reference it. However, you can archive it."
+msgstr ""
+"他のレコードがまだ参照しているため、組織カテゴリを削除することはできません。 ただし、アーカイブすることはで"
+"きます。"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.organization_view_form
 msgid "ZIP"
-msgstr ""
+msgstr "郵便番号"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_construction_sopt
