@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-04 03:11+0000\n"
-"PO-Revision-Date: 2021-11-04 11:00+0700\n"
+"PO-Revision-Date: 2021-11-04 11:13+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1988,7 +1988,7 @@ msgstr "マネージャー承認"
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.approval_category_form_views_inherit
 msgid "Manager.."
-msgstr ""
+msgstr "マネージャー承認"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__image_medium
@@ -2067,7 +2067,7 @@ msgstr "最低仕入価格"
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.approval_category_form_views_inherit
 msgid "Minimun.."
-msgstr ""
+msgstr "最小限承認数"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_construction__license_flag_1
@@ -3122,7 +3122,7 @@ msgstr "管轄部門"
 #: model:ir.model.fields,field_description:ss_erp.field_sale_order__x_responsible_dept_id
 #: model:ir.model.fields,field_description:ss_erp.field_sale_order_line__x_responsible_dept_id
 msgid "Responsible Dept"
-msgstr ""
+msgstr "管轄部門"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__activity_user_id
