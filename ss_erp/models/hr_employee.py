@@ -24,23 +24,21 @@ class HrEmployee(models.Model):
         "Same employee number exists!"
     )]
 
-    # @api.constrains('organization_first', 'organization_second', 'organization_third')
-    # def _check_organization_constraint(self):
-    #     for record in self:
-    #         if record.organization_first.id != record.organization_second.id and\
-    #                 record.organization_second.id != record.organization_third.id:
-    #             return True
-    #         else:
-    #             raise ValidationError(_('The same organization is selected'))
+    # Check Organization
+    @api.constrains("organization_first", "organization_second", "organization_third")
+    def _check_same_organization(self):
+        for r in self:
+            if r.organization_second or r.organization_third:
+                if r.organization_first.id == r.organization_second.id or \
+                        r.organization_second.id == r.organization_third.id or \
+                        r.organization_third.id == r.organization_first.id:
+                    raise ValidationError(_("Same organization is selected"))
 
-    # @api.constrains('department_jurisdiction_first', 'department_jurisdiction_second', 'department_jurisdiction_third')
-    # def _check_department_jurisdiction_constraint(self):
-    #     for employee in self:
-    #         print('*************employee***********',employee)
-    #         for record in employee:
-    #             print('*************employee***********',record)
-    #             if record.department_jurisdiction_first.id != record.department_jurisdiction_second.id != \
-    #                     record.department_jurisdiction_third.id:
-    #                 return True
-    #             else:
-    #                 raise ValidationError(_('Same jurisdiction selected'))
+    # Check Jurisdiction
+    @api.constrains("department_jurisdiction_first", "department_jurisdiction_second", "department_jurisdiction_third")
+    def _check_same_jurisdiction(self):
+        for r in self:
+            if r.department_jurisdiction_first.filtered(lambda m: m.id in r.department_jurisdiction_second.ids) or \
+                    r.department_jurisdiction_second.filtered(lambda m: m.id in r.department_jurisdiction_third.ids) or \
+                    r.department_jurisdiction_third.filtered(lambda m: m.id in r.department_jurisdiction_first.ids):
+                raise ValidationError(_('Same jurisdiction selected'))

@@ -8,32 +8,32 @@
             <xpath expr="//field[@name='category_ids']" position="after">
                 <group>
                     <field name="employee_number" />
-                    <field name="company_id" string="Company Name"/>
+<!--                    <field name="company_id" string="Company Name"/>-->
                 </group>
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]" position="after">
                 <group string="First organization (main manager)">
                     <group>
-                        <field name="organization_first" string="Organization"/>
+                        <field name="organization_first" string="Organization" options="{'no_create': True, 'no_create_edit':True}"/>
                     </group>
                     <group>
-                        <field name="department_jurisdiction_first" widget="many2many_tags" string="Jurisdiction"/>
+                        <field name="department_jurisdiction_first" widget="many2many_tags" string="Jurisdiction" options="{'no_create': True, 'no_create_edit':True}"/>
                     </group>
                 </group>
                 <group string="Second organization (concurrent post)">
                     <group>
-                        <field name="organization_second" string="Organization"/>
+                        <field name="organization_second" string="Organization" options="{'no_create': True, 'no_create_edit':True}"/>
                     </group>
                     <group>
-                        <field name="department_jurisdiction_second" widget="many2many_tags" string="Jurisdiction"/>
+                        <field name="department_jurisdiction_second" widget="many2many_tags" string="Jurisdiction" options="{'no_create': True, 'no_create_edit':True}"/>
                     </group>
                 </group>
                 <group string="Third organization (concurrent post)">
                     <group>
-                        <field name="organization_third" string="Organization"/>
+                        <field name="organization_third" string="Organization" options="{'no_create': True, 'no_create_edit':True}"/>
                     </group>
                     <group>
-                        <field name="department_jurisdiction_third" widget="many2many_tags" string="Jurisdiction"/>
+                        <field name="department_jurisdiction_third" widget="many2many_tags" string="Jurisdiction" options="{'no_create': True, 'no_create_edit':True}"/>
                     </group>
                 </group>
             </xpath>

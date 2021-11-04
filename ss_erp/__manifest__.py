@@ -9,12 +9,15 @@
     "website": "https://www.systemgear-vietnam.com/",
     "author": "SGVN",
     "depends": [
-                "delivery","mail", "contacts", "purchase", "purchase_stock", "web", "account", "stock_dropshipping"
-                ],
+        "base", "delivery", "mail", "contacts", "purchase",
+        "purchase_stock", "web", "account", "stock_dropshipping", "approvals", "hr",
+        "approvals_purchase_stock",
+    ],
     "data": [
         # SECURITY
         "security/ir.model.access.csv",
         "security/x_security_groups_security.xml",
+        "data/contact_category_data.xml",
 
         # DATA
         "data/bis_category_data.xml",
@@ -22,11 +25,8 @@
 
         # REPORTS
         "reports/paperformat.xml",
-
         "reports/layout.xml",
-
         "reports/purchase_order_template_report.xml",
-        # "reports/purchase_quotation_for_construction_report.xml",
         "reports/purchase_quotation_report.xml",
         "reports/action.xml",
 
@@ -44,6 +44,14 @@
         "views/stock_picking_views.xml",
         "views/web_access_rule_buttons.xml",
         "views/webclient_templates.xml",
+        "views/res_partner_bank_views.xml",
+        "views/ss_erp_contact_category_views.xml",
+        "views/approval_category_views.xml",
+        "views/approval_request_views.xml",
+        "views/hr_employee_views.xml",
+        "views/res_partner_form_views.xml",
+        "views/ss_erp_multi_approvers_views.xml",
+        "views/sale_order_views.xml",
 
         # Wizard
         "wizards/partner_rebate_attachment_wizard_views.xml",

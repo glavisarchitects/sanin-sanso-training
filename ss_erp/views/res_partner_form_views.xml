@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="ss_erp_res_partner_form_form">
+        <field name="name">ss_erp.res.partner.form.form</field>
+        <field name="model">ss_erp.res.partner.form</field>
+        <field name="inherit_id" ref="ss_erp.res_partner_inherit_form"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <div name="button_box" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </div>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="ss_erp_res_partner_form_tree">
+        <field name="name">ss_erp.res.partner.form.tree</field>
+        <field name="model">ss_erp.res.partner.form</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" string="Name"/>
+                <field name="function" invisible="1"/>
+                <field name="phone" class="o_force_ltr" optional="show"/>
+                <field name="email" optional="show"/>
+                <field name="user_id" optional="show" widget="many2one_avatar_user" domain="[('share', '=', False)]"/>
+                <field name="city" optional="show"/>
+                <field name="state_id" optional="hide" readonly="1"/>
+                <field name="country_id" optional="show" readonly="1"/>
+                <field name="vat" optional="hide" readonly="1"/>
+                <field name="category_id" optional="hide" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                <field name="is_company" invisible="1"/>
+                <field name="parent_id" invisible="1" readonly="1"/>
+                <field name="active" invisible="1"/>
+                <field name="res_partner_id" invisible="0"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_ss_erp_res_partner_form" model="ir.actions.act_window">
+        <field name="name">Res Partner Form</field>
+        <field name="res_model">ss_erp.res.partner.form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="ss_erp_res_partner_form_menu"
+        name="Res Partner Form"
+        action="action_ss_erp_res_partner_form"
+        parent="contacts.res_partner_menu_config"
+        groups="base.group_no_one"
+        sequence="8"/>
+</odoo>

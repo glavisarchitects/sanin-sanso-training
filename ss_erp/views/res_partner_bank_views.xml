@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="res_partner_bank_inherit_form">
+        <field name="name">res.partner.bank.inherit.form</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bank_id']" position="after">
+                <field name="x_bank_branch"/>
+            </xpath>
+            <xpath expr="//field[@name='acc_holder_name']" position="after">
+                <field name="x_acc_holder_furigana"/>
+            </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="res_partner_bank_inherit_tree">
+        <field name="name">res.partner.bank.inherit.tree</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bank_name']" position="after">
+                <field name="x_bank_branch"/>
+                <field name="x_acc_holder_furigana"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

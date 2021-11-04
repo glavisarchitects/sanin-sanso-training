@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- TREE VIEW  -->
+    <record id="ss_erp_contact_category_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.contact.category.view.tree</field>
+        <field name="model">ss_erp.contact.category</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="company_type"/>
+                <field name="type"/>
+                <field name="description"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    <!-- FORM VIEW -->
+    <record id="ss_erp_contact_category_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.contact.category.view.form</field>
+        <field name="model">ss_erp.contact.category</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name" required="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_type" required="1"/>
+                            <field name="type" required="1"/>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Basic" name="categ_basic" autofocus="autofocus">
+                            <group>
+                                <group>
+                                    <field name="has_parent_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_ref" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_address" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_function" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_phone" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_mobile" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_fax" widget="radio" options="{'horizontal': true}"/>
+                                </group>
+                                <group>
+                                    <field name="has_x_fax_payment" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_contract_check" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_email" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_website" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_vat" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_title" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_category_id" widget="radio" options="{'horizontal': true}"/>                                </group>
+                            </group>
+                        </page>
+                        <page string="Business partner overview" name="categ_partner_overview">
+                            <group>
+                                <group>
+                                    <field name="has_partner_info" widget="boolean_toggle"/>
+                                    <field name="has_x_found_year" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_capital" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_performance_info" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_construction_info" widget="radio" options="{'horizontal': true}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Sale &amp; Buy" name="categ_sale_and_buy">
+                            <group>
+                                <group>
+                                    <field name="has_user_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_property_delivery_carrier_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_team_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_property_payment_term_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_property_product_pricelist" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_sales_term" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_collecting_money" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_fee_burden" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_bill_site" widget="radio" options="{'horizontal': true}"/>
+                                </group>
+                                <group>
+                                    <field name="has_x_purchase_user_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_vendor_payment_term" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_property_supplier_payment_term_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_minimum_cost" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_payment_terms" widget="boolean_toggle"/>
+                                    <field name="has_property_account_position_id" widget="radio" options="{'horizontal': true}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Total" name="categ_total">
+                            <group>
+                                <group>
+                                    <field name="has_bank_accounts" widget="radio" options="{'horizontal': true}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Internal note" name="categ_internal_note">
+                            <group>
+                                <group>
+                                    <field name="has_purchase_note" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_sales_note" widget="radio" options="{'horizontal': true}"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- SEARCH VIEW -->
+    <record id="ss_erp_contact_category_view_search" model="ir.ui.view">
+        <field name="name">ss_erp.contact.category.view.search</field>
+        <field name="model">ss_erp.contact.category</field>
+        <field name="arch" type="xml">
+            <search string="">
+                <field name="name"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="group_company_type" string="Company Type" context="{'group_by': 'company_type'}"/>
+                    <filter name="group_type" string="Address type" context="{'group_by': 'type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <!-- ACTION -->
+    <record id="ss_erp_contact_category_action" model="ir.actions.act_window">
+        <field name="name">Contact Category</field>
+        <field name="res_model">ss_erp.contact.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="ss_erp_contact_category_action_menu"
+        name="Contact Category"
+        parent="contacts.res_partner_menu_config"
+        action="ss_erp_contact_category_action"
+        sequence="4"
+    />
+</odoo>

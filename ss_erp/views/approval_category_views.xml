@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="approval_category_form_views_inherit">
+        <field name="name">approval.category.form</field>
+        <field name="model">approval.category</field>
+        <field name="inherit_id" ref="approvals.approval_category_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='has_location']" position="after">
+                <field name="has_x_organization" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_department" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_reject" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_contact_form_id" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_inventory_order_ids" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_sale_order_ids" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_account_move_ids" widget="radio" options="{'horizontal': true}"/>
+            </xpath>
+            <xpath expr="//field[@name='is_manager_approver']" position="before">
+                <field name="x_is_multiple_approval"/>
+                <label for="multi_approvers_ids" colspan="4"/>
+                <field name="multi_approvers_ids" nolabel="1" colspan="4" attrs="{'invisible': [('x_is_multiple_approval', '=', False)]}">
+                    <tree editable="bottom">
+                        <field name="x_approval_seq" />
+                        <field name="x_approver_group_ids" widget="many2many_tags"/>
+                        <field name="x_related_user_ids" widget="many2many_tags"/>
+                        <field name="x_is_manager_approver"  string="Manager.."/>
+                        <field name="x_minimum_approvers" string="Minimun.."/>
+                    </tree>
+                </field>
+                <!-- <field name="x_is_multiple_approval"/> -->
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Pre-purchase approval" name="pre_purchase">
+                    <group>
+                        <group string="Purchase pre-approval items">
+                            <field name="has_x_payment_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_purchase_material" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_cash_amount" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_cash_payment_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_prepay_amount" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_prepay_payment_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_payment_reason" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_purchase_order_ids" widget="radio" options="{'horizontal': true}"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="Petty cash replenishment" name="replenishment">
+                    <group>
+                        <group>
+                            <field name="has_x_transfer_preferred_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_present_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_cash_balance" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_bank_balance" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_transfer_date" widget="radio" options="{'horizontal': true}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

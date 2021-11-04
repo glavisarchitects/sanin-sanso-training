@@ -2,7 +2,9 @@
 <odoo>
     <template id="assets_backend" inherit_id="web.assets_backend" name="Additional alert">
         <xpath expr="link[last()]" position="after">
-            <script type="text/javascript" src="/static/src/js/views/basic/basic_controller.js"></script>
+            <script type="text/javascript" src="/ss_erp/static/src/js/view/basic/basic_controller.js"></script>
+            <script type="text/javascript" src="/ss_erp/static/src/js/form_controller.js"></script>
+            <link rel="stylesheet" type="text/scss" href="/ss_erp/static/src/scss/sgvn.scss"></link>
         </xpath>
     </template>
 </odoo>
