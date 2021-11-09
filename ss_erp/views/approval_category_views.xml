@@ -45,7 +45,7 @@
                 </page>
                 <page string="Petty cash replenishment" name="replenishment">
                     <group>
-                        <group>
+                        <group string="Small cash supply items">
                             <field name="has_x_transfer_preferred_date" widget="radio" options="{'horizontal': true}"/>
                             <field name="has_x_present_date" widget="radio" options="{'horizontal': true}"/>
                             <field name="has_x_cash_balance" widget="radio" options="{'horizontal': true}"/>

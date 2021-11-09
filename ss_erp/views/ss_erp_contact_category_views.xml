@@ -100,8 +100,8 @@
                         <page string="Internal note" name="categ_internal_note">
                             <group>
                                 <group>
-                                    <field name="has_purchase_note" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_sales_note" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_purchase_note" widget="radio" options="{'horizontal': true}"/>
                                 </group>
                             </group>
                         </page>

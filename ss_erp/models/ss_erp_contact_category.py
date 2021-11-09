@@ -4,7 +4,7 @@ from odoo import models, fields, api
 CONTACT_CATEGORY_SELECTION = [
     ('required', 'Required'),
     ('optional', 'Optional'),
-    ('no', 'None'),
+    ('no', 'No'),
 ]
 
 
@@ -70,9 +70,6 @@ class ContactCategory(models.Model):
         CONTACT_CATEGORY_SELECTION, string='Sales person', default='required')
     has_property_delivery_carrier_id = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='Shipping method', default='required')
-    has_performance_info = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Performance', default='required'
-    )
     has_team_id = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='Sales team', default='required')
     has_property_payment_term_id = fields.Selection(

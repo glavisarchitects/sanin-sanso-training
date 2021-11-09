@@ -24,3 +24,5 @@ from . import approval_category
 from . import approval_request
 from . import hr_employee
 from . import sale_order
+from . import ss_erp_account_subaccount
+from . import account_account

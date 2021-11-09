@@ -37,6 +37,8 @@
         "views/product_template_views.xml",
         "views/purchase_order_views.xml",
         "views/res_company_views.xml",
+        "views/ss_erp_partner_performance_views.xml",
+        "views/ss_erp_partner_construction_views.xml",
         "views/res_partner_views.xml",
         "views/res_users_views.xml",
         "views/responsible_department_views.xml",
@@ -52,6 +54,7 @@
         "views/res_partner_form_views.xml",
         "views/ss_erp_multi_approvers_views.xml",
         "views/sale_order_views.xml",
+        "views/ss_erp_subaccount_views.xml",
 
         # Wizard
         "wizards/partner_rebate_attachment_wizard_views.xml",

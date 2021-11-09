@@ -6,10 +6,10 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='category_id']" position="after">
-                <field name="organization_id"/>
+                <field name="organization_id" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
-                <field name="x_name_furigana"/>
+                <field name="x_name_furigana" placeholder="フリガナ"/>
                 <field name="has_parent_id" invisible="1"/>
                 <field name="has_ref" invisible="1"/>
                 <field name="has_address" invisible="1"/>
@@ -53,6 +53,13 @@
             </xpath>
             <xpath expr="//field[@name='company_type']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='ref']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//group[@name='container_row_stock']" position="attributes">
+                <attribute name="groups">base.group_user</attribute>
             </xpath>
             <xpath expr="//field[@name='company_type']" position="before">
                 <field name="x_contact_categ" widget="radio" options="{'horizontal': true, 'no_create_edit': True}" required="1"/>
@@ -231,7 +238,7 @@
                                 'invisible': [('has_performance_info', '=', 'no')],
                                 'required': [('has_performance_info', '=', 'required')]
                             }"  nolabel="1">
-                                <tree>
+                                <tree editable="bottom">
                                     <field name="accounting_period" />
                                     <field name="revenue" />
                                     <field name="ordinary_profit" />
@@ -255,7 +262,7 @@
                         'invisible': [('has_construction_info', '=', 'no')],
                         'required': [('has_construction_info', '=', 'required')]
                     }" >
-                        <tree>
+                        <tree editable="bottom">
                             <field name="license_figure" />
                             <field name="license_flag_1" />
                             <field name="license_flag_2" />
@@ -363,7 +370,7 @@
                                 'invisible': [('has_bank_accounts', '=', 'no')],
                                 'required': [('has_bank_accounts', '=', 'required')]
                             }" >
-                                <tree>
+                                <tree editable="bottom">
                                     <field name="bank_id"/>
                                     <field name="x_bank_branch"/>
                                     <field name="acc_number"/>
@@ -485,6 +492,8 @@
             </field>
         </field>
     </record>
-
+    <record model="ir.ui.view" id="purchase.view_partner_property_form">
+        <field name="active">False</field>
+    </record>
     
 </odoo>

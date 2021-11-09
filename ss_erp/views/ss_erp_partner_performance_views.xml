@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- TREE VIEW -->
+    <record id="ss_erp_partner_performance_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.partner.performance.view.tree</field>
+        <field name="model">ss_erp.partner.performance</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="accounting_period" />
+                <field name="revenue" />
+                <field name="ordinary_profit" />
+            </tree>
+        </field>
+    </record>
+    <!-- FORM VIEW -->
+    <record id="ss_erp_partner_performance_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.partner.performance.view.form</field>
+        <field name="model">ss_erp.partner.performance</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="accounting_period" />
+                            <field name="revenue" />
+                            <field name="ordinary_profit" />
+                            <field name="active" invisible="1"/>
+                            <field name="partner_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- SEARCH VIEW -->
+    <record id="ss_erp_partner_performance_view_search" model="ir.ui.view">
+        <field name="name">ss_erp.partner.performance.view.search</field>
+        <field name="model">ss_erp.partner.performance</field>
+        <field name="arch" type="xml">
+            <search string="">
+                <field name="accounting_period" />
+                <field name="revenue" />
+                <field name="ordinary_profit" />
+            </search>
+        </field>
+    </record>
+    <!-- ACTION -->
+    <record id="ss_erp_partner_performance_action" model="ir.actions.act_window">
+        <field name="name">Partner Performance</field>
+        <field name="res_model">ss_erp.partner.performance</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <!-- MENUITEM -->
+</odoo>
