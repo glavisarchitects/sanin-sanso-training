@@ -113,7 +113,6 @@
             </field> -->
             <field name="partner_ref" position="after">
                 <field name="x_bis_categ_id" options="{'no_create': True}"/>
-                <!-- <field name="x_po_type" required="1" readonly="0"/> -->
                 <field name="origin" position="move"/>
             </field>
 

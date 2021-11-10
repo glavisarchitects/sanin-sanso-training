@@ -13,7 +13,6 @@
                 <field name="x_organization_id"/>
                 <field name="user_id"/>
                 <field name="x_account_modify"/>
-                <!-- <field name="x_po_type"/> -->
             </field>
             <field name="partner_id" position="attributes">
                 <attribute name="string">Contact address</attribute>
@@ -67,10 +66,6 @@
             </field>
             <field name="move_type" position="attributes">
                 <attribute name="invisible">1</attribute>
-            </field>
-            <field name="group_id" position="after">
-                <!-- <field name="x_po_type" /> -->
-                <!-- <field name="x_so_type" /> -->
             </field>
         </field>
     </record>

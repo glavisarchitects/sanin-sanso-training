@@ -18,14 +18,6 @@ class StockPicking(models.Model):
         'ss_erp.responsible.department', string="Jurisdiction")
     x_mkt_user_id = fields.Many2one(
         'res.users', string="Sales staff")
-    # x_po_type = fields.Selection([
-    #     ('normal', 'Normal purchase'),
-    #     ('industry_lorry', 'Raleigh delivery(industrial gas)'),
-    #     ('lp_lorry', 'Raleigh delivery(LP gas)'),
-    #     ('lng_lorry', 'Raleigh delivery(LNG gas)'),
-    #     ('dropship', 'Direct delivery'),
-    # ], string="Purchase type", index=True)
-
     # TODO
     # x_so_type = fields.Selection(related='sale_id.x_so_type', string="Sales type" )
     x_import_id = fields.Char("Capture ID", copy=False)

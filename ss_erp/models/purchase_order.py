@@ -18,14 +18,6 @@ class PurchaseOrder(models.Model):
         return x_organization_id
     x_bis_categ_id = fields.Many2one(
         'ss_erp.bis.category', string="Transaction classification", copy=True, index=True)
-    # x_po_type = fields.Selection([
-    #     ('normal', 'Normal purchase'),
-    #     ('industry_lorry', 'Raleigh delivery(industrial gas)'),
-    #     ('lp_lorry', 'Raleigh delivery(LP gas)'),
-    #     ('lng_lorry', 'Raleigh delivery(LNG gas)'),
-    #     ('dropship', 'Direct delivery'),
-    # ], string="Purchase type", default='normal', index=True, copy=False)
-
     x_rfq_issue_date = fields.Date("Quotation request date")
     x_po_issue_date = fields.Date("Order sending date")
     x_desired_delivery = fields.Selection([
@@ -168,6 +160,5 @@ class PurchaseOrder(models.Model):
             'x_organization_id': self.x_organization_id and self.x_organization_id.id or False,
             'x_responsible_dept_id': self.x_responsible_dept_id and self.x_responsible_dept_id.id or False,
             'x_mkt_user_id': self.x_mkt_user_id and self.x_mkt_user_id.id or False,
-            # 'x_po_type': self.x_po_type,
         })
         return res
