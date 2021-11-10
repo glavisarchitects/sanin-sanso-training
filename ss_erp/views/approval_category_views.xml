@@ -16,7 +16,7 @@
             </xpath>
             <xpath expr="//field[@name='is_manager_approver']" position="before">
                 <field name="x_is_multiple_approval"/>
-                <label for="multi_approvers_ids" colspan="4"/>
+                <label for="multi_approvers_ids" colspan="4" attrs="{'invisible': [('x_is_multiple_approval', '=', False)]}"/>
                 <field name="multi_approvers_ids" nolabel="1" colspan="4" attrs="{'invisible': [('x_is_multiple_approval', '=', False)]}">
                     <tree editable="bottom">
                         <field name="x_approval_seq" />
@@ -26,8 +26,18 @@
                         <field name="x_minimum_approvers" string="Minimun.."/>
                     </tree>
                 </field>
-                <!-- <field name="x_is_multiple_approval"/> -->
             </xpath>
+
+            <field name="is_manager_approver" position="attributes">
+                <attribute name="attrs">{'invisible': [('x_is_multiple_approval', '=', True)]}</attribute>
+            </field>
+            <field name="user_ids" position="attributes">
+                <attribute name="attrs">{'invisible': [('x_is_multiple_approval', '=', True)]}</attribute>
+            </field>
+            <field name="approval_minimum" position="attributes">
+                <attribute name="attrs">{'invisible': [('x_is_multiple_approval', '=', True)]}</attribute>
+            </field>
+
             <xpath expr="//notebook" position="inside">
                 <page string="Pre-purchase approval" name="pre_purchase">
                     <group>

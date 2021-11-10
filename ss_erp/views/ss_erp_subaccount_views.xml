@@ -29,13 +29,13 @@
 
     <!-- ACTION -->
     <record id="subaccount_model_action" model="ir.actions.act_window">
-        <field name="name">Chart of Sub Accounts</field>
+        <field name="name">補助科目表</field>
         <field name="res_model">ss_erp.account.subaccount</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <!-- ACCOUNT ACCOUNT FORM  -->
-    <record id="view_account_form" model="ir.ui.view">
+    <record id="ss_erp_view_account_form" model="ir.ui.view">
         <field name="name">account.account.form</field>
         <field name="model">account.account</field>
         <field name="inherit_id" ref="account.view_account_form"/>
@@ -47,7 +47,7 @@
     </record>
     <menuitem
             id="ss_erp_subaccount_menu"
-            name="Sub Accounts"
+            name="補助科目表"
             action="subaccount_model_action"
             parent="account.menu_account_config"
             />

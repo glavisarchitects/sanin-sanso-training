@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class MultiApprovers(models.Model):
@@ -37,7 +40,6 @@ class MultiApprovers(models.Model):
     ], string='status', default='new', readonly=True, store=True, copy=True)
     x_minimum_approvers = fields.Integer('Minimum number of approved people')
     # flag indicating current level of request
-    is_current = fields.Boolean("Current", default=False, store=True, copy=True, readonly=True)
 
     @api.constrains("x_approver_group_ids", "x_minimum_approvers")
     def _check_approver_group_minimum_approvers(self):
@@ -49,13 +51,13 @@ class MultiApprovers(models.Model):
 
     def write(self, values):
         res = super(MultiApprovers, self).write(values)
-        if 'x_existing_request_user_ids' in values and values.get('x_existing_request_user_ids')[0][0] == 4:
+
+        if 'x_existing_request_user_ids' in values and values.get('x_existing_request_user_ids')[0][0] in [4, 6]:
             for record in self:
                 num_approved = len(record.x_existing_request_user_ids)
                 minimal_approver = record.x_minimum_approvers
                 if num_approved == 1:
                     record.write({'x_user_status': 'pending'})
                 if num_approved >= minimal_approver:
-                    record.x_request_id._pass_multi_approvers()
                     record.write({'x_user_status': 'approved'})
         return res

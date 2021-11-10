@@ -29,7 +29,6 @@
             </field>
             <field name="user_id" position="attributes">
                 <attribute name="string">Purchasing person</attribute>
-                <attribute name="required">True</attribute>
             </field>
             <field name="partner_id" position="attributes">
                 <attribute name="string">Supplier</attribute>
@@ -52,7 +51,7 @@
                 <attribute name="string">Slip No.</attribute>
             </field>
             <field name="name" position="after">
-                <field name="x_bis_categ_id" required="1"/>
+                <field name="x_bis_categ_id"/>
                 <field name="x_responsible_dept_id"/>
             </field>
             <field name="date_approve" position="attributes">
@@ -62,8 +61,10 @@
                 <field name="x_organization_id"/>
             </field>
             <field name="date_planned" position="attributes">
-                <attribute name="string">Requested delivery date</attribute>
-                <attribute name="optional">show</attribute>
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="user_id" position="after">
+                <field name="date_planned" invisible="context.get('quotation_only', False)" optional="show" string="Requested delivery date"/>
             </field>
             <field name="activity_ids" position="attributes">
                 <attribute name="optional">hide</attribute>
@@ -89,13 +90,20 @@
 
 
     <!-- Form view for Quotation -->
-    <record id="ss_erp_purchase_order_view_form_inherit" model="ir.ui.view">
+    <record id="purchase_order_view_form_inherit" model="ir.ui.view">
         <field name="name">purchase.order.form.inherit</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="inherit_id" ref="purchase_stock.purchase_order_view_form_inherit"/>
         <field name="arch" type="xml">
             <field name="partner_id" position="attributes">
                 <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="domain">[
+                    '|',('company_id', '=', False),
+                    ('company_id', '=', company_id),
+                    ('x_branch_name', '=', False),
+                    '|',('x_partner_categ', 'in', ['vendor', 'multi']),
+                    ('organization_id', '=', x_organization_id),
+                    ]</attribute>
             </field>
             <field name="partner_ref" position="attributes">
                 <attribute name="string">See supplier</attribute>
@@ -104,8 +112,8 @@
                 <attribute name="attrs"></attribute>
             </field> -->
             <field name="partner_ref" position="after">
-                <field name="x_bis_categ_id" required="1" options="{'no_create': True}"/>
-                <field name="x_po_type" required="1" readonly="0"/>
+                <field name="x_bis_categ_id" options="{'no_create': True}"/>
+                <!-- <field name="x_po_type" required="1" readonly="0"/> -->
                 <field name="origin" position="move"/>
             </field>
 
@@ -165,7 +173,6 @@
             </field>
             <field name="user_id" position="attributes">
                 <attribute name="domain">[('share', '=', False),('partner_id.organization_id', '=', x_organization_id)]</attribute>
-                <attribute name="required">1</attribute>
             </field>
             <field name="fiscal_position_id" position="after">
                 <field name="x_organization_id" options="{'no_create': True}" required="1" readonly="0"/>
@@ -181,22 +188,22 @@
                         <group name="construction_info">
                             <field name="x_construction_name"/>
                             <field name="x_construction_sopt"/>
-                            <label for="x_construction_period_start"/>
+                            <label for="x_construction_period_start" string="Scheduled construction period"/>
                             <div name="construction_period_div" class="o_row">
                                 <field name="x_construction_period_start"/>
                                 <h2> ~ </h2>
                                 <field name="x_construction_period_end"/>
                             </div>
                             <field name="x_supplies_check" widget="radio" options="{'horizontal': true}"/> 
-                            <field name="x_supplies_info" attrs="{'invisible': [('x_supplies_check', '=', 'no')]}"/>
+                            <field name="x_supplies_info" /> 
                             
                             
                         </group>
                         <group>
                             <field name="x_explanation_check" widget="radio" options="{'horizontal': true}"/>
-                            <field name="x_explanation_date" attrs="{'invisible': [('x_explanation_check', '=', 'no')]}"/>
-                            <field name="x_explanation_spot" attrs="{'invisible': [('x_explanation_check', '=', 'no')]}"/>
-                            <field name="x_construction_other" attrs="{'invisible': [('x_explanation_check', '=', 'no')]}"/>
+                            <field name="x_explanation_date"/>
+                            <field name="x_explanation_spot"/>
+                            <field name="x_construction_other"/>    
                             
                         </group>
                     </group>
@@ -220,11 +227,14 @@
                         </group>
                     </group>
                     <group>
-                        <group name="group_contract" string="Notes on construction contract">
-                            <field name="x_construction_contract_notice" nolabel="1" readonly="1"/>
+                        <group name="group_contract">
+                            <separator string="Notes on construction contract" colspan="4" style="font-size:1.2rem"/>
+                            <field name="x_construction_contract_notice" nolabel="1"/>
+
                         </group>
-                        <group name="group_subcontract" string="Estimated price and estimated period for subcontracting work">
-                            <field name="x_construction_subcontract" nolabel="1" readonly="1"/>
+                        <group name="group_subcontract">
+                            <separator string="Estimated price and estimated period for subcontracting work" colspan="4" style="font-size:1.2rem"/>
+                            <field name="x_construction_subcontract" nolabel="1"/>
                         </group>
                     </group>
                 </page>

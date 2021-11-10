@@ -13,13 +13,22 @@
                 <field name="x_organization_id"/>
                 <field name="user_id"/>
                 <field name="x_account_modify"/>
-                <field name="x_po_type"/>
+                <!-- <field name="x_po_type"/> -->
             </field>
             <field name="partner_id" position="attributes">
                 <attribute name="string">Contact address</attribute>
             </field>
             <field name="origin" position="attributes">
                 <attribute name="string">Reference source</attribute>
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="location_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="location_dest_id" position="attributes">
+                <attribute name="invisible">1</attribute>
             </field>
         </field>
     </record>
@@ -49,18 +58,18 @@
             </field>
             <group name="carrier_data" position="inside">
                 <field name="location_dest_id_usage" invisible="1"/>
-                <field name="x_dest_address_info" readonly="1" attrs="{'invisible': [('location_dest_id_usage', '!=', 'customer')]}"/>
+                <!-- <field name="x_dest_address_info" attrs="{'invisible': [('location_dest_id_usage', '!=', 'customer')]}"/> -->
             </group>
             <field name="group_id" position="before">
-                <field name="x_organization_id" readonly="1"/>
-                <field name="x_responsible_dept_id" readonly="1"/>
-                <field name="x_mkt_user_id" readonly="1"/>
+                <field name="x_organization_id" />
+                <field name="x_responsible_dept_id" />
+                <field name="x_mkt_user_id" />
             </field>
             <field name="move_type" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
             <field name="group_id" position="after">
-                <field name="x_po_type" />
+                <!-- <field name="x_po_type" /> -->
                 <!-- <field name="x_so_type" /> -->
             </field>
         </field>

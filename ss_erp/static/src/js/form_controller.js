@@ -1,7 +1,7 @@
 /* Copyright 2016 Camptocamp SA
  * License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). */
 
- odoo.define("ss_erp_base.main", function (require) {
+ odoo.define("ss_erp.hide_edit_btn_with_rule", function (require) {
     "use strict";
     var FormController = require("web.FormController");
     FormController.include({
@@ -23,15 +23,15 @@
         show_hide_edit_button: function (access) {
             if (this.$buttons) {
                 var button = this.$buttons.find(".o_form_button_edit");
-                if (button) {
-                    // button.prop("disabled", !access);
-                    if (!access){
-                        button.addClass('o_hidden');
-                    }
-                    else {
-                        button.removeClass('o_hidden')
-                    }
-                }
+                // if (button) {
+                //     // button.prop("disabled", !access);
+                //     if (!access){
+                //         button.addClass('o_hidden');
+                //     }
+                //     else {
+                //         button.removeClass('o_hidden')
+                //     }
+                // }
             }
         },
     });
