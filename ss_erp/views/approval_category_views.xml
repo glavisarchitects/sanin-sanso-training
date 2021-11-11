@@ -17,7 +17,7 @@
             <xpath expr="//field[@name='is_manager_approver']" position="before">
                 <field name="x_is_multiple_approval"/>
                 <label for="multi_approvers_ids" colspan="4" attrs="{'invisible': [('x_is_multiple_approval', '=', False)]}"/>
-                <field name="multi_approvers_ids" nolabel="1" colspan="4" attrs="{'invisible': [('x_is_multiple_approval', '=', False)]}">
+                <field name="multi_approvers_ids" widget="one2many"  nolabel="1" colspan="4" attrs="{'invisible': [('x_is_multiple_approval', '=', False)]}">
                     <tree editable="bottom">
                         <field name="x_approval_seq" />
                         <field name="x_approver_group_ids" widget="many2many_tags"/>

@@ -95,5 +95,45 @@
             <field name="lang">${object.partner_id.lang}</field>
             <field name="auto_delete" eval="True"/>
         </record>
+        <template id="message_multi_approver_assigned">
+            <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                <!-- ・ Applicant's name, application department -->
+                 <!-- Approver, approval date -->
+                 <!-- ・ Rejection date -->
+                 <!-- ・ Reason for rejection -->
+                 <!-- ・ Contact code, contact name --> <!-- complete -->
+                <!-- ・ Voucher link -->
+                <!-- ・Explanation (if there is a description) --><!-- only new -->
+                <div t-if="request">
+                    <t t-if="request.request_owner_id">Applicant's name: <span t-field="request.request_owner_id.name"/></t>
+                    <t t-if="request.x_department_id">, Application department: <span t-field="request.x_department_id.name"/></t>
+                </div>
+                <div t-if="approver">
+                    <t t-if="approver">Approver: <span t-field="approver.name"/></t>
+                    <t t-if="approver">, Approval date: <span t-esc="approver_date"/></t>
+                </div>
+                <div t-if="partner">
+                    <t t-if="partner">Contact code: <span t-field="partner.ref"/></t>
+                    <t t-if="partner">, Contact name: <span t-field="partner.name"/></t>
+                </div>
+                <div t-if="request.request_status == 'refused'">
+                    <t t-if="reject_date">Rejection date: <span t-esc="reject_date"/></t>
+                </div>
+                <div t-if="request.request_status == 'refused'">
+                    Reason for rejection: <span t-field="request.x_reject"/>
+                </div>
+                <p style="margin: 16px 0px 16px 0px;">
+                    <a t-att-href="access_link" t-att-data-oe-model="request._name" t-att-data-oe-id="request.id"
+                        style="background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;">
+                        View <t t-esc="model_description or 'document'"/>
+                    </a>
+                </p>
+
+                <t t-if="request.reason and request.request_status == 'pending' ">
+                    Explanation :
+                    <div style="margin-top: 8px;" t-field="request.reason"/>
+                </t>
+            </div>
+    </template>
     </data>
 </odoo>
