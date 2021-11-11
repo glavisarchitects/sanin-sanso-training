@@ -299,7 +299,7 @@ msgid "<span>According to a separate design document</span>"
 msgstr "<span>別途設計書による</span>"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid ""
 "<span>Construction payment conditions (deadline at the end of the month and payment at the end of the "
 "following month according to our regulations)</span>"
@@ -436,7 +436,7 @@ msgstr "勘定科目設定"
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__has_property_account_position_id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__has_property_account_position_id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__has_property_account_position_id
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Accounting position"
 msgstr "会計ポジション"
 
@@ -623,7 +623,7 @@ msgid "Arrival source"
 msgstr "入荷元"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Arrival type"
 msgstr "入荷タイプ"
 
@@ -1004,7 +1004,7 @@ msgid "Construction"
 msgstr "建設業許可"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Construction information"
 msgstr "工事情報"
 
@@ -1146,7 +1146,7 @@ msgstr "作成者"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers__x_create_date
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Created date"
 msgstr "作成日"
 
@@ -1323,7 +1323,7 @@ msgid "Destination Location Type"
 msgstr "移動先ロケーション"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Direct delivery"
 msgstr "直送"
 
@@ -1408,7 +1408,7 @@ msgstr "有効"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_construction_subcontract
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Estimated price and estimated period for subcontracting work"
 msgstr "下請工事の予定価格と見積期間"
 
@@ -1509,7 +1509,7 @@ msgid "Fiscal year"
 msgstr "決算期"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Fixed price"
 msgstr "定価"
 
@@ -2303,7 +2303,7 @@ msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_construction_contract_notice
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Notes on construction contract"
 msgstr "工事契約における注記事項"
 
@@ -2465,7 +2465,7 @@ msgid "Order No."
 msgstr "発注 No."
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Order confirmation date"
 msgstr "発注確定日"
 
@@ -3111,7 +3111,7 @@ msgid "Request"
 msgstr ""
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 #: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_tree
 msgid "Requested delivery date"
 msgstr "要求納期"
@@ -3184,7 +3184,7 @@ msgstr ""
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_kpis_tree
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Response date"
 msgstr "回答期日"
 
@@ -3326,9 +3326,9 @@ msgid "Sanitized Number"
 msgstr ""
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Scheduled construction period"
-msgstr ""
+msgstr "予定工期"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__x_construction_period_end
@@ -3346,7 +3346,7 @@ msgid "Second organization (concurrent post)"
 msgstr "第二組織（兼務）"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "See supplier"
 msgstr "仕入先参照"
 
@@ -3870,7 +3870,7 @@ msgid "Unapproved"
 msgstr "未承認"
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_view_form_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid "Unit"
 msgstr ""
 
