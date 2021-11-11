@@ -50,6 +50,7 @@
         "views/res_partner_bank_views.xml",
         "views/ss_erp_contact_category_views.xml",
         "views/approval_category_views.xml",
+        "views/approval_lost_views.xml",
         "views/approval_request_views.xml",
         "views/hr_employee_views.xml",
         "views/res_partner_form_views.xml",

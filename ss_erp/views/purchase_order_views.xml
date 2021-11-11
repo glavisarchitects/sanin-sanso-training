@@ -90,7 +90,7 @@
 
 
     <!-- Form view for Quotation -->
-    <record id="ss_erp_purchase_order_view_form_inherit" model="ir.ui.view">
+    <record id="purchase_order_view_form_inherit" model="ir.ui.view">
         <field name="name">purchase.order.form.inherit</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase_stock.purchase_order_view_form_inherit"/>

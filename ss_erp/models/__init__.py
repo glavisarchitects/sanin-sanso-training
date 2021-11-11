@@ -21,6 +21,7 @@ from . import res_partner_bank
 from . import ss_erp_multi_approvers
 from . import res_partner_form
 from . import approval_category
+from . import approval_lost
 from . import approval_request
 from . import hr_employee
 from . import sale_order

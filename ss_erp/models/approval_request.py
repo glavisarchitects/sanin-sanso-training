@@ -84,15 +84,51 @@ class ApprovalRequest(models.Model):
 
     hide_btn_cancel = fields.Boolean(compute='_compute_hide_btn_cancel')
     show_btn_temporary_approve = fields.Boolean(compute='_compute_show_btn_temporary_approve')
+    show_btn_approve = fields.Boolean(compute='_compute_show_btn_approve')
+    show_btn_draft = fields.Boolean(compute='_compute_show_btn_draft')
+    show_btn_refuse = fields.Boolean(compute='_compute_show_btn_refuse')
+
+    def _compute_show_btn_draft(self):
+        for request in self:
+            request.show_btn_draft = True if request.request_owner_id == self.env.user and request.request_status in ['refused','cancel'] else False
 
     def _compute_hide_btn_cancel(self):
         for request in self:
-            request.hide_btn_cancel = False if request.request_owner_id == self.env.user else True
+            request.hide_btn_cancel = False if request.request_owner_id == self.env.user and request.request_status =='pending' else True
 
     def _compute_show_btn_temporary_approve(self):
         for request in self:
             index_user = request._get_index_user_multi_approvers()
-            request.show_btn_temporary_approve = True if index_user and index_user > 0 and request.user_status and request.user_status == 'pending' else False
+            request.show_btn_temporary_approve = True if index_user and index_user > 0 and \
+                request.user_status and request.user_status == 'pending' and \
+                request.multi_approvers_ids[index_user - 1].x_user_status != 'approved' and request.request_status =='pending' \
+                else False
+
+    def _compute_show_btn_refuse(self):
+        for request in self:
+            request.show_btn_refuse = False
+            if request.request_status == 'pending':
+                index = 0
+                while index < len(self.multi_approvers_ids):
+                    if self.multi_approvers_ids[index].x_user_status in ['new', 'pending']:
+                        if self.env.user in self.multi_approvers_ids[index].x_approver_group_ids:
+                            # if user == self.env.user and self.multi_approvers_ids[index].x_approver_group_ids.x_status == 'new':
+                            current_user_status = self.env['approval.approver'].search([('request_id','=',request.id),('user_id','=',self.env.user.id)], limit = 1)
+                            if current_user_status and current_user_status.status in ['new','pending']:
+                                request.show_btn_refuse = True
+                                break
+                    index+=1
+
+
+    def _compute_show_btn_approve(self):
+        for request in self:
+            # ('user_status','!=','pending')
+            index_user = request._get_index_user_multi_approvers()
+            if request.user_status == 'pending' and (not index_user or (index_user > 0 and
+                         request.multi_approvers_ids[index_user - 1].x_user_status == 'approved')):
+                request.show_btn_approve = True
+            else:
+                request.show_btn_approve = False
 
     @api.onchange('category_id', 'request_owner_id')
     def _onchange_category_id(self):
@@ -189,7 +225,7 @@ class ApprovalRequest(models.Model):
         if curren_multi_approvers:
             curren_multi_approvers.write({'x_user_status': 'refused'})
 
-    def action_refuse(self, approver=None):
+    def action_refuse(self, approver=None, lost_reason = None):
         if self.x_is_multiple_approval:
             if not self._check_user_access_request():
                 raise UserError(_("We cannot refuse this request."))
@@ -197,18 +233,8 @@ class ApprovalRequest(models.Model):
         if self.x_is_multiple_approval:
             self._refuse_multi_approvers()
 
-    # def _withdraw_multi_approvers(self, user):
-    #     curren_multi_approvers = self.multi_approvers_ids.filtered(lambda p: p.is_current)
-    #     if curren_multi_approvers:
-    #         if user in curren_multi_approvers[0].x_existing_request_user_ids:
-    #             curren_multi_approvers[0].write({'x_existing_request_user_ids': [(3, user.id)]})
-    #         if curren_multi_approvers[0].x_user_status == 'refused':
-    #             curren_multi_approvers[0].write({'x_user_status': 'pending'})
+        # TODO Notify applicant
 
-    # def action_withdraw(self, approver=None):
-    #     super(ApprovalRequest, self).action_withdraw(approver=approver)
-    #     if self.x_is_multiple_approval:
-    #         self._withdraw_multi_approvers(self.env.user)
 
     def action_draft(self):
         if self.request_owner_id != self.env.user:

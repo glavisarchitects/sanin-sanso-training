@@ -183,9 +183,11 @@
                                                 <div>
                                                     <span t-field="o.x_explanation_check"/>
                                                     <span style="margin-left:6px" t-esc="o.x_explanation_date and o.x_explanation_date.strftime('%Y年%m月%d日') or ''"/>
-                                                    <span style="margin-left:6px" t-field="o.x_explanation_spot"/>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div>
+                                            <span t-field="o.x_explanation_spot"/>
                                         </div>
                                     </td>
                                 </tr>

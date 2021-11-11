@@ -12,15 +12,30 @@
             <xpath expr="//form" position="attributes">
                 <attribute name="qth_edit">request_status == 'new'</attribute>
             </xpath>
-            <button name="action_cancel" position="before">
+            <button name="action_approve" position="before">
                 <field name="hide_btn_cancel" invisible="1"/>
                 <field name="show_btn_temporary_approve" invisible="1"/>
+                <field name="show_btn_approve" invisible="1"/>
                 <button name="action_temporary_approve" string="Temporary Approve" type="object" attrs="{'invisible':[('show_btn_temporary_approve', '=', False)]}"/>
+                <button name="%(ss_erp.ss_erp_approval_lost_action)d" string="Refuse"
+                            type="action" context="{'default_approval_request': active_id}" attrs="{'invisible':[('show_btn_refuse','=',False)]}"/>
             </button>
+<!--            <button name="action_cancel" position="attributes">-->
+<!--                <attribute name="attrs">{'invisible':['|','|',('hide_btn_cancel', '=', True),('request_status','in',['approved','cancel']),'&amp;',('user_status','==',False),('has_access_to_request','==',False)]}</attribute>-->
+<!--            </button>-->
             <button name="action_cancel" position="attributes">
-                <attribute name="attrs">{'invisible':['|','|',('hide_btn_cancel', '=', True),('request_status','in',['cancel']),'&amp;',('user_status','==',False),('has_access_to_request','==',False)]}</attribute>
+                <attribute name="attrs">{'invisible':['|','|',('hide_btn_cancel', '=', True),('request_status','in',['approved','cancel']),'&amp;',('user_status','==',False),('has_access_to_request','==',False)]}</attribute>
+            </button>
+            <button name="action_refuse" position="attributes">
+                <attribute name="attrs">{'invisible':1}</attribute>
+            </button>
+            <button name="action_approve" position="attributes">
+                <attribute name="attrs">{'invisible':[('show_btn_approve', '=', False)]}</attribute>
             </button>
 
+            <button name="action_draft" position="attributes">
+                <attribute name="attrs">{'invisible':[('show_btn_draft','=',False)]}</attribute>
+            </button>
 
             <field name="request_owner_id" position="attributes">
                 <attribute name="string">Applicant</attribute>
@@ -71,6 +86,8 @@
                 <field name="has_x_cash_balance" invisible="1"/>
                 <field name="has_x_bank_balance" invisible="1"/>
                 <field name="has_x_transfer_date" invisible="1"/>
+                <field name="show_btn_draft" invisible="1"/>
+                <field name="show_btn_refuse" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='category_id']" position="after">
                 <field name="x_purchase_material" attrs="{
@@ -144,8 +161,9 @@
                     'required': [('has_x_account_move_ids', '=', 'required')],
                 }"/>
                 <field name="x_reject" attrs="{
-                    'invisible': [('has_x_reject', '=', 'no')],
+                    'invisible': [('has_x_reject', '=', 'no'),],
                     'required': [('has_x_reject', '=', 'required')],
+                    'readonly':1,
                 }"/>
             </xpath>
             <xpath expr="//notebook" position="inside">

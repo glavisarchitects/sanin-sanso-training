@@ -41,7 +41,7 @@ class MultiApprovers(models.Model):
     x_minimum_approvers = fields.Integer('Minimum number of approved people')
     # flag indicating current level of request
 
-    @api.constrains("x_approver_group_ids", "x_minimum_approvers")
+    @api.constrains("x_approver_group_ids", "x_minimum_approvers", "x_is_manager_approver")
     def _check_approver_group_minimum_approvers(self):
         for record in self:
             have_manager = 1 if record.x_is_manager_approver else 0

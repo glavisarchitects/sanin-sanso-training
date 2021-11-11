@@ -234,31 +234,31 @@
                             }"/>
                         </group>
                         <group string="Performance information" >
-                            <field name="performance_ids" attrs="{
+                            <field name="performance_ids" widget="one2many" attrs="{
                                 'invisible': [('has_performance_info', '=', 'no')],
                                 'required': [('has_performance_info', '=', 'required')]
                             }"  nolabel="1">
-                                <tree editable="bottom">
+                                <tree editable="top">
                                     <field name="accounting_period" />
                                     <field name="revenue" />
                                     <field name="ordinary_profit" />
                                 </tree>
-                                <form>
-                                    <group>
-                                        <group>
-                                            <field name="accounting_period" />
-                                            <field name="revenue" />
-                                            <field name="ordinary_profit" />
-                                            <field name="active" invisible="1"/>
-                                            <field name="partner_id" invisible="1"/>
-                                        </group>
-                                    </group>
-                                </form>
+<!--                                <form>-->
+<!--                                    <group>-->
+<!--                                        <group>-->
+<!--                                            <field name="accounting_period" />-->
+<!--                                            <field name="revenue" />-->
+<!--                                            <field name="ordinary_profit" />-->
+<!--                                            <field name="active" invisible="1"/>-->
+<!--                                            <field name="partner_id" invisible="1"/>-->
+<!--                                        </group>-->
+<!--                                    </group>-->
+<!--                                </form>-->
                             </field>
                         </group>
                     </group>
                     <separator string="Construction permit"/>
-                    <field name="construction_ids" attrs="{
+                    <field name="construction_ids" widget="one2many" attrs="{
                         'invisible': [('has_construction_info', '=', 'no')],
                         'required': [('has_construction_info', '=', 'required')]
                     }" >
@@ -269,20 +269,20 @@
                             <field name="license_number" />
                             <field name="license_period" />
                         </tree>
-                        <form>
-                            <group>
-                                <group>
-                                    <field name="license_figure" />
-                                    <field name="license_flag_1" />
-                                    <field name="license_flag_2" />
-                                    <field name="license_number" />
-                                    <field name="license_period" />
-                                    <field name="active" invisible="1"/>
-                                    <field name="partner_id" invisible="1"/>
-                                </group>
-                            </group>
-                            
-                        </form>
+<!--                        <form>-->
+<!--                            <group>-->
+<!--                                <group>-->
+<!--                                    <field name="license_figure" />-->
+<!--                                    <field name="license_flag_1" />-->
+<!--                                    <field name="license_flag_2" />-->
+<!--                                    <field name="license_number" />-->
+<!--                                    <field name="license_period" />-->
+<!--                                    <field name="active" invisible="1"/>-->
+<!--                                    <field name="partner_id" invisible="1"/>-->
+<!--                                </group>-->
+<!--                            </group>-->
+<!--                            -->
+<!--                        </form>-->
                     </field>
                 </page>
             </xpath>
@@ -366,7 +366,7 @@
             <xpath expr="//page[@name='accounting']" position="replace">
                 <page string="Invoicing" name="accounting" attrs="{'invisible': [('is_company','=',False),('parent_id','!=',False)]}" modifiers="{'invisible':[['is_company','=',false],['parent_id','!=',false]]}">
                         <group string="Bank Accounts" name="banks" modifiers="{}">
-                            <field name="bank_ids" nolabel="1" attrs="{
+                            <field name="bank_ids" nolabel="1" widget="one2many" attrs="{
                                 'invisible': [('has_bank_accounts', '=', 'no')],
                                 'required': [('has_bank_accounts', '=', 'required')]
                             }" >

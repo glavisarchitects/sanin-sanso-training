@@ -134,9 +134,9 @@ class ResPartnerForm(models.Model):
             res_partner_id = vals.pop('res_partner_id')
             if not res_partner_id:
                 # Create partner with contact form
-                partner_id = self.env['res.partner'].create(vals)
+                partner_id = self.env['res.partner'].sudo().create(vals)
                 form_id.write({'res_partner_id': partner_id.id})
             else:
                 # Update partner with contact form
                 partner_id = self.env['res.partner'].browse(int(res_partner_id))
-                partner_id.write(vals)
+                partner_id.sudo().write(vals)
