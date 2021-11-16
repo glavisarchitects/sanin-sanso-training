@@ -100,7 +100,7 @@ class PartnerRebate(models.Model):
                 if record.date_start > record.date_end:
                     raise ValidationError(_("The starting date cannot be after the ending date."))
                 elif record.date_start == record.date_end:
-                    raise ValidationError(_("The starting date and the ending date are the same datetime."))
+                    raise ValidationError(_("有効開始日と有効終了日が同じ日時になっています。"))
 
 
     # TODO: prepare display name if it happens
