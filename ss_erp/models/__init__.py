@@ -27,3 +27,5 @@ from . import hr_employee
 from . import sale_order
 from . import ss_erp_account_subaccount
 from . import account_account
+from . import stock_scrap
+from . import ss_erp_partner_payment_term

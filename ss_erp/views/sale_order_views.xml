@@ -14,6 +14,10 @@
                 <attribute name="required">0</attribute>
             </xpath>
 
+            <xpath expr="//label[@for='pricelist_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='order_line']//tree//field[@name='tax_id']" position="after">
                 <field name="x_pricelist" required="1"/>
                 <field name="x_expected_delivery_date"/>
@@ -21,6 +25,20 @@
 
             <xpath expr="//field[@name='order_line']//tree//field[@name='discount']" position="after">
                 <field name="x_remarks"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']//tree//field[@name='product_id']" position="replace">
+                <field name="product_id"
+                       domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
+                       context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
+                       attrs="{
+                                'readonly': [('product_updatable', '=', False)],
+                                'required': [('display_type', '=', False)],
+                            }"
+                       options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"
+                       force_save="1"
+                       widget="many2one_barcode"
+                />
             </xpath>
         </field>
     </record>

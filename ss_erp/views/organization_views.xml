@@ -52,6 +52,7 @@
                         <group>
                             <field name="organization_phone" widget="phone"/>
                             <field name="organization_fax"/>
+                            <field name="warehouse_id"/>
                         </group>
                     </group>
                 </sheet>

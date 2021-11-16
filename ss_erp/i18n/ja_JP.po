@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-11 09:40+0000\n"
-"PO-Revision-Date: 2021-11-11 16:57+0700\n"
+"PO-Revision-Date: 2021-11-15 13:39+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3472,7 +3472,7 @@ msgstr "伝票No."
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.approval_category_form_views_inherit
 msgid "Small cash supply items"
-msgstr ""
+msgstr "小口現金補給項目"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_construction__license_flag_2

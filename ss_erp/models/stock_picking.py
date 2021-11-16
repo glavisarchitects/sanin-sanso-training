@@ -23,3 +23,30 @@ class StockPicking(models.Model):
     x_import_id = fields.Char("Capture ID", copy=False)
     location_dest_id_usage = fields.Selection(
         related='location_dest_id.usage', string='Destination Location Type', readonly=True)
+
+    x_inspection_user_id = fields.Many2one(
+        comodel_name='res.users',
+        string='良品検査担当者名',
+        required=False)
+
+    x_inspection_exist = fields.Boolean(
+        string='良品検査実施有無',
+        default=False)
+
+    has_lot_ids = fields.Boolean(
+        'Has Serial Numbers', compute='_compute_has_lot_ids')
+
+    @api.depends('move_ids_without_package', 'move_ids_without_package.lot_ids')
+    def _compute_has_lot_ids(self):
+        for record in self:
+            record.has_lot_ids = True if len(record.move_ids_without_package.mapped(
+                'lot_ids')) else False
+
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    x_partner_id = fields.Many2one(
+        comodel_name='res.partner',
+        string='連絡先名',
+        required=False)

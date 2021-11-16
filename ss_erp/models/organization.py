@@ -49,6 +49,9 @@ class Organization(models.Model):
         'Complete Name', compute='_compute_complete_name',
         store=True)
 
+    # TODO
+    warehouse_id = fields.Many2one('stock.warehouse',string='倉庫')
+
     @api.depends('name', 'parent_id.complete_name')
     def _compute_complete_name(self):
         for organization in self:

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ss_erp_stock_scrap_form_inherit" model="ir.ui.view">
+            <field name="name">ss_erp.stock.scrap.form</field>
+            <field name="model">stock.scrap</field>
+            <field name="inherit_id" ref="stock.stock_scrap_form_view"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+<!--                Source Document sheet 処理概要 - Process Flow I008-->
+<!--                TODO Add filter for x_organization_id and x_responsible_dept_id-->
+                <xpath expr="//field[@name='product_id']" position="before">
+                    <field name="x_organization_id" options="{'no_create': True, 'no_create_edit': True}" required="1"/>
+                    <field name="x_responsible_dept_id" options="{'no_create': True, 'no_create_edit': True}" required="1"/>
+                </xpath>
+                <xpath expr="//field[@name='origin']" position="after">
+<!--                    TODO Filter Source Location according to x_organization_id-->
+<!--                    TODO Change scrap location according to scrap type-->
+                    <field name="scrap_type" required="1"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="ss_erp_stock_scrap_tree_view" model="ir.ui.view">
+            <field name="name">ss_erp.stock.scrap.tree</field>
+            <field name="model">stock.scrap</field>
+            <field name="inherit_id" ref="stock.stock_scrap_tree_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="x_organization_id"/>
+                    <field name="x_responsible_dept_id"/>
+                    <field name="scrap_type"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

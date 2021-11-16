@@ -15,3 +15,4 @@ access_access_ss_erp_subaccount,access_access_ss_erp_subaccount,model_ss_erp_acc
 access_access_ss_erp_subaccount,access_access_ss_erp_subaccount,model_ss_erp_account_subaccount,,1,1,1,1
 access_ss_erp_approval_lost,access_ss_erp_approval_lost,model_ss_erp_approval_lost,,1,1,1,1
 access_res_partner_group_erp_manager,access.res.partner.group.erp.manager,base.model_res_partner,base.group_erp_manager,1,1,1,1
+access_ss_erp_partner_payment_term,access_group_all_ss_erp_partner_payment_term,model_ss_erp_partner_payment_term,,1,1,1,1

@@ -96,14 +96,12 @@ class PartnerRebate(models.Model):
         :raises ValidationError: When constraint is violated
         """
         for record in self:
-            if (
-                record.date_start
-                and record.date_end
-                and record.date_start > record.date_end
-            ):
-                raise ValidationError(
-                    _("The starting date cannot be after the ending date.")
-                )
+            if record.date_start and record.date_end:
+                if record.date_start > record.date_end:
+                    raise ValidationError(_("The starting date cannot be after the ending date."))
+                elif record.date_start == record.date_end:
+                    raise ValidationError(_("The starting date and the ending date are the same datetime."))
+
 
     # TODO: prepare display name if it happens
     # @api.model

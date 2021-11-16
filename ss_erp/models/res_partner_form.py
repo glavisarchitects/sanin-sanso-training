@@ -68,6 +68,8 @@ class ResPartnerForm(models.Model):
         'res.users', 'res_users_res_partner_form_rel', 'partner_id', 'res_users_id', copy=False)
     website_message_ids = fields.Many2many(
         'mail.message', 'web_mail_message_res_partner_form_rel', 'partner_id', 'mail_message_id', copy=False)
+    x_payment_terms_ids = fields.Many2many(
+        'ss_erp.partner.payment.term', 'payment_term_res_partner_form_rel', 'partner_id', 'payment_term_id', copy=False)
 
     # Override to fix conflict
     @api.depends('is_company', 'parent_id.commercial_partner_id')

@@ -23,7 +23,7 @@ class ResPartner(models.Model):
         ('vendor', 'Supplier'),
         ('multi', 'Customers & Supplier'),
         ('other', 'Other')],
-        string="Contact classification", 
+        string="Contact classification",
         help=_("Select Other for contacts not related to the transaction"),
         default='customer')
     type = fields.Selection(selection_add=[
@@ -174,8 +174,14 @@ class ResPartner(models.Model):
         related='x_contact_categ.has_sales_note', store=True,)
     has_purchase_note = fields.Selection(
         related='x_contact_categ.has_purchase_note', store=True,)
-    has_partner_info = fields.Boolean(related='x_contact_categ.has_partner_info', store=True)
-    has_x_payment_terms = fields.Boolean(related='x_contact_categ.has_x_payment_terms', store=True)
+    has_partner_info = fields.Boolean(
+        related='x_contact_categ.has_partner_info', store=True)
+    has_x_payment_terms = fields.Boolean(
+        related='x_contact_categ.has_x_payment_terms',
+        store=True)
+    x_payment_terms_ids = fields.One2many('ss_erp.partner.payment.term',
+        'partner_id', 
+        string='Transaction terms')
 
     @api.depends('is_company', 'x_contact_categ')
     def _compute_company_type(self):

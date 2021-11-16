@@ -40,6 +40,8 @@ class ApprovalRequest(models.Model):
     x_is_multiple_approval = fields.Boolean(related='category_id.x_is_multiple_approval')
     multi_approvers_ids = fields.One2many(
         'ss_erp.multi.approvers', 'x_request_id', string='Multi-step approval', readonly=True, copy=False)
+
+    last_approver = fields.Many2one('res.users',string = 'Last Approver')
     # FIELD RELATED
     has_x_organization = fields.Selection(
         related='category_id.has_x_organization', store=True)
@@ -107,17 +109,22 @@ class ApprovalRequest(models.Model):
     def _compute_show_btn_refuse(self):
         for request in self:
             request.show_btn_refuse = False
-            if request.request_status == 'pending':
-                index = 0
-                while index < len(self.multi_approvers_ids):
-                    if self.multi_approvers_ids[index].x_user_status in ['new', 'pending']:
-                        if self.env.user in self.multi_approvers_ids[index].x_approver_group_ids:
-                            # if user == self.env.user and self.multi_approvers_ids[index].x_approver_group_ids.x_status == 'new':
-                            current_user_status = self.env['approval.approver'].search([('request_id','=',request.id),('user_id','=',self.env.user.id)], limit = 1)
-                            if current_user_status and current_user_status.status in ['new','pending']:
-                                request.show_btn_refuse = True
-                                break
-                    index+=1
+            if request.category_id.x_is_multiple_approval:
+                if request.request_status == 'pending':
+                    index = 0
+                    while index < len(self.multi_approvers_ids):
+                        if self.multi_approvers_ids[index].x_user_status in ['new', 'pending']:
+                            if self.env.user in self.multi_approvers_ids[index].x_approver_group_ids:
+                                # if user == self.env.user and self.multi_approvers_ids[index].x_approver_group_ids.x_status == 'new':
+                                current_user_status = self.env['approval.approver'].search([('request_id','=',request.id),('user_id','=',self.env.user.id)], limit = 1)
+                                if current_user_status and current_user_status.status in ['new','pending']:
+                                    request.show_btn_refuse = True
+                                    break
+                        index+=1
+            else:
+                if request.request_status == 'pending':
+                    if self.env.user in request.category_id.user_ids:
+                        request.show_btn_refuse = True
 
 
     def _compute_show_btn_approve(self):
@@ -263,6 +270,12 @@ class ApprovalRequest(models.Model):
             curren_multi_approvers.write({'x_existing_request_user_ids': [(4, user.id)]})
             users = curren_multi_approvers.mapped('x_approver_group_ids') - self.env.user
             self.notify_approval(users=users, approver=self.env.user)
+            if curren_multi_approvers.x_user_status == 'approved':
+                next_multi_approvers = self.multi_approvers_ids.filtered(
+                    lambda p: p.x_approval_seq == curren_multi_approvers.x_approval_seq + 1)
+                if next_multi_approvers:
+                    users = next_multi_approvers.mapped('x_approver_group_ids') - self.env.user
+                    self.notify_approval(users=users, approver=self.env.user)
 
     def action_approve(self, approver=None):
         if self.x_is_multiple_approval:
@@ -290,9 +303,6 @@ class ApprovalRequest(models.Model):
         users = self.request_owner_id
         users |= self.multi_approvers_ids.mapped('x_related_user_ids')
         self.notify_approval(users=users, approver=self.env.user)
-
-        # TODO Notify applicant
-
 
     def action_draft(self):
         if self.request_owner_id != self.env.user:
@@ -386,7 +396,14 @@ class ApprovalRequest(models.Model):
                 else:
                     status = 'new'
             request.request_status = status
-            request.x_contact_form_id.write({'approval_state': request.request_status})
+            if request.x_contact_form_id:
+                request.x_contact_form_id.sudo().write({'approval_state': request.request_status})
+            if request.x_sale_order_ids:
+                for so in request.x_sale_order_ids:
+                    if status == 'approved':
+                        so.sudo().write({'approval_status': 'approved'})
+                    elif status == 'pending':
+                        so.sudo().write({'approval_status': 'in_process'})
 
             if request.request_status == 'approved':
                 users = request.multi_approvers_ids.mapped('x_related_user_ids')

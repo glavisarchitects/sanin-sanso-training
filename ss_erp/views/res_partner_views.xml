@@ -238,22 +238,22 @@
                                 'invisible': [('has_performance_info', '=', 'no')],
                                 'required': [('has_performance_info', '=', 'required')]
                             }"  nolabel="1">
-                                <tree editable="top">
+                                <tree editable="bottom">
                                     <field name="accounting_period" />
                                     <field name="revenue" />
                                     <field name="ordinary_profit" />
                                 </tree>
-<!--                                <form>-->
-<!--                                    <group>-->
-<!--                                        <group>-->
-<!--                                            <field name="accounting_period" />-->
-<!--                                            <field name="revenue" />-->
-<!--                                            <field name="ordinary_profit" />-->
-<!--                                            <field name="active" invisible="1"/>-->
-<!--                                            <field name="partner_id" invisible="1"/>-->
-<!--                                        </group>-->
-<!--                                    </group>-->
-<!--                                </form>-->
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="accounting_period" />
+                                            <field name="revenue" />
+                                            <field name="ordinary_profit" />
+                                            <field name="active" invisible="1"/>
+                                            <field name="partner_id" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
                             </field>
                         </group>
                     </group>
@@ -269,70 +269,81 @@
                             <field name="license_number" />
                             <field name="license_period" />
                         </tree>
-<!--                        <form>-->
-<!--                            <group>-->
-<!--                                <group>-->
-<!--                                    <field name="license_figure" />-->
-<!--                                    <field name="license_flag_1" />-->
-<!--                                    <field name="license_flag_2" />-->
-<!--                                    <field name="license_number" />-->
-<!--                                    <field name="license_period" />-->
-<!--                                    <field name="active" invisible="1"/>-->
-<!--                                    <field name="partner_id" invisible="1"/>-->
-<!--                                </group>-->
-<!--                            </group>-->
-<!--                            -->
-<!--                        </form>-->
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="license_figure" />
+                                    <field name="license_flag_1" />
+                                    <field name="license_flag_2" />
+                                    <field name="license_number" />
+                                    <field name="license_period" />
+                                    <field name="active" invisible="1"/>
+                                    <field name="partner_id" invisible="1"/>
+                                </group>
+                            </group>
+                            
+                        </form>
                     </field>
                 </page>
             </xpath>
             <xpath expr="//group[@name='sale']" position="inside">
-                <label for="x_more_than_amount" string="Transaction terms" attrs="{
-                    'invisible': [('has_sales_term', '=', 'no')],
-                }"/>
-                <div attrs="{
-                    'invisible': [('has_sales_term', '=', 'no')],
-                    'required': [('has_sales_term', '=', 'required')]
-                }">
-                    <div class="o_row">
-                        <field name="x_more_than_amount"/>
-                        <span>10,000 yen or more</span>
-                        <field name="x_more_than_deadline"/>
-                        <span >Day closing</span>
-                        <field name="x_more_than_payment_site"/>
-                        <span >Post-payment</span>
-                    </div>
-                    <field name="x_more_than_payment_method" />
-                    <div class="o_row">
-                        <field name="x_less_than_amount"/>
-                        <span>10,000 yen or less</span>
-                        <field name="x_less_than_deadline"/>
-                        <span >Day closing</span>
-                        <field name="x_less_than_payment_site"/>
-                        <span >Post-payment</span>
-                    </div>
-                    <field name="less_than_payment_method" />
-                </div>
-                <field name="x_collecting_money" widget="radio" options="{'horizontal': true}" attrs="{
-                    'invisible': [('has_x_collecting_money', '=', 'no')],
-                    'required': [('has_x_collecting_money', '=', 'required')]
-                }"/>
-                <field name="x_fee_burden" widget="radio" options="{'horizontal': true}" attrs="{
-                    'invisible': [('has_x_fee_burden', '=', 'no')],
-                    'required': [('has_x_fee_burden', '=', 'required')]
-                }"/>
-                <label for="x_bill_site" string="Bill site" attrs="{
-                    'required': [('has_x_bill_site', '=', 'required')]
-                }"/>
-                <div attrs="{
-                    'invisible': [('has_x_bill_site', '=', 'no')],
-                    'required': [('has_x_bill_site', '=', 'required')]
-                }">
-                    <span>Starting the closing date</span>
-                    <field name="x_bill_site"/>
-                    <span>Day</span>
-                </div>
-
+                <label for="x_payment_terms_ids" string="Transaction terms" attrs="{
+                    'invisible': [('has_x_payment_terms', '=', 'no')],
+                }" colspan="4"/>
+                <field name="x_payment_terms_ids" colspan="4" widget="one2many" nolabel="1"
+                    attrs="{
+                        'invisible': [('x_payment_terms_ids', '=', 'no')],
+                        'required': [('x_payment_terms_ids', '=', 'required')]
+                    }">
+                    <tree editable="top">
+                        <field name="more_than_amount"/>
+                        <field name="more_than_deadline"/>
+                        <field name="more_than_payment_site"/>
+                        <field name="more_than_payment_method"/>
+                        <field name="less_than_amount"/>
+                        <field name="less_than_deadline"/>
+                        <field name="less_than_payment_site"/>
+                        <field name="less_than_payment_method"/>
+                        <field name="collecting_money"/>
+                        <field name="fee_burden"/>
+                        <field name="bill_site"/>
+                    </tree>
+                    <form>
+                        <group>
+                            <group>
+                                <label for="more_than_amount" string="Transaction terms"/>
+                                <div>
+                                    <div class="o_row">
+                                        <field name="more_than_amount"/>
+                                        <span>10,000 yen or more</span>
+                                        <field name="more_than_deadline"/>
+                                        <span >Day closing</span>
+                                        <field name="more_than_payment_site"/>
+                                        <span >Post-payment</span>
+                                    </div>
+                                    <field name="more_than_payment_method" />
+                                    <div class="o_row">
+                                        <field name="less_than_amount"/>
+                                        <span>10,000 yen or less</span>
+                                        <field name="less_than_deadline"/>
+                                        <span >Day closing</span>
+                                        <field name="less_than_payment_site"/>
+                                        <span >Post-payment</span>
+                                    </div>
+                                    <field name="less_than_payment_method" />
+                                </div>
+                                <field name="collecting_money" widget="radio" options="{'horizontal': true}"/>
+                                <field name="fee_burden" widget="radio" options="{'horizontal': true}"/>
+                                <label for="bill_site" string="Bill site"/>
+                                <div>
+                                    <span>Starting the closing date</span>
+                                    <field name="bill_site"/>
+                                    <span>Day</span>
+                                </div>
+                            </group>
+                        </group>
+                    </form>
+                </field>
             </xpath>
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="before">
                 <field name="x_purchase_user_id" attrs="{
@@ -366,7 +377,7 @@
             <xpath expr="//page[@name='accounting']" position="replace">
                 <page string="Invoicing" name="accounting" attrs="{'invisible': [('is_company','=',False),('parent_id','!=',False)]}" modifiers="{'invisible':[['is_company','=',false],['parent_id','!=',false]]}">
                         <group string="Bank Accounts" name="banks" modifiers="{}">
-                            <field name="bank_ids" nolabel="1" widget="one2many" attrs="{
+                            <field name="bank_ids" widget="one2many" nolabel="1" attrs="{
                                 'invisible': [('has_bank_accounts', '=', 'no')],
                                 'required': [('has_bank_accounts', '=', 'required')]
                             }" >
