@@ -14,27 +14,27 @@ class PartnerPaymentTerm(models.Model):
     _description = 'Customer Transaction Terms'
 
     name = fields.Char(string='Name')
-    more_than_amount = fields.Float(string='Amount of 10,000 yen or more')
+    more_than_amount = fields.Float(string='万円以上金額')
     more_than_deadline = fields.Char(
-        string='Closing date of 10,000 yen or more')
+        string='万円以上の締日')
     more_than_payment_site = fields.Char(
-        string='Payment site for 10,000 yen or more')
+        string='万円以上の支払サイト')
     more_than_payment_method = fields.Selection(PAYMENT_METHOD,
-        string='Payment method of 10,000 yen or more', default='transfer')
-    less_than_amount = fields.Float(string='Amount of less than 10,000 yen')
+        string='万円以上の支払手段', default='transfer')
+    less_than_amount = fields.Float(string='万円以下金額')
     less_than_deadline = fields.Char(
-        string='Closing date of 10,000 yen or less')
+        string='万円以下の締日')
     less_than_payment_site = fields.Char(
-        string='Payment site for 10,000 yen or less')
+        string='万円以下の支払サイト')
     less_than_payment_method = fields.Selection(PAYMENT_METHOD,
-        string='Payment method of 10,000 yen or less', default='transfer')
+        string='万円以下の支払手段', default='transfer')
     collecting_money = fields.Selection([
         ('yes', '有'),
         ('no', '無'),
-    ], string='Collecting money', default='no')
+    ], string='集金', default='no')
     fee_burden = fields.Selection([
         ('other_side', '先方'),
         ('our_side', '当方'),
-    ], string='Fee burden', default='our_side')
-    bill_site = fields.Char(string='Bill site')
-    partner_id = fields.Many2one('res.partner', 'Contact address')
+    ], string='手数料負担', default='our_side')
+    bill_site = fields.Char(string='手形サイト')
+    partner_id = fields.Many2one('res.partner', '連絡先')
