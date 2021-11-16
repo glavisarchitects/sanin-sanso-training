@@ -308,41 +308,41 @@
                         <field name="fee_burden"/>
                         <field name="bill_site"/>
                     </tree>
-                    <form>
-                        <group>
-                            <group>
-                                <label for="more_than_amount" string="Transaction terms"/>
-                                <div>
-                                    <div class="o_row">
-                                        <field name="more_than_amount"/>
-                                        <span>10,000 yen or more</span>
-                                        <field name="more_than_deadline"/>
-                                        <span >Day closing</span>
-                                        <field name="more_than_payment_site"/>
-                                        <span >Post-payment</span>
-                                    </div>
-                                    <field name="more_than_payment_method" />
-                                    <div class="o_row">
-                                        <field name="less_than_amount"/>
-                                        <span>10,000 yen or less</span>
-                                        <field name="less_than_deadline"/>
-                                        <span >Day closing</span>
-                                        <field name="less_than_payment_site"/>
-                                        <span >Post-payment</span>
-                                    </div>
-                                    <field name="less_than_payment_method" />
-                                </div>
-                                <field name="collecting_money" widget="radio" options="{'horizontal': true}"/>
-                                <field name="fee_burden" widget="radio" options="{'horizontal': true}"/>
-                                <label for="bill_site" string="Bill site"/>
-                                <div>
-                                    <span>Starting the closing date</span>
-                                    <field name="bill_site"/>
-                                    <span>Day</span>
-                                </div>
-                            </group>
-                        </group>
-                    </form>
+<!--                    <form>-->
+<!--                        <group>-->
+<!--                            <group>-->
+<!--                                <label for="more_than_amount" string="Transaction terms"/>-->
+<!--                                <div>-->
+<!--                                    <div class="o_row">-->
+<!--                                        <field name="more_than_amount"/>-->
+<!--                                        <span>10,000 yen or more</span>-->
+<!--                                        <field name="more_than_deadline"/>-->
+<!--                                        <span >Day closing</span>-->
+<!--                                        <field name="more_than_payment_site"/>-->
+<!--                                        <span >Post-payment</span>-->
+<!--                                    </div>-->
+<!--                                    <field name="more_than_payment_method" />-->
+<!--                                    <div class="o_row">-->
+<!--                                        <field name="less_than_amount"/>-->
+<!--                                        <span>10,000 yen or less</span>-->
+<!--                                        <field name="less_than_deadline"/>-->
+<!--                                        <span >Day closing</span>-->
+<!--                                        <field name="less_than_payment_site"/>-->
+<!--                                        <span >Post-payment</span>-->
+<!--                                    </div>-->
+<!--                                    <field name="less_than_payment_method" />-->
+<!--                                </div>-->
+<!--                                <field name="collecting_money" widget="radio" options="{'horizontal': true}"/>-->
+<!--                                <field name="fee_burden" widget="radio" options="{'horizontal': true}"/>-->
+<!--                                <label for="bill_site" string="Bill site"/>-->
+<!--                                <div>-->
+<!--                                    <span>Starting the closing date</span>-->
+<!--                                    <field name="bill_site"/>-->
+<!--                                    <span>Day</span>-->
+<!--                                </div>-->
+<!--                            </group>-->
+<!--                        </group>-->
+<!--                    </form>-->
                 </field>
             </xpath>
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="before">
