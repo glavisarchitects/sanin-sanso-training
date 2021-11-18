@@ -65,8 +65,8 @@
                 <field name="x_dest_address_info" attrs="{'readonly':1}"/>
             </group>
             <field name="group_id" position="before">
-                <field name="x_organization_id" attrs="{'readonly':1}"/>
-                <field name="x_responsible_dept_id" attrs="{'readonly':1}"/>
+                <field name="x_organization_id"/>
+                <field name="x_responsible_dept_id"/>
                 <field name="x_mkt_user_id" attrs="{'readonly':1}"/>
             </field>
             <field name="move_type" position="attributes">
