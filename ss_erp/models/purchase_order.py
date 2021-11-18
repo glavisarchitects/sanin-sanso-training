@@ -12,7 +12,6 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-
     def _get_default_x_organization_id(self):
         x_organization_id = self.x_mkt_user_id and self.x_mkt_user_id.organization_id and self.x_mkt_user_id.organization_id or False
         return x_organization_id
@@ -111,14 +110,6 @@ class PurchaseOrder(models.Model):
     def action_rfq_send(self):
         res = super(PurchaseOrder, self).action_rfq_send()
         if self.env.context.get('send_rfq', False):
-            # if self.x_is_construction:
-            #     res['context'].update({
-            #         'default_template_id': self.env.ref("email_template_edi_purchase_construction").id
-            #     })
-            # else:
-            #     res['context'].update({
-            #         'default_template_id': self.env.ref("email_template_edi_purchase").id
-            #     })
             res['context'].update({
                 'default_template_id': self.env.ref("ss_erp.email_template_edi_purchase_quotation").id
             })
@@ -162,3 +153,18 @@ class PurchaseOrder(models.Model):
             'x_mkt_user_id': self.x_mkt_user_id and self.x_mkt_user_id.id or False,
         })
         return res
+
+    # @api.onchange('x_organization_id')
+    # def _onchange_x_organization_id(self):
+    #     domain = [
+    #         ('x_partner_categ', 'in', ['vendor', 'multi']),
+    #         '|', ('x_is_branch','=',False),
+    #         ('x_branch_name','=',self.x_organization_id)]
+    #     res = {'domain':{
+    #         'partner_id': domain
+    #     }}
+    #     return res
+    @api.onchange('x_organization_id')
+    def _onchange_x_organization_id(self):
+        self.partner_id = None
+

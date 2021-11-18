@@ -5,6 +5,7 @@
             <script type="text/javascript" src="/ss_erp/static/src/js/hide_edit_btn.js"></script>
             <script type="text/javascript" src="/ss_erp/static/src/js/basic_controller.js"></script>
             <!-- <script type="text/javascript" src="/ss_erp/static/src/js/form_controller.js"></script> -->
+            <script type="text/javascript" src="/ss_erp/static/src/js/views/list/list_editable_renderer.js"></script>
             <link rel="stylesheet" type="text/scss" href="/ss_erp/static/src/scss/sgvn.scss"></link>
         </xpath>
     </template>

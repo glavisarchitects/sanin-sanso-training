@@ -32,24 +32,23 @@
         </field>
     </record>
 
-    <record id="view_picking_withcarrier_out_form" model="ir.ui.view">
+    <record id="ss_erp_picking_out_form" model="ir.ui.view">
         <field name="name">stock.picking.form.inherit</field>
         <field name="model">stock.picking</field>
-        <field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
             <field name="partner_id" position="attributes">
                 <attribute name="string">Arrival source</attribute>
             </field>
             <field name="user_id" position="attributes">
                 <attribute name="string">Manager</attribute>
+                <attribute name="required">1</attribute>
             </field>
-            <field name="user_id" position="after">
-                <field name="has_lot_ids" invisible="1"/>
-                <field name="x_inspection_user_id" attrs="{'required':[('has_lot_ids', '=', True)],
-                                'invisible' :[('has_lot_ids', '=', False)]}"/>
-            </field>  
-            <field name="backorder_id" position="before">
+            <field name="location_dest_id" position="after">
                 <field name="user_id" position="move"/>
+                <field name="has_lot_ids" invisible="1"/>
+                <field name="x_inspection_user_id" attrs="{'required':[('x_inspection_exist', '=', True)],
+                            'invisible' :[('x_inspection_exist', '=', False)]}"/>
             </field>
             <field name="origin" position="attributes">
                 <attribute name="string">Reference source</attribute>
@@ -63,13 +62,12 @@
                 <attribute name="string">Shipping company</attribute>
             </field>
             <group name="carrier_data" position="inside">
-                <field name="location_dest_id_usage" invisible="1"/>
-                <!-- <field name="x_dest_address_info" attrs="{'invisible': [('location_dest_id_usage', '!=', 'customer')]}"/> -->
+                <field name="x_dest_address_info" attrs="{'readonly':1}"/>
             </group>
             <field name="group_id" position="before">
-                <field name="x_organization_id" />
-                <field name="x_responsible_dept_id" />
-                <field name="x_mkt_user_id" />
+                <field name="x_organization_id" attrs="{'readonly':1}"/>
+                <field name="x_responsible_dept_id" attrs="{'readonly':1}"/>
+                <field name="x_mkt_user_id" attrs="{'readonly':1}"/>
             </field>
             <field name="move_type" position="attributes">
                 <attribute name="invisible">1</attribute>

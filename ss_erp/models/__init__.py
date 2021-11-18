@@ -29,3 +29,4 @@ from . import ss_erp_account_subaccount
 from . import account_account
 from . import stock_scrap
 from . import ss_erp_partner_payment_term
+from . import ss_erp_product_price

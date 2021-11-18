@@ -36,11 +36,11 @@ class StockPicking(models.Model):
     has_lot_ids = fields.Boolean(
         'Has Serial Numbers', compute='_compute_has_lot_ids')
 
-    @api.depends("move_line_nosuggest_ids.product_id", "move_ids_without_package.product_id")
+    @api.depends("move_line_nosuggest_ids.product_id", "move_ids_without_package.product_id","picking_type_id")
     def _compute_has_lot_ids(self):
         for r in self:
             products = r.move_line_nosuggest_ids.product_id | r.move_ids_without_package.product_id
-            if products.filtered(lambda p: p.tracking == 'serial'):
+            if products.filtered(lambda p: p.tracking == 'serial') and r.picking_type_id.code == 'incoming':
                 r.has_lot_ids = True
             else:
                 r.has_lot_ids = False

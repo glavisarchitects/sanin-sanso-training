@@ -99,10 +99,10 @@
                 <attribute name="domain">[
                     '|',('company_id', '=', False),
                     ('company_id', '=', company_id),
-                    ('x_branch_name', '=', False),
-                    '|',('x_partner_categ', 'in', ['vendor', 'multi']),
-                    ('organization_id', '=', x_organization_id),
-                    ]</attribute>				
+                    ('x_partner_categ', 'in', ['vendor', 'multi']),
+                    '|',('x_is_branch', '=', False),
+                    '&amp;',('x_is_branch', '=', True),('x_branch_name', '=', x_organization_id),
+                    ]</attribute>
             </field>
             <field name="partner_ref" position="after">
                 <field name="x_bis_categ_id" required="1" options="{'no_create': True}"/>

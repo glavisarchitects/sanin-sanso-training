@@ -23,6 +23,7 @@
         # DATA
         "data/bis_category_data.xml",
         "data/ir_sequence_data.xml",
+        "data/product_pricelist_class_data.xml",
 
         # REPORTS
         "reports/paperformat.xml",
@@ -58,6 +59,8 @@
         "views/sale_order_views.xml",
         "views/ss_erp_subaccount_views.xml",
         "views/stock_scrap.xml",
+        "views/ss_erp_product_price_views.xml",
+        "views/ss_erp_product_pricelist_class_views.xml",
 
         # Wizard
         "wizards/partner_rebate_attachment_wizard_views.xml",

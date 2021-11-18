@@ -66,7 +66,7 @@
             </xpath>
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="x_is_branch"/>
-                <field name="x_branch_name" attrs="{'invisible': [('x_is_branch', '=', False)]}"/>
+                <field name="x_branch_name" attrs="{'invisible': [('x_is_branch', '=', False)], 'required': [('x_is_branch', '=', True)]}"/>
             </xpath>
             <xpath expr="//field[@name='type']" position="before">
                 <field name="x_partner_categ" widget="radio" options="{'horizontal': true}" required="1"/>
