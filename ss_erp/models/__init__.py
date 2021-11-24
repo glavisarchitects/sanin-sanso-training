@@ -30,3 +30,8 @@ from . import account_account
 from . import stock_scrap
 from . import ss_erp_partner_payment_term
 from . import ss_erp_product_price
+from . import ss_erp_convert_code_type
+from . import ss_erp_external_system_type
+from . import ss_erp_code_convert
+from . import ss_erp_ifdb_powernet_sales_head
+from . import ss_erp_ifdb_powernet_sales_head_detail

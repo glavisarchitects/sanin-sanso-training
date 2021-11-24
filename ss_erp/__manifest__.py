@@ -61,6 +61,11 @@
         "views/stock_scrap.xml",
         "views/ss_erp_product_price_views.xml",
         "views/ss_erp_product_pricelist_class_views.xml",
+        "views/ss_erp_convert_code_type.xml",
+        "views/ss_erp_external_system_type.xml",
+        "views/ss_erp_code_convert.xml",
+        "views/ss_erp_ifdb_powernet_sales_head_views.xml",
+        "views/ss_erp_ifdb_powernet_sales_head_detail_views.xml",
 
         # Wizard
         "wizards/partner_rebate_attachment_wizard_views.xml",

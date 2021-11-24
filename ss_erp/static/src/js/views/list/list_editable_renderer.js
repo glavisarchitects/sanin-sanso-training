@@ -1,3 +1,4 @@
+@@ -0,0 +1,65 @@
 odoo.define('ss_erp.EditableListRenderer', function (require) {
 "use strict";
 
@@ -20,7 +21,7 @@ const { WidgetAdapterMixin } = require('web.OwlCompatibility');
 var _t = core._t;
 
 ListRenderer.include({
-   
+
     _computeDefaultWidths: function () {
         const isListEmpty = !this._hasVisibleRecords(this.state);
         const relativeWidths = [];

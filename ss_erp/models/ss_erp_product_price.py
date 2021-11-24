@@ -9,7 +9,7 @@ class ProductPrice(models.Model):
     _name = 'ss_erp.product.price'
     _description = 'Product Price'
 
-    name = fields.Char('名称', copy=False)
+    name = fields.Char('価格リスト名', copy=False)
     company_id = fields.Many2one('res.company', '会社')
     organization_id = fields.Many2one('ss_erp.organization', '組織')
     pricelist_class = fields.Many2one('product.pricelist.class', '価格リスト区分')
@@ -21,7 +21,7 @@ class ProductPrice(models.Model):
     product_uom_qty_max = fields.Float('数量範囲(最大値)')
     price_unit = fields.Float('単価')
     start_date = fields.Date('有効開始日')
-    end_date = fields.Date('有効終了日', default=Date.to_date('2099-12-31'))
+    end_date = fields.Date('有効終了日', default=fields.Date.from_string('2099-12-31'))
     description = fields.Text('内部注記')
 
     has_organization = fields.Selection(store=True, related='pricelist_class.organization_id')
@@ -58,8 +58,8 @@ class ProductPrice(models.Model):
         new_uom_id = (False if vals.get('uom_id') is None else vals['uom_id']) or self.uom_id.id
         new_product_uom_qty_min = (False if vals.get('product_uom_qty_min') is None else vals['product_uom_qty_min']) or self.product_uom_qty_min
         new_product_uom_qty_max = (False if vals.get('product_uom_qty_max') is None else vals['product_uom_qty_max']) or self.product_uom_qty_max
-        new_start_date = (False if vals.get('start_date') is None else vals['start_date']) or self.start_date
-        new_end_date = (False if vals.get('end_date') is None else vals['end_date']) or self.end_date
+        new_start_date = (False if vals.get('start_date') is None else fields.Date.from_string(vals['start_date'])) or self.start_date
+        new_end_date = (False if vals.get('end_date') is None else fields.Date.from_string(vals['end_date'])) or self.end_date
         # pricelist_class = 'pricelist_class' in vals or self.company_id.id
         # organization = 'pricelist_class' in vals or self.company_id.id
         if new_company_id and new_pricelist_class and new_organization_id and new_partner_id and\
@@ -77,10 +77,10 @@ class ProductPrice(models.Model):
 
             ])
             if len(product_pricelist_duplicate) > 0:
-                for dup in product_pricelist_duplicate:
-                    _new_end_date = Datetime.from_string(new_end_date).date()
-                    _new_start_date=Datetime.from_string(new_start_date).date()
-                    if dup.end_date > _new_start_date or dup.start_date > _new_end_date:
+                for exist in product_pricelist_duplicate:
+                    if exist != self and ((exist.end_date > new_start_date and exist.start_date < new_end_date) or
+                                          (exist.start_date < new_end_date and exist.end_date < new_end_date) or
+                                          (exist.start_date < new_start_date and exist.end_date < new_end_date)):
                         raise ValidationError(_('既に登録されている条件と期間が重なっているため登録できません'))
 
     @api.model

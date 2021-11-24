@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- TREE VIEW -->
+        <record id="ss_erp_external_system_type_view_tree" model="ir.ui.view">
+            <field name="name">ss_erp.external.system.type.view.tree</field>
+            <field name="model">ss_erp.external.system.type</field>
+            <field name="arch" type="xml">
+                <tree string="">
+                    <field name="code" />
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <!-- FORM VIEW -->
+
+        <!-- SEARCH VIEW -->
+        <record id="ss_erp_external_system_type_view_search" model="ir.ui.view">
+            <field name="name">ss_erp.external.system.type.view.search</field>
+            <field name="model">ss_erp.external.system.type</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="code" />
+                    <field name="name" />
+                </search>
+            </field>
+        </record>
+        <!-- ACTION -->
+        <record id="ss_erp_external_system_type_action" model="ir.actions.act_window">
+            <field name="name">External System Type</field>
+            <field name="res_model">ss_erp.external.system.type</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- MENUITEM -->
+        <!-- <menuitem
+            id="ss_erp_external_system_type_action_menu"
+            name="External System Type"
+            parent="contacts.res_partner_menu_config"
+            action="ss_erp_external_system_type_action"
+            sequence="4"
+        />-->
+    </data>
+</odoo>

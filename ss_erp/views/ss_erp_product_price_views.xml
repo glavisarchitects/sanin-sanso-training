@@ -40,6 +40,7 @@
                             <field name="name" required="1"/>
                             <field name="company_id" required="1"/>
                             <field name="pricelist_class" required="1"/>
+                            <field name="name" required="1"/>
                             <field name="organization_id"
                                    attrs="{'required': [('has_organization', '=', 'required')], 'invisible': [('has_organization', '=', 'no')]}"/>
                             <field name="partner_id"

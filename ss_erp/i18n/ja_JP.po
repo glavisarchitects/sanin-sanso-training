@@ -6,19 +6,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-16 04:19+0000\n"
-"PO-Revision-Date: 2021-11-16 04:19+0000\n"
+"POT-Creation-Date: 2021-11-24 03:04+0000\n"
+"PO-Revision-Date: 2021-11-24 16:37+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"Language: ja_JP\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #. module: ss_erp
 #: model:ir.module.category,description:ss_erp.group_company
-#: model:res.groups,comment:ss_erp.group_account_head
-#: model:res.groups,comment:ss_erp.group_sale_head
+#: model:res.groups,comment:ss_erp.group_account_head model:res.groups,comment:ss_erp.group_sale_head
 msgid ""
 "\n"
 "                This group can access all records\n"
@@ -29,7 +30,8 @@ msgstr ""
 #: model:res.groups,comment:ss_erp.group_branch_manager
 msgid ""
 "\n"
-"                This group can access all records belong to his branch and descendant, can read all records of his\n"
+"                This group can access all records belong to his branch and descendant, can read all records "
+"of his\n"
 "                company.\n"
 "            "
 msgstr ""
@@ -40,6 +42,11 @@ msgid ""
 "\n"
 "                This group can access all records of his company.\n"
 "            "
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__meeting_count
+msgid "# Meetings"
 msgstr ""
 
 #. module: ss_erp
@@ -95,20 +102,22 @@ msgstr "'見積依頼書 - %s' % (object.name)"
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchaseorder_document
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchasequotation_document
-msgid ""
-"* For direct delivery, refer to the direct delivery destination information "
-"at the bottom."
+msgid "* For direct delivery, refer to the direct delivery destination information at the bottom."
 msgstr "※直送は下部の直送先情報参照"
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_stock_picking__location_dest_id_usage
 msgid ""
 "* Vendor Location: Virtual location representing the source location for products coming from your vendors\n"
-"* View: Virtual location used to create a hierarchical structures for your warehouse, aggregating its child locations ; can't directly contain products\n"
+"* View: Virtual location used to create a hierarchical structures for your warehouse, aggregating its child "
+"locations ; can't directly contain products\n"
 "* Internal Location: Physical locations inside your own warehouses,\n"
-"* Customer Location: Virtual location representing the destination location for products sent to your customers\n"
-"* Inventory Loss: Virtual location serving as counterpart for inventory operations used to correct stock levels (Physical inventories)\n"
-"* Production: Virtual counterpart location for production operations: this location consumes the components and produces finished products\n"
+"* Customer Location: Virtual location representing the destination location for products sent to your "
+"customers\n"
+"* Inventory Loss: Virtual location serving as counterpart for inventory operations used to correct stock "
+"levels (Physical inventories)\n"
+"* Production: Virtual counterpart location for production operations: this location consumes the components "
+"and produces finished products\n"
 "* Transit Location: Counterpart location that should be used in inter-company or inter-warehouses operations"
 msgstr ""
 
@@ -261,7 +270,8 @@ msgid ""
 "                        % if object.partner_ref:\n"
 "                        with reference: ${object.partner_ref}\n"
 "                        % endif\n"
-"                        amounting in <strong>${format_amount(object.amount_total, object.currency_id)}</strong>\n"
+"                        amounting in <strong>${format_amount(object.amount_total, object.currency_id)}</"
+"strong>\n"
 "                        from ${object.company_id.name}.\n"
 "                        <br/><br/>\n"
 "                        % if object.date_planned:\n"
@@ -313,8 +323,7 @@ msgstr "<span>別途設計書、施工計画書による</span>"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchasequotation_document
-msgid ""
-"<span>According to a separate design document and construction plan</span>"
+msgid "<span>According to a separate design document and construction plan</span>"
 msgstr "<span>別途設計書、施工計画書による</span>"
 
 #. module: ss_erp
@@ -326,9 +335,8 @@ msgstr "<span>別途設計書による</span>"
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_purchase_order_view_form_inherit
 msgid ""
-"<span>Construction payment conditions (deadline at the end of the month and "
-"payment at the end of the following month according to our "
-"regulations)</span>"
+"<span>Construction payment conditions (deadline at the end of the month and payment at the end of the "
+"following month according to our regulations)</span>"
 msgstr ""
 
 #. module: ss_erp
@@ -506,6 +514,11 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__additional_info
+msgid "Additional info"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__type
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__type
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__type
@@ -527,15 +540,12 @@ msgstr "アドレスの種類"
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__lang
-msgid ""
-"All the emails and documents sent to this contact will be translated in this"
-" language."
+msgid "All the emails and documents sent to this contact will be translated in this language."
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__x_more_than_amount
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_more_than_amount
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__more_than_amount
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_more_than_amount
 msgid "Amount of 10,000 yen or more"
 msgstr "10,000円以上の金額"
@@ -543,7 +553,6 @@ msgstr "10,000円以上の金額"
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__x_less_than_amount
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_less_than_amount
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__less_than_amount
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_less_than_amount
 msgid "Amount of less than 10,000 yen"
 msgstr "1万円未満の金額"
@@ -671,8 +680,8 @@ msgstr "作成者"
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__receipt_reminder_email
 msgid ""
-"Automatically send a confirmation email to the vendor X days before the "
-"expected receipt date, asking him to confirm the exact date."
+"Automatically send a confirmation email to the vendor X days before the expected receipt date, asking him "
+"to confirm the exact date."
 msgstr ""
 
 #. module: ss_erp
@@ -696,8 +705,7 @@ msgstr "銀行口座"
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_account_setup_bank_manual_config__acc_type
 #: model:ir.model.fields,help:ss_erp.field_res_partner_bank__acc_type
-msgid ""
-"Bank account type: Normal or IBAN. Inferred from the bank account number."
+msgid "Bank account type: Normal or IBAN. Inferred from the bank account number."
 msgstr "銀行口座タイプ:ノーマルまたはIBAN。銀行口座番号から推測されます。"
 
 #. module: ss_erp
@@ -740,7 +748,6 @@ msgstr "基本情報"
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__has_x_bill_site
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_bill_site
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__has_x_bill_site
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__bill_site
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__has_x_bill_site
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_bill_site
 msgid "Bill site"
@@ -891,14 +898,11 @@ msgid "Check if the contact is a company, otherwise it is a person"
 msgstr ""
 
 #. module: ss_erp
-#: code:addons/ss_erp/models/res_partner.py:0
-#: model:ir.model.fields,help:ss_erp.field_res_partner__x_is_branch
+#: code:addons/ss_erp/models/res_partner.py:0 model:ir.model.fields,help:ss_erp.field_res_partner__x_is_branch
 #: model:ir.model.fields,help:ss_erp.field_res_users__x_is_branch
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__x_is_branch
 #, python-format
-msgid ""
-"Check if you have a place of responsibility, branch office, sales office, "
-"branch office"
+msgid "Check if you have a place of responsibility, branch office, sales office, branch office"
 msgstr ""
 
 #. module: ss_erp
@@ -925,7 +929,6 @@ msgstr "新規組織を作成する"
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__x_less_than_deadline
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_less_than_deadline
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__less_than_deadline
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_less_than_deadline
 msgid "Closing date of 10,000 yen or less"
 msgstr "10,000円以下の締切日"
@@ -933,15 +936,27 @@ msgstr "10,000円以下の締切日"
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__x_more_than_deadline
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_more_than_deadline
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__more_than_deadline
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_more_than_deadline
 msgid "Closing date of 10,000 yen or more"
 msgstr "10,000円以上の締切日"
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__internal_code
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__code
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__code
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__code
 msgid "Code"
 msgstr "コード"
+
+#. module: ss_erp
+#: model:ir.model,name:ss_erp.model_ss_erp_code_convert
+msgid "Code Convert"
+msgstr "コード変換"
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_code_convert_view_tree
+msgid "Code type"
+msgstr "コード種別"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__has_x_collecting_money
@@ -949,7 +964,6 @@ msgstr "コード"
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__has_x_collecting_money
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_collecting_money
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__has_x_collecting_money
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__collecting_money
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__has_x_collecting_money
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_collecting_money
 msgid "Collecting money"
@@ -999,6 +1013,11 @@ msgid "Company Type"
 msgstr "会社タイプ"
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__partner_gid
+msgid "Company database ID"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__company_type
 msgid "Company type"
 msgstr "会社タイプ"
@@ -1044,8 +1063,8 @@ msgstr "工事名称"
 #: code:addons/ss_erp/models/purchase_order.py:0
 #, python-format
 msgid ""
-"Construction payment conditions (deadline at the end of the month and "
-"payment at the end of the following month according to our regulations)"
+"Construction payment conditions (deadline at the end of the month and payment at the end of the following "
+"month according to our regulations)"
 msgstr "工事支払条件（当社規定による、月末締切・翌月末支払）"
 
 #. module: ss_erp
@@ -1082,7 +1101,6 @@ msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_construction__partner_id
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__partner_id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance__partner_id
 #: model_terms:ir.ui.view,arch_db:ss_erp.vpicktree_inherit
 msgid "Contact address"
@@ -1145,6 +1163,28 @@ msgid "Contract start date"
 msgstr "契約開始日"
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__convert_code_type
+msgid "Conversion code type"
+msgstr "変換コード種別"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__name
+msgid "Conversion code type name"
+msgstr "変換コード種別名"
+
+#. module: ss_erp
+#: model:ir.actions.act_window,name:ss_erp.ss_erp_code_convert_action
+#: model:ir.ui.menu,name:ss_erp.ss_erp_code_convert_action_menu
+msgid "Convert Code"
+msgstr "コード変換"
+
+#. module: ss_erp
+#: model:ir.actions.act_window,name:ss_erp.ss_erp_convert_code_type_action
+#: model:ir.model,name:ss_erp.model_ss_erp_convert_code_type
+msgid "Convert Code Type"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__payment_token_count
 msgid "Count Payment Token"
 msgstr ""
@@ -1162,10 +1202,14 @@ msgstr "国"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_partner_rebate_attachment_wizard__create_uid
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_account_subaccount__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_approval_lost__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_bis_category__create_uid
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__create_uid
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__create_uid
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category__create_uid
@@ -1173,6 +1217,7 @@ msgstr "国"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__create_uid
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__create_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__create_uid
 msgid "Created by"
@@ -1186,10 +1231,14 @@ msgstr "作成日"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_partner_rebate_attachment_wizard__create_date
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_account_subaccount__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_approval_lost__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_bis_category__create_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__create_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__create_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category__create_date
@@ -1197,6 +1246,7 @@ msgstr "作成日"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__create_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__create_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__create_date
 msgid "Created on"
@@ -1283,15 +1333,12 @@ msgstr ""
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchasequotation_document
 msgid ""
-"Dealine at the end of the month, payment at the end of the following month "
-"according to our regulations"
+"Dealine at the end of the month, payment at the end of the following month according to our regulations"
 msgstr "当社規定による、月末締切・翌月末支払"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchaseorder_document
-msgid ""
-"Dealine at the end of the payment at the end of the following month "
-"according to our regulations"
+msgid "Dealine at the end of the payment at the end of the following month according to our regulations"
 msgstr "当社規定による、月末締切・翌月末支払"
 
 #. module: ss_erp
@@ -1307,7 +1354,7 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__property_delivery_carrier_id
 msgid "Delivery Method"
-msgstr "配送方法"
+msgstr "配送方法\t"
 
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__type__delivery
@@ -1388,6 +1435,7 @@ msgstr "直送先情報"
 #: model:ir.model.fields,field_description:ss_erp.field_ir_mail_server__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_mail_mail__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_partner_rebate_attachment_wizard__display_name
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_product_template__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order_line__display_name
@@ -1400,7 +1448,10 @@ msgstr "直送先情報"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_account_subaccount__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_approval_lost__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_bis_category__display_name
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__display_name
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__display_name
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category__display_name
@@ -1408,6 +1459,7 @@ msgstr "直送先情報"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__display_name
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__display_name
 #: model:ir.model.fields,field_description:ss_erp.field_stock_move_line__display_name
@@ -1424,9 +1476,8 @@ msgstr "ドキュメント"
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__partner_share
 msgid ""
-"Either customer (not a user), either shared user. Indicated the current "
-"partner is a customer without access or with a limited access created for "
-"sharing data."
+"Either customer (not a user), either shared user. Indicated the current partner is a customer without "
+"access or with a limited access created for sharing data."
 msgstr ""
 
 #. module: ss_erp
@@ -1482,6 +1533,37 @@ msgid "Explanation :"
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.actions.act_window,name:ss_erp.ss_erp_external_system_type_action
+#: model:ir.model,name:ss_erp.model_ss_erp_external_system_type
+msgid "External System Type"
+msgstr ""
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_code_convert_view_tree
+msgid "External code"
+msgstr "外部コード"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__external_system
+msgid "External system"
+msgstr "外部システム"
+
+#. module: ss_erp
+#: model:ir.ui.menu,name:ss_erp.external_system_cooperation_menu
+msgid "External system cooperation"
+msgstr "外部システム連携"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__name
+msgid "External system type name"
+msgstr "外部システム種別名"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__external_code
+msgid "External)"
+msgstr "外部コード"
+
+#. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.external_layout_standard
 msgid "FAX"
 msgstr ""
@@ -1526,7 +1608,6 @@ msgstr "FAX支払通知書"
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__has_x_fee_burden
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_fee_burden
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__has_x_fee_burden
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__fee_burden
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__has_x_fee_burden
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_fee_burden
 msgid "Fee burden"
@@ -1534,9 +1615,7 @@ msgstr "手数料負担"
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__phone_sanitized
-msgid ""
-"Field used to store sanitized phone number. Helps speeding up searches and "
-"comparisons."
+msgid "Field used to store sanitized phone number. Helps speeding up searches and comparisons."
 msgstr ""
 
 #. module: ss_erp
@@ -1713,6 +1792,7 @@ msgstr "完納希望"
 #: model:ir.model.fields,field_description:ss_erp.field_ir_mail_server__id
 #: model:ir.model.fields,field_description:ss_erp.field_mail_mail__id
 #: model:ir.model.fields,field_description:ss_erp.field_partner_rebate_attachment_wizard__id
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__id
 #: model:ir.model.fields,field_description:ss_erp.field_product_template__id
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__id
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order_line__id
@@ -1725,7 +1805,10 @@ msgstr "完納希望"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_account_subaccount__id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_approval_lost__id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_bis_category__id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers__id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers__x_id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__id
@@ -1734,6 +1817,7 @@ msgstr "完納希望"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance__id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__id
 #: model:ir.model.fields,field_description:ss_erp.field_stock_move_line__id
@@ -1783,32 +1867,27 @@ msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__team_id
-msgid ""
-"If set, this Sales Team will be used for sales and assignments related to "
-"this partner"
+msgid "If set, this Sales Team will be used for sales and assignments related to this partner"
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_organization__active
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_organization_category__active
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_responsible_department__active
-msgid ""
-"If the active field is set to False, it will allow you to hide the payment "
-"terms without removing it."
+msgid "If the active field is set to False, it will allow you to hide the payment terms without removing it."
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__is_blacklisted
 msgid ""
-"If the email address is on the blacklist, the contact won't receive mass "
-"mailing anymore, from any list"
+"If the email address is on the blacklist, the contact won't receive mass mailing anymore, from any list"
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__phone_sanitized_blacklisted
 msgid ""
-"If the sanitized phone number is on the blacklist, the contact won't receive"
-" mass mailing sms anymore, from any list"
+"If the sanitized phone number is on the blacklist, the contact won't receive mass mailing sms anymore, from "
+"any list"
 msgstr ""
 
 #. module: ss_erp
@@ -1839,17 +1918,15 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__mobile_blacklisted
 msgid ""
-"Indicates if a blacklisted sanitized phone number is a mobile number. Helps "
-"distinguish which number is blacklisted             when there is both a "
-"mobile and phone field in a model."
+"Indicates if a blacklisted sanitized phone number is a mobile number. Helps distinguish which number is "
+"blacklisted             when there is both a mobile and phone field in a model."
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__phone_blacklisted
 msgid ""
-"Indicates if a blacklisted sanitized phone number is a phone number. Helps "
-"distinguish which number is blacklisted             when there is both a "
-"mobile and phone field in a model."
+"Indicates if a blacklisted sanitized phone number is a phone number. Helps distinguish which number is "
+"blacklisted             when there is both a mobile and phone field in a model."
 msgstr ""
 
 #. module: ss_erp
@@ -1886,9 +1963,10 @@ msgstr "請求先"
 #: model:ir.model.fields,help:ss_erp.field_res_users__type
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__type
 msgid ""
-"Invoice & Delivery addresses are used in sales orders. Private addresses are"
-" only visible by authorized users."
-msgstr "請求書と配送先住所は、販売注文で使用されます。プライベートアドレスは、許可されたユーザーのみが表示できます。"
+"Invoice & Delivery addresses are used in sales orders. Private addresses are only visible by authorized "
+"users."
+msgstr ""
+"請求書と配送先住所は、販売注文で使用されます。プライベートアドレスは、許可されたユーザーのみが表示できます。"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_kpis_tree
@@ -1933,6 +2011,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order__is_dropshipping
 msgid "Is dropship"
 msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__fields
+msgid "Item"
+msgstr "項目"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.approval_request_view_form_inherit
@@ -1992,6 +2075,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ir_mail_server____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_mail_mail____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_partner_rebate_attachment_wizard____last_update
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_product_template____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_purchase_order_line____last_update
@@ -2004,7 +2088,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_account_subaccount____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_approval_lost____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_bis_category____last_update
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category____last_update
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type____last_update
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category____last_update
@@ -2012,6 +2099,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate____last_update
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department____last_update
 #: model:ir.model.fields,field_description:ss_erp.field_stock_move_line____last_update
@@ -2022,10 +2110,14 @@ msgstr "最終更新日"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_partner_rebate_attachment_wizard__write_uid
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_account_subaccount__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_approval_lost__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_bis_category__write_uid
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__write_uid
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__write_uid
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category__write_uid
@@ -2033,6 +2125,7 @@ msgstr "最終更新日"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__write_uid
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__write_uid
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__write_uid
 msgid "Last Updated by"
@@ -2040,10 +2133,14 @@ msgstr "最終更新者"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_partner_rebate_attachment_wizard__write_date
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_account_subaccount__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_approval_lost__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_bis_category__write_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__write_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__write_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category__write_date
@@ -2051,17 +2148,22 @@ msgstr "最終更新者"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__write_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__write_date
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__write_date
 msgid "Last Updated on"
 msgstr "最終更新日"
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__calendar_last_notif_ack
+msgid "Last notification marked as read from base Calendar"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__last_time_entries_checked
 msgid ""
-"Last time the invoices & payments matching was performed for this partner. "
-"It is set either if there's not at least an unreconciled debit and an "
-"unreconciled credit or if you click the \"Done\" button."
+"Last time the invoices & payments matching was performed for this partner. It is set either if there's not "
+"at least an unreconciled debit and an unreconciled credit or if you click the \"Done\" button."
 msgstr ""
 
 #. module: ss_erp
@@ -2214,6 +2316,11 @@ msgid "Mobile"
 msgstr "携帯電話"
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__model
+msgid "Model"
+msgstr "モデル"
+
+#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__x_vendor_monthly_total_price
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_vendor_monthly_total_price
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_vendor_monthly_total_price
@@ -2243,13 +2350,6 @@ msgstr "多段階承認"
 #. module: ss_erp
 #: model:ir.module.category,description:ss_erp.module_category_organization
 msgid "Multiple Branches, Teams and Organizations Management"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__my_activity_date_deadline
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__my_activity_date_deadline
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__my_activity_date_deadline
-msgid "My Activity Deadline"
 msgstr ""
 
 #. module: ss_erp
@@ -2447,6 +2547,11 @@ msgid "OCN Token"
 msgstr ""
 
 #. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_code_convert_view_tree
+msgid "Odoo code"
+msgstr "Odooコード"
+
+#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__on_time_rate
 msgid "On-Time Delivery Rate"
 msgstr ""
@@ -2454,11 +2559,6 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__online_partner_bank_account
 msgid "Online Partner Bank Account"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__online_partner_information
-msgid "Online Partner Information"
 msgstr ""
 
 #. module: ss_erp
@@ -2474,21 +2574,30 @@ msgstr ""
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/approval_request.py:0
-#: code:addons/ss_erp/models/approval_request.py:0
 #, python-format
 msgid "Only the applicant can back to draft."
-msgstr ""
+msgstr "申請者以外は取下げすることができません。"
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/approval_request.py:0
 #, python-format
 msgid "Only the applicant can cancel."
-msgstr ""
+msgstr "申請者以外は取消することができません。"
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/approval_request.py:0
 #, python-format
 msgid "Only the applicant can submit."
+msgstr "申請者以外は申請することができません。"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__opportunity_ids
+msgid "Opportunities"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__opportunity_count
+msgid "Opportunity"
 msgstr ""
 
 #. module: ss_erp
@@ -2552,9 +2661,7 @@ msgstr "オプション"
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__payment_responsible_id
-msgid ""
-"Optionally you can assign a user to this field, which will make him "
-"responsible for the action."
+msgid "Optionally you can assign a user to this field, which will make him responsible for the action."
 msgstr ""
 
 #. module: ss_erp
@@ -2722,6 +2829,7 @@ msgstr "組織カテゴリ"
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__res_partner__x_partner_categ__other
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_res_partner_form__x_partner_categ__other
+#: model:ir.ui.menu,name:ss_erp.external_system_cooperation_other
 msgid "Other"
 msgstr "その他"
 
@@ -2757,8 +2865,7 @@ msgstr "送信メール"
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__on_time_rate
 msgid ""
-"Over the past 12 months; the number of products received on time divided by "
-"the number of ordered products."
+"Over the past 12 months; the number of products received on time divided by the number of ordered products."
 msgstr ""
 
 #. module: ss_erp
@@ -2770,9 +2877,9 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:ss_erp.external_layout_standard
 msgid ""
 "Page:\n"
-"                    <span class=\"page\"/>\n"
-"                    of\n"
-"                    <span class=\"topage\"/>"
+"                        <span class=\"page\"/>\n"
+"                        of\n"
+"                        <span class=\"topage\"/>"
 msgstr ""
 "ページ:\n"
 "                    <span class=\"page\"/>\n"
@@ -2844,7 +2951,6 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__less_than_payment_method
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__less_than_payment_method
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__less_than_payment_method
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__less_than_payment_method
 msgid "Payment method of 10,000 yen or less"
 msgstr ""
@@ -2852,7 +2958,6 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__x_more_than_payment_method
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_more_than_payment_method
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__more_than_payment_method
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_more_than_payment_method
 msgid "Payment method of 10,000 yen or more"
 msgstr ""
@@ -2860,7 +2965,6 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__x_less_than_payment_site
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_less_than_payment_site
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__less_than_payment_site
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_less_than_payment_site
 msgid "Payment site for 10,000 yen or less"
 msgstr ""
@@ -2868,7 +2972,6 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner__x_more_than_payment_site
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_more_than_payment_site
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__more_than_payment_site
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_more_than_payment_site
 msgid "Payment site for 10,000 yen or more"
 msgstr ""
@@ -2991,9 +3094,36 @@ msgid "Pricelist"
 msgstr "価格リスト"
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__priority_conversion
+msgid "Priority conversion destination"
+msgstr "優先変換先"
+
+#. module: ss_erp
 #: model:ir.model,name:ss_erp.model_stock_move_line
 msgid "Product Moves (Stock Move Line)"
 msgstr "製品の移動(在庫移動ライン)"
+
+#. module: ss_erp
+#: model:ir.model,name:ss_erp.model_ss_erp_product_price
+msgid "Product Price"
+msgstr ""
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_product_price_view_form
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_product_pricelist_class_view_form
+msgid "Product Price Form"
+msgstr ""
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_product_price_view_tree
+msgid "Product Price List"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model,name:ss_erp.model_product_pricelist_class
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_product_price_list_class_view_tree
+msgid "Product Price List Class"
+msgstr ""
 
 #. module: ss_erp
 #: model:ir.model,name:ss_erp.model_product_template
@@ -3304,7 +3434,7 @@ msgstr "必須"
 #: model:ir.model,name:ss_erp.model_ss_erp_res_partner_form
 #: model:ir.ui.menu,name:ss_erp.ss_erp_res_partner_form_menu
 msgid "Res Partner Form"
-msgstr ""
+msgstr "連絡先フォーム"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_kpis_tree
@@ -3484,9 +3614,8 @@ msgstr ""
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__purchase_warn
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__sale_warn
 msgid ""
-"Selecting the \"Warning\" option will notify user with the message, "
-"Selecting \"Blocking Message\" will throw an exception with the message and "
-"block the flow. The Message has to be written in the next field."
+"Selecting the \"Warning\" option will notify user with the message, Selecting \"Blocking Message\" will "
+"throw an exception with the message and block the flow. The Message has to be written in the next field."
 msgstr ""
 
 #. module: ss_erp
@@ -3592,7 +3721,7 @@ msgstr "伝票No."
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.approval_category_form_views_inherit
 msgid "Small cash supply items"
-msgstr "小口現金補給項目"
+msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_construction__license_flag_2
@@ -3746,15 +3875,13 @@ msgstr "税"
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__online_partner_bank_account
-msgid ""
-"Technical field used to store information from plaid/yodlee to match partner"
+msgid "Technical field used to store information from plaid/yodlee to match partner"
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__online_partner_vendor_name
 msgid ""
-"Technical field used to store information from plaid/yodlee to match partner"
-" (used when a purchase is made)"
+"Technical field used to store information from plaid/yodlee to match partner (used when a purchase is made)"
 msgstr ""
 
 #. module: ss_erp
@@ -3765,8 +3892,8 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__vat
 msgid ""
-"The Tax Identification Number. Complete it if the contact is subjected to "
-"government taxes. Used in some legal statements."
+"The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some "
+"legal statements."
 msgstr ""
 
 #. module: ss_erp
@@ -3776,8 +3903,7 @@ msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__property_account_position_id
-msgid ""
-"The fiscal position determines the taxes/accounts used for this contact."
+msgid "The fiscal position determines the taxes/accounts used for this contact."
 msgstr ""
 
 #. module: ss_erp
@@ -3793,19 +3919,12 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__has_unreconciled_entries
 msgid ""
-"The partner has at least one unreconciled debit and credit since last time "
-"the invoices & payments matching was performed."
+"The partner has at least one unreconciled debit and credit since last time the invoices & payments matching "
+"was performed."
 msgstr ""
 
 #. module: ss_erp
-#: code:addons/ss_erp/models/partner_rebate.py:0
-#, python-format
-msgid "The starting date and the ending date are the same datetime."
-msgstr ""
-
-#. module: ss_erp
-#: code:addons/ss_erp/models/organization.py:0
-#: code:addons/ss_erp/models/partner_rebate.py:0
+#: code:addons/ss_erp/models/organization.py:0 code:addons/ss_erp/models/partner_rebate.py:0
 #: code:addons/ss_erp/models/responsible_department.py:0
 #, python-format
 msgid "The starting date cannot be after the ending date."
@@ -3813,14 +3932,12 @@ msgstr "有効開始日は、終了日より先の日付は選択できません
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__property_stock_customer
-msgid ""
-"The stock location used as destination when sending goods to this contact."
+msgid "The stock location used as destination when sending goods to this contact."
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__property_stock_supplier
-msgid ""
-"The stock location used as source when receiving goods from this contact."
+msgid "The stock location used as source when receiving goods from this contact."
 msgstr ""
 
 #. module: ss_erp
@@ -3830,30 +3947,24 @@ msgstr "第三組織（兼務）"
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__property_account_payable_id
-msgid ""
-"This account will be used instead of the default one as the payable account "
-"for the current partner"
+msgid "This account will be used instead of the default one as the payable account for the current partner"
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__property_account_receivable_id
-msgid ""
-"This account will be used instead of the default one as the receivable "
-"account for the current partner"
+msgid "This account will be used instead of the default one as the receivable account for the current partner"
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__property_purchase_currency_id
-msgid ""
-"This currency will be used, instead of the default one, for purchases from "
-"the current partner"
+msgid "This currency will be used, instead of the default one, for purchases from the current partner"
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__email_normalized
 msgid ""
-"This field is used to search on email address as the primary email field can"
-" contain more than strictly an email address."
+"This field is used to search on email address as the primary email field can contain more than strictly an "
+"email address."
 msgstr ""
 
 #. module: ss_erp
@@ -3863,23 +3974,17 @@ msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__property_supplier_payment_term_id
-msgid ""
-"This payment term will be used instead of the default one for purchase "
-"orders and vendor bills"
+msgid "This payment term will be used instead of the default one for purchase orders and vendor bills"
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__property_payment_term_id
-msgid ""
-"This payment term will be used instead of the default one for sales orders "
-"and customer invoices"
+msgid "This payment term will be used instead of the default one for sales orders and customer invoices"
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__property_product_pricelist
-msgid ""
-"This pricelist will be used, instead of the default one, for sales to the "
-"current partner"
+msgid "This pricelist will be used, instead of the default one, for sales to the current partner"
 msgstr ""
 
 #. module: ss_erp
@@ -3993,6 +4098,11 @@ msgid "Transfer"
 msgstr "運送"
 
 #. module: ss_erp
+#: model:ir.model.constraint,message:ss_erp.constraint_ss_erp_product_price__unique
+msgid "Two pricelist cannot have the same name."
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_account_setup_bank_manual_config__acc_type
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner_bank__acc_type
 msgid "Type"
@@ -4021,7 +4131,6 @@ msgid "Unit"
 msgstr ""
 
 #. module: ss_erp
-#: code:addons/ss_erp/models/partner_rebate.py:0
 #: code:addons/ss_erp/models/partner_rebate.py:0
 #, python-format
 msgid "Unknown timezone {}"
@@ -4109,16 +4218,15 @@ msgstr ""
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/approval_request.py:0
-#: code:addons/ss_erp/models/approval_request.py:0
 #, python-format
 msgid "We cannot approve this request."
-msgstr ""
+msgstr "この申請を承認することができません。"
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/approval_request.py:0
 #, python-format
 msgid "We cannot refuse this request."
-msgstr ""
+msgstr "この申請を拒否することができません。"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__website
@@ -4159,6 +4267,11 @@ msgid ""
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_sale_order_line__x_is_required_x_pricelist
+msgid "X Is Required X Pricelist"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_payment_terms_ids
 msgid "X Payment Terms"
 msgstr ""
@@ -4178,27 +4291,28 @@ msgstr "ベンダーは名称、TIN、メール、または内部参照で見つ
 #: code:addons/ss_erp/models/organization_category.py:0
 #, python-format
 msgid ""
-"You can not delete organization category as other records still reference "
-"it. However, you can archive it."
-msgstr "他のレコードがまだ参照しているため、組織カテゴリを削除することはできません。 ただし、アーカイブすることはできます。"
+"You can not delete organization category as other records still reference it. However, you can archive it."
+msgstr ""
+"他のレコードがまだ参照しているため、組織カテゴリを削除することはできません。 ただし、アーカイブすることはで"
+"きます。"
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/approval_request.py:0
 #, python-format
 msgid "You have to add at least %s approvers to confirm your request."
-msgstr ""
+msgstr "申請の承認をするには、少なくとも%s承認者を追加する必要があります。"
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/ss_erp_multi_approvers.py:0
 #, python-format
 msgid "You have to add at least %s approvers to multi-approvers."
-msgstr ""
+msgstr "多段階承認には少なくとも%sの承認者を追加する必要があります。"
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/approval_request.py:0
 #, python-format
 msgid "You have to attach at lease one document."
-msgstr ""
+msgstr "少なくとも１つのドキュメントを添付する必要はあります。"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.organization_view_form
@@ -4252,6 +4366,24 @@ msgid "その他"
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__organization_id__no
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__partner_id__no
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__product_uom_qty_max__no
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__product_uom_qty_min__no
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__uom_id__no
+msgid "なし"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__organization_id__optional
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__partner_id__optional
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__product_uom_qty_max__optional
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__product_uom_qty_min__optional
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__uom_id__optional
+msgid "オプション"
+msgstr ""
+
+#. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_bis_category_view_tree
 msgid "ガス、器材、工事・・・"
 msgstr ""
@@ -4267,8 +4399,65 @@ msgid "フリガナ"
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__product_id
+msgid "プロダクト"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.actions.act_window,name:ss_erp.ss_erp_product_price_action
+#: model:ir.ui.menu,name:ss_erp.ss_erp_product_price_list_menu
+msgid "プロダクト価格"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.actions.act_window,name:ss_erp.ss_erp_product_price_class_action
+#: model:ir.ui.menu,name:ss_erp.ss_erp_product_price_list_class_menu
+msgid "プロダクト価格リスト区分"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_partner_construction__license_flag_2__normal
 msgid "一般"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__more_than_payment_site
+msgid "万円以上の支払サイト"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__more_than_payment_method
+msgid "万円以上の支払手段"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__more_than_deadline
+msgid "万円以上の締日"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__more_than_amount
+msgid "万円以上金額"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__less_than_payment_site
+msgid "万円以下の支払サイト"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__less_than_payment_method
+msgid "万円以下の支払手段"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__less_than_deadline
+msgid "万円以下の締日"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__less_than_amount
+msgid "万円以下金額"
 msgstr ""
 
 #. module: ss_erp
@@ -4287,13 +4476,29 @@ msgid "仕掛品・製造品の廃棄"
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__company_id
+msgid "会社"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_company__x_company_code
 msgid "会社コード"
 msgstr ""
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_sale_order_line__x_pricelist
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__pricelist_id
 msgid "価格リスト"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__pricelist_class
+msgid "価格リスト区分"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__name
+msgid "価格リスト名"
 msgstr ""
 
 #. module: ss_erp
@@ -4314,10 +4519,45 @@ msgid "先方"
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__description
+msgid "内部注記"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__uom_id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__has_uom
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__uom_id
+msgid "単位"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__price_unit
+msgid "単価"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__partner_id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__has_partner
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__partner_id
+msgid "取引先"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.actions.act_window,name:ss_erp.ss_erp_bis_category_action
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_bis_category__name
 #: model:ir.ui.menu,name:ss_erp.transaction_classification_menu
 msgid "取引区分"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__name
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_product_pricelist_class_view_form
+msgid "名称"
+msgstr ""
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_product_pricelist_class_view_form
+msgid "基本"
 msgstr ""
 
 #. module: ss_erp
@@ -4369,6 +4609,15 @@ msgid "当社規定(規則参照)"
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__organization_id__required
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__partner_id__required
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__product_uom_qty_max__required
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__product_uom_qty_min__required
+#: model:ir.model.fields.selection,name:ss_erp.selection__product_pricelist_class__uom_id__required
+msgid "必須"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__stock_scrap__scrap_type__ingredient_defect
 msgid "成分不良品の廃棄"
 msgstr ""
@@ -4381,6 +4630,16 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_res_partner_form__less_than_payment_method__bills
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_res_partner_form__x_more_than_payment_method__bills
 msgid "手形"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__bill_site
+msgid "手形サイト"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__fee_burden
+msgid "手数料負担"
 msgstr ""
 
 #. module: ss_erp
@@ -4421,6 +4680,54 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_res_company__x_payment_terms
 msgid "支払条件当社規定"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__product_uom_qty_max
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__has_product_uom_qty_max
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__product_uom_qty_max
+msgid "数量範囲(最大値)"
+msgstr ""
+
+#. module: ss_erp
+#: code:addons/ss_erp/models/ss_erp_product_price.py:0
+#, python-format
+msgid "数量範囲(最大値)以下を入力して下さい。"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__product_uom_qty_min
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__has_product_uom_qty_min
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__product_uom_qty_min
+msgid "数量範囲(最小値)"
+msgstr ""
+
+#. module: ss_erp
+#: code:addons/ss_erp/models/ss_erp_product_price.py:0
+#, python-format
+msgid "既に登録されている条件と期間が重なっているため登録できません"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__end_date
+msgid "有効終了日"
+msgstr ""
+
+#. module: ss_erp
+#: code:addons/ss_erp/models/ss_erp_product_price.py:0
+#, python-format
+msgid "有効終了日は、開始日より過去の日付は選択できません"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__start_date
+msgid "有効開始日"
+msgstr ""
+
+#. module: ss_erp
+#: code:addons/ss_erp/models/partner_rebate.py:0
+#, python-format
+msgid "有効開始日と有効終了日が同じ日時になっています。"
 msgstr ""
 
 #. module: ss_erp
@@ -4480,6 +4787,13 @@ msgid "納期予定日"
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__organization_id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__has_organization
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__organization_id
+msgid "組織"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__res_partner__x_contract_check__contract
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_res_partner_form__x_contract_check__contract
 msgid "締結"
@@ -4520,8 +4834,18 @@ msgid "該当なし"
 msgstr ""
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_product_pricelist_class__description
+msgid "説明"
+msgstr ""
+
+#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_sale_order__x_organization_id
 msgid "販売組織"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__partner_id
+msgid "連絡先"
 msgstr ""
 
 #. module: ss_erp
@@ -4542,4 +4866,9 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__stock_scrap__scrap_type__retained
 msgid "長期滞留品の廃棄"
+msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__collecting_money
+msgid "集金"
 msgstr ""
