@@ -102,9 +102,6 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="ss_erp_ifdb_autogas_file_header_menu"
-              name="オートガスPOS（松江）ファイル取込"
-              action="ss_erp_ifdb_autogas_file_header_action"
-              parent="ss_erp.external_system_cooperation_importing_performance"/>
+
 
 </odoo>

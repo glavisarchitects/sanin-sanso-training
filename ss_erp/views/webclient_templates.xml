@@ -5,6 +5,10 @@
             <script type="text/javascript" src="/ss_erp/static/src/js/view/basic/basic_controller.js"></script>
             <script type="text/javascript" src="/ss_erp/static/src/js/form_controller.js"></script>
             <link rel="stylesheet" type="text/scss" href="/ss_erp/static/src/scss/sgvn.scss"></link>
+
+        </xpath>
+        <xpath expr="//script[last()]" position="after">
+            <script type="text/javascript" src="/ss_erp/static/src/js/action_import_SS_test.js"></script>
         </xpath>
     </template>
 </odoo>
