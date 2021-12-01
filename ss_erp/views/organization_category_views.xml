@@ -76,7 +76,5 @@
         </field>
     </record>
 
-    <menuitem id="menu_organization_category_setting" name="Org. Categories"
-            parent="base.menu_users" action="action_organizations_category" />
 
 </odoo>

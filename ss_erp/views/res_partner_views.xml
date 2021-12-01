@@ -68,12 +68,16 @@
                 <field name="x_is_branch"/>
                 <field name="x_branch_name" attrs="{'invisible': [('x_is_branch', '=', False)], 'required': [('x_is_branch', '=', True)]}"/>
             </xpath>
+            <xpath expr="//field[@name='function']" position="before">
+                <field name="x_is_vendor"/>
+            </xpath>
             <xpath expr="//field[@name='type']" position="before">
-                <field name="x_partner_categ" widget="radio" options="{'horizontal': true}" required="1"/>
-                <field name="x_transaction_categ"  widget="many2many_checkboxes" attrs="{
-                    'required': [('x_partner_categ', '!=', 'other')]
+<!--                <field name="x_partner_categ" widget="radio" options="{'horizontal': true}" required="1"/>-->
+                <field name="x_is_customer"/>
+                <field name="x_transaction_categ"  widget="many2many_checkboxes"
+                       attrs="{'required': ['|',('x_is_customer', '=', True),('x_is_vendor','=',True)]
                 }"/>
-                <field name="x_transaction_department" widget="many2many_tags" options="{'no_create': True, 'no_open': True, 'no_edit': True}" attrs="{'required': [('x_partner_categ', '=', 'other')]}"/>
+                <field name="x_transaction_department" widget="many2many_tags" options="{'no_create': True, 'no_open': True, 'no_edit': True}" attrs="{'required': [('x_transaction_categ', '=', True)]}"/>
                 <field name="ref" widget="many2many_tags" string="Customer code" attrs="{
                     'invisible': [('has_ref', '=', 'no')],
                     'required': [('has_ref', '=', 'required')]
@@ -86,6 +90,7 @@
                     'required': [('has_phone', '=', 'required')]
                 }</attribute>
             </xpath>
+
             <xpath expr="//field[@name='mobile']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_mobile', '=', 'no')],
@@ -357,11 +362,11 @@
             </xpath>
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="after">
                 <field name="x_other_payment_term" attrs="{
-                    'invisible': [('x_contract_check', '=', 'ss_rule')],
-                    'required': [('x_contract_check', '=', 'other')]
+                    'invisible': [('x_vendor_payment_term', '=', 'ss_rule')],
+                    'required': [('x_vendor_payment_term', '=', 'other')]
                 }"/>
                 <field name="x_other_payment_reason" attrs="{
-                    'invisible': [('x_contract_check', '=', 'ss_rule')],
+                    'invisible': [('x_vendor_payment_term', '=', 'ss_rule')],
                 }"/>
                 <field name="x_minimum_cost" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{
                     'invisible': [('has_x_minimum_cost', '=', 'no')],

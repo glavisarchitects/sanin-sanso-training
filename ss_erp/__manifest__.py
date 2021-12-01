@@ -47,7 +47,7 @@
         "views/responsible_department_views.xml",
         "views/ss_erp_bis_category_views.xml",
         "views/stock_picking_views.xml",
-        "views/web_access_rule_buttons.xml",
+        # "views/web_access_rule_buttons.xml",
         "views/res_partner_bank_views.xml",
         "views/ss_erp_contact_category_views.xml",
         "views/approval_category_views.xml",
@@ -64,8 +64,19 @@
         "views/ss_erp_convert_code_type.xml",
         "views/ss_erp_external_system_type.xml",
         "views/ss_erp_code_convert.xml",
-        "views/ss_erp_ifdb_powernet_sales_head_views.xml",
-        "views/ss_erp_ifdb_powernet_sales_head_detail_views.xml",
+        "views/ss_erp_ifdb_powernet_sales_header_views.xml",
+        "views/ss_erp_ifdb_powernet_sales_detail_views.xml",
+        "views/ss_erp_ifdb_autogas_file_header_views.xml",
+        "views/ss_erp_ifdb_autogas_file_data_rec_views.xml",
+        "views/ss_erp_inventory_order_views.xml",
+        "views/ss_erp_ifdb_propane_sales_header_views.xml",
+        "views/ss_erp_ifdb_propane_sales_detail_views.xml",
+        "views/ss_erp_ifdb_yg_detail_views.xml",
+        "views/ss_erp_ifdb_yg_header_views.xml",
+        "views/ss_erp_ifdb_yg_summary_views.xml",
+
+        "views/webclient_templates.xml",
+        "menu/menu_views.xml",
 
         # Wizard
         "wizards/partner_rebate_attachment_wizard_views.xml",
@@ -77,5 +88,7 @@
     "installable": True,
     "post_init_hook": "post_init_hook",
     "uninstall_hook": "uninstall_hook",
-
+    'qweb': [
+        'static/src/xml/import_custom_powernet_sales_template.xml',
+    ],
 }

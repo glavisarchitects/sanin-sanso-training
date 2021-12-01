@@ -28,14 +28,24 @@ class ResPartnerForm(models.Model):
     property_account_payable_id = fields.Many2one('account.account', string="Account Payable",
         domain="[('internal_type', '=', 'payable'), ('deprecated', '=', False), ('company_id', '=', current_company_id)]",
         help="This account will be used instead of the default one as the payable account for the current partner",
+        default=lambda self:self._default_property_account_payable_id(),
         required=False)
     property_account_receivable_id = fields.Many2one('account.account', company_dependent=True,
         string="Account Receivable",
         domain="[('internal_type', '=', 'receivable'), ('deprecated', '=', False), ('company_id', '=', current_company_id)]",
         help="This account will be used instead of the default one as the receivable account for the current partner",
+        default=lambda self:self._default_property_account_receivable_id(),
         required=False)
     same_vat_partner_id = fields.Many2one(
         'res.partner', string='Partner with same Tax ID', store=False)
+
+    @api.model
+    def _default_property_account_payable_id(self):
+        return self.env['ir.property']._get('property_account_payable_id', 'res.partner')
+
+    @api.model
+    def _default_property_account_receivable_id(self):
+        return self.env['ir.property']._get('property_account_receivable_id', 'res.partner')
 
     # Override one2many field -> many2many field
     activity_ids = fields.Many2many(
@@ -70,6 +80,13 @@ class ResPartnerForm(models.Model):
         'mail.message', 'web_mail_message_res_partner_form_rel', 'partner_id', 'mail_message_id', copy=False)
     x_payment_terms_ids = fields.Many2many(
         'ss_erp.partner.payment.term', 'payment_term_res_partner_form_rel', 'partner_id', 'payment_term_id', copy=False)
+
+    @api.model
+    def _commercial_fields(self):
+        return super(ResPartnerForm, self)._commercial_fields() + \
+               ['debit_limit', 'property_account_payable_id', 'property_account_receivable_id',
+                'property_account_position_id',
+                'property_payment_term_id', 'property_supplier_payment_term_id', 'last_time_entries_checked']
 
     # Override to fix conflict
     @api.depends('is_company', 'parent_id.commercial_partner_id')

@@ -107,18 +107,5 @@
             <field name="search_view_id" ref="ss_erp_partner_rebate_search"/>
         </record>
 
-        <menuitem
-            id="ss_erp_partner_rebate_action_management_menu"
-            name="Rebate condition"
-            action="ss_erp_partner_rebate_action"
-            parent="purchase.menu_procurement_management"
-            sequence="10"/>
-
-        <menuitem
-            id="ss_erp_partner_rebate_finance_action_menu"
-            name="Rebate condition"
-            action="ss_erp_partner_rebate_action"
-            parent="account.menu_finance_payables"
-            sequence="150"/>
     </data>
 </odoo>

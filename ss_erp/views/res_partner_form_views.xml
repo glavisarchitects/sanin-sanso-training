@@ -41,12 +41,4 @@
         <field name="res_model">ss_erp.res.partner.form</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-    <menuitem
-        id="ss_erp_res_partner_form_menu"
-        name="Res Partner Form"
-        action="action_ss_erp_res_partner_form"
-        parent="contacts.res_partner_menu_config"
-        groups="base.group_no_one"
-        sequence="8"/>
 </odoo>

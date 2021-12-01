@@ -132,12 +132,4 @@
         <field name="res_model">ss_erp.contact.category</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-    <menuitem
-        id="ss_erp_contact_category_action_menu"
-        name="Contact Category"
-        parent="contacts.res_partner_menu_config"
-        action="ss_erp_contact_category_action"
-        sequence="4"
-    />
 </odoo>

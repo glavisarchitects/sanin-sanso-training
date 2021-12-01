@@ -97,6 +97,4 @@
         </field>
     </record>
 
-    <menuitem id="menu_organization_settings" name="Organizations"
-        parent="base.menu_users" action="action_organizations" />
 </odoo>

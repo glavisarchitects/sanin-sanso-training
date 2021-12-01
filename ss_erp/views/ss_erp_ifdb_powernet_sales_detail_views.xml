@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- TREE VIEW -->
+    <record id="ss_erp_ifdb_powernet_sales_detail_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.powernet.sales.detail.view.tree</field>
+        <field name="model">ss_erp.ifdb.powernet.sales.detail</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="id" string="External ID"/>
+                <field name="upload_date" />
+                <field name="customer_code" />
+                <field name="billing_summary_code" />
+                <field name="sales_date" />
+                <field name="status"
+                       widget="badge"
+                       decoration-info="status=='success'"
+                       decoration-warning="status=='wait'"
+                       decoration-danger="status=='error'" />
+            </tree>
+        </field>
+    </record>
+    <!-- ACTION -->
+    <record id="ss_erp_ifdb_powernet_sales_detail_action" model="ir.actions.act_window">
+        <field name="name">PowerNet Import data</field>
+        <field name="res_model">ss_erp.ifdb.powernet.sales.detail</field>
+        <field name="view_mode">tree</field>
+    </record>
+    <!-- MENUITEM -->
+    <menuitem id="menu_ss_erp_ifdb_powernet_salesdetail"
+              name="Import PowerNet Sales Detail file"
+              parent="ss_erp.external_system_cooperation_imported_data"
+              sequence="2"
+              action="ss_erp_ifdb_powernet_sales_detail_action"
+              groups="sales_team.group_sale_manager"/>
+</odoo>

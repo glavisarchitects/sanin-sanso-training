@@ -1312,7 +1312,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__has_ref
 #: model_terms:ir.ui.view,arch_db:ss_erp.res_partner_inherit_form
 msgid "Customer code"
-msgstr "得意先コード"
+msgstr "取引先コード"
 
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__res_partner__x_partner_categ__multi
@@ -1366,7 +1366,7 @@ msgstr "配送先"
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_transaction_department
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_transaction_department
 msgid "Department"
-msgstr "部署"
+msgstr "部門"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_hr_employee__department_jurisdiction_first
@@ -1724,7 +1724,7 @@ msgstr "創立年度"
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_name_furigana
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_name_furigana
 msgid "Furigana"
-msgstr "ふりがな"
+msgstr "フリガナ"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__partner_latitude
@@ -4106,7 +4106,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_account_setup_bank_manual_config__acc_type
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner_bank__acc_type
 msgid "Type"
-msgstr "タイプ"
+msgstr "預金口座"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_construction__license_figure

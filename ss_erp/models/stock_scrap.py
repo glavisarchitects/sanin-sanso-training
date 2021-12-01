@@ -1,6 +1,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
+
 class StockScrap(models.Model):
     _inherit = 'stock.scrap'
 
@@ -20,3 +21,10 @@ class StockScrap(models.Model):
                    ],
         required=False, )
 
+    @api.onchange('organization_id')
+    def onchange_organization_id(self):
+        if self.organization_id and self.location_id:
+            self.location_id = False
+            self.responsible_dept_id = False
+            self.scrap_type = False
+            self.scrap_location_id = False

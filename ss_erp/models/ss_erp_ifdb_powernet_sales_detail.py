@@ -3,25 +3,21 @@ from odoo import models, fields, api
 
 
 class IFDBPowerNetSalesHeadDetail(models.Model):
-    _name = 'ss_erp.ifdb.powernet.sales.head.detail'
-    _description = 'IFDB PowerNet Sales Head Detail'
+    _name = 'ss_erp.ifdb.powernet.sales.detail'
+    _description = 'IFDB PowerNet Sales Detail'
 
-
-    id = fields.Integer('ID', required=True, readonly=True)
-    powernet_sales_header_id = fields.Many2one('ss_erp.ifdb.powernet.sales.header','PowerNet Sales Line Header')
-    upload_date = fields.Datetime('Upload date and', required=True, index=True, readonly=True)
-    name = fields.Char('Name')
-    user_id = fields.Many2one('res.users', 'Manager', index=True)
-    branch_id = fields.Many2one('ss_erp.organaization','Branch', index=True)
+    powernet_sales_header_id = fields.Many2one('ss_erp.ifdb.powernet.sales.header', 'PowerNet Sales Header', required=True)
+    upload_date = fields.Datetime('Upload date and time', required=True, index=True, readonly=True)
+    name = fields.Char('Name', required=True)
+    user_id = fields.Many2one('res.users', 'Person in charge', index=True, required=True)
+    branch_id = fields.Many2one('ss_erp.organization', 'Branch', index=True, required=True)
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラー')
     ], string='Status', required=True, readonly=True)
-    create_date = fields.Datetime('Created date',readonly=True)
-    create_uid = fields.Many2one('res.users','Author', readonly=True)
-    write_date = fields.Datetime('Last update', readonly=True)
-    write_uid = fields.Many2one('res.users','Last updated',readonly=True)
+
+
     processing_date = fields.Datetime('Processing date and time', index=True, readonly=True)
     customer_code = fields.Char('Customer code', index=True,readonly=True)
     billing_summary_code = fields.Char('Billing summary code', readonly=True)
@@ -65,4 +61,3 @@ class IFDBPowerNetSalesHeadDetail(models.Model):
     product_classification_code_3 = fields.Char('Product classification code 3',readonly=True)
     error_message = fields.Char('Error message',readonly=True)
     sale_id = fields.Many2one('sale.order','See sales order',readonly=True)
-

@@ -3,6 +3,7 @@
     <data noupdate="0">
         <record id="product_pricelist_class_data_whole_company" model="product.pricelist.class">
             <field name="name">全社</field>
+            <field name="description">全社単位価格</field>
             <field name="organization_id">optional</field>
             <field name="partner_id">optional</field>
             <field name="uom_id">optional</field>
@@ -12,6 +13,7 @@
 
         <record id="product_pricelist_class_data_organization" model="product.pricelist.class">
             <field name="name">組織</field>
+            <field name="description">組織単位価格</field>
             <field name="organization_id">required</field>
             <field name="partner_id">optional</field>
             <field name="uom_id">optional</field>
@@ -21,6 +23,7 @@
 
         <record id="product_pricelist_class_data_partner" model="product.pricelist.class">
             <field name="name">取引先</field>
+            <field name="description">取引先単位価格</field>
             <field name="organization_id">required</field>
             <field name="partner_id">required</field>
             <field name="uom_id">optional</field>

@@ -13,7 +13,7 @@ class ProductPrice(models.Model):
     company_id = fields.Many2one('res.company', '会社')
     organization_id = fields.Many2one('ss_erp.organization', '組織')
     pricelist_class = fields.Many2one('product.pricelist.class', '価格リスト区分')
-    pricelist_id = fields.Many2one('product.pricelist', '価格リスト')
+    # pricelist_id = fields.Many2one('product.pricelist', '価格リスト')
     partner_id = fields.Many2one('res.partner', '取引先')
     product_id = fields.Many2one('product.product', 'プロダクト')
     uom_id = fields.Many2one('uom.uom', '単位')
@@ -29,10 +29,6 @@ class ProductPrice(models.Model):
     has_uom = fields.Selection(store=True, related='pricelist_class.uom_id')
     has_product_uom_qty_min = fields.Selection(store=True, related='pricelist_class.product_uom_qty_min')
     has_product_uom_qty_max = fields.Selection(store=True, related='pricelist_class.product_uom_qty_max')
-
-    _sql_constraints = [
-        ('_unique', 'unique (name)', "Two pricelist cannot have the same name."),
-    ]
 
     #
     @api.onchange('start_date', 'end_date')
@@ -78,9 +74,10 @@ class ProductPrice(models.Model):
             ])
             if len(product_pricelist_duplicate) > 0:
                 for exist in product_pricelist_duplicate:
-                    if exist != self and ((exist.end_date > new_start_date and exist.start_date < new_end_date) or
-                                          (exist.start_date < new_end_date and exist.end_date < new_end_date) or
-                                          (exist.start_date < new_start_date and exist.end_date < new_end_date)):
+                    # if exist != self and ((exist.end_date > new_start_date and exist.start_date < new_end_date) or
+                    #                       (exist.start_date < new_end_date and exist.end_date < new_end_date) or
+                    #                       (exist.start_date < new_start_date and exist.end_date < new_end_date)):
+                    if (exist.start_date < new_start_date < exist.end_date) or (exist.start_date < new_end_date < exist.end_date):
                         raise ValidationError(_('既に登録されている条件と期間が重なっているため登録できません'))
 
     @api.model
@@ -100,8 +97,8 @@ class ProductPriceClass(models.Model):
 
     name = fields.Char('名称')
     description = fields.Char('説明')
-    organization_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '組織')
-    partner_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '取引先')
-    uom_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '単位')
-    product_uom_qty_min = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '数量範囲(最小値)')
-    product_uom_qty_max = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '数量範囲(最大値)')
+    organization_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '組織', default='optional')
+    partner_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '取引先', default='optional')
+    uom_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '単位', default='optional')
+    product_uom_qty_min = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '数量範囲(最小値)', default='optional')
+    product_uom_qty_max = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], '数量範囲(最大値)', default='optional')

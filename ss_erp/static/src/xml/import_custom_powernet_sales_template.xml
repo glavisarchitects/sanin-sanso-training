@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+
+
+    <t t-name="ImportView.buttons">
+        <button type="button" class="btn btn-primary o_import_import o_import_import_full d-none">Import</button>
+        <button type="button" class="btn btn-primary o_import_import o_import_import_partial d-none">Resume</button>
+        <button type="button" class="btn btn-secondary o_import_validate d-none">Test</button>
+        <button type="button" class="btn btn-primary oe_import_file">Load File</button>
+        <button type="button" class="btn btn-secondary o_import_cancel">Cancel</button>
+        <button t-if="res_model=='ss_erp.ifdb.powernet.sales.header'" type="button"
+                class="btn btn-primary oe_powernet_import_transform">PowerNet Transform</button>
+    </t>
+
+</templates>

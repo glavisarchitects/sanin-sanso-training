@@ -32,12 +32,4 @@
         <field name="res_model">ss_erp.bis.category</field>
         <field name="view_mode">tree</field>
     </record>
-
-    <menuitem
-        id="transaction_classification_menu"
-        name="取引区分"
-        action="ss_erp_bis_category_action"
-        parent="contacts.res_partner_menu_config"
-        sequence="7"/>
-
 </odoo>

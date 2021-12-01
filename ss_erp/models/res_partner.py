@@ -18,14 +18,26 @@ class ResPartner(models.Model):
             'ss_erp.ss_erp_contact_category_data_0', raise_if_not_found=False)
     )
     x_name_furigana = fields.Char(string="Furigana")
-    x_partner_categ = fields.Selection([
-        ('customer', 'Customer'),
-        ('vendor', 'Supplier'),
-        ('multi', 'Customers & Supplier'),
-        ('other', 'Other')],
-        string="Contact classification",
-        help=_("Select Other for contacts not related to the transaction"),
-        default='customer')
+    # x_partner_categ = fields.Selection([
+    #     ('customer', 'Customer'),
+    #     ('vendor', 'Supplier'),
+    #     ('multi', 'Customers & Supplier'),
+    #     ('other', 'Other')],
+    #     string="Contact classification",
+    #     help=_("Select Other for contacts not related to the transaction"),
+    #     default='customer')
+
+    # 20211129
+    x_is_customer = fields.Boolean(
+        string='得意先',
+        index=True,
+        default=True,
+        required=False)
+    x_is_vendor = fields.Boolean(
+        string='仕入先',
+        index=True,
+        default=True,
+        required=False)
     type = fields.Selection(selection_add=[
         ('for_rfq', 'Address for requesting a quote'),
         ('for_po', 'Order destination'),

@@ -62,7 +62,6 @@ class SaleOrder(models.Model):
                     line.x_pricelist = product_pricelist
 
 
-
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
@@ -90,8 +89,6 @@ class SaleOrderLine(models.Model):
              ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
              ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
 
-        # print("###########################", product_pricelist)
-        # print("@@@@@@@@@@@@@@@@@@@@@@@@@", self.x_has_organization_id)
         self.x_is_required_x_pricelist = True
 
         # set False for pricelist core
