@@ -90,11 +90,5 @@
         <field name="res_model">ss_erp.ifdb.powernet.sales.header</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <!-- MENUITEM -->
-    <menuitem id="menu_ss_erp_ifdb_powernet_saleshead"
-              name="Import PowerNet file"
-              parent="ss_erp.external_system_cooperation_importing_performance"
-              action="ss_erp_ifdb_powernet_sales_header_action"
-              sequence="2"
-              groups="sales_team.group_sale_manager"/>
+
 </odoo>
