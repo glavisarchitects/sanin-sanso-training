@@ -11,9 +11,9 @@ class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
 
     x_department_id = fields.Many2one(
-        'hr.employee', string='Application department')
+        'ss_erp.responsible.department', string='Application department',default=lambda self:self._get_default_department())
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string='Application organization')
+        'ss_erp.organization', string='Application organization', default=lambda self:self._get_default_organization())
     x_contact_form_id = fields.Many2one(
         'ss_erp.res.partner.form', string='Contact application form')
     x_inventory_order_ids = fields.Many2many(
@@ -89,6 +89,18 @@ class ApprovalRequest(models.Model):
     show_btn_approve = fields.Boolean(compute='_compute_show_btn_approve')
     show_btn_draft = fields.Boolean(compute='_compute_show_btn_draft')
     show_btn_refuse = fields.Boolean(compute='_compute_show_btn_refuse')
+
+    def _get_default_department(self):
+        employee = self.env['hr.employee'].search([('user_id','=',self.env.user.id)],limit=1)
+        if employee:
+            return employee[0].department_jurisdiction_first
+        return False
+
+    def _get_default_organization(self):
+        employee = self.env['hr.employee'].search([('user_id','=',self.env.user.id)],limit=1)
+        if employee:
+            return employee[0].organization_first
+        return False
 
     def _compute_show_btn_draft(self):
         for request in self:
