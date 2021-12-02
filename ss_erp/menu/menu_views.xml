@@ -22,21 +22,21 @@
               action="ss_erp_code_convert_action" sequence="1"/>
     <menuitem id="ss_erp_contact_category_action_menu" name="Contact Category" parent="contacts.res_partner_menu_config"
               action="ss_erp_contact_category_action" sequence="4"/>
-    <menuitem id="menu_ss_erp_ifdb_propane_sales" name="Propane sales file" parent="sale.sale_order_menu"
-              sequence="90"/>
+<!--    <menuitem id="menu_ss_erp_ifdb_propane_sales" name="Propane sales file" parent="sale.sale_order_menu"-->
+<!--              sequence="90"/>-->
     <menuitem id="menu_ss_erp_ifdb_propane_sales_header_action" name="Propane sales file"
-              parent="ss_erp.menu_ss_erp_ifdb_propane_sales" action="ss_erp_ifdb_propane_sales_header_action"
+              parent="ss_erp.external_system_cooperation_importing_performance" action="ss_erp_ifdb_propane_sales_header_action"
               sequence="10"/>
     <menuitem id="menu_ss_erp_ifdb_propane_sales_detail_action" name="Propane sales file details"
-              parent="ss_erp.menu_ss_erp_ifdb_propane_sales" action="ss_erp_ifdb_propane_sales_detail_action"
+              parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_propane_sales_detail_action"
               sequence="20"/>
-    <menuitem id="menu_ss_erp_ifdb_yg_parent" name="Yamasan gas supply" parent="sale.sale_order_menu" sequence="90"/>
+<!--    <menuitem id="menu_ss_erp_ifdb_yg_parent" name="Yamasan gas supply" parent="sale.sale_order_menu" sequence="90"/>-->
     <menuitem id="menu_ss_erp_ifdb_yg_header_action" name="Yamasan gas supply Header"
-              parent="ss_erp.menu_ss_erp_ifdb_yg_parent" action="ss_erp_ifdb_yg_header_action" sequence="10"/>
+              parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_header_action" sequence="10"/>
     <menuitem id="menu_ss_erp_ifdb_yg_detail_action" name="Yamasan gas supply details"
-              parent="ss_erp.menu_ss_erp_ifdb_yg_parent" action="ss_erp_ifdb_yg_detail_action" sequence="20"/>
+              parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_detail_action" sequence="20"/>
     <menuitem id="menu_ss_erp_ifdb_yg_summary_action" name="Yamasan gas supply summary"
-              parent="ss_erp.menu_ss_erp_ifdb_yg_parent" action="ss_erp_ifdb_yg_summary_action" sequence="20"/>
+              parent="ss_erp.external_system_cooperation_importing_performance" action="ss_erp_ifdb_yg_summary_action" sequence="20"/>
     <menuitem id="external_system_cooperation_importing_performance" name="実績情報取込"
               parent="ss_erp.external_system_cooperation_menu" sequence="50"/>
     <menuitem id="external_system_cooperation_imported_data" name="取込データ"
