@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 import calendar
-import pandas as pd
 from datetime import datetime, timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+
+try:
+    import pandas as pd
+except ImportError:
+    raise UserError(_("`pandas` package is not yet installed. Please install by command: pip3 install pandas"))
+
 
 MODELS_CUSTOM_IMPORTS = [
     'ss_erp.ifdb.powernet.sales.header',

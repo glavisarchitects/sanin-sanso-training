@@ -48,6 +48,12 @@ class StockPicking(models.Model):
                 r.has_lot_ids = False
 
 
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+
+    x_inventory_order_line_id = fields.Many2one(comodel_name='ss_erp.inventory.order.line',)
+
+
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 

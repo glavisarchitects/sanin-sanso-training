@@ -9,7 +9,7 @@
                 <field name="name"/>
                 <field name="organization_id"/>
                 <field name="location_id"/>
-                <field name="picking_type_id"/>
+                <!--                <field name="picking_type_id"/>-->
                 <field name="scheduled_date"/>
                 <field name="shipping_method"/>
                 <field name="user_id"/>
@@ -25,9 +25,11 @@
             <form string="在庫移動">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,waiting,shipping,done,cancel"/>
-                    <button name="confirm_inventory_order" string="Confirm" type="object" class="btn-primary"
+                    <button name="confirm_inventory_order" string="確定" type="object" class="btn-primary"
                             attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="cancel_state" string="Cancel" type="object"
+<!--                    <button name="check_availability" string="利用可能確認" type="object" class="btn-primary"-->
+<!--                            attrs="{'invisible': [('state', '!=', 'waiting')]}"/>-->
+                    <button name="cancel_state" string="取消" type="object"
                             attrs="{'invisible': [('state', '==', 'cancel')]}"/>
                 </header>
                 <sheet>
@@ -45,29 +47,36 @@
                     </h1>
                     <group>
                         <group>
-                            <field name="picking_type_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="organization_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="responsible_dept_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="location_id" domain="[('usage','!=', 'view')]" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="user_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <!--                            <field name="picking_type_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>-->
+                            <field name="organization_id" required="1"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="responsible_dept_id" required="1"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="location_id" domain="[('usage','!=', 'view')]" required="1"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="user_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
-                            <field name="scheduled_date" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="shipping_method" widget="radio" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+<!--                            <field name="reserved_availability"/>-->
+                            <field name="scheduled_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="shipping_method" widget="radio"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="オペレーション">
-                            <field name="inventory_order_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                            <field name="inventory_order_line_ids"
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}">
                                 <tree editable="bottom">
                                     <field name="organization_id" required="1"/>
                                     <field name="responsible_dept_id" required="1"/>
                                     <field name="location_dest_id" required="1" domain="[('usage','!=', 'view')]"/>
                                     <field name="product_id" required="1"/>
                                     <!--                                    <field name="lot_ids"/>-->
-                                    <field name="product_uom_qty"/>
-                                    <field name="product_uom"/>
-                                    <field name="reserved_availability"/>
+                                    <field name="product_uom_qty" required="1"/>
+                                    <field name="product_uom" required="1"/>
+                                    <field name="reserved_availability" readonly="1"/>
+                                    <field name="product_packaging"/>
                                 </tree>
                             </field>
                         </page>

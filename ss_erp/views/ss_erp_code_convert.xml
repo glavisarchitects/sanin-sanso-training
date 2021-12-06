@@ -20,7 +20,7 @@
             <field name="name">ss_erp.code.convert.view.form</field>
             <field name="model">ss_erp.code.convert</field>
             <field name="arch" type="xml">
-                <form string="">
+                <form string="" duplicate="0">
                     <sheet>
                         <group>
                             <group>

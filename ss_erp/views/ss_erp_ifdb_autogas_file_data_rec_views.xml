@@ -35,18 +35,18 @@
         <field name="arch" type="xml">
             <tree string="オートガスPOS（松江）取込データ" editable="bottom">
                 <field name="id" />
-                <field name="processing_date" />
-                <field name="card_classification" />
-                <field name="processing_division" />
-                <field name="unused" />
-                <field name="group_division" />
+                <field name="processing_date" required="True" />
+                <field name="card_classification" readonly="True" />
+                <field name="processing_division" readonly="True" />
+                <field name="unused" readonly="True" />
+                <field name="group_division" readonly="True" />
                 <field name="status"
                        widget="badge"
                        decoration-info="status=='success'"
                        decoration-warning="status=='wait'"
                        decoration-danger="status=='error'" />
                 <field name="autogas_file_header_id"
-                       optional="hide" />
+                       required="True" optional="hide" />
                 <field name="sale_id"
                        optional="hide" />
             </tree>

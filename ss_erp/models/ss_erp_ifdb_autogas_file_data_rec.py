@@ -1,4 +1,4 @@
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 
 
 class IfdbAutogasFileDataRec(models.Model):
@@ -8,7 +8,8 @@ class IfdbAutogasFileDataRec(models.Model):
     autogas_file_header_id = fields.Many2one(
         comodel_name="ss_erp.ifdb.autogas.file.header",
         string="オートガスPOSファイルヘッダ",
-        required=True
+        required=True,
+        ondelete="cascade"
     )
     status = fields.Selection(
         selection=[
@@ -24,56 +25,46 @@ class IfdbAutogasFileDataRec(models.Model):
     )
     processing_date = fields.Datetime(
         string="処理日時",
-        required=True,
         readonly=True
     )
     card_classification = fields.Char(
-        string="カード区分",
-        readonly=True
+        string="カード区分"
     )
     processing_division = fields.Char(
-        string="処理区分",
-        readonly=True
+        string="処理区分"
     )
     unused = fields.Char(
-        string="未使用",
-        readonly=True
+        string="未使用"
     )
     group_division = fields.Char(
-        string="グループ区分",
-        readonly=True
+        string="グループ区分"
     )
     actual_car_number = fields.Char(
-        string="実車番",
-        readonly=True
+        string="実車番"
     )
     card_number = fields.Char(
-        string="カード番号",
-        readonly=True
+        string="カード番号"
+    )
+    product_code = fields.Char(
+        string="商品コード"
     )
     data_no = fields.Char(
-        string="データNo",
-        readonly=True
+        string="データNo"
     )
-    quanlity_1 = fields.Char(
-        string="数量1",
-        readonly=True
+    quantity_1 = fields.Char(
+        string="数量1"
     )
     unit_price = fields.Char(
-        string="単価",
-        readonly=True
+        string="単価"
     )
     amount_of_money = fields.Char(
-        string="金額",
-        readonly=True
+        string="金額"
     )
     staff_code = fields.Char(
-        string="係員コード",
-        readonly=True
+        string="係員コード"
     )
     processing_time = fields.Char(
-        string="処理時刻",
-        readonly=True
+        string="処理時刻"
     )
     calendar_date = fields.Char(
         string="カレンダー日付",
@@ -108,8 +99,7 @@ class IfdbAutogasFileDataRec(models.Model):
         readonly=True
     )
     quantity_2 = fields.Char(
-        string="数量2",
-        readonly=True
+        string="数量2"
     )
     filer2 = fields.Char(
         string="Filer2",

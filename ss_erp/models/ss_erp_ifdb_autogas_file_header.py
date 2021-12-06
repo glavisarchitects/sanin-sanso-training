@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 
+
 class IFDBAutogasFileHeader(models.Model):
     _name = "ss_erp.ifdb.autogas.file.header"
     _description = "Autogas File Header"
@@ -23,8 +24,7 @@ class IFDBAutogasFileHeader(models.Model):
     branch_id = fields.Many2one(
         comodel_name="ss_erp.organization",
         string="支店",
-        index=True,
-        required=True
+        index=True
     )
     status = fields.Selection(
         selection=[

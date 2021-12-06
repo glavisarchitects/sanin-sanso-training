@@ -68,7 +68,7 @@
                         </group>
                         <group>
                             <field name="user_id" />
-                            <field name="branch_id" />
+                            <field name="branch_id" required="True" />
                         </group>
                     </group>
                     <notebook>
@@ -81,11 +81,11 @@
                                            decoration-warning="status=='wait'"
                                            decoration-danger="status=='error'" />
                                     <field name="id" />
-                                    <field name="card_classification" />
-                                    <field name="processing_division" />
-                                    <field name="unused" />
-                                    <field name="group_division" />
-                                    <field name="actual_car_number" />
+                                    <field name="card_classification" readonly="True" />
+                                    <field name="processing_division" readonly="True" />
+                                    <field name="unused" readonly="True" />
+                                    <field name="group_division" readonly="True" />
+                                    <field name="actual_car_number" readonly="True" />
                                 </tree>
                             </field>
                         </page>
