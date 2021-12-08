@@ -7,6 +7,9 @@ from odoo.exceptions import UserError
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    def _get_default_country_id(self):
+        return self.env['res.country'].search([('code', '=', 'JP'), ], limit=1)
+
     x_fax_number = fields.Char(
         string="Fax Number", size=20
     )
@@ -18,14 +21,6 @@ class ResPartner(models.Model):
             'ss_erp.ss_erp_contact_category_data_0', raise_if_not_found=False)
     )
     x_name_furigana = fields.Char(string="Furigana")
-    # x_partner_categ = fields.Selection([
-    #     ('customer', 'Customer'),
-    #     ('vendor', 'Supplier'),
-    #     ('multi', 'Customers & Supplier'),
-    #     ('other', 'Other')],
-    #     string="Contact classification",
-    #     help=_("Select Other for contacts not related to the transaction"),
-    #     default='customer')
 
     # 20211129
     x_is_customer = fields.Boolean(
@@ -194,6 +189,9 @@ class ResPartner(models.Model):
     x_payment_terms_ids = fields.One2many('ss_erp.partner.payment.term',
         'partner_id', 
         string='Transaction terms')
+    country_id = fields.Many2one('res.country', string='Country', ondelete='restrict',default=_get_default_country_id)
+
+
 
     @api.depends('is_company', 'x_contact_categ')
     def _compute_company_type(self):
@@ -208,8 +206,8 @@ class ResPartner(models.Model):
         if self.x_contact_categ and self.x_contact_categ.type:
             self.type = self.x_contact_categ.type
 
-    @api.model
-    def default_get(self, default_fields):
-        rec = super(ResPartner, self).default_get(default_fields)
-        rec['country_id'] = self.env.ref('base.jp', raise_if_not_found=False)
-        return rec
+    # @api.model
+    # def default_get(self, default_fields):
+    #     rec = super(ResPartner, self).default_get(default_fields)
+    #     rec['country_id'] = self.env.ref('base.jp', raise_if_not_found=False)
+    #     return rec

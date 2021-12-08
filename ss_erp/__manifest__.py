@@ -11,19 +11,20 @@
     "depends": [
         "base", "delivery", "mail", "contacts", "purchase",
         "purchase_stock", "web", "account", "stock_dropshipping", "approvals", "hr",
-        "approvals_purchase_stock",
+        "approvals_purchase_stock", "base_import"
     ],
     "data": [
         # SECURITY
         "security/ir.model.access.csv",
         "security/x_security_groups_security.xml",
-        "data/contact_category_data.xml",''
         "security/approval_security.xml",
 
         # DATA
         "data/bis_category_data.xml",
         "data/ir_sequence_data.xml",
         "data/product_pricelist_class_data.xml",
+        "data/contact_category_data.xml", ''
+        "data/ir_action_server_data.xml",
 
         # REPORTS
         "reports/paperformat.xml",
@@ -89,6 +90,6 @@
     "post_init_hook": "post_init_hook",
     "uninstall_hook": "uninstall_hook",
     'qweb': [
-        'static/src/xml/import_custom_powernet_sales_template.xml',
+        'static/src/xml/import_custom.xml',
     ],
 }

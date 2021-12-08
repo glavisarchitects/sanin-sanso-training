@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from . import base_import
 from . import bis_category
 from . import mail_mail
 from . import model
@@ -47,4 +48,4 @@ from . import ss_erp_ifdb_yg_detail
 from . import ss_erp_ifdb_yg_header
 from . import ss_erp_ifdb_yg_summary
 from . import ss_erp_ifdb_autogas_file_data_rec
-from . import importer_powernet_sales
+# from . import importer_powernet_sales

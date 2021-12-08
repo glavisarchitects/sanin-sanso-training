@@ -6,16 +6,29 @@ class Import(models.TransientModel):
     _inherit = "base_import.import"
     _description = "Base Import"
 
-    def transform_autogas_file(self, options, **kwargs):
+    import_file_header_model = fields.Char(
+        string="Related File Header Model",
+        readonly=True,
+        index=True
+    )
+    import_file_header_id = fields.Many2oneReference(
+        string="Related File Header Id",
+        readonly=True,
+        index=True,
+        model_field="import_file_header_model"
+    )
+
+    def transform_autogas_file(self, options, parent_context={}):
         self.ensure_one()
-        if self.file_type != "text/csv":
-            raise UserError(_("Autogas File Transform only takes `.csv` as file extension!"))
-        autogas_header = self.env["ss_erp.ifdb.autogas.file.header"].create({
-            "name": self.file_name,
-            "upload_date": fields.Datetime.now(),
-            "user_id": self.env.user.id,
-            "branch_id": self.env.user.organization_id.id
-        })
+        autogas_header = False
+        if parent_context and not any([self.import_file_header_id, self.import_file_header_model]):
+            self.import_file_header_model = parent_context["default_import_file_header_model"]
+            self.import_file_header_id = parent_context["default_import_file_header_id"]
+            autogas_header = self.env[self.import_file_header_model].browse(
+                self.import_file_header_id
+            )
+        if not autogas_header:
+            raise UserError(_("Missing File Header, please using `upload` option from file header!"))
         data = self.file.decode("utf-8").split("\r\n")
         # remove the first and last line
         data = data[1:-2]
@@ -56,3 +69,25 @@ class Import(models.TransientModel):
             )
             new_data.append(new_line_data)
         self.file = "\n".join(new_data).encode("utf-8")
+
+    def transform_powernet_file(self, options, parent_context={}):
+        self.ensure_one()
+        powernet_header = False
+        if parent_context and not any([self.import_file_header_id, self.import_file_header_model]):
+            self.import_file_header_model = parent_context["default_import_file_header_model"]
+            self.import_file_header_id = parent_context["default_import_file_header_id"]
+            powernet_header = self.env[self.import_file_header_model].browse(
+                self.import_file_header_id
+            )
+        if not powernet_header:
+            raise UserError(_("Missing File Header, please using `upload` option from file header!"))
+        data = self.file.split(b"\n")
+        new_data = [
+            b'"powernet_sales_header_id","customer_code","billing_summary_code","sales_date","slip_type","slip_no","data_types","cash_classification","product_code","product_code_2","product_name","product_remarks","sales_category","quantity","unit_code","unit_price","amount_of_money","consumption_tax","sales_amount","quantity_after_conversion","search_remarks_1","search_remarks_2","search_remarks_3","search_remarks_4","search_remarks_5","search_remarks_6","search_remarks_7","search_remarks_8","search_remarks_9","search_remarks_10","sales_classification_code_1","sales_classification_code_2","sales_classification_code_3","consumer_sales_classification_code_1","consumer_sales_classification_code_2","consumer_sales_classification_code_3","consumer_sales_classification_code_4","consumer_sales_classification_code_5","product_classification_code_1","product_classification_code_2","product_classification_code_3"'
+        ]
+        for line in data:
+            if line == b"":
+                continue
+            new_line = b'"%s",' % (powernet_header.name.encode("utf-8")) + line
+            new_data.append(new_line)
+        self.file = b"\n".join(new_data)

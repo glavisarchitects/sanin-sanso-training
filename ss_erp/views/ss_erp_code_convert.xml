@@ -33,10 +33,12 @@
                         </group>
                         <group>
                             <group>
-                                <field name="external_code" required="True"/>
+                                <field name="external_code" attrs="{'invisible': [('convert_code_type','=', False)], 'required': [('convert_code_type','!=', False)]}"/>
                             </group>
                             <group>
-                                <field name="internal_code" required="True"/>
+                                <field name="internal_code" options="{'hide_model': True, 'no_create': True, 'no_edit': True, 'no_open': True}"
+                                       attrs="{'invisible': [('convert_code_type','=', False)], 'required': [('convert_code_type','!=', False)]}"/>
+                                <field name="value" invisible="True"/>
                             </group>
                         </group>
                     </sheet>
@@ -64,7 +66,5 @@
             <field name="res_model">ss_erp.code.convert</field>
             <field name="view_mode">tree,form</field>
         </record>
-
-
     </data>
 </odoo>

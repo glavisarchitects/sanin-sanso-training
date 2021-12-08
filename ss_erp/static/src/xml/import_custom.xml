@@ -4,11 +4,13 @@
     <t t-name="CustomBaseImport" t-inherit="base_import.ImportView.buttons" t-inherit-mode="extension" owl="1">
         <xpath expr="//button[hasclass('o_import_cancel')]" position="after">
             <button type="button" 
-                class="btn bt-secondary oe_autogas_import_transform d-none">
+                class="btn btn-secondary oe_autogas_import_transform d-none">
                 Autogas Transform
             </button>
-            <button t-if="res_model=='ss_erp.ifdb.powernet.sales.header'" type="button"
-                class="btn btn-primary oe_powernet_import_transform">PowerNet Transform</button>
+            <button type="button"
+                class="btn btn-secondary oe_powernet_import_transform d-none">
+                PowerNet Transform
+            </button>
         </xpath>
     </t>
 

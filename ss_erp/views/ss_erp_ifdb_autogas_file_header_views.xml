@@ -52,6 +52,10 @@
             <form string="オートガスPOS（松江）ファイル取込">
                 <header>
                     <button type="object"
+                            name="action_import"
+                            string="アップロード"
+                            class="oe_highlight" />
+                    <button type="object"
                             name="action_processing_excution"
                             string="処理実行"
                             class="oe_highlight" />
@@ -64,7 +68,7 @@
                     <group>
                         <group>
                             <field name="upload_date" />
-                            <field name="status" />
+                            <field name="status" readonly="True" />
                         </group>
                         <group>
                             <field name="user_id" />

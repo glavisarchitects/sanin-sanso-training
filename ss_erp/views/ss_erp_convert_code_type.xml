@@ -46,7 +46,7 @@
                     <field name="code" />
                     <field name="name" />
                     <field name="model" />
-                    <field name="fields"/>
+                    <field name="fields" />
                 </search>
             </field>
         </record>
@@ -57,13 +57,6 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <!-- MENUITEM -->
-        <!--<menuitem
-            id="ss_erp_convert_code_type_action_menu"
-            name="Convert Code Type"
-            parent="contacts.res_partner_menu_config"
-            action="ss_erp_convert_code_type_action"
-            sequence="4"
-        />-->
+        
     </data>
 </odoo>

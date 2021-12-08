@@ -1,4 +1,5 @@
-from odoo import _, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class IfdbAutogasFileDataRec(models.Model):
@@ -114,3 +115,36 @@ class IfdbAutogasFileDataRec(models.Model):
         string="販売オーダ参照",
         readonly=True
     )
+    customer_code = fields.Char(
+        string="得意先コード",
+        compute="_compute_customer_code",
+        store=True,
+        size=4
+    )
+    validate_so = fields.Char(
+        string="SOチェック用",
+        compute="_compute_validate_sale_order",
+        store=True
+    )
+
+    _sql_constraints = [
+        ("card_number_length",
+        "CHECK(LENGTH(card_number) >= 12)",
+        "Card Number length must be bigger than 12")
+    ]
+
+    @api.depends("card_number")
+    def _compute_customer_code(self):
+        for r in self:
+            r.customer_code = r.card_number[8:12]
+
+    @api.depends("customer_code", "calendar_date")
+    def _compute_validate_sale_order(self):
+        for r in self:
+            validate_so = ""
+            if r.customer_code:
+                validate_so+="%s" % r.customer_code
+            if r.calendar_date:
+                validate_so+="%s" % r.calendar_date
+            r.validate_so = validate_so
+

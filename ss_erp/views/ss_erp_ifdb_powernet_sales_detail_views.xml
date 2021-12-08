@@ -6,12 +6,12 @@
         <field name="model">ss_erp.ifdb.powernet.sales.detail</field>
         <field name="arch" type="xml">
             <tree string="">
-                <field name="id" string="External ID"/>
-                <field name="upload_date" />
-                <field name="customer_code" />
-                <field name="billing_summary_code" />
-                <field name="sales_date" />
-                <field name="status"
+                <field name="id" string="External ID" readonly="1" />
+                <!-- <field name="upload_date" readonly="1" /> -->
+                <field name="customer_code" readonly="1" />
+                <field name="billing_summary_code" readonly="1" />
+                <field name="sales_date" readonly="1" />
+                <field name="status" readonly="1"
                        widget="badge"
                        decoration-info="status=='success'"
                        decoration-warning="status=='wait'"

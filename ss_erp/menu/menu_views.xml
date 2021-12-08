@@ -24,6 +24,14 @@
               action="ss_erp_contact_category_action" sequence="4"/>
 <!--    <menuitem id="menu_ss_erp_ifdb_propane_sales" name="Propane sales file" parent="sale.sale_order_menu"-->
 <!--              sequence="90"/>-->
+
+    <menuitem id="external_system_cooperation_importing_performance" name="実績情報取込"
+              parent="ss_erp.external_system_cooperation_menu" sequence="50"/>
+
+        <menuitem id="external_system_cooperation_imported_data" name="取込データ"
+              parent="ss_erp.external_system_cooperation_menu" sequence="60"/>
+
+
     <menuitem id="menu_ss_erp_ifdb_propane_sales_header_action" name="Propane sales file"
               parent="ss_erp.external_system_cooperation_importing_performance" action="ss_erp_ifdb_propane_sales_header_action"
               sequence="10"/>
@@ -35,12 +43,13 @@
               parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_header_action" sequence="10"/>
     <menuitem id="menu_ss_erp_ifdb_yg_detail_action" name="Yamasan gas supply details"
               parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_detail_action" sequence="20"/>
+
+
+
     <menuitem id="menu_ss_erp_ifdb_yg_summary_action" name="Yamasan gas supply summary"
               parent="ss_erp.external_system_cooperation_importing_performance" action="ss_erp_ifdb_yg_summary_action" sequence="20"/>
-    <menuitem id="external_system_cooperation_importing_performance" name="実績情報取込"
-              parent="ss_erp.external_system_cooperation_menu" sequence="50"/>
-    <menuitem id="external_system_cooperation_imported_data" name="取込データ"
-              parent="ss_erp.external_system_cooperation_menu" sequence="60"/>
+
+
     <menuitem id="menu_ss_erp_ifdb_powernet_saleshead" name="Import PowerNet file"
               parent="ss_erp.external_system_cooperation_importing_performance"
               action="ss_erp_ifdb_powernet_sales_header_action" sequence="2" groups="sales_team.group_sale_manager"/>

@@ -1,27 +1,33 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+
 
 class CodeConvert(models.Model):
     _name = 'ss_erp.code.convert'
     _description = 'Code Convert'
     _rec_name = 'external_system'
 
-
     @api.model
     def _selection_target_model(self):
         return [(model.model, model.name) for model in self.env['ir.model'].search([])]
 
-    external_system = fields.Many2one('ss_erp.external.system.type', string='External system', required=True, copy=False)
-    convert_code_type = fields.Many2one('ss_erp.convert.code.type', string='Conversion code type', required=True, copy=False)
+    external_system = fields.Many2one('ss_erp.external.system.type', string='External system', required=True,
+                                      copy=False)
+    convert_code_type = fields.Many2one('ss_erp.convert.code.type', string='Conversion code type', required=True,
+                                        copy=False)
     external_code = fields.Char(string='External')
-    priority_conversion = fields.Boolean(string='Priority conversion destination', required=True, default=False, copy=False)
-    internal_code = fields.Reference(selection='_selection_target_model', inverse='_set_resource_ref', compute='_compute_resource_ref', copy=False)
+    priority_conversion = fields.Boolean(string='Priority conversion destination', required=True, default=False,
+                                         copy=False)
+    internal_code = fields.Reference(selection='_selection_target_model', inverse='_set_resource_ref',
+                                     compute='_compute_resource_ref', )
     value = fields.Text(required=True, help="Expression containing a value specification. \n"
                                             "When Formula type is selected, this field may be a Python expression "
                                             " that can use the same values as for the code field on the server action.\n"
                                             "If Value type is selected, the value will be used directly without evaluation.")
-    active = fields.Boolean(string='Active', default=True)
-    _sql_constraints = [('unique_convert_code', 'unique(external_system, convert_code_type, external_code)', _('The input code conversion definition has already been registered'))	]
+
+    _sql_constraints = [('unique_convert_code', 'unique(external_system, convert_code_type, external_code)',
+                         _('The input code conversion definition has already been registered'))]
 
     @api.depends('convert_code_type')
     def _compute_resource_ref(self):
@@ -45,4 +51,3 @@ class CodeConvert(models.Model):
         for line in self:
             if line.internal_code:
                 line.value = str(line.internal_code.id)
-
