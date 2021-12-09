@@ -101,7 +101,7 @@ class Import(models.TransientModel):
             raise UserError(_("Missing File Header, please using `upload` option from file header!"))
         data = self.file.split(b"\n")
         new_data = [
-            b'"powernet_sales_header_id","customer_code","billing_summary_code","sales_date","slip_type","slip_no","data_types","cash_classification","product_code","product_code_2","product_name","product_remarks","sales_category","quantity","unit_code","unit_price","amount_of_money","consumption_tax","sales_amount","quantity_after_conversion","search_remarks_1","search_remarks_2","search_remarks_3","search_remarks_4","search_remarks_5","search_remarks_6","search_remarks_7","search_remarks_8","search_remarks_9","search_remarks_10","sales_classification_code_1","sales_classification_code_2","sales_classification_code_3","consumer_sales_classification_code_1","consumer_sales_classification_code_2","consumer_sales_classification_code_3","consumer_sales_classification_code_4","consumer_sales_classification_code_5","product_classification_code_1","product_classification_code_2","product_classification_code_3"'
+            b'"powernet_sales_header_id","需要家コード","請求まとめコード","売上日","伝票種類","伝票Ｎｏ","データ種類","現金／掛け区分","商品コード","商品コード２","商品名","商品備考","売上区分","数量","単位コード","単価","金額","消費税","売上額","換算後数量","検索備考1","検索備考2","検索備考3","検索備考4","検索備考5","検索備考6","検索備考7","検索備考8","検索備考9","検索備考10","販売分類コード1","販売分類コード2","販売分類コード3","需要家販売分類コード1","需要家販売分類コード2","需要家販売分類コード3","需要家販売分類コード4","需要家販売分類コード5","商品分類コード1","商品分類コード2","商品分類コード3"'
         ]
         for line in data:
             if line == b"":
