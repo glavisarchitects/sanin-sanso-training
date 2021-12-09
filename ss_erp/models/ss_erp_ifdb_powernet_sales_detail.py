@@ -26,7 +26,7 @@ class IFDBPowerNetSalesHeadDetail(models.Model):
     product_name = fields.Char('商品名')
     product_remarks = fields.Char('商品備考')
     sales_category = fields.Char('売上区分')
-    quantity = fields.Integer('数量')
+    quantity = fields.Float('数量')
     unit_code = fields.Char('単位コード')
     unit_price = fields.Float('単価')
     amount_of_money = fields.Float('金額')
