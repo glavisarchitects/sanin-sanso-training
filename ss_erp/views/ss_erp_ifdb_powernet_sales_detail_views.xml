@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <tree string="">
                 <field name="id" string="External ID" readonly="1" />
-                <!-- <field name="upload_date" readonly="1" /> -->
+                <field name="processing_date"/>
                 <field name="customer_code" readonly="1" />
                 <field name="billing_summary_code" readonly="1" />
                 <field name="sales_date" readonly="1" />
@@ -16,6 +16,44 @@
                        decoration-info="status=='success'"
                        decoration-warning="status=='wait'"
                        decoration-danger="status=='error'" />
+                 <field name="slip_type" optional="hide"/>
+                <field name="slip_no" optional="hide"/>
+                <field name="data_types" optional="hide"/>
+                <field name="cash_classification" optional="hide"/>
+                <field name="product_code" optional="hide"/>
+                <field name="product_code_2" optional="hide"/>
+                <field name="product_name" optional="hide"/>
+                <field name="product_remarks" optional="hide"/>
+                <field name="sales_category" optional="hide"/>
+                <field name="quantity" optional="hide"/>
+                <field name="unit_code" optional="hide"/>
+                <field name="unit_price" optional="hide"/>
+                <field name="amount_of_money" optional="hide"/>
+                <field name="consumption_tax" optional="hide"/>
+                <field name="sales_amount" optional="hide"/>
+                <field name="quantity_after_conversion" optional="hide"/>
+                <field name="search_remarks_1" optional="hide"/>
+                <field name="search_remarks_2" optional="hide"/>
+                <field name="search_remarks_3" optional="hide"/>
+                <field name="search_remarks_4" optional="hide"/>
+                <field name="search_remarks_5" optional="hide"/>
+                <field name="search_remarks_6" optional="hide"/>
+                <field name="search_remarks_7" optional="hide"/>
+                <field name="search_remarks_8" optional="hide"/>
+                <field name="search_remarks_9" optional="hide"/>
+                <field name="search_remarks_10" optional="hide"/>
+                <field name="sales_classification_code_1" optional="hide"/>
+                <field name="sales_classification_code_2" optional="hide"/>
+                <field name="sales_classification_code_3" optional="hide"/>
+                <field name="consumer_sales_classification_code_1" optional="hide"/>
+                <field name="consumer_sales_classification_code_2" optional="hide"/>
+                <field name="consumer_sales_classification_code_3" optional="hide"/>
+                <field name="consumer_sales_classification_code_4" optional="hide"/>
+                <field name="consumer_sales_classification_code_5" optional="hide"/>
+                <field name="product_classification_code_1" optional="hide"/>
+                <field name="product_classification_code_2" optional="hide"/>
+                <field name="product_classification_code_3" optional="hide"/>
+                <field name="sale_id"/>
             </tree>
         </field>
     </record>

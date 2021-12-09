@@ -52,7 +52,7 @@ class InventoryOrder(models.Model):
         self.has_cancel = True
 
     #
-    @api.depends('has_confirm')
+    @api.depends('has_confirm', 'inventory_order_line_ids.move_ids.state')
     def _compute_state(self):
         for rec in self:
             stock_picking_order = rec.env['stock.picking'].search([('x_inventory_order_id', '=', rec.id)])
@@ -68,8 +68,14 @@ class InventoryOrder(models.Model):
                     rec.state = 'waiting'
                     if all(s == 'done' for s in stp_state_all):
                         rec.state = 'done'
-                    elif all(s == 'assigned' for s in stp_vir):
+                    elif all(s == 'done' for s in stp_vir):
                         rec.state = 'shipping'
+                        in_transfer = stock_picking_order - stock_picking_to_virtual
+                        if in_transfer:
+                            for it in in_transfer:
+                                if it.state == 'confirmed':
+                                    it.action_confirm()
+                                    it.action_assign()
                 else:
                     rec.state = 'draft'
 
@@ -101,8 +107,10 @@ class InventoryOrder(models.Model):
                             'product_uom_qty': line.product_uom_qty,
                             'product_uom': line.product_uom,
                             'name': self.name,
+                            'state': 'confirmed',
                         })))
                     from_source_move = {
+                        # 'state': 'confirmed',
                         'location_id': self.location_id.id,
                         'location_dest_id': virtual_location.id,
                         'picking_type_id': out_going.id,
@@ -115,6 +123,7 @@ class InventoryOrder(models.Model):
                     }
 
                     move_to_dest_location = {
+                        # 'state': 'waiting',
                         'location_id': virtual_location.id,
                         'location_dest_id': dest.id,
                         'picking_type_id': in_coming.id,
@@ -126,8 +135,12 @@ class InventoryOrder(models.Model):
 
                         'move_ids_without_package': val,
                     }
-                self.env['stock.picking'].create(from_source_move)
+                out_transfer = self.env['stock.picking'].create(from_source_move)
+                out_transfer.action_confirm()
+                out_transfer.action_assign()
+
                 self.env['stock.picking'].create(move_to_dest_location)
+
                 self.has_confirm = True
         else:
             raise UserError(

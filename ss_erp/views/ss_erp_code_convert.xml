@@ -6,7 +6,7 @@
             <field name="name">ss_erp.code.convert.view.tree</field>
             <field name="model">ss_erp.code.convert</field>
             <field name="arch" type="xml">
-                <tree string="">
+                <tree string="" duplicate="false">
                     <field name="external_system" />
                     <field name="convert_code_type" string="Code type"/>
                     <field name="external_code" string="External code"/>
@@ -20,7 +20,7 @@
             <field name="name">ss_erp.code.convert.view.form</field>
             <field name="model">ss_erp.code.convert</field>
             <field name="arch" type="xml">
-                <form string="" duplicate="0">
+                <form string="" duplicate="false">
                     <sheet>
                         <group>
                             <group>
@@ -38,7 +38,6 @@
                             <group>
                                 <field name="internal_code" options="{'hide_model': True, 'no_create': True, 'no_edit': True, 'no_open': True}"
                                        attrs="{'invisible': [('convert_code_type','=', False)], 'required': [('convert_code_type','!=', False)]}"/>
-                                <field name="value" invisible="True"/>
                             </group>
                         </group>
                     </sheet>

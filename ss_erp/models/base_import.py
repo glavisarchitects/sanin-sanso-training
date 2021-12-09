@@ -33,7 +33,7 @@ class Import(models.TransientModel):
         # remove the first and last line
         data = data[1:-2]
         new_data = [
-            '"card_classification","processing_division","unused","group_division","actual_car_number","card_number","product_code","data_no","quantity_1","unit_price","amount_of_money","staff_code","processing_time","quantity_2","autogas_file_header_id"'
+            '"card_classification","processing_division","unused","group_division","actual_car_number","card_number","product_code","data_no","quantity_1","unit_price","amount_of_money","staff_code","processing_time","calendar_date","consumption_tax_output_classification","consumption_tax","credit_terminal_processing_serial_number","credit_classification","credit_data_no","tax_classification_code","filer1","quantity_2","filer2","autogas_file_header_id"'
         ]
         for line in data:
             line_data, quantity_2 = line.split()
@@ -49,8 +49,17 @@ class Import(models.TransientModel):
             unit_price = line_data[40:48]
             amount_of_money = line_data[48:55]
             staff_code = line_data[55:57]
-            processing_time = line_data[57:63]
-            new_line_data = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+            processing_time = line_data[57:61]
+            calendar_date = line_data[61:67]
+            consumption_tax_output_classification = line_data[67:68]
+            consumption_tax = line_data[68:75]
+            credit_terminal_processing_serial_number = line_data[75:80]
+            credit_classification = line_data[80:81]
+            credit_data_no = line_data[81:85]
+            tax_classification_code = line_data[85:86]
+            filer1 = ""
+            filer2 = ""
+            new_line_data = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
                 card_classification,
                 processing_division,
                 unused,
@@ -64,7 +73,16 @@ class Import(models.TransientModel):
                 amount_of_money,
                 staff_code,
                 processing_time,
+                calendar_date,
+                consumption_tax_output_classification,
+                consumption_tax,
+                credit_terminal_processing_serial_number,
+                credit_classification,
+                credit_data_no,
+                tax_classification_code,
+                filer1,
                 quantity_2,
+                filer2,
                 autogas_header.name,
             )
             new_data.append(new_line_data)

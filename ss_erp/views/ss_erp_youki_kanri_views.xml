@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+<!--    <record id="ss_erp_ifdb_youki_kanri_view_search" model="ir.ui.view">-->
+<!--        <field name="name">ss_erp.ifdb.youki.kanri.view.search</field>-->
+<!--        <field name="model">ss_erp.ifdb.youki.kanri</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <search string="Youki kanri">-->
+<!--                <field name="upload_date"/>-->
+<!--                <field name="name"-->
+<!--                       filter_domain="[('name', 'ilike', self)]"/>-->
+<!--                <group string="Group By">-->
+<!--                    <filter name="flt_status" string="Status" context="{'group_by': 'status'}"/>-->
+<!--                    <filter name="flt_branch" string="Branch" context="{'group_by': 'branch_id'}"/>-->
+<!--                    <filter name="flt_user" string="User" context="{'group_by': 'user_id'}"/>-->
+<!--                </group>-->
+<!--            </search>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <record id="ss_erp_ss_erp_ifdb_youki_kanri_tree" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.youki.kanri.view.tree</field>
+        <field name="model">ss_erp.ifdb.youki.kanri</field>
+        <field name="arch" type="xml">
+            <tree string="容器管理システムファイル取込">
+                <field name="upload_date"/>
+                <field name="name"/>
+                <field name="branch_id"/>
+                <field name="user_id"/>
+                <field name="status"
+                       widget="badge"
+                       decoration-info="status=='success'"
+                       decoration-warning="status=='wait'"
+                       decoration-danger="status=='error'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_youki_kanri_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.youki.kanri.view.form</field>
+        <field name="model">ss_erp.ifdb.youki.kanri</field>
+        <field name="arch" type="xml">
+            <form string="容器管理システムファイル取込">
+                <header>
+<!--                    <button type="object"-->
+<!--                            name="action_import"-->
+<!--                            string="アップロード"-->
+<!--                            class="oe_highlight"/>-->
+<!--                    <button type="object"-->
+<!--                            name="action_processing_excution"-->
+<!--                            string="処理実行"-->
+<!--                            class="oe_highlight"/>-->
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="upload_date" required="1"/>
+                            <field name="status" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="user_id" required="1"/>
+                            <field name="branch_id" required="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="data_records" string="データレコード">
+                            <field name="youki_kanri_detail_ids">
+                                <tree editable="bottom">
+                                    <field name="status"
+                                           widget="badge"
+                                           decoration-info="status=='success'"
+                                           decoration-warning="status=='wait'"
+                                           decoration-danger="status=='error'"/>
+                                    <field name="id"/>
+                                    <field name="processing_date" readonly="True"/>
+                                    <field name="external_data_type" readonly="True"/>
+                                    <field name="customer_branch_code" readonly="True"/>
+                                    <field name="customer_branch_sub_code" readonly="True"/>
+                                    <field name="customer_business_partner_code" readonly="True"/>
+                                    <field name="customer_business_partner_branch_code" readonly="True"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_youki_kanri_action"
+            model="ir.actions.act_window">
+        <field name="name">容器管理システムファイル取込</field>
+        <field name="res_model">ss_erp.ifdb.youki.kanri</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+</odoo>

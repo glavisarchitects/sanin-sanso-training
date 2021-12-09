@@ -78,122 +78,86 @@ class IFDBAutogasFileHeader(models.Model):
 
         # get customer code convert
         external_partners = list(set(exe_data.mapped('customer_code')))
-        autogas_type_ids = self.env['ss_erp.external.system.type'].search(['code', '=', 'auto_gas_pos'])
-        cust_code_type_ids = self.env['ss_erp.convert.code.type'].search(['code', '=', 'customer'])
-        cust_code_convert = self.env['ss_erp.code.convert'].search(
-            [('external_system', 'in', autogas_type_ids), ('convert_code_type', 'in', cust_code_type_ids)])
+        autogas_type_ids = self.env['ss_erp.external.system.type'].search([('code', '=', 'auto_gas_pos')]).mapped('id')
+        cust_code_type_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'customer')]).mapped('id')
+        cust_code_convert = self.env['ss_erp.code.convert'].search_read(
+            [('external_system', 'in', autogas_type_ids), ('convert_code_type', 'in', cust_code_type_ids)],['external_code','internal_code'])
 
         customer_dict = {}
-        for customer in external_partners:
-            customer_id = cust_code_convert.filtered(lambda x: x.external_code == customer).sorted(
-                key=lambda k: (k['priority_conversion']))
-            if customer_id:
-                customer_dict[customer] = customer_id[0].internal_code
+        for customer in cust_code_convert:
+            if not customer_dict.get(customer['external_code']):
+                if customer['external_code']:
+                    internal_code = customer['internal_code'].split(",")[1]
+                    customer_dict[customer['external_code']] = int(internal_code)
 
         # get product code convert
         external_products = list(set(exe_data.mapped('product_code')))
-        product_code_type_ids = self.env['ss_erp.convert.code.type'].search(['code', '=', 'product'])
-        product_code_convert = self.env['ss_erp.code.convert'].search(
-            [('external_system', 'in', autogas_type_ids), ('convert_code_type', 'in', product_code_type_ids)])
+        product_code_type_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'product')])
+        product_code_convert = self.env['ss_erp.code.convert'].search_read(
+            [('external_system', 'in', autogas_type_ids), ('convert_code_type', 'in', product_code_type_ids)],['external_code','internal_code'])
         product_dict = {}
-        for product in external_products:
-            product_id = product_code_convert.filtered(lambda x: x.external_code == product).sorted(
-                key=lambda k: (k['priority_conversion']))
-            if product_id:
-                product_dict[product] = product_id[0].internal_code
+        for product in product_code_convert:
+            if not product_dict.get(product['external_code']):
+                if product['external_code']:
+                    internal_code = product['internal_code'].split(",")[1]
+                    product_dict[product['external_code']] = int(internal_code)
 
         uom_id = self.env['uom.uom'].search([('name', '=', 'L')], limit=1)
         if not uom_id:
             raise UserError(_('Lの単位を登録してください！'))
 
-        # Create Sale order
-        validate_sos = list(set(exe_data.mapped('validate_so')))
-        for so in validate_sos:
-            so_line_ids = exe_data.filtered(lambda x: x.validate_so == so)
-            check_so = True
-            val = []
-            for line in so_line_ids:
-                error_message = ''
-                if not customer_dict.get(line.customer_code):
-                    line.status = 'error'
-                    error_message = '顧客コードの変換に失敗しました。コード変換マスタを確認してください。'
-                    check_so = False
-                if product_dict.get(line.product_code):
-                    line.status = 'error'
-                    error_message += '顧客コードの変換に失敗しました。コード変換マスタを確認してください。'
-                    check_so = False
-                val.append(((0, 0, {
-                    'product_id': product_dict[line.product_code],
-                    'product_uom_qty': line.quantity_2,
-                    'product_uom': uom_id[0].id,
-                })))
-                if not check_so:
-                    line.error_message = error_message
-            if check_so:
-                partner_id = customer_dict[so_line_ids[0].customer_code]
-                sale_order = {
-                    'x_organization_id': self.branch_id,
-                    'partner_id': partner_id,
-                    'partner_invoice_id': partner_id,
-                    'partner_shipping_id': partner_id,
-                    'date_order': date_order,
-                    'state': 'draft',
-                    'no_approval_required_flag': True,
-                    'order_line': val,
-                }
-                order_id = self.env['sale.order'].create(sale_order)
-                for line in so_line_ids:
-                    line.status = 'success'
-                    line.sale_id = order_id.id
 
         # Create sale order
         order_to_create=[]
         failed_order = []
         success_order_dict = {}
         detail=[]
-        last_order_ref = False
+        last_validate_so = False
         count = 0
         len_list = len(exe_data)
         for line in exe_data:
             error_message = False
-
-            if line.validate_so not in order_to_create:
-                order_to_create.append(line.validate_so)
-                if not detail:
-                    so = {
-                        'x_organization_id': self.branch_id,
-                        'partner_id': partner_id,
-                        'partner_invoice_id': partner_id,
-                        'partner_shipping_id': partner_id,
-                        'date_order': line.calendar_date,
-                        'state': 'draft',
-                        'no_approval_required_flag': True,
-                    }
-                    detail = []
-                else:
-                    if last_order_ref and last_order_ref not in failed_order:
-                        so['order_line'] = detail
-                        order_id = self.env['sale.order'].create(so)
-                        success_order_dict[last_validate_so] = order_id.id
-
             if not customer_dict.get(line.customer_code):
                 line.status = 'error'
                 error_message = '顧客コードの変換に失敗しました。コード変換マスタを確認してください。'
             if not product_dict.get(line.product_code):
                 line.status = 'error'
-                error_message += '顧客コードの変換に失敗しました。コード変換マスタを確認してください。'
+                if error_message:
+                    error_message+= '商品コードの変換に失敗しました。コード変換マスタを確認してください。'
+                else:
+                    error_message= '商品コードの変換に失敗しました。コード変換マスタを確認してください。'
+
+            if line.validate_so not in order_to_create:
+                order_to_create.append(line.validate_so)
+                if not detail and not error_message:
+                    date = datetime.strptime(line.calendar_date,'%y%m%d') if line.calendar_date else datetime.now()
+                    so = {
+                        'x_organization_id': self.branch_id,
+                        'partner_id': customer_dict.get(line.customer_code),
+                        'partner_invoice_id': customer_dict.get(line.customer_code),
+                        'partner_shipping_id': customer_dict.get(line.customer_code),
+                        'date_order': date,
+                        'state': 'draft',
+                        'no_approval_required_flag': True,
+                    }
+                    detail = []
+                else:
+                    if last_validate_so and last_validate_so not in failed_order:
+                        so['order_line'] = detail
+                        order_id = self.env['sale.order'].create(so)
+                        success_order_dict[last_validate_so] = order_id.id
             if error_message:
                 line.error_message=error_message
                 if line.validate_so not in failed_order:
                     failed_order.append(line.validate_so)
             else:
-                val.append(((0, 0, {
+                detail.append(((0, 0, {
                     'product_id': product_dict[line.product_code],
                     'product_uom_qty': line.quantity_2,
                     'product_uom': uom_id[0].id,
                 })))
-                last_order_ref = line.validate_so
-            if last_order_ref and last_order_ref not in failed_order and count == len_list:
+                last_validate_so = line.validate_so
+            if last_validate_so and last_validate_so not in failed_order and count == len_list:
                 so['order_line'] = detail
                 order_id = self.env['sale.order'].create(so)
                 success_order_dict[last_validate_so] = order_id.id
@@ -202,4 +166,5 @@ class IFDBAutogasFileHeader(models.Model):
         for line in exe_data:
             if line.validate_so not in failed_order:
                 line.status = 'success'
-                line.sale_id = success_order_dict[validate_so]
+                line.sale_id = success_order_dict[line.validate_so]
+                line.processing_date = datetime.now()

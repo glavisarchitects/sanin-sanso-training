@@ -90,6 +90,29 @@
                                     <field name="unused" readonly="True" />
                                     <field name="group_division" readonly="True" />
                                     <field name="actual_car_number" readonly="True" />
+                                    <field name="card_number" readonly="True" />
+                                    <field name="product_code" readonly="True" />
+                                    <field name="data_no" readonly="True" />
+                                    <field name="quantity_1" readonly="True" />
+                                    <field name="unit_price" readonly="True" />
+                                    <field name="amount_of_money" readonly="True" />
+                                    <field name="staff_code" readonly="True" />
+                                    <field name="processing_time" readonly="True" />
+                                    <field name="calendar_date" readonly="True" />
+                                    <field name="consumption_tax_output_classification" readonly="True" />
+                                    <field name="consumption_tax" readonly="True" />
+                                    <field name="credit_terminal_processing_serial_number" readonly="True" />
+                                    <field name="credit_classification" readonly="True" />
+                                    <field name="credit_data_no" readonly="True" />
+                                    <field name="tax_classification_code" readonly="True" />
+                                    <field name="filer1" readonly="True" />
+                                    <field name="quantity_2" readonly="True" />
+                                    <field name="filer2" readonly="True" />
+                                    <field name="error_message" readonly="True" />
+                                    <field name="sale_id" readonly="True" />
+                                    <field name="processing_date" readonly="True" groups="base.group_no_one" />
+                                    <field name="customer_code" readonly="True" groups="base.group_no_one" />
+                                    <field name="validate_so" readonly="True" groups="base.group_no_one" />
                                 </tree>
                             </field>
                         </page>

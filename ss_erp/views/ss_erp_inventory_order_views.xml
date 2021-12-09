@@ -39,7 +39,7 @@
                                 class="oe_stat_button"
                                 attrs="{'invisible':[('picking_count', '=', 0)]}"
                                 icon="fa-truck">
-                            <field name="picking_count" widget="statinfo" string="Stock Picking"/>
+                            <field name="picking_count" widget="statinfo" string="在庫移動"/>
                         </button>
                     </div>
                     <h1>

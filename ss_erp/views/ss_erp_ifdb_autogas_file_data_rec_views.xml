@@ -36,10 +36,34 @@
             <tree string="オートガスPOS（松江）取込データ" editable="bottom">
                 <field name="id" />
                 <field name="processing_date" required="True" />
-                <field name="card_classification" readonly="True" />
-                <field name="processing_division" readonly="True" />
-                <field name="unused" readonly="True" />
-                <field name="group_division" readonly="True" />
+                <field name="card_classification" readonly="True" optional="hide" />
+                <field name="processing_division" readonly="True" optional="hide" />
+                <field name="unused" readonly="True" optional="hide" />
+                <field name="group_division" readonly="True" optional="hide" />
+                <field name="actual_car_number" readonly="True" optional="hide" />
+                <field name="card_number" readonly="True" optional="hide" />
+                <field name="product_code" readonly="True" optional="hide" />
+                <field name="data_no" readonly="True" optional="hide" />
+                <field name="quantity_1" readonly="True" optional="hide" />
+                <field name="unit_price" readonly="True" optional="hide" />
+                <field name="amount_of_money" readonly="True" optional="hide" />
+                <field name="staff_code" readonly="True" optional="hide" />
+                <field name="processing_time" readonly="True" optional="hide" />
+                <field name="calendar_date" readonly="True" optional="hide" />
+                <field name="consumption_tax_output_classification" readonly="True" optional="hide" />
+                <field name="consumption_tax" readonly="True" optional="hide" />
+                <field name="credit_terminal_processing_serial_number" readonly="True" optional="hide" />
+                <field name="credit_classification" readonly="True" optional="hide" />
+                <field name="credit_data_no" readonly="True" optional="hide" />
+                <field name="tax_classification_code" readonly="True" optional="hide" />
+                <field name="filer1" readonly="True" optional="hide" />
+                <field name="quantity_2" readonly="True" optional="hide" />
+                <field name="filer2" readonly="True" optional="hide" />
+                <field name="error_message" readonly="True" optional="hide" />
+                <field name="customer_code" readonly="True" optional="hide"
+                    groups="base.group_no_one" />
+                <field name="validate_so" readonly="True" optional="hide"
+                    groups="base.group_no_one" />
                 <field name="status"
                        widget="badge"
                        decoration-info="status=='success'"

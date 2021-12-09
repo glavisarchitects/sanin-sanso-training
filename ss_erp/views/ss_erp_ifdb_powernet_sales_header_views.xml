@@ -79,10 +79,47 @@
                                            decoration-danger="status=='error'"/>
                                     <field name="id" readonly="1"/>
                                     <field name="processing_date" readonly="1"/>
-<!--                                    <field name="sale_id" readonly="1"/>-->
                                     <field name="customer_code" readonly="1" />
                                     <field name="billing_summary_code" readonly="1" />
                                     <field name="sales_date" readonly="1" />
+                                    <field name="sale_id" readonly="1"/>
+                                    <field name="slip_type" readonly="1" />
+                                    <field name="slip_no" readonly="1" />
+                                    <field name="data_types" readonly="1" />
+                                    <field name="cash_classification" readonly="1" />
+                                    <field name="product_code" readonly="1" />
+                                    <field name="product_code_2" readonly="1" />
+                                    <field name="product_name" readonly="1" />
+                                    <field name="product_remarks" readonly="1" />
+                                    <field name="sales_category" readonly="1" />
+                                    <field name="quantity" readonly="1" />
+                                    <field name="unit_code" readonly="1" />
+                                    <field name="unit_price" readonly="1" />
+                                    <field name="amount_of_money" readonly="1" />
+                                    <field name="consumption_tax" readonly="1" />
+                                    <field name="sales_amount" readonly="1" />
+                                    <field name="quantity_after_conversion" readonly="1" />
+                                    <field name="search_remarks_1" readonly="1" />
+                                    <field name="search_remarks_2" readonly="1" />
+                                    <field name="search_remarks_3" readonly="1" />
+                                    <field name="search_remarks_4" readonly="1" />
+                                    <field name="search_remarks_5" readonly="1" />
+                                    <field name="search_remarks_6" readonly="1" />
+                                    <field name="search_remarks_7" readonly="1" />
+                                    <field name="search_remarks_8" readonly="1" />
+                                    <field name="search_remarks_9" readonly="1" />
+                                    <field name="search_remarks_10" readonly="1" />
+                                    <field name="sales_classification_code_1" readonly="1" />
+                                    <field name="sales_classification_code_2" readonly="1" />
+                                    <field name="sales_classification_code_3" readonly="1" />
+                                    <field name="consumer_sales_classification_code_1" readonly="1" />
+                                    <field name="consumer_sales_classification_code_2" readonly="1" />
+                                    <field name="consumer_sales_classification_code_3" readonly="1" />
+                                    <field name="consumer_sales_classification_code_4" readonly="1" />
+                                    <field name="consumer_sales_classification_code_5" readonly="1" />
+                                    <field name="product_classification_code_1" readonly="1" />
+                                    <field name="product_classification_code_2" readonly="1" />
+                                    <field name="product_classification_code_3" readonly="1" />
                                 </tree>
                             </field>
                         </page>

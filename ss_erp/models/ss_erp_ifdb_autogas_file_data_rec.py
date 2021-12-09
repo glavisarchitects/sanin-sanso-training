@@ -68,43 +68,34 @@ class IfdbAutogasFileDataRec(models.Model):
         string="処理時刻"
     )
     calendar_date = fields.Char(
-        string="カレンダー日付",
-        readonly=True
+        string="カレンダー日付"
     )
     consumption_tax_output_classification = fields.Char(
-        string="消費税出力区分",
-        readonly=True
+        string="消費税出力区分"
     )
     consumption_tax = fields.Char(
-        string="消費税",
-        readonly=True
+        string="消費税"
     )
     credit_terminal_processing_serial_number = fields.Char(
-        string="クレジット端末処理通番",
-        readonly=True
+        string="クレジット端末処理通番"
     )
     credit_classification = fields.Char(
-        string="クレジット区分",
-        readonly=True
+        string="クレジット区分"
     )
     credit_data_no = fields.Char(
-        string="クレジットデータNo",
-        readonly=True
+        string="クレジットデータNo"
     )
     tax_classification_code = fields.Char(
-        string="課税区分コード",
-        readonly=True
+        string="課税区分コード"
     )
     filer1 = fields.Char(
-        string="Filer1",
-        readonly=True
+        string="Filer1"
     )
     quantity_2 = fields.Char(
         string="数量2"
     )
     filer2 = fields.Char(
-        string="Filer2",
-        readonly=True
+        string="Filer2"
     )
     error_message = fields.Char(
         string="エラーメッセージ",

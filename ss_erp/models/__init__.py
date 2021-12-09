@@ -49,3 +49,4 @@ from . import ss_erp_ifdb_yg_header
 from . import ss_erp_ifdb_yg_summary
 from . import ss_erp_ifdb_autogas_file_data_rec
 # from . import importer_powernet_sales
+from . import ss_erp_ifdb_youki_kanri
