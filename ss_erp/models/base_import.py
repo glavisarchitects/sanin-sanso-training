@@ -106,6 +106,6 @@ class Import(models.TransientModel):
         for line in data:
             if line == "":
                 continue
-            new_line = b'"%s",' % (powernet_header.name.encode("utf-8")) + line
+            new_line = '"%s",' % (powernet_header.name.encode("utf-8")) + line
             new_data.append(new_line)
         self.file = "\n".join(new_data)
