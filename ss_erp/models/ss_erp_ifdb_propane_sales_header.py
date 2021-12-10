@@ -60,9 +60,9 @@ class IFDBPropaneSalesHeader(models.Model):
                 error_message = 'Account C does not exist in the contact master.'
             if int(line.customer_branch_code) not in organization_list:
                 error_message += 'Branch office C does not exist in the organization master.'
-            if int(line.commercial_branch_code) not in organization_list:
+            if int(line.codeommercial_branch_code) not in organization_list:
                 error_message += 'Branch C does not exist in the organization master.'
-            if int(line.commercial_product_code) not in product_list:
+            if int(line.codeommercial_product_code) not in product_list:
                 error_message += 'Product C does not exist in the product master.'
             if int(line.unit_code) not in uom_list:
                 error_message += 'Unit C does not exist in the product unit master.'
