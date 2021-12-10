@@ -1,5 +1,142 @@
-from odoo import _, fields, models
-from odoo.exceptions import UserError
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
+
+try:
+    import pandas as pd
+    import numpy as np
+except (ImportError, ModuleNotFoundError):
+    raise UserError(_(
+        "pandas / numpy extension libraries not found. Please install by command: \n"
+        "pip3 install numpy\n"
+        "pip3 install pandas\n"
+    ))
+
+FIELDS_BEFORE_ifdb_propane_sales = [
+    'external_data_type',
+    'customer_branch_code',
+    'customer_branch_sub_code',
+    'customer_business_partner_code',
+    'customer_business_partner_branch_code',
+    'customer_delivery_code',
+    'direct_branch_code',
+    'direct_branch_sub_code',
+    'direct_business_partner_code',
+    'direct_business_partner_sub_code',
+    'direct_delivery_code',
+    'customer_name',
+    'codeommercial_branch_code',
+    'codeommercial_branch_sub_code',
+    'codeommercial_product_code',
+    'product_name',
+    'standard_name',
+    'standard',
+    'number',
+    'slip_number',
+    'codelassification_code',
+    'line_break',
+    'quantity',
+    'unit_code',
+    'unit_price',
+    'amount_of_money',
+    'unit_price_2',
+    'amount_2',
+    'unified_quantity',
+    'order_number',
+    'comment',
+    'codeommercial_branch_code2',
+    'codeommercial_branch_sub_code2',
+    'codeommercial_product_code2',
+    'amount_calculation_classification',
+    'slip_processing_classification'
+]
+
+FIELDS_AFTER_ifdb_propane_sales = [
+    'name',
+    'upload_date',
+    'sales_detail_ids/external_data_type',
+    'sales_detail_ids/customer_branch_code',
+    'sales_detail_ids/customer_branch_sub_code',
+    'sales_detail_ids/customer_business_partner_code',
+    'sales_detail_ids/customer_business_partner_branch_code',
+    'sales_detail_ids/customer_delivery_code',
+    'sales_detail_ids/direct_branch_code',
+    'sales_detail_ids/direct_branch_sub_code',
+    'sales_detail_ids/direct_business_partner_code',
+    'sales_detail_ids/direct_business_partner_sub_code',
+    'sales_detail_ids/direct_delivery_code',
+    'sales_detail_ids/customer_name',
+    'sales_detail_ids/codeommercial_branch_code',
+    'sales_detail_ids/codeommercial_branch_sub_code',
+    'sales_detail_ids/codeommercial_product_code',
+    'sales_detail_ids/product_name',
+    'sales_detail_ids/standard_name',
+    'sales_detail_ids/standard',
+    'sales_detail_ids/number',
+    'sales_detail_ids/slip_number',
+    'sales_detail_ids/codelassification_code',
+    'sales_detail_ids/line_break',
+    'sales_detail_ids/quantity',
+    'sales_detail_ids/unit_code',
+    'sales_detail_ids/unit_price',
+    'sales_detail_ids/amount_of_money',
+    'sales_detail_ids/unit_price_2',
+    'sales_detail_ids/amount_2',
+    'sales_detail_ids/unified_quantity',
+    'sales_detail_ids/order_number',
+    'sales_detail_ids/comment',
+    'sales_detail_ids/codeommercial_branch_code2',
+    'sales_detail_ids/codeommercial_branch_sub_code2',
+    'sales_detail_ids/codeommercial_product_code2',
+    'sales_detail_ids/amount_calculation_classification',
+    'sales_detail_ids/slip_processing_classification'
+]
+
+FIELDS_BEFORE_ifdb_yg = [
+    'partner_id',
+    'amount_use',
+    'item',
+]
+
+FIELDS_AFTER_ifdb_yg = [
+    'name',
+    'upload_date',
+    'summary_ids/partner_id',
+    'summary_ids/amount_use',
+    'summary_ids/item',
+]
+
+FIELDS_BEFORE_ifdb_yg_summary = [
+    'item',
+    'customer_cd',
+    'meter_reading_date',
+    'amount_use',
+]
+
+FIELDS_AFTER_ifdb_yg_sumary = [
+    'id',
+    'detail_ids/item',
+    'detail_ids/customer_cd',
+    'detail_ids/meter_reading_date',
+    'detail_ids/amount_use',
+]
+
+FIELDS_MODEL = {
+    'ss_erp.ifdb.propane.sales.header': {
+        'FIELDS_BEFORE': FIELDS_BEFORE_ifdb_propane_sales,
+        'FIELDS_AFTER': FIELDS_AFTER_ifdb_propane_sales
+    },
+    'ss_erp.ifdb.yg.header': {
+        'FIELDS_BEFORE': FIELDS_BEFORE_ifdb_yg,
+        'FIELDS_AFTER': FIELDS_AFTER_ifdb_yg
+    },
+    'ss_erp.ifdb.yg.summary': {
+        'FIELDS_BEFORE': FIELDS_BEFORE_ifdb_yg_summary,
+        'FIELDS_AFTER': FIELDS_AFTER_ifdb_yg_sumary
+    }
+}
 
 
 class Import(models.TransientModel):
@@ -130,3 +267,180 @@ class Import(models.TransientModel):
                 continue
         print(data)
         return True
+
+    def _transform(self, data):
+        def _ymd(short_dt):
+            # convert 210203 to 2021-02-03
+            dt = short_dt.strip()
+            if len(dt) != 6:
+                return ''
+            else:
+                return '-'.join(['20' + dt[:2], dt[2:4], dt[4:]])
+
+        FIELDS_BEFORE = FIELDS_MODEL[self.res_model]['FIELDS_BEFORE']
+        FIELDS_AFTER = FIELDS_MODEL[self.res_model]['FIELDS_AFTER']
+        # convert data to df
+        df = pd.DataFrame(data, columns=FIELDS_BEFORE, dtype=object).fillna('').astype(str)
+        for c in df.columns:
+            df[c] = df[c].str.strip()
+
+        # get data for transform
+        external_data_types = list(df['external_data_type'])
+        name_col = ['name', '']
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        upload_date_col = ['upload_date', now]
+        for el in external_data_types:
+            if len(name_col) == len(external_data_types):
+                break
+            name_col.append('')
+            upload_date_col.append('')
+        df['name'] = name_col
+        df['upload_date'] = upload_date_col
+        df['sales_detail_ids/external_data_type'] = df['external_data_type']
+        df['sales_detail_ids/customer_branch_code'] = df['customer_branch_code']
+        df['sales_detail_ids/customer_branch_sub_code'] = df['customer_branch_sub_code']
+        df['sales_detail_ids/customer_business_partner_code'] = df['customer_business_partner_code']
+        df['sales_detail_ids/customer_business_partner_branch_code'] = df['customer_business_partner_branch_code']
+        df['sales_detail_ids/customer_delivery_code'] = df['customer_delivery_code']
+        df['sales_detail_ids/direct_branch_code'] = df['direct_branch_code']
+        df['sales_detail_ids/direct_branch_sub_code'] = df['direct_branch_sub_code']
+        df['sales_detail_ids/direct_business_partner_code'] = df['direct_business_partner_code']
+        df['sales_detail_ids/direct_business_partner_sub_code'] = df['direct_business_partner_sub_code']
+        df['sales_detail_ids/direct_delivery_code'] = df['direct_delivery_code']
+        df['sales_detail_ids/customer_name'] = df['customer_name']
+        df['sales_detail_ids/codeommercial_branch_code'] = df['codeommercial_branch_code']
+        df['sales_detail_ids/codeommercial_branch_sub_code'] = df['codeommercial_branch_sub_code']
+        df['sales_detail_ids/codeommercial_product_code'] = df['codeommercial_product_code']
+        df['sales_detail_ids/product_name'] = df['product_name']
+        df['sales_detail_ids/standard_name'] = df['standard_name']
+        df['sales_detail_ids/standard'] = df['standard']
+        df['sales_detail_ids/number'] = df['number']
+        df['sales_detail_ids/slip_number'] = df['slip_number']
+        df['sales_detail_ids/codelassification_code'] = df['codelassification_code']
+        df['sales_detail_ids/line_break'] = df['line_break']
+        df['sales_detail_ids/quantity'] = df['quantity']
+        df['sales_detail_ids/unit_code'] = df['unit_code']
+        df['sales_detail_ids/unit_price'] = df['unit_price']
+        df['sales_detail_ids/amount_of_money'] = df['amount_of_money']
+        df['sales_detail_ids/unit_price_2'] = df['unit_price_2']
+        df['sales_detail_ids/amount_2'] = df['amount_2']
+        df['sales_detail_ids/unified_quantity'] = df['unified_quantity']
+        df['sales_detail_ids/order_number'] = df['order_number']
+        df['sales_detail_ids/comment'] = df['comment']
+        df['sales_detail_ids/codeommercial_branch_code2'] = df['codeommercial_branch_code2']
+        df['sales_detail_ids/codeommercial_branch_sub_code2'] = df['codeommercial_branch_sub_code2']
+        df['sales_detail_ids/codeommercial_product_code2'] = df['codeommercial_product_code2']
+        df['sales_detail_ids/amount_calculation_classification'] = df['amount_calculation_classification']
+        df['sales_detail_ids/slip_processing_classification'] = df['slip_processing_classification']
+
+
+        # sort
+        df_sorted = df.reset_index(drop=True)
+
+        # replace duplicated values
+        header_cols = [c for c in FIELDS_AFTER if not c.startswith('sales_detail_ids')]
+        # df_sorted.loc[df_sorted.duplicated(subset=['id']), header_cols] = ''
+        df_res_trans = df_sorted[FIELDS_AFTER]
+        df_res_trans = df_res_trans.iloc[1:]
+        return df_res_trans
+
+    def _transform_ifdb_yg(self, data):
+        def _ymd(short_dt):
+            # convert 210203 to 2021-02-03
+            dt = short_dt.strip()
+            if len(dt) != 6:
+                return ''
+            else:
+                return '-'.join(['20' + dt[:2], dt[2:4], dt[4:]])
+
+        FIELDS_BEFORE = FIELDS_MODEL[self.res_model]['FIELDS_BEFORE']
+        FIELDS_AFTER = FIELDS_MODEL[self.res_model]['FIELDS_AFTER']
+        # convert data to df
+        df = pd.DataFrame(data, columns=FIELDS_BEFORE, dtype=object).fillna('').astype(str)
+        for c in df.columns:
+            df[c] = df[c].str.strip()
+
+        # get data for transform
+        external_data_types = list(df['partner_id'])
+        name_col = ['']
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        upload_date_col = [now]
+        for el in external_data_types:
+            if len(name_col) == len(external_data_types):
+                break
+            name_col.append('')
+            upload_date_col.append('')
+        df['name'] = name_col
+        df['upload_date'] = upload_date_col
+        df['summary_ids/partner_id'] = df['partner_id']
+        df['summary_ids/amount_use'] = df['amount_use']
+        df['summary_ids/item'] = df['item']
+
+        # sort
+        df_sorted = df.reset_index(drop=True)
+
+        # replace duplicated values
+        # header_cols = [c for c in FIELDS_AFTER if not c.startswith('summary_ids')]
+        # df_sorted.loc[df_sorted.duplicated(subset=['id']), header_cols] = ''
+        return df_sorted[FIELDS_AFTER]
+
+    def _transform_ifdb_yg_summary(self, data):
+        def _ymd(short_dt):
+            # convert 210203 to 2021-02-03
+            dt = short_dt.strip()
+            if len(dt) != 6:
+                return ''
+            else:
+                return '-'.join(['20' + dt[:2], dt[2:4], dt[4:]])
+
+        FIELDS_BEFORE = FIELDS_MODEL[self.res_model]['FIELDS_BEFORE']
+        FIELDS_AFTER = FIELDS_MODEL[self.res_model]['FIELDS_AFTER']
+        # convert data to df
+        df = pd.DataFrame(data, columns=FIELDS_BEFORE, dtype=object).fillna('').astype(str)
+        for c in df.columns:
+            df[c] = df[c].str.strip()
+
+        # get data for transform
+        external_data_types = list(df['customer_cd'])
+        name_col = []
+        for el in external_data_types:
+            if len(name_col) == len(external_data_types):
+                break
+            name_col.append('')
+        df['id'] = name_col
+        df['detail_ids/item'] = df['item']
+        df['detail_ids/customer_cd'] = df['customer_cd']
+        df['detail_ids/meter_reading_date'] = df['meter_reading_date']
+        df['detail_ids/amount_use'] = df['amount_use']
+
+
+        # sort
+        df_sorted = df.reset_index(drop=True)
+
+        # replace duplicated values
+        # header_cols = [c for c in FIELDS_AFTER if not c.startswith('summary_ids')]
+        # df_sorted.loc[df_sorted.duplicated(subset=['id']), header_cols] = ''
+        return df_sorted[FIELDS_AFTER]
+
+    def _read_file(self, options):
+        res = super(Import, self)._read_file(options)
+
+        if options.get('custom_transform'):
+            # header
+            FIELDS_AFTER = FIELDS_MODEL[self.res_model]['FIELDS_AFTER']
+
+            yield FIELDS_AFTER
+            # body
+            df_res_trans = res
+            if self.res_model == 'ss_erp.ifdb.yg.header':
+                df_res_trans = self._transform_ifdb_yg(res)
+            if self.res_model == 'ss_erp.ifdb.yg.summary':
+                df_res_trans = self._transform_ifdb_yg_summary(res)
+            if self.res_model == 'ss_erp.ifdb.propane.sales.header':
+                df_res_trans = self._transform(res)
+            for row in df_res_trans.itertuples(index=False, name=None):
+                yield row
+        else:
+            # 標準
+            for row in res:
+                yield row

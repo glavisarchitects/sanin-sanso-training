@@ -171,7 +171,7 @@ class InventoryOrderLine(models.Model):
     product_id = fields.Many2one('product.product', 'プロダクト')
     # lot_ids = fields.Many2many('stock.production.lot', string='シリアルナンバー')
     product_uom_qty = fields.Float('要求')
-    product_uom = fields.Many2one('uom.uom', '単位')
+    product_uom = fields.Many2one('uom.uom',default=lambda self: self.product_id.uom_id,string='単位')
     reserved_availability = fields.Float('引当済数量', compute='compute_reserved_availability')
     product_packaging = fields.Many2one('product.packaging', '荷姿')
 

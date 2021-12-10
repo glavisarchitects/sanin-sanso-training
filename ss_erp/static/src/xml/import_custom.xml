@@ -15,6 +15,12 @@
                 class="btn btn-secondary oe_youki_kanri_import_transform d-none">
                 Youki Kanri Transform
             </button>
+            <button 
+                t-if="res_model=='ss_erp.ifdb.propane.sales.header' or res_model=='ss_erp.ifdb.yg.header'"
+                type="button"
+                class="btn btn-primary o_import_transform d-none">
+                Transform
+            </button>
         </xpath>
     </t>
 

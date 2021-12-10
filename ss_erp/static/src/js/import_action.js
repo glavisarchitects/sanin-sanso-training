@@ -3,8 +3,29 @@ odoo.define("ss_erp.import", function (require) {
     
     var BaseImport = require("base_import.import")
     var core = require("web.core");
+
+    var QWeb = core.qweb;
+    var _t = core._t;
+    var _lt = core._lt;
+    var session = require('web.session');
+    var StateMachine = window.StateMachine;
     
     var DataImportCustom = BaseImport.DataImport.include({
+
+        init: function () {
+            this._super.apply(this, arguments);
+            this.transformed = false;
+        },
+
+        import_options: function () {
+            var options = this._super.apply(this, arguments);
+            if (this.transformed) {
+                options['custom_transform'] = true;
+            } else {
+                options['custom_transform'] = false;
+            }
+            return options;
+        },
 
         _getTransformType: function () {
             if (this.res_model === "ss_erp.ifdb.autogas.file.data.rec") {
@@ -37,6 +58,10 @@ odoo.define("ss_erp.import", function (require) {
             this.$buttons.filter(".oe_powernet_import_transform").on("click", this.onTransform.bind(this));
             this.$buttons.filter(".oe_autogas_import_transform").on("click", this.onTransform.bind(this));
             this.$buttons.filter(".oe_youki_kanri_import_transform").on("click", this.onTransform.bind(this));
+            this.$buttons.filter('.o_import_transform').on('click', function () {
+                this.transformed = true;
+                this['settings_changed']();
+            }.bind(this));
         },
 
         onpreviewing: function () {
@@ -60,10 +85,28 @@ odoo.define("ss_erp.import", function (require) {
                 this.$buttons.filter(".oe_youki_kanri_import_transform").removeClass("d-none");
             }
         },
+
+        onfile_loaded: function () {
+            this._super.apply(this, arguments);
+            this.transformed = false;
+        },
+
+        onpreview_success: function () {
+            this._super.apply(this, arguments);
+            console.log('import');
+            if (this.transformed) {
+                this.$buttons.filter('.o_import_transform').addClass('d-none');
+            } else {
+                this.$buttons.filter('.o_import_transform').removeClass('d-none');
+            }
+        },
+
     });
+
     core.action_registry.add("import_custom", DataImportCustom);
     
     return {
         DataImportCustom: DataImportCustom,
     };
+
 });
