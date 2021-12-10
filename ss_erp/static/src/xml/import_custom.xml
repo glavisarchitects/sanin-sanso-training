@@ -11,6 +11,10 @@
                 class="btn btn-secondary oe_powernet_import_transform d-none">
                 PowerNet Transform
             </button>
+            <button type="button"
+                class="btn btn-secondary oe_youki_kanri_import_transform d-none">
+                Youki Kanri Transform
+            </button>
         </xpath>
     </t>
 

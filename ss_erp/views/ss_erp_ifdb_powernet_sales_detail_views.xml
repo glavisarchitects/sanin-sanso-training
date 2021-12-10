@@ -5,7 +5,7 @@
         <field name="name">ss_erp.ifdb.powernet.sales.detail.view.tree</field>
         <field name="model">ss_erp.ifdb.powernet.sales.detail</field>
         <field name="arch" type="xml">
-            <tree string="">
+            <tree string="PowerNet取込データ">
                 <field name="id" string="External ID" readonly="1" />
                 <field name="processing_date"/>
                 <field name="customer_code" readonly="1" />
@@ -53,15 +53,30 @@
                 <field name="product_classification_code_1" optional="hide"/>
                 <field name="product_classification_code_2" optional="hide"/>
                 <field name="product_classification_code_3" optional="hide"/>
+                <field name="error_message" optional="hide"/>
                 <field name="sale_id"/>
             </tree>
         </field>
     </record>
     <!-- ACTION -->
     <record id="ss_erp_ifdb_powernet_sales_detail_action" model="ir.actions.act_window">
-        <field name="name">PowerNet Import data</field>
+        <field name="name">PowerNet取込データ</field>
         <field name="res_model">ss_erp.ifdb.powernet.sales.detail</field>
         <field name="view_mode">tree</field>
+    </record>
+    <record id="ss_erp_ifdb_powernet_sales_detail_view_search" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.powernet.sales.detail.view.search</field>
+        <field name="model">ss_erp.ifdb.powernet.sales.detail</field>
+        <field name="arch" type="xml">
+            <search string="">
+                <group string="Group By">
+                    <field name="status"/>
+                    <filter name="flt_status"
+                            string="Status"
+                            context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
     </record>
 
 </odoo>

@@ -76,6 +76,7 @@
         "views/ss_erp_ifdb_yg_header_views.xml",
         "views/ss_erp_ifdb_yg_summary_views.xml",
         "views/ss_erp_youki_kanri_views.xml",
+        "views/ss_erp_youki_kanri_detail_views.xml",
 
         "views/webclient_templates.xml",
         "menu/menu_views.xml",

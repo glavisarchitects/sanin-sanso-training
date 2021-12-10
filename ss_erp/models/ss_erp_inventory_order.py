@@ -49,44 +49,37 @@ class InventoryOrder(models.Model):
 
     #
     def cancel_state(self):
+        self.ensure_one()
         self.has_cancel = True
+        stock_picking_order = self.env['stock.picking'].search([('x_inventory_order_id', '=', self.id)])
+        for stock_picking in stock_picking_order:
+            stock_picking.action_cancel()
 
     #
     @api.depends('has_confirm', 'inventory_order_line_ids.move_ids.state')
     def _compute_state(self):
         for rec in self:
             stock_picking_order = rec.env['stock.picking'].search([('x_inventory_order_id', '=', rec.id)])
-            stp_state_all = stock_picking_order.mapped('state')
-            stock_picking_to_virtual = rec.env['stock.picking'].search(
-                [('x_inventory_order_id', '=', rec.id), ('location_dest_id_usage', '=', 'customer')])
-            stp_vir = stock_picking_to_virtual.mapped('state')
-
+            stp_state_all = list(set(stock_picking_order.mapped('state')))
             if rec.has_cancel:
                 rec.state = 'cancel'
             else:
                 if rec.has_confirm:
                     rec.state = 'waiting'
-                    if all(s == 'done' for s in stp_state_all):
-                        rec.state = 'done'
-                    elif all(s == 'done' for s in stp_vir):
+                    if 'assigned' in stp_state_all:
                         rec.state = 'shipping'
-                        in_transfer = stock_picking_order - stock_picking_to_virtual
-                        if in_transfer:
-                            for it in in_transfer:
-                                if it.state == 'confirmed':
-                                    it.action_confirm()
-                                    it.action_assign()
+                    else:
+                        if len(stp_state_all) == 1 and 'done' in stp_state_all:
+                            rec.state = 'done'
                 else:
                     rec.state = 'draft'
 
-    #
     @api.model
     def create(self, vals):
         if 'name' not in vals or vals['name'] == _('New'):
             vals['name'] = self.env['ir.sequence'].next_by_code('ss_erp.inventory.order') or _('New')
         return super(InventoryOrder, self).create(vals)
 
-    #
     def confirm_inventory_order(self):
         if self.inventory_order_line_ids:
             virtual_location = self.env['stock.location'].search([('usage', '=', 'customer')], limit=1)
@@ -96,19 +89,47 @@ class InventoryOrder(models.Model):
             out_going = self.env['stock.picking.type'].search([('code', '=', 'outgoing')], limit=1)
             in_coming = self.env['stock.picking.type'].search([('code', '=', 'incoming')], limit=1)
 
-            location_dest = self.inventory_order_line_ids.mapped('location_dest_id')
-            for dest in location_dest:
-                val = []
-                for line in self.inventory_order_line_ids:
-                    if dest.id == line.location_dest_id.id:
-                        val.append(((0, 0, {
+            source_in = {}
+            source_out = {}
+
+            for line in self.inventory_order_line_ids:
+                key = str(line.location_dest_id) + '_' + str(line.organization_id.id) + '_' + str(
+                    line.responsible_dept_id.id)
+                move_in = {
+                            'x_inventory_order_line_id': line.id,
+                            'product_id': line.product_id.id,
+                            'product_uom_qty': line.product_uom_qty,
+                            'product_uom': line.product_uom,
+                            'name': self.name,
+                            'state': 'waiting',
+                        }
+                move_out = {
                             'x_inventory_order_line_id': line.id,
                             'product_id': line.product_id.id,
                             'product_uom_qty': line.product_uom_qty,
                             'product_uom': line.product_uom,
                             'name': self.name,
                             'state': 'confirmed',
-                        })))
+                        }
+                if source_in.get(key):
+                    source_in[key]['move_ids_without_package'].append((0, 0, move_in))
+                else:
+                    move_to_dest_location = {
+                        # 'state': 'waiting',
+                        'location_id': virtual_location.id,
+                        'location_dest_id': line.location_dest_id.id,
+                        'picking_type_id': in_coming.id,
+                        'x_organization_id': line.organization_id.id,
+                        'x_responsible_dept_id': line.responsible_dept_id.id,
+                        'scheduled_date': self.scheduled_date,
+                        'x_inventory_order_id': self.id,
+                        'move_ids_without_package': [(0, 0, move_out)]
+                    }
+                    source_in[key] = move_to_dest_location
+
+                if source_out.get(key):
+                    source_out[key]['move_ids_without_package'].append((0, 0, move_out))
+                else:
                     from_source_move = {
                         # 'state': 'confirmed',
                         'location_id': self.location_id.id,
@@ -119,29 +140,18 @@ class InventoryOrder(models.Model):
                         'user_id': self.user_id.id,
                         'scheduled_date': self.scheduled_date,
                         'x_inventory_order_id': self.id,
-                        'move_ids_without_package': val,
+                        'move_ids_without_package': [(0, 0, move_in)]
                     }
+                    source_out[key] = from_source_move
 
-                    move_to_dest_location = {
-                        # 'state': 'waiting',
-                        'location_id': virtual_location.id,
-                        'location_dest_id': dest.id,
-                        'picking_type_id': in_coming.id,
-                        'x_organization_id': line.organization_id.id,
-                        'x_responsible_dept_id': line.responsible_dept_id.id,
-                        'user_id': self.user_id.id,
-                        'scheduled_date': self.scheduled_date,
-                        'x_inventory_order_id': self.id,
 
-                        'move_ids_without_package': val,
-                    }
-                out_transfer = self.env['stock.picking'].create(from_source_move)
-                out_transfer.action_confirm()
-                out_transfer.action_assign()
+            for key,value in source_in.items():
+                self.env['stock.picking'].create(value)
 
-                self.env['stock.picking'].create(move_to_dest_location)
+            for key,value in source_out.items():
+                out_transfer = self.env['stock.picking'].create(value)
 
-                self.has_confirm = True
+            self.has_confirm = True
         else:
             raise UserError(
                 _("Please re check inventory order again."))
@@ -153,7 +163,7 @@ class InventoryOrderLine(models.Model):
     _description = 'Inventory Order Line'
 
     company_id = fields.Many2one('res.company', string='会社', )
-    order_id = fields.Many2one('ss_erp.inventory.order', 'オーダ参照', copy=False)
+    order_id = fields.Many2one('ss_erp.inventory.order', 'オーダ参照',)
     move_ids = fields.One2many('stock.move', 'x_inventory_order_line_id')
     organization_id = fields.Many2one('ss_erp.organization', '移動先組織')
     responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動元管轄部門')
@@ -171,6 +181,6 @@ class InventoryOrderLine(models.Model):
         for rec in self:
             stock_move_out = rec.env['stock.move'].search([('x_inventory_order_line_id', '=', rec.id)], limit=1)
             if stock_move_out:
-                rec.reserved_availability = stock_move_out.forecast_availability
+                rec.reserved_availability = stock_move_out.product_uom_qty
             else:
                 rec.reserved_availability = 0

@@ -5,6 +5,7 @@ from odoo.exceptions import UserError
 class IfdbAutogasFileDataRec(models.Model):
     _name = "ss_erp.ifdb.autogas.file.data.rec"
     _description = "Autogas File Data Record"
+    _order = 'validate_so'
 
     autogas_file_header_id = fields.Many2one(
         comodel_name="ss_erp.ifdb.autogas.file.header",
@@ -127,7 +128,7 @@ class IfdbAutogasFileDataRec(models.Model):
     @api.depends("card_number")
     def _compute_customer_code(self):
         for r in self:
-            r.customer_code = r.card_number[8:12]
+            r.customer_code = r.card_number[7:11]
 
     @api.depends("customer_code", "calendar_date")
     def _compute_validate_sale_order(self):

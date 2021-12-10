@@ -11,6 +11,8 @@ odoo.define("ss_erp.import", function (require) {
                 return "autogas";
             } else if (this.res_model === "ss_erp.ifdb.powernet.sales.detail") {
                 return "powernet";
+            } else if (this.res_model === "ss_erp.ifdb.youki.kanri.detail") {
+                return "youki_kanri";
             }
         },
 
@@ -34,6 +36,7 @@ odoo.define("ss_erp.import", function (require) {
             this._super.apply(this, arguments);
             this.$buttons.filter(".oe_powernet_import_transform").on("click", this.onTransform.bind(this));
             this.$buttons.filter(".oe_autogas_import_transform").on("click", this.onTransform.bind(this));
+            this.$buttons.filter(".oe_youki_kanri_import_transform").on("click", this.onTransform.bind(this));
         },
 
         onpreviewing: function () {
@@ -49,6 +52,12 @@ odoo.define("ss_erp.import", function (require) {
                 && this.parent_context.default_import_file_header_id
                 ) {
                 this.$buttons.filter(".oe_powernet_import_transform").removeClass("d-none");
+            }
+            if (this.res_model === "ss_erp.ifdb.youki.kanri.detail"
+                && this.parent_context.default_import_file_header_model
+                && this.parent_context.default_import_file_header_id
+                ) {
+                this.$buttons.filter(".oe_youki_kanri_import_transform").removeClass("d-none");
             }
         },
     });

@@ -28,7 +28,7 @@
         <field name="name">ss_erp.ifdb.powernet.sales.head.view.tree</field>
         <field name="model">ss_erp.ifdb.powernet.sales.header</field>
         <field name="arch" type="xml">
-            <tree string="">
+            <tree string="PowerNetファイル取込">
                 <field name="upload_date" />
                 <field name="name" />
                 <field name="branch_id" />
@@ -47,7 +47,7 @@
         <field name="name">ss_erp.ifdb.powernet.sales.head.view.form</field>
         <field name="model">ss_erp.ifdb.powernet.sales.header</field>
         <field name="arch" type="xml">
-            <form string="">
+            <form string="PowerNetファイル取込">
                 <header>
                     <button name="action_import"
                             string="Upload"
@@ -71,7 +71,7 @@
                     <notebook>
                         <page name="data_records" string="データレコード">
                             <field name="powernet_sale_record_ids">
-                                <tree editable="bottom">
+                                <tree>
                                     <field name="status" readonly="1"
                                            widget="badge"
                                            decoration-info="status=='success'"
@@ -120,6 +120,7 @@
                                     <field name="product_classification_code_1" readonly="1" />
                                     <field name="product_classification_code_2" readonly="1" />
                                     <field name="product_classification_code_3" readonly="1" />
+                                    <field name="error_message" optional="hide"/>
                                 </tree>
                             </field>
                         </page>
@@ -130,7 +131,7 @@
     </record>
     <!-- ACTION -->
     <record id="ss_erp_ifdb_powernet_sales_header_action" model="ir.actions.act_window">
-        <field name="name">PowerNet file Import</field>
+        <field name="name">PowerNetファイル取込</field>
         <field name="res_model">ss_erp.ifdb.powernet.sales.header</field>
         <field name="view_mode">tree,form</field>
     </record>

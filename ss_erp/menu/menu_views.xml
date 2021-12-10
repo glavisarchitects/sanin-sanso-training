@@ -20,9 +20,9 @@
               sequence="100"/>
     <menuitem id="ss_erp_code_convert_action_menu" name="Convert Code" parent="ss_erp.external_system_cooperation_other"
               action="ss_erp_code_convert_action" sequence="1"/>
-    <menuitem id="ss_erp_convert_code_type_action_menu" name="Convert Code Type"
+    <menuitem id="ss_erp_convert_code_type_action_menu" name="変換コード種別"
               parent="external_system_cooperation_other" action="ss_erp_convert_code_type_action" sequence="30"/>
-    <menuitem id="ss_erp_external_system_type_action_menu" name="External System Type"
+    <menuitem id="ss_erp_external_system_type_action_menu" name="外部システム種別"
               parent="external_system_cooperation_other" action="ss_erp_external_system_type_action" sequence="40"/>
     <menuitem id="ss_erp_contact_category_action_menu" name="Contact Category" parent="contacts.res_partner_menu_config"
               action="ss_erp_contact_category_action" sequence="4"/>
@@ -39,39 +39,47 @@
     <!--end-->
 
 
-    <menuitem id="menu_ss_erp_ifdb_propane_sales_header_action" name="Propane sales file"
+    <menuitem id="menu_ss_erp_ifdb_propane_sales_header_action" name="プロパン売上（米子）ファイル取込"
               parent="ss_erp.external_system_cooperation_importing_performance"
               action="ss_erp_ifdb_propane_sales_header_action"
-              sequence="10"/>
-    <menuitem id="menu_ss_erp_ifdb_propane_sales_detail_action" name="Propane sales file details"
+              sequence="50"/>
+    <menuitem id="menu_ss_erp_ifdb_propane_sales_detail_action" name="プロパン売上（米子）取込データ"
               parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_propane_sales_detail_action"
-              sequence="20"/>
+              sequence="60"/>
     <!--    <menuitem id="menu_ss_erp_ifdb_yg_parent" name="Yamasan gas supply" parent="sale.sale_order_menu" sequence="90"/>-->
-    <menuitem id="menu_ss_erp_ifdb_yg_header_action" name="Yamasan gas supply Header"
-              parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_header_action"
+    <menuitem id="menu_ss_erp_ifdb_yg_header_action" name="ヤマサンガスサプライファイル取込"
+              parent="ss_erp.external_system_cooperation_importing_performance" action="ss_erp_ifdb_yg_header_action"
               sequence="10"/>
-    <menuitem id="menu_ss_erp_ifdb_yg_detail_action" name="Yamasan gas supply details"
+    <menuitem id="menu_ss_erp_ifdb_yg_detail_action" name="ヤマサンガスサプライ取込データ（検針明細表）"
               parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_detail_action"
               sequence="20"/>
 
 
-    <menuitem id="menu_ss_erp_ifdb_yg_summary_action" name="Yamasan gas supply summary"
-              parent="ss_erp.external_system_cooperation_importing_performance" action="ss_erp_ifdb_yg_summary_action"
+    <menuitem id="menu_ss_erp_ifdb_yg_summary_action" name="ヤマサンガスサプライ取込データ（検針集計表）"
+              parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_summary_action"
               sequence="20"/>
-    <menuitem id="menu_ss_erp_ifdb_powernet_saleshead" name="Import PowerNet file"
+    <menuitem id="menu_ss_erp_ifdb_powernet_saleshead" name="Powernetファイル取込"
               parent="ss_erp.external_system_cooperation_importing_performance"
-              action="ss_erp_ifdb_powernet_sales_header_action" sequence="2" groups="sales_team.group_sale_manager"/>
-    <menuitem id="menu_ss_erp_ifdb_powernet_salesdetail" name="Import PowerNet Sales Detail file"
-              parent="ss_erp.external_system_cooperation_imported_data" sequence="2"
+              action="ss_erp_ifdb_powernet_sales_header_action" sequence="20" groups="sales_team.group_sale_manager"/>
+    <menuitem id="menu_ss_erp_ifdb_powernet_salesdetail" name="Powernet取込データ"
+              parent="ss_erp.external_system_cooperation_imported_data" sequence="30"
               action="ss_erp_ifdb_powernet_sales_detail_action" groups="sales_team.group_sale_manager"/>
     <menuitem id="ss_erp_ifdb_autogas_file_data_rec_menu" name="オートガスPOS（松江）取込データ"
               action="ss_erp_ifdb_autogas_file_data_rec_action"
+              sequence="50"
               parent="ss_erp.external_system_cooperation_imported_data"/>
     <menuitem id="ss_erp_ifdb_autogas_file_header_menu" name="オートガスPOS（松江）ファイル取込"
-              action="ss_erp_ifdb_autogas_file_header_action"
+              action="ss_erp_ifdb_autogas_file_header_action" sequence="40"
               parent="ss_erp.external_system_cooperation_importing_performance"/>
 
     <menuitem id="ss_erp_youki_kanri_menu" name="容器管理システムファイル取込"
-              action="ss_erp_ifdb_youki_kanri_action" sequence="10"
+              action="ss_erp_ifdb_youki_kanri_action" sequence="35"
               parent="ss_erp.external_system_cooperation_importing_performance"/>
+    <menuitem
+        id="ss_erp_youki_kanri_detail_menu"
+        name="容器管理システムデータ"
+        action="ss_erp_ifdb_youki_kanri_detail_action"
+        groups="sales_team.group_sale_manager"
+        parent="ss_erp.external_system_cooperation_imported_data"
+        sequence="35"/>
 </odoo>

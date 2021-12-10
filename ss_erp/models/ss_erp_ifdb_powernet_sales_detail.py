@@ -7,7 +7,7 @@ class IFDBPowerNetSalesHeadDetail(models.Model):
     _description = 'IFDB PowerNet Sales Detail'
 
     powernet_sales_header_id = fields.Many2one('ss_erp.ifdb.powernet.sales.header', 'PowerNetセールスヘッダー',
-                                               required=True)
+                                               required=True,ondelete="cascade")
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
         ('success', '成功'),

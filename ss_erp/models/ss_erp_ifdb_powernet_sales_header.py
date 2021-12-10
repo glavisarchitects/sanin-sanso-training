@@ -22,17 +22,26 @@ class IFDBPowerNetSalesHeader(models.Model):
         inverse_name="powernet_sales_header_id",
         string="PowerNet販売記録の詳細"
     )
+    _sql_constraints = [
+        (
+            "name_uniq",
+            "UNIQUE(name)",
+            "File Header Name is used for searching, please make it unique!"
+        )
+    ]
 
     @api.depends('powernet_sale_record_ids.status')
     def _compute_status(self):
         for record in self:
-            status_list = record.powernet_sale_record_ids.mapped('status')
-            if 'error' in status_list:
-                record.status = 'error'
-            elif 'wait' in status_list:
-                record.status = 'wait'
-            else:
-                record.status = 'success'
+            record.status = 'wait'
+            if record.powernet_sale_record_ids:
+                status_list = record.powernet_sale_record_ids.mapped('status')
+                if 'error' in status_list:
+                    record.status = 'error'
+                elif 'wait' in status_list:
+                    record.status = 'wait'
+                else:
+                    record.status = 'success'
 
     def action_import(self):
         self.ensure_one()
@@ -63,7 +72,7 @@ class IFDBPowerNetSalesHeader(models.Model):
             raise UserError(
                 _('直売売上用の顧客コードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（powernet.direct.sales.dummy.customer_id）'))
         exe_data = self.powernet_sale_record_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
-            key=lambda k: (k['sales_date'], k['customer_code'], k['data_types']))
+            key=lambda k: (k['sale_ref'],k['sales_date'], k['customer_code'], k['data_types']))
 
         # Get list product uom exchange
         powernet_type_ids = self.env['ss_erp.external.system.type'].search([('code', '=', 'power_net')]).mapped('id')
@@ -82,35 +91,10 @@ class IFDBPowerNetSalesHeader(models.Model):
             if product['default_code']:
                 product_dict[product['default_code']] = product['id']
 
-        # Create sale order
-        order_to_create=[]
-        failed_order = []
-        success_order_dict = {}
-        detail=[]
-        last_sale_ref = False
-        count = 1
-        len_list = len(exe_data)
+        failed_so = []
+        success_dict = {}
         for line in exe_data:
             error_message = False
-
-            if line.sale_ref not in order_to_create:
-                order_to_create.append(line.sale_ref)
-                if not detail:
-                    so = {
-                        'x_organization_id': self.branch_id.id,
-                        'partner_id': customer_id[0].id,
-                        'partner_invoice_id': customer_id[0].id,
-                        'partner_shipping_id': customer_id[0].id,
-                        'date_order': self.upload_date,
-                        'state': 'draft',
-                        'x_no_approval_required_flag': True,
-                    }
-                    detail = []
-                else:
-                    if last_sale_ref and last_sale_ref not in failed_order:
-                        so['order_line'] = detail
-                        order_id = self.env['sale.order'].create(so)
-                        success_order_dict[last_sale_ref] = order_id.id
             if not product_dict.get(line.product_code):
                 line.status = 'error'
                 error_message = '商品コードがプロダクトマスタに存在しません。'
@@ -121,26 +105,43 @@ class IFDBPowerNetSalesHeader(models.Model):
                     error_message+= '単位コードの変換に失敗しました。コード変換マスタを確認してください。'
                 else:
                     error_message= '単位コードの変換に失敗しました。コード変換マスタを確認してください。'
-            if error_message:
-                line.error_message=error_message
-                if line.sale_ref not in failed_order:
-                    failed_order.append(line.sale_ref)
-            else:
+            if not error_message:
                 order_line = {
                     'product_id': product_dict[line.product_code],
                     'product_uom_qty': line.quantity,
                     'product_uom': uom_dict[line.unit_code],
                 }
-                detail.append((0, 0, order_line))
-            last_sale_ref = line.sale_ref
-            if last_sale_ref and last_sale_ref not in failed_order and count == len_list:
-                so['order_line'] = detail
-                order_id = self.env['sale.order'].create(so)
-                success_order_dict[last_sale_ref] = order_id.id
-            count += 1
+                if not success_dict.get(line.sale_ref):
+                    so = {
+                            'x_organization_id': self.branch_id.id,
+                            'partner_id': customer_id[0].id,
+                            'partner_invoice_id': customer_id[0].id,
+                            'partner_shipping_id': customer_id[0].id,
+                            'date_order': self.upload_date,
+                            'state': 'draft',
+                            'x_no_approval_required_flag': True,
+                            'order_line': [(0, 0, order_line)]
+                        }
+                    success_dict[line.sale_ref] = so
+                else:
+                    success_dict[line.sale_ref]['order_line'].append((0, 0, order_line))
+            else:
+                if line.sale_ref not in failed_so:
+                    failed_so.append(line.sale_ref)
+                if success_dict.get(line.sale_ref, False):
+                    success_dict.pop(line.sale_ref, None)
+                line.write({
+                    'status': 'error',
+                    'error_message': error_message
+                })
 
+        for key, value in success_dict.items():
+            sale_id = self.env['sale.order'].create(value)
+            success_dict[key]['sale_id'] = sale_id.id
+
+        success_list = success_dict.keys()
         for line in exe_data:
-            if line.sale_ref not in failed_order:
+            if line.sale_ref in success_list:
                 line.status = 'success'
-                line.sale_id = success_order_dict[line.sale_ref]
+                line.sale_id = success_dict[line.sale_ref]['sale_id']
                 line.processing_date = datetime.now()

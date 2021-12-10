@@ -50,9 +50,9 @@
                             <field name="direct_business_partner_sub_code"/>
                             <field name="direct_delivery_code"/>
                             <field name="customer_name"/>
-                            <field name="commercial_branch_code"/>
-                            <field name="commercial_branch_sub_code"/>
-                            <field name="commercial_product_code"/>
+                            <field name="codeommercial_branch_code"/>
+                            <field name="codeommercial_branch_sub_code"/>
+                            <field name="codeommercial_product_code"/>
                             <field name="product_name"/>
                             <field name="standard_name"/>
                             <field name="standard"/>
@@ -61,7 +61,7 @@
                             <field name="unified_quantity"/>
                             <field name="order_number"/>
                             <field name="comment"/>
-                            <field name="commercial_branch_code2"/>
+                            <field name="codeommercial_branch_code2"/>
                             <field name="amount_calculation_classification"/>
                             <field name="slip_processing_classification"/>
                             <field name="sale_id"/>

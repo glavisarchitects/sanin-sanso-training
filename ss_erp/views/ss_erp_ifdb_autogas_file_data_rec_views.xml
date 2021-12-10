@@ -35,13 +35,14 @@
         <field name="arch" type="xml">
             <tree string="オートガスPOS（松江）取込データ" editable="bottom">
                 <field name="id" />
-                <field name="processing_date" required="True" />
+                <field name="processing_date" readonly="True"/>
                 <field name="card_classification" readonly="True" optional="hide" />
                 <field name="processing_division" readonly="True" optional="hide" />
                 <field name="unused" readonly="True" optional="hide" />
                 <field name="group_division" readonly="True" optional="hide" />
                 <field name="actual_car_number" readonly="True" optional="hide" />
                 <field name="card_number" readonly="True" optional="hide" />
+                <field name="customer_code" readonly="True" optional="show"/>
                 <field name="product_code" readonly="True" optional="hide" />
                 <field name="data_no" readonly="True" optional="hide" />
                 <field name="quantity_1" readonly="True" optional="hide" />
@@ -70,7 +71,7 @@
                        decoration-warning="status=='wait'"
                        decoration-danger="status=='error'" />
                 <field name="autogas_file_header_id"
-                       required="True" optional="hide" />
+                       optional="hide" />
                 <field name="sale_id"
                        optional="hide" />
             </tree>
@@ -83,7 +84,4 @@
         <field name="res_model">ss_erp.ifdb.autogas.file.data.rec</field>
         <field name="view_mode">tree</field>
     </record>
-
-
-
 </odoo>

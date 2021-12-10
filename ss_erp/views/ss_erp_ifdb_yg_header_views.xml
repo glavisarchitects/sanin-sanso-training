@@ -9,7 +9,8 @@
                 <field name="name"/>
                 <field name="branch_id"/>
                 <field name="user_id"/>
-                <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'" decoration-info="status == 'wait'" widget="badge" optional="show"/>
+                <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'"
+                       decoration-info="status == 'wait'" widget="badge" optional="show"/>
             </tree>
         </field>
     </record>
@@ -18,16 +19,63 @@
         <field name="model">ss_erp.ifdb.yg.header</field>
         <field name="arch" type="xml">
             <form string="">
+                <header>
+                    <button name="btn_processing_execution" type="object" string="Processing execution"
+                            class="btn btn-primary"/>
+                    <button name="import_summary" type="object" string="Import Summary" class="btn btn-primary"/>
+                    <button name="import_detail" type="object" string="Import Detail" class="btn btn-primary"/>
+                </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="upload_date"/>
-                            <field name="name"/>
-                            <field name="branch_id"/>
-                            <field name="user_id"/>
+                            <field name="name" required="1"/>
+                            <field name="upload_date" required="1"/>
+                            <field name="status" required="1"/>
+                        </group>
+                        <group>
+                            <field name="user_id" required="1"/>
+                            <field name="branch_id" required="1"/>
+                            <field name="meter_reading_date" required="1"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Meter reading summary table">
+                            <field name="summary_ids">
+                                <tree>
+                                    <field name="status" decoration-danger="status == 'error'"
+                                           decoration-success="status == 'success'" decoration-info="status == 'wait'"
+                                           widget="badge" optional="show"/>
+                                    <field name="id"/>
+                                    <field name="processing_date"/>
+                                    <field name="partner_id"/>
+                                    <field name="amount_use"/>
+                                    <field name="item"/>
+                                    <field name="sale_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Meter reading detail table">
+                            <field name="detail_ids">
+                                <tree>
+                                    <field name="status" decoration-danger="status == 'error'"
+                                           decoration-success="status == 'success'" decoration-info="status == 'wait'"
+                                           widget="badge" optional="show"/>
+                                    <field name="id"/>
+                                    <field name="processing_date"/>
+                                    <field name="customer_cd"/>
+                                    <field name="amount_use"/>
+                                    <field name="item"/>
+                                    <field name="sale_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>

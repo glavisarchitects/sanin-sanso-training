@@ -23,11 +23,27 @@
                     <group>
                         <group>
                             <field name="processing_date"/>
+                            <field name="partner_id"/>
                             <field name="sale_id"/>
                             <field name="amount_use"/>
                             <field name="item"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Meter reading detail table">
+                            <field name="detail_ids">
+                                <tree>
+                                    <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'" decoration-info="status == 'wait'" widget="badge" optional="show"/>
+                                    <field name="id"/>
+                                    <field name="processing_date"/>
+                                    <field name="customer_cd"/>
+                                    <field name="amount_use"/>
+                                    <field name="item"/>
+                                    <field name="sale_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

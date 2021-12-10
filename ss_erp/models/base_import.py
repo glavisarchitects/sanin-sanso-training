@@ -109,3 +109,24 @@ class Import(models.TransientModel):
             new_line = b'"%s",' % (powernet_header.name.encode("utf-8")) + line
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
+
+    def transform_youki_kanri_file(self, option, parent_context={}):
+        self.ensure_one()
+        youki_kanri = False
+        if parent_context and not any([self.import_file_header_id, self.import_file_header_model]):
+            self.import_file_header_model = parent_context["default_import_file_header_model"]
+            self.import_file_header_id = parent_context["default_import_file_header_id"]
+            youki_kanri = self.env[self.import_file_header_model].browse(
+                self.import_file_header_id
+            )
+        if not youki_kanri:
+            raise UserError(_("Missing File Header, please using `upload` option from file header!"))
+        data = self.file.split(b"\n")
+        new_data = [
+            b''
+        ]
+        for line in data:
+            if line == b"":
+                continue
+        print(data)
+        return True

@@ -1,22 +1,26 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 
+
 class IFDBYGSummary(models.Model):
     _name = 'ss_erp.ifdb.yg.summary'
     _description = 'Yamasan Gas Supply Meter Reading Summary Table'
 
     name = fields.Char(string='Label dari Field')
-    header_id = fields.Many2one('ss_erp.ifdb.yg.header', string='Yamasan Gas Supply Header')
+    header_id = fields.Many2one(
+        'ss_erp.ifdb.yg.header', string='Yamasan Gas Supply Header')
     status = fields.Selection([
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり'),
-    ], string='Status', default='wait', index=True)
-    processing_date = fields.Datetime(string='Processing date and time', readonly=True)
-    partner_id = fields.Many2one('res.partner', string='')
-    amount_use = fields.Float(string='Amount to use')
-    item = fields.Char(string='Item')
-    sale_id = fields.Many2one('sale.order', string='See sales order')
-    error_message = fields.Char(string='Error message')
+    ], string='ステータス', default='wait', index=True)
+    processing_date = fields.Datetime(
+        string='処理日時', readonly=True)
+    partner_id = fields.Char(string='販売店コード')
+    # partner = fields.Char(string='Dealer code')
+    amount_use = fields.Float(string='使用量')
+    item = fields.Char(string='項目')
+    sale_id = fields.Many2one('sale.order', string='販売オーダ参照')
+    error_message = fields.Char(string='エラーメッセージ')
     detail_ids = fields.One2many(
         'ss_erp.ifdb.yg.detail', 'summary_id', string='YG detail')
