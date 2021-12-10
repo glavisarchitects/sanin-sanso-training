@@ -10,8 +10,8 @@ class IFDBPropaneSalesDetail(models.Model):
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり'),
-    ], string='Status', default='wait', index=True)
-    processing_date = fields.Datetime(string='Processing date and time', readonly=True)
+    ], string='ステータス', default='wait', index=True)
+    processing_date = fields.Datetime(string='処理日時', readonly=True)
     external_data_type = fields.Char(string='外部データ種別')
 
     customer_branch_code = fields.Char(string='顧支店Ｃ')

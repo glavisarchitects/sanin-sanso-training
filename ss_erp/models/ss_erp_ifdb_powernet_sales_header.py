@@ -14,7 +14,7 @@ class IFDBPowerNetSalesHeader(models.Model):
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
         ('success', '成功'),
-        ('error', 'エラー')
+        ('error', 'エラーあり')
     ], string='ステータス', default="wait",compute='_compute_status')
 
     powernet_sale_record_ids = fields.One2many(

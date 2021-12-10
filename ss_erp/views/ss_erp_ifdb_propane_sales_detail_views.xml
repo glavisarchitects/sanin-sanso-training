@@ -4,7 +4,7 @@
         <field name="name">ss_erp.ifdb.propane.sales.detail.tree</field>
         <field name="model">ss_erp.ifdb.propane.sales.detail</field>
         <field name="arch" type="xml">
-            <tree string="">
+            <tree string="プロパン売上（米子）取込データ">
                 <field name="id" string='External ID'/>
                 <field name="processing_date"/>
                 <field name="external_data_type"/>
@@ -29,7 +29,7 @@
         </field>
     </record>
     <record id="ss_erp_ifdb_propane_sales_detail_action" model="ir.actions.act_window">
-        <field name="name">Propane sales file details</field>
+        <field name="name">プロパン売上（米子）取込データ</field>
         <field name="res_model">ss_erp.ifdb.propane.sales.detail</field>
         <field name="view_mode">tree</field>
     </record>

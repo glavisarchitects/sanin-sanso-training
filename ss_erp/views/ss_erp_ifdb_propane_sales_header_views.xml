@@ -4,7 +4,7 @@
         <field name="name">ss_erp.ifdb.propane.sales.header.tree</field>
         <field name="model">ss_erp.ifdb.propane.sales.header</field>
         <field name="arch" type="xml">
-            <tree string="">
+            <tree string="プロパン売上（米子）ファイル取込">
                 <field name="upload_date"/>
                 <field name="name"/>
                 <field name="branch_id"/>
@@ -17,7 +17,7 @@
         <field name="name">ss_erp.ifdb.propane.sales.header.form</field>
         <field name="model">ss_erp.ifdb.propane.sales.header</field>
         <field name="arch" type="xml">
-            <form string="">
+            <form string="プロパン売上（米子）ファイル取込">
                 <header>
                     <button name="btn_processing_execution" type="object" string="Processing execution"/>
                 </header>
@@ -83,7 +83,7 @@
         </field>
     </record>
     <record id="ss_erp_ifdb_propane_sales_header_action" model="ir.actions.act_window">
-        <field name="name">Propane sales file</field>
+        <field name="name">プロパン売上（米子）ファイル取込</field>
         <field name="res_model">ss_erp.ifdb.propane.sales.header</field>
         <field name="view_mode">tree,form</field>
     </record>

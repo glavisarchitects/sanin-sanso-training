@@ -5,9 +5,9 @@ class IFDBPropaneSalesHeader(models.Model):
     _name = 'ss_erp.ifdb.propane.sales.header'
     _description = 'Propane sales'
 
-    name = fields.Char(string='Name')
+    name = fields.Char(string='名称')
     upload_date = fields.Datetime(
-        string='Upload date and time', index=True, required=True)
+        string='アップロード日時', index=True, required=True)
     user_id = fields.Many2one('res.users', string='Manager')
     branch_id = fields.Many2one('ss_erp.organization', string='Branch')
     status = fields.Selection([
@@ -59,13 +59,25 @@ class IFDBPropaneSalesHeader(models.Model):
             if int(line.customer_business_partner_code) not in partner_list:
                 error_message = 'Account C does not exist in the contact master.'
             if int(line.customer_branch_code) not in organization_list:
-                error_message += 'Branch office C does not exist in the organization master.'
+                if error_message:
+                    error_message += '顧取引先Ｃが連絡先マスタに存在しません。'
+                else:
+                    error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
             if int(line.codeommercial_branch_code) not in organization_list:
-                error_message += 'Branch C does not exist in the organization master.'
+                if error_message:
+                    error_message += '商支店Ｃが組織マスタに存在しません。'
+                else:
+                    error_message = '商支店Ｃが組織マスタに存在しません。'
             if int(line.codeommercial_product_code) not in product_list:
-                error_message += 'Product C does not exist in the product master.'
+                if error_message:
+                    error_message += '商商品Ｃがプロダクトマスタに存在しません。'
+                else:
+                    error_message = '商商品Ｃがプロダクトマスタに存在しません。'
             if int(line.unit_code) not in uom_list:
-                error_message += 'Unit C does not exist in the product unit master.'
+                if error_message:
+                    error_message += '単位Ｃがプロダクト単位マスタに存在しません。'
+                else:
+                    error_message = '単位Ｃがプロダクト単位マスタに存在しません。'
 
             if line.customer_business_partner_code not in failed_customer_code:
                 if error_message:
