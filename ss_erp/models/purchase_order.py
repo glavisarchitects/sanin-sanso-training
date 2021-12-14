@@ -80,15 +80,6 @@ class PurchaseOrder(models.Model):
                 record.is_dropshipping = True if route_id in record.mapped(
                     'product_id').mapped('route_ids') else False
 
-    @api.onchange('x_construction_payment_cash')
-    def _onchange_construction_cash(self):
-        if self.x_construction_payment_cash and self.clamp(self.x_construction_payment_cash):
-            self.x_construction_payment_bill = 100 - self.x_construction_payment_cash
-
-    @api.onchange('x_construction_payment_bill')
-    def _onchange_construction_bills(self):
-        if self.x_construction_payment_bill and self.clamp(self.x_construction_payment_bill):
-            self.x_construction_payment_cash = 100 - self.x_construction_payment_bill
 
     @api.model
     def _get_picking_type(self, company_id):
