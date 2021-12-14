@@ -4,6 +4,7 @@ from odoo import models, fields, api
 
 class PartnerPerformance(models.Model):
     _name = 'ss_erp.partner.performance'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Partner performance'
 
     name = fields.Char(string='Name')

@@ -27,7 +27,7 @@ class InventoryOrder(models.Model):
     state = fields.Selection([('draft', 'ドラフト'), ('waiting', '出荷待ち'), ('shipping', '積送中'),
                               ('done', '移動完了'), ('cancel', '取消済')], 'ステータス', default='draft', compute='_compute_state',
                              copy=False)
-    inventory_order_line_ids = fields.One2many('ss_erp.inventory.order.line', 'order_id', string="オーダ明細")
+    inventory_order_line_ids = fields.One2many('ss_erp.inventory.order.line', 'order_id', string="オーダ明細", copy=True)
     note = fields.Text('ノート')
 
     has_confirm = fields.Boolean(default=False, copy=False)
@@ -61,6 +61,14 @@ class InventoryOrder(models.Model):
         for rec in self:
             stock_picking_order = rec.env['stock.picking'].search([('x_inventory_order_id', '=', rec.id)])
             stp_state_all = list(set(stock_picking_order.mapped('state')))
+
+            picking_in = rec.env['stock.picking'].search(
+                [('x_inventory_order_id', '=', rec.id), ('picking_type_code', '=', 'incoming')])
+
+            picking_out = stock_picking_order - picking_in
+
+            if picking_out:
+                picking_out_state = list(set(picking_out.mapped('state')))
             if rec.has_cancel:
                 rec.state = 'cancel'
             else:
@@ -71,6 +79,13 @@ class InventoryOrder(models.Model):
                     else:
                         if len(stp_state_all) == 1 and 'done' in stp_state_all:
                             rec.state = 'done'
+                #    If all picking out are assign then all picking in -> assign
+                    if picking_out and picking_in:
+                        if all(sto == 'assigned' for sto in picking_out_state):
+                            for pi in picking_in:
+                                if pi.state not in ['assigned', 'done', 'cancel']:
+                                    pi.action_confirm()
+                                    pi.action_assign()
                 else:
                     rec.state = 'draft'
 
@@ -123,7 +138,7 @@ class InventoryOrder(models.Model):
                         'x_responsible_dept_id': line.responsible_dept_id.id,
                         'scheduled_date': self.scheduled_date,
                         'x_inventory_order_id': self.id,
-                        'move_ids_without_package': [(0, 0, move_out)]
+                        'move_ids_without_package': [(0, 0, move_in)]
                     }
                     source_in[key] = move_to_dest_location
 
@@ -140,7 +155,7 @@ class InventoryOrder(models.Model):
                         'user_id': self.user_id.id,
                         'scheduled_date': self.scheduled_date,
                         'x_inventory_order_id': self.id,
-                        'move_ids_without_package': [(0, 0, move_in)]
+                        'move_ids_without_package': [(0, 0, move_out)]
                     }
                     source_out[key] = from_source_move
 
@@ -171,7 +186,7 @@ class InventoryOrderLine(models.Model):
     product_id = fields.Many2one('product.product', 'プロダクト')
     # lot_ids = fields.Many2many('stock.production.lot', string='シリアルナンバー')
     product_uom_qty = fields.Float('要求')
-    product_uom = fields.Many2one('uom.uom',default=lambda self: self.product_id.uom_id,string='単位')
+    product_uom = fields.Many2one('uom.uom', string='単位')
     reserved_availability = fields.Float('引当済数量', compute='compute_reserved_availability')
     product_packaging = fields.Many2one('product.packaging', '荷姿')
 
@@ -184,3 +199,9 @@ class InventoryOrderLine(models.Model):
                 rec.reserved_availability = stock_move_out.product_uom_qty
             else:
                 rec.reserved_availability = 0
+
+    #
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.product_uom = self.product_id.uom_id

@@ -4,8 +4,7 @@
         <field name="name">ss_erp.ifdb.yg.summary.tree</field>
         <field name="model">ss_erp.ifdb.yg.summary</field>
         <field name="arch" type="xml">
-            <tree string="" editable="top">
-                <field name="id"/>
+            <tree string="">
                 <field name="processing_date"/>
                 <field name="sale_id"/>
                 <field name="amount_use"/>
@@ -27,19 +26,17 @@
                             <field name="sale_id"/>
                             <field name="amount_use"/>
                             <field name="item"/>
+                            <field name="error_message"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Meter reading detail table">
+                        <page string="検針明細表">
                             <field name="detail_ids">
                                 <tree>
-                                    <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'" decoration-info="status == 'wait'" widget="badge" optional="show"/>
-                                    <field name="id"/>
-                                    <field name="processing_date"/>
                                     <field name="customer_cd"/>
                                     <field name="amount_use"/>
+                                    <field name="meter_reading_date"/>
                                     <field name="item"/>
-                                    <field name="sale_id"/>
                                 </tree>
                             </field>
                         </page>
@@ -58,7 +55,7 @@
         </field>
     </record>
     <record id="ss_erp_ifdb_yg_summary_action" model="ir.actions.act_window">
-        <field name="name">Yamasan Gas Supply Header</field>
+        <field name="name">ヤマサンガスサプライ取込データ（検針集計表）</field>
         <field name="res_model">ss_erp.ifdb.yg.summary</field>
         <field name="view_mode">tree</field>
     </record>

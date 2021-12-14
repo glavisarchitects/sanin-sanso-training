@@ -7,8 +7,8 @@ _logger = logging.getLogger(__name__)
 
 
 class ResPartnerForm(models.Model):
-    _inherit = 'res.partner'
     _name = 'ss_erp.res.partner.form'
+    _inherit = 'res.partner'
     _description = 'Res Partner Form'
 
     approval_id = fields.Char(string="Approval ID")
@@ -19,23 +19,25 @@ class ResPartnerForm(models.Model):
     channel_ids = fields.Many2many(
         'mail.channel', 'mail_channel_profile_partner_form', 'partner_id', 'channel_id', copy=False)
     meeting_ids = fields.Many2many('calendar.event', 'calendar_event_res_partner_form_rel',
-        'res_partner_id', 'calendar_event_id', string='Meetings', copy=False)
+                                   'res_partner_id', 'calendar_event_id', string='Meetings', copy=False)
     x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_form_rel',
-       'categ_id', 'partner_id', string="Transaction classification", index=True)
+                                           'categ_id', 'partner_id', string="Transaction classification", index=True)
     x_transaction_department = fields.Many2many(
-        'ss_erp.bis.category', 'department_partner_form_rel', 'department_id', 'partner_id', string="Department", index=True)
+        'ss_erp.bis.category', 'department_partner_form_rel', 'department_id', 'partner_id', string="Department",
+        index=True)
 
     property_account_payable_id = fields.Many2one('account.account', string="Account Payable",
-        domain="[('internal_type', '=', 'payable'), ('deprecated', '=', False), ('company_id', '=', current_company_id)]",
-        help="This account will be used instead of the default one as the payable account for the current partner",
-        default=lambda self:self._default_property_account_payable_id(),
-        required=False)
+                                                  domain="[('internal_type', '=', 'payable'), ('deprecated', '=', False), ('company_id', '=', current_company_id)]",
+                                                  help="This account will be used instead of the default one as the payable account for the current partner",
+                                                  default=lambda self: self._default_property_account_payable_id(),
+                                                  required=False)
     property_account_receivable_id = fields.Many2one('account.account', company_dependent=True,
-        string="Account Receivable",
-        domain="[('internal_type', '=', 'receivable'), ('deprecated', '=', False), ('company_id', '=', current_company_id)]",
-        help="This account will be used instead of the default one as the receivable account for the current partner",
-        default=lambda self:self._default_property_account_receivable_id(),
-        required=False)
+                                                     string="Account Receivable",
+                                                     domain="[('internal_type', '=', 'receivable'), ('deprecated', '=', False), ('company_id', '=', current_company_id)]",
+                                                     help="This account will be used instead of the default one as the receivable account for the current partner",
+                                                     default=lambda
+                                                         self: self._default_property_account_receivable_id(),
+                                                     required=False)
     same_vat_partner_id = fields.Many2one(
         'res.partner', string='Partner with same Tax ID', store=False)
 
@@ -49,13 +51,15 @@ class ResPartnerForm(models.Model):
 
     # Override one2many field -> many2many field
     activity_ids = fields.Many2many(
-        'mail.activity', 'mail_activity_res_partner_form_rel', 'partner_id', 'activity_id', string="Activities", copy=False)
+        'mail.activity', 'mail_activity_res_partner_form_rel', 'partner_id', 'activity_id', string="Activities",
+        copy=False)
     bank_ids = fields.Many2many(
-        'res.partner.bank', 'res_partner_bank_res_partner_form_rel', 'partner_id', 'bank_id', string="Banks", copy=False)
+        'res.partner.bank', 'res_partner_bank_res_partner_form_rel', 'partner_id', 'bank_id', string="Banks",
+        copy=False)
     child_ids = fields.Many2many(
         'res.partner', 'res_partner_child_res_partner_form_rel', 'partner_id', 'child_id', string="Contact", copy=False)
     construction_ids = fields.Many2many('ss_erp.partner.construction', 'partner_construction_res_partner_form_rel',
-        'partner_id', 'construction_id', string="Construction", copy=False)
+                                        'partner_id', 'construction_id', string="Construction", copy=False)
     contract_ids = fields.Many2many(
         'account.analytic.account', 'analytic_account_res_partner_form_rel', 'partner_id', 'account_id', copy=False)
     invoice_ids = fields.Many2many(
@@ -67,7 +71,8 @@ class ResPartnerForm(models.Model):
     payment_token_ids = fields.Many2many(
         'payment.token', 'payment_token_res_partner_form_rel', 'partner_id', 'token_id', copy=False)
     performance_ids = fields.Many2many(
-        'ss_erp.partner.performance', 'partner_performance_res_partner_form_rel', 'partner_id', 'partner_performance_id', copy=False)
+        'ss_erp.partner.performance', 'partner_performance_res_partner_form_rel', 'partner_id',
+        'partner_performance_id', copy=False)
     purchase_line_ids = fields.Many2many(
         'purchase.order.line', 'po_line_res_partner_form_rel', 'partner_id', 'po_line_id', copy=False)
     ref_company_ids = fields.Many2many(

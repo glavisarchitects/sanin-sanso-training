@@ -145,7 +145,6 @@
             </xpath>
             <xpath expr="//page[@name='products']/field/tree/field[@name='product_uom']" position="attributes">
                 <attribute name="options">{'no_create': True}</attribute>
-                <attribute name="string">Unit</attribute>
             </xpath>
             <field name="picking_type_id" position="attributes">
                 <attribute name="string">Arrival type</attribute>

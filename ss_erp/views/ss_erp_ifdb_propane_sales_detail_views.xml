@@ -5,12 +5,13 @@
         <field name="model">ss_erp.ifdb.propane.sales.detail</field>
         <field name="arch" type="xml">
             <tree string="プロパン売上（米子）取込データ">
-                <field name="id" string='External ID'/>
                 <field name="processing_date"/>
                 <field name="external_data_type"/>
                 <field name="customer_branch_code"/>
                 <field name="customer_branch_sub_code"/>
                 <field name="customer_business_partner_code"/>
+                <field name="propane_sales_header_id" invisible="True"/>
+                <field name="sale_id" invisible="True"/>
                 <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'" decoration-info="status == 'wait'" widget="badge" optional="show"/>
             </tree>
         </field>
@@ -25,6 +26,14 @@
                 <field name="customer_branch_code"/>
                 <field name="customer_branch_sub_code"/>
                 <field name="customer_business_partner_code"/>
+                <filter name="error" string="Error" domain="[('status', '=', 'error')]"/>
+                <filter name="wait" string="Waiting" domain="[('status', '=', 'wait')]"/>
+                <filter name="done" string="Done" domain="[('status', '=', 'success')]"/>
+                <group expand="0" string="Group By">
+                    <filter string='Status' name="status_group" domain="[]" context="{'group_by': 'status'}"/>
+                    <filter string='Header' name="header_group" domain="[]" context="{'group_by': 'propane_sales_header_id'}"/>
+                    <filter string='Sale order' name="sale_order_group" domain="[]" context="{'group_by': 'sale_id'}"/>
+                </group>
             </search>
         </field>
     </record>

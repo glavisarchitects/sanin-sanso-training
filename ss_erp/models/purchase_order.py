@@ -90,16 +90,6 @@ class PurchaseOrder(models.Model):
         if self.x_construction_payment_bill and self.clamp(self.x_construction_payment_bill):
             self.x_construction_payment_cash = 100 - self.x_construction_payment_bill
 
-    @api.constrains("x_construction_payment_cash", "x_construction_payment_bill")
-    def _check_sum_construction_payment(self):
-        for record in self:
-            cash = record.x_construction_payment_cash
-            bills = record.x_construction_payment_bill
-            if cash or bills:
-                if sum([cash, bills]) != 100 or not(self.clamp(cash) or self.clamp(cash)):
-                    raise ValidationError(
-                        _('Total payment must be 100%%: Cash %s%% - Bills %s%%' % (cash, bills)))
-
     @api.model
     def _get_picking_type(self, company_id):
         picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('name', 'ilike', 'Dropship%'), ('warehouse_id.company_id', '=', company_id)])
@@ -133,16 +123,6 @@ class PurchaseOrder(models.Model):
             return self.env.ref('action_report_purchasequotation').report_action(self)
         return res
 
-    @api.model
-    def clamp(self, number):
-        if number:
-            if number < 0:
-                return False
-            elif number > 100:
-                return False
-            else:
-                return number
-
     def _prepare_picking(self):
         res = super(PurchaseOrder, self)._prepare_picking()
         res.update({
@@ -154,17 +134,4 @@ class PurchaseOrder(models.Model):
         })
         return res
 
-    # @api.onchange('x_organization_id')
-    # def _onchange_x_organization_id(self):
-    #     domain = [
-    #         ('x_partner_categ', 'in', ['vendor', 'multi']),
-    #         '|', ('x_is_branch','=',False),
-    #         ('x_branch_name','=',self.x_organization_id)]
-    #     res = {'domain':{
-    #         'partner_id': domain
-    #     }}
-    #     return res
-    @api.onchange('x_organization_id')
-    def _onchange_x_organization_id(self):
-        self.partner_id = None
 

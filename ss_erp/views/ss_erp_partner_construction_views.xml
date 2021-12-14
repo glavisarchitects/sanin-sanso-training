@@ -6,11 +6,11 @@
         <field name="model">ss_erp.partner.construction</field>
         <field name="arch" type="xml">
             <tree string="">
-                <field name="license_figure" />
-                <field name="license_flag_1" />
-                <field name="license_flag_2" />
-                <field name="license_number" />
-                <field name="license_period" />
+                <field name="license_figure"/>
+                <field name="license_flag_1"/>
+                <field name="license_flag_2"/>
+                <field name="license_number"/>
+                <field name="license_period"/>
             </tree>
         </field>
     </record>
@@ -23,16 +23,21 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="license_figure" />
-                            <field name="license_flag_1" />
-                            <field name="license_flag_2" />
-                            <field name="license_number" />
-                            <field name="license_period" />
+                            <field name="license_figure"/>
+                            <field name="license_flag_1"/>
+                            <field name="license_flag_2"/>
+                            <field name="license_number"/>
+                            <field name="license_period"/>
                             <field name="active" invisible="1"/>
                             <field name="partner_id" invisible="1"/>
                         </group>
                     </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -42,11 +47,11 @@
         <field name="model">ss_erp.partner.construction</field>
         <field name="arch" type="xml">
             <search string="">
-                <field name="license_figure" />
-                <field name="license_flag_1" />
-                <field name="license_flag_2" />
-                <field name="license_number" />
-                <field name="license_period" />
+                <field name="license_figure"/>
+                <field name="license_flag_1"/>
+                <field name="license_flag_2"/>
+                <field name="license_number"/>
+                <field name="license_period"/>
             </search>
         </field>
     </record>

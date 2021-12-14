@@ -7,10 +7,10 @@
             <field name="model">ss_erp.convert.code.type</field>
             <field name="arch" type="xml">
                 <tree string="">
-                    <field name="code" />
-                    <field name="name" />
-                    <field name="model" />
-                    <field name="fields" />
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="model"/>
+                    <field name="fields"/>
                 </tree>
             </field>
         </record>
@@ -25,15 +25,20 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name" />
-                                <field name="code" />
+                                <field name="name"/>
+                                <field name="code"/>
                             </group>
                             <group>
-                                <field name="model" />
-                                <field name="fields" />
+                                <field name="model"/>
+                                <field name="fields"/>
                             </group>
                         </group>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -43,10 +48,10 @@
             <field name="model">ss_erp.convert.code.type</field>
             <field name="arch" type="xml">
                 <search string="">
-                    <field name="code" />
-                    <field name="name" />
-                    <field name="model" />
-                    <field name="fields" />
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="model"/>
+                    <field name="fields"/>
                 </search>
             </field>
         </record>
@@ -57,6 +62,6 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        
+
     </data>
 </odoo>

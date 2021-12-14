@@ -6,9 +6,9 @@
         <field name="model">ss_erp.partner.performance</field>
         <field name="arch" type="xml">
             <tree string="">
-                <field name="accounting_period" />
-                <field name="revenue" />
-                <field name="ordinary_profit" />
+                <field name="accounting_period"/>
+                <field name="revenue"/>
+                <field name="ordinary_profit"/>
             </tree>
         </field>
     </record>
@@ -21,14 +21,19 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="accounting_period" />
-                            <field name="revenue" />
-                            <field name="ordinary_profit" />
+                            <field name="accounting_period"/>
+                            <field name="revenue"/>
+                            <field name="ordinary_profit"/>
                             <field name="active" invisible="1"/>
                             <field name="partner_id" invisible="1"/>
                         </group>
                     </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -38,9 +43,9 @@
         <field name="model">ss_erp.partner.performance</field>
         <field name="arch" type="xml">
             <search string="">
-                <field name="accounting_period" />
-                <field name="revenue" />
-                <field name="ordinary_profit" />
+                <field name="accounting_period"/>
+                <field name="revenue"/>
+                <field name="ordinary_profit"/>
             </search>
         </field>
     </record>

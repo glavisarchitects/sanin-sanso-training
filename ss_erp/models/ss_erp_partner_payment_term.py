@@ -11,6 +11,7 @@ PAYMENT_METHOD = [
 
 class PartnerPaymentTerm(models.Model):
     _name = 'ss_erp.partner.payment.term'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Customer Transaction Terms'
 
     name = fields.Char(string='Name')

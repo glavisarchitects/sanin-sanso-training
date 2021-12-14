@@ -34,7 +34,7 @@ class IFDBPropaneSalesDetail(models.Model):
 
     # HuuPhong 091221
     number = fields.Char('本数')
-    slip_number = fields.Char('伝票日')
+    slip_date = fields.Char('伝票日')
     codelassification_code = fields.Char(string='分類Ｃ')
     line_break = fields.Char(string='行区分')
     quantity = fields.Char(string='数量')
@@ -53,7 +53,7 @@ class IFDBPropaneSalesDetail(models.Model):
     amount_calculation_classification = fields.Char(string='金額計算区分')
     slip_processing_classification = fields.Char(string='伝票処理区分')
 
-    error_message = fields.Char(string='Error message')
-    sale_id = fields.Many2one('sale.order',string='See sales order')
+    error_message = fields.Char(string='エラーメッセージ')
+    sale_id = fields.Many2one('sale.order',string='販売オーダ参照')
 
 

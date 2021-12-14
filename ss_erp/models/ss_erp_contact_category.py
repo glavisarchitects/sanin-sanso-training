@@ -10,6 +10,7 @@ CONTACT_CATEGORY_SELECTION = [
 
 class ContactCategory(models.Model):
     _name = 'ss_erp.contact.category'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Contact Category'
 
     name = fields.Char(string='Name')

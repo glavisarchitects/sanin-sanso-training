@@ -7,6 +7,7 @@ from odoo.fields import Datetime, Date
 
 class ProductPrice(models.Model):
     _name = 'ss_erp.product.price'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Product Price'
 
     name = fields.Char('価格リスト名', copy=False)
@@ -93,6 +94,7 @@ class ProductPrice(models.Model):
 #
 class ProductPriceClass(models.Model):
     _name = 'product.pricelist.class'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Product Price List Class'
 
     name = fields.Char('名称')

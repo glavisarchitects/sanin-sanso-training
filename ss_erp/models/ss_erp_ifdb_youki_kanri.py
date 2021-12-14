@@ -3,6 +3,7 @@ from odoo import models, fields, api
 
 class YoukiKanri(models.Model):
     _name = "ss_erp.ifdb.youki.kanri"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Youki Kanri"
 
     name = fields.Char(
@@ -10,7 +11,8 @@ class YoukiKanri(models.Model):
     )
     upload_date = fields.Datetime(
         string="アップロード日時",
-        index=True
+        index=True,
+		default=fields.Datetime.now()
     )
     user_id = fields.Many2one(
         comodel_name="res.users",

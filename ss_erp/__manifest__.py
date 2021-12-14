@@ -9,7 +9,7 @@
     "website": "https://www.systemgear-vietnam.com/",
     "author": "SGVN",
     "depends": [
-        "base", "delivery", "mail", "contacts", "purchase",
+        "base", "delivery", "mail", "contacts", "purchase", "uom",
         "purchase_stock", "web", "account", "stock_dropshipping", "approvals", "hr",
         "approvals_purchase_stock", "base_import"
     ],
@@ -23,8 +23,9 @@
         "data/bis_category_data.xml",
         "data/ir_sequence_data.xml",
         "data/product_pricelist_class_data.xml",
-        "data/contact_category_data.xml", ''
+        "data/contact_category_data.xml",
         "data/ir_action_server_data.xml",
+        "data/yamasan_product_data.xml",
 
         # REPORTS
         "reports/paperformat.xml",
@@ -77,6 +78,7 @@
         "views/ss_erp_ifdb_yg_summary_views.xml",
         "views/ss_erp_youki_kanri_views.xml",
         "views/ss_erp_youki_kanri_detail_views.xml",
+        "views/ss_erp_youki_kensa_views.xml",
 
         "views/webclient_templates.xml",
         "menu/menu_views.xml",

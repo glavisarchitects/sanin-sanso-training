@@ -7,6 +7,7 @@ _logger = logging.getLogger(__name__)
 
 
 class MultiApprovers(models.Model):
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _name = 'ss_erp.multi.approvers'
     _description = 'Multi Approvers'
     _order = 'x_approval_seq'

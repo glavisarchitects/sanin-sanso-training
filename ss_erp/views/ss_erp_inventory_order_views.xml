@@ -90,7 +90,6 @@
                     <field name="activity_ids"/>
                     <field name="message_ids"/>
                 </div>
-
             </form>
         </field>
     </record>

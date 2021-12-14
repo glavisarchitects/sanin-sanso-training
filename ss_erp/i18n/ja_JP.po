@@ -401,7 +401,7 @@ msgstr "<strong>合計</strong>"
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchaseorder_document
 #: model_terms:ir.ui.view,arch_db:ss_erp.report_purchasequotation_document
 msgid "<strong>UOM</strong>"
-msgstr "<strong>単位</strong>"
+msgstr "<strong>仕入単位</strong>"
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/ss_erp_code_convert.py:0
@@ -2591,7 +2591,7 @@ msgstr "ロゴ"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_approval_lost__lost_reason
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_lost_view_form
 msgid "Lost Reason"
-msgstr ""
+msgstr "却下理由"
 
 #. module: ss_erp
 #: code:addons/ss_erp/models/ss_erp_ifdb_autogas_file_header.py:0
@@ -3925,7 +3925,7 @@ msgstr "参照元"
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.approval_request_view_form_inherit
 msgid "Refuse"
-msgstr ""
+msgstr "却下"
 
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_multi_approvers__x_user_status__refused
@@ -4516,7 +4516,7 @@ msgstr "町名番地2"
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_lost_view_form
 msgid "Submit"
-msgstr ""
+msgstr "却下"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_yg_detail__summary_id
@@ -4628,7 +4628,7 @@ msgstr ""
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.approval_request_view_form_inherit
 msgid "Temporary Approve"
-msgstr ""
+msgstr "承認"
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__vat

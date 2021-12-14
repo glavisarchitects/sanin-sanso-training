@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class TransactionClassification(models.Model):
     _name = "ss_erp.bis.category"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "TransactionClassification"
 
     name = fields.Char(

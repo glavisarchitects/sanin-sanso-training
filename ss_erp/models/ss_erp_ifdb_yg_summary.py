@@ -4,11 +4,11 @@ from odoo import models, fields, api
 
 class IFDBYGSummary(models.Model):
     _name = 'ss_erp.ifdb.yg.summary'
-    _description = 'Yamasan Gas Supply Meter Reading Summary Table'
+    _description = 'ヤマサンガスサプライ取込データ（検針集計表）'
 
-    name = fields.Char(string='Label dari Field')
+    # name = fields.Char(string='Label dari Field')
     header_id = fields.Many2one(
-        'ss_erp.ifdb.yg.header', string='Yamasan Gas Supply Header')
+        'ss_erp.ifdb.yg.header', string='ヤマサンガスサプライヘッダ')
     status = fields.Selection([
         ('wait', '処理待ち'),
         ('success', '成功'),

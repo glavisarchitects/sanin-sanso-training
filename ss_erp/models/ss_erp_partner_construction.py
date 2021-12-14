@@ -4,6 +4,7 @@ from odoo import models, fields, api
 
 class PartnerConstruction(models.Model):
     _name = 'ss_erp.partner.construction'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Partner Construction'
 
     name = fields.Char(string='Name')

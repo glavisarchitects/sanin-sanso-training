@@ -13,7 +13,7 @@ class YoukiKanriDetail(models.Model):
         selection=[
             ("wait", "処理待ち"),
             ("success", "成功"),
-            ("error", "ラーあ"),
+            ("error", "エラー"),
         ],
         string="ステータス",
         readonly=True,

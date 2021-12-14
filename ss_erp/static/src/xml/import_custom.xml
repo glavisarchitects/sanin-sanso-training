@@ -5,21 +5,21 @@
         <xpath expr="//button[hasclass('o_import_cancel')]" position="after">
             <button type="button" 
                 class="btn btn-secondary oe_autogas_import_transform d-none">
-                Autogas Transform
+                変形
             </button>
             <button type="button"
                 class="btn btn-secondary oe_powernet_import_transform d-none">
-                PowerNet Transform
+                変形
             </button>
             <button type="button"
                 class="btn btn-secondary oe_youki_kanri_import_transform d-none">
-                Youki Kanri Transform
+                変形
             </button>
             <button 
-                t-if="res_model=='ss_erp.ifdb.propane.sales.header' or res_model=='ss_erp.ifdb.yg.header'"
+                t-if="res_model=='ss_erp.ifdb.propane.sales.header' or res_model=='ss_erp.ifdb.yg.summary' or res_model=='ss_erp.ifdb.yg.detail'"
                 type="button"
                 class="btn btn-primary o_import_transform d-none">
-                Transform
+                変形
             </button>
         </xpath>
     </t>

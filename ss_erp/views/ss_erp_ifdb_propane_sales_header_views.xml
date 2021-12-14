@@ -9,7 +9,8 @@
                 <field name="name"/>
                 <field name="branch_id"/>
                 <field name="user_id"/>
-                <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'" decoration-info="status == 'wait'" widget="badge" optional="show"/>
+                <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'"
+                       decoration-info="status == 'wait'" widget="badge" optional="show"/>
             </tree>
         </field>
     </record>
@@ -19,7 +20,7 @@
         <field name="arch" type="xml">
             <form string="プロパン売上（米子）ファイル取込">
                 <header>
-                    <button name="btn_processing_execution" type="object" string="Processing execution"/>
+                    <button name="btn_processing_execution" type="object" string="処理実行"/>
                 </header>
                 <sheet>
                     <group>
@@ -33,42 +34,58 @@
                             <field name="branch_id"/>
                         </group>
                     </group>
-                    <field name="sales_detail_ids">
-                        <tree editable="bottom">
-                            <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'" decoration-info="status == 'wait'" widget="badge" optional="show"/>
-                            <field name="id" string='External ID'/>
-                            <field name="processing_date"/>
-                            <field name="external_data_type"/>
-                            <field name="customer_branch_code"/>
-                            <field name="customer_branch_sub_code"/>
-                            <field name="customer_business_partner_code"/>
-                            <field name="customer_business_partner_branch_code"/>
-                            <field name="customer_delivery_code"/>
-                            <field name="direct_branch_code"/>
-                            <field name="direct_branch_sub_code"/>
-                            <field name="direct_business_partner_code"/>
-                            <field name="direct_business_partner_sub_code"/>
-                            <field name="direct_delivery_code"/>
-                            <field name="customer_name"/>
-                            <field name="codeommercial_branch_code"/>
-                            <field name="codeommercial_branch_sub_code"/>
-                            <field name="codeommercial_product_code"/>
-                            <field name="product_name"/>
-                            <field name="standard_name"/>
-                            <field name="standard"/>
-                            <field name="amount_of_money"/>
-                            <field name="unit_price_2"/>
-                            <field name="unified_quantity"/>
-                            <field name="order_number"/>
-                            <field name="comment"/>
-                            <field name="codeommercial_branch_code2"/>
-                            <field name="amount_calculation_classification"/>
-                            <field name="slip_processing_classification"/>
-                            <field name="sale_id"/>
-                            <field name="error_message"/>
+                    <field name="sales_detail_ids" string="レコード">
+                        <tree>
+                            <field name="status" decoration-danger="status == 'error'"
+                                   decoration-success="status == 'success'" decoration-info="status == 'wait'"
+                                   widget="badge" optional="show"/>
+                            <field name="processing_date" readonly="1"/>
+                            <field name="external_data_type" readonly="1"/>
+                            <field name="customer_branch_code" readonly="1"/>
+                            <field name="customer_branch_sub_code" readonly="1"/>
+                            <field name="customer_business_partner_code" readonly="1"/>
+                            <field name="customer_business_partner_branch_code" readonly="1"/>
+                            <field name="customer_delivery_code" readonly="1"/>
+                            <field name="direct_branch_code" readonly="1"/>
+                            <field name="direct_branch_sub_code" readonly="1"/>
+                            <field name="direct_business_partner_code" readonly="1"/>
+                            <field name="direct_business_partner_sub_code" readonly="1"/>
+                            <field name="direct_delivery_code" readonly="1"/>
+                            <field name="customer_name" readonly="1"/>
+                            <field name="codeommercial_branch_code" readonly="1"/>
+                            <field name="codeommercial_branch_sub_code" readonly="1"/>
+                            <field name="codeommercial_product_code" readonly="1"/>
+                            <field name="product_name" readonly="1"/>
+                            <field name="standard_name" readonly="1"/>
+                            <field name="standard" readonly="1"/>
+
+                            <!--HuuPhong 232121-->
+                            <field name="number" readonly="1"/>
+                            <field name="slip_date" readonly="1"/>
+                            <field name="codelassification_code" readonly="1"/>
+                            <field name="line_break" readonly="1"/>
+                            <field name="quantity" readonly="1"/>
+                            <field name="unit_code" readonly="1"/>
+                            <field name="unit_price" readonly="1"/>
+
+                            <field name="amount_of_money" readonly="1"/>
+                            <field name="unit_price_2" readonly="1"/>
+                            <field name="unified_quantity" readonly="1"/>
+                            <field name="order_number" readonly="1"/>
+                            <field name="comment" readonly="1"/>
+                            <field name="codeommercial_branch_code2" readonly="1"/>
+                            <field name="amount_calculation_classification" readonly="1"/>
+                            <field name="slip_processing_classification" readonly="1"/>
+                            <field name="sale_id" readonly="1"/>
+                            <field name="error_message" readonly="1"/>
                         </tree>
                     </field>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -87,5 +104,5 @@
         <field name="res_model">ss_erp.ifdb.propane.sales.header</field>
         <field name="view_mode">tree,form</field>
     </record>
-    
+
 </odoo>

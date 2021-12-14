@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 
 class CodeConvert(models.Model):
     _name = 'ss_erp.code.convert'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Code Convert'
     _rec_name = 'external_system'
 

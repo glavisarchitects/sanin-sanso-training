@@ -21,8 +21,10 @@ odoo.define("ss_erp.import", function (require) {
             var options = this._super.apply(this, arguments);
             if (this.transformed) {
                 options['custom_transform'] = true;
+                options['header_id'] = this.parent_context['default_import_file_header_id'];
             } else {
                 options['custom_transform'] = false;
+                options['header_id'] = this.parent_context['default_import_file_header_id'];
             }
             return options;
         },
@@ -83,6 +85,11 @@ odoo.define("ss_erp.import", function (require) {
                 && this.parent_context.default_import_file_header_id
                 ) {
                 this.$buttons.filter(".oe_youki_kanri_import_transform").removeClass("d-none");
+            }
+            if (this.transformed) {
+                this.$buttons.filter('.o_import_transform').addClass('d-none');
+            } else {
+                this.$buttons.filter('.o_import_transform').removeClass('d-none');
             }
         },
 

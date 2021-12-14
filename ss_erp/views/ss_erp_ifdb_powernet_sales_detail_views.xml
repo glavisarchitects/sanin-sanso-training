@@ -6,7 +6,6 @@
         <field name="model">ss_erp.ifdb.powernet.sales.detail</field>
         <field name="arch" type="xml">
             <tree string="PowerNet取込データ">
-                <field name="id" string="External ID" readonly="1" />
                 <field name="processing_date"/>
                 <field name="customer_code" readonly="1" />
                 <field name="billing_summary_code" readonly="1" />

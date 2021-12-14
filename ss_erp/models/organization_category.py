@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError, UserError
 
 class OrganizationCategory(models.Model):
     _name = 'ss_erp.organization.category'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Organization category'
 
     name = fields.Char(string='Category name')

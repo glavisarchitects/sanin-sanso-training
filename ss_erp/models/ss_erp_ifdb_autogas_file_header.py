@@ -5,12 +5,14 @@ from datetime import datetime
 
 class IFDBAutogasFileHeader(models.Model):
     _name = "ss_erp.ifdb.autogas.file.header"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Autogas File Header"
 
     upload_date = fields.Datetime(
         string="アップロード日時",
         index=True,
-        readonly=True
+        readonly=True,
+		default=fields.Datetime.now()
     )
     name = fields.Char(
         string="名称",

@@ -3,21 +3,36 @@ from odoo import models, fields, api, _
 
 class IFDBPropaneSalesHeader(models.Model):
     _name = 'ss_erp.ifdb.propane.sales.header'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Propane sales'
 
     name = fields.Char(string='名称')
     upload_date = fields.Datetime(
-        string='アップロード日時', index=True, required=True)
-    user_id = fields.Many2one('res.users', string='Manager')
-    branch_id = fields.Many2one('ss_erp.organization', string='Branch')
+        string='アップロード日時', index=True, required=True,
+		default=fields.Datetime.now())
+    user_id = fields.Many2one('res.users', string='担当者')
+    branch_id = fields.Many2one('ss_erp.organization', string='支店')
     status = fields.Selection([
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり'),
-    ], string='Status', default='wait', index=True)
+    ], string='ステータス', default='wait', index=True,compute='_compute_status')
     sales_detail_ids = fields.One2many(
         'ss_erp.ifdb.propane.sales.detail', 'propane_sales_header_id',
         string='Propane sales file header')
+
+    @api.depends('sales_detail_ids.status')
+    def _compute_status(self):
+        for record in self:
+            if record.sales_detail_ids:
+                status_list = record.sales_detail_ids.mapped('status')
+                record.status = "success"
+                if "error" in status_list:
+                    record.status = "error"
+                elif "wait" in status_list:
+                    record.status = "wait"
+            else:
+                record.status = "wait"
 
     def btn_processing_execution(self):
         for record in self:
@@ -26,7 +41,7 @@ class IFDBPropaneSalesHeader(models.Model):
     def _processing_excution(self):
         self.ensure_one()
         exe_data = self.sales_detail_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
-            key=lambda k: (k['customer_business_partner_code']))
+            key=lambda k: (k['slip_date'],k['customer_business_partner_code']))
 
         partner_ids = self.env['res.partner'].search_read([], ['id'])
         partner_list = []
@@ -57,12 +72,12 @@ class IFDBPropaneSalesHeader(models.Model):
         for line in exe_data:
             error_message = False
             if int(line.customer_business_partner_code) not in partner_list:
-                error_message = 'Account C does not exist in the contact master.'
+                error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
             if int(line.customer_branch_code) not in organization_list:
                 if error_message:
-                    error_message += '顧取引先Ｃが連絡先マスタに存在しません。'
+                    error_message += '顧支店Ｃが組織マスタに存在しません。'
                 else:
-                    error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
+                    error_message = '顧支店Ｃが組織マスタに存在しません。'
             if int(line.codeommercial_branch_code) not in organization_list:
                 if error_message:
                     error_message += '商支店Ｃが組織マスタに存在しません。'
@@ -79,6 +94,8 @@ class IFDBPropaneSalesHeader(models.Model):
                 else:
                     error_message = '単位Ｃがプロダクト単位マスタに存在しません。'
 
+            key = line.slip_date + '_' + line.customer_business_partner_code
+
             if line.customer_business_partner_code not in failed_customer_code:
                 if error_message:
                     line.write({
@@ -86,50 +103,49 @@ class IFDBPropaneSalesHeader(models.Model):
                         'error_message': error_message
                     })
                     failed_customer_code.append(line.customer_business_partner_code)
-                    if success_dict.get(line.customer_business_partner_code, False):
-                        success_dict.pop(line.customer_business_partner_code, None)
+                    if success_dict.get(key, False):
+                        success_dict.pop(key, None)
                     continue
                 else:
-                    if not success_dict.get(line.customer_business_partner_code):
+                    if not success_dict.get(key):
                         so = {
                             'partner_id': int(line.customer_business_partner_code),
+                            'partner_invoice_id': int(line.customer_business_partner_code),
+                            'partner_shipping_id': int(line.customer_business_partner_code),
+                            'date_order': line.slip_date,
                             'order_line': [(0, 0, {
-                                'product_id': int(line.commercial_product_code),
-                                'product_uom_qty': 1,
+                                'product_id': int(line.codeommercial_product_code),
+                                'product_uom_qty': line.quantity,
                                 'product_uom': int(line.unit_code)
                             })],
                         }
-                        success_dict[line.customer_business_partner_code] = {
+                        success_dict[key] = {
                             'order': so,
                             'success': [line.id]
                         }
                     else:
                         order_line = {
-                            'product_id': int(line.commercial_product_code),
-                            'product_uom_qty': 1,
+                            'product_id': int(line.codeommercial_product_code),
+                            'product_uom_qty': line.quantity,
                             'product_uom': int(line.unit_code)
                         }
-                        success_dict[line.customer_business_partner_code]['order']['order_line'].append(
+                        success_dict[key]['order']['order_line'].append(
                             (0, 0, order_line))
-                        success_dict[line.customer_business_partner_code]['success'].append(line.id)
+                        success_dict[key]['success'].append(line.id)
             else:
                 line.write({
                     'status': 'error',
                     'error_message': error_message
                 })
 
+        for key, value in success_dict.items():
+            sale_id = self.env['sale.order'].create(value)
+            success_dict[key]['sale_id'] = sale_id.id
+
         for line in exe_data:
-            if success_dict.get(line.customer_business_partner_code, False):
-                if success_dict.get(line.customer_business_partner_code).get('sale_id', False):
-                    sale_id = success_dict.get(line.customer_business_partner_code).get('sale_id')
-                    line.write({
-                        'status': 'success',
-                        'sale_id': sale_id
-                    })
-                else:
-                    sale_id = self.env['sale.order'].create(success_dict[line.customer_business_partner_code]['order'])
-                    success_dict[line.customer_business_partner_code]['sale_id'] = sale_id.id
-                    line.write({
-                        'status': 'success',
-                        'sale_id': sale_id.id
-                    })
+            key = line.slip_date + '_' + line.customer_business_partner_code
+            if success_dict.get(key):
+                line.write({
+                    'status': 'success',
+                    'sale_id': success_dict[key]['sale_id']
+                })

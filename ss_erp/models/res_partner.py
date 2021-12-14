@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class ResPartner(models.Model):
@@ -191,6 +191,27 @@ class ResPartner(models.Model):
         string='Transaction terms')
     country_id = fields.Many2one('res.country', string='Country', ondelete='restrict',default=_get_default_country_id)
 
+    _sql_constraints = [
+        (
+            'constraint_uniq_company_name',
+            'unique(company_name)',
+            _('申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。')
+        ),
+    ]
+    _sql_constraints = [
+        (
+            'constraint_uniq_phone',
+            'unique(phone)',
+            _('申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。')
+        ),
+    ]
+    _sql_constraints = [
+        (
+            'constraint_uniq_contact_address',
+            'unique(contact_address)',
+            _('申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。')
+        ),
+    ]
 
 
     @api.depends('is_company', 'x_contact_categ')

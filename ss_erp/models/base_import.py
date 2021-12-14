@@ -95,32 +95,33 @@ FIELDS_AFTER_ifdb_propane_sales = [
 ]
 
 FIELDS_BEFORE_ifdb_yg = [
-    'partner_id',
-    'amount_use',
-    'item',
-]
-
-FIELDS_AFTER_ifdb_yg = [
-    'name',
-    'upload_date',
-    'summary_ids/partner_id',
-    'summary_ids/amount_use',
-    'summary_ids/item',
-]
-
-FIELDS_BEFORE_ifdb_yg_summary = [
     'item',
     'customer_cd',
     'meter_reading_date',
     'amount_use',
 ]
 
-FIELDS_AFTER_ifdb_yg_sumary = [
-    'id',
-    'detail_ids/item',
-    'detail_ids/customer_cd',
-    'detail_ids/meter_reading_date',
-    'detail_ids/amount_use',
+FIELDS_AFTER_ifdb_yg = [
+    'header_id/ Database ID',
+    'item',
+    'customer_cd',
+    'meter_reading_date',
+    'amount_use',
+]
+
+FIELDS_BEFORE_ifdb_yg_summary = [
+    'partner_id',
+    'amount_use',
+    'item',
+
+]
+
+FIELDS_AFTER_ifdb_yg_summary = [
+    'header_id/ Database ID',
+    'partner_id',
+    'amount_use',
+    'item',
+
 ]
 
 FIELDS_MODEL = {
@@ -128,13 +129,13 @@ FIELDS_MODEL = {
         'FIELDS_BEFORE': FIELDS_BEFORE_ifdb_propane_sales,
         'FIELDS_AFTER': FIELDS_AFTER_ifdb_propane_sales
     },
-    'ss_erp.ifdb.yg.header': {
-        'FIELDS_BEFORE': FIELDS_BEFORE_ifdb_yg,
-        'FIELDS_AFTER': FIELDS_AFTER_ifdb_yg
-    },
     'ss_erp.ifdb.yg.summary': {
         'FIELDS_BEFORE': FIELDS_BEFORE_ifdb_yg_summary,
-        'FIELDS_AFTER': FIELDS_AFTER_ifdb_yg_sumary
+        'FIELDS_AFTER': FIELDS_AFTER_ifdb_yg_summary
+    },
+    'ss_erp.ifdb.yg.detail': {
+        'FIELDS_BEFORE': FIELDS_BEFORE_ifdb_yg,
+        'FIELDS_AFTER': FIELDS_AFTER_ifdb_yg
     }
 }
 
@@ -260,17 +261,18 @@ class Import(models.TransientModel):
             raise UserError(_("Missing File Header, please using `upload` option from file header!"))
         data = self.file.split(b"\n")
         new_data = [
-            b''
+            b'"ifdb_youki_kanri_id","external_data_type","customer_branch_code","customer_branch_sub_code","customer_business_partner_code","customer_delivery_code","direct_branch_code","direct_branch_sub_code","direct_business_partner_code","direct_business_partner_sub_code","direct_delivery_code","customer_name","codeommercial_branch_code","codeommercial_branch_sub_code","codeommercial_product_code","product_name","standard_name","standard","number","slip_date","codelassification_code","line_break","quantity","unit_code","unit_price","amount_of_money","unit_price_2","amount_2","unified_quantity","order_number","comment","codeommercial_branch_code2","codeommercial_branch_sub_code2","codeommercial_product_code2","amount_calculation_classification","slip_processing_classification"'
         ]
         for line in data:
             if line == b"":
                 continue
-        print(data)
-        return True
+            new_line = b'"%s",' % (youki_kanri.name.encode("utf-8")) + line
+            new_data.append(new_line)
+        self.file = b"\n".join(new_data)
 
     def _transform(self, data):
         def _ymd(short_dt):
-            # convert 210203 to 2021-02-03
+            # convert 210203 to 20210203
             dt = short_dt.strip()
             if len(dt) != 6:
                 return ''
@@ -344,49 +346,9 @@ class Import(models.TransientModel):
         df_res_trans = df_res_trans.iloc[1:]
         return df_res_trans
 
-    def _transform_ifdb_yg(self, data):
+    def _transform_ifdb_yg(self, data, header_id):
         def _ymd(short_dt):
-            # convert 210203 to 2021-02-03
-            dt = short_dt.strip()
-            if len(dt) != 6:
-                return ''
-            else:
-                return '-'.join(['20' + dt[:2], dt[2:4], dt[4:]])
-
-        FIELDS_BEFORE = FIELDS_MODEL[self.res_model]['FIELDS_BEFORE']
-        FIELDS_AFTER = FIELDS_MODEL[self.res_model]['FIELDS_AFTER']
-        # convert data to df
-        df = pd.DataFrame(data, columns=FIELDS_BEFORE, dtype=object).fillna('').astype(str)
-        for c in df.columns:
-            df[c] = df[c].str.strip()
-
-        # get data for transform
-        external_data_types = list(df['partner_id'])
-        name_col = ['']
-        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        upload_date_col = [now]
-        for el in external_data_types:
-            if len(name_col) == len(external_data_types):
-                break
-            name_col.append('')
-            upload_date_col.append('')
-        df['name'] = name_col
-        df['upload_date'] = upload_date_col
-        df['summary_ids/partner_id'] = df['partner_id']
-        df['summary_ids/amount_use'] = df['amount_use']
-        df['summary_ids/item'] = df['item']
-
-        # sort
-        df_sorted = df.reset_index(drop=True)
-
-        # replace duplicated values
-        # header_cols = [c for c in FIELDS_AFTER if not c.startswith('summary_ids')]
-        # df_sorted.loc[df_sorted.duplicated(subset=['id']), header_cols] = ''
-        return df_sorted[FIELDS_AFTER]
-
-    def _transform_ifdb_yg_summary(self, data):
-        def _ymd(short_dt):
-            # convert 210203 to 2021-02-03
+            # convert 210203 to 20210203
             dt = short_dt.strip()
             if len(dt) != 6:
                 return ''
@@ -406,14 +368,51 @@ class Import(models.TransientModel):
         for el in external_data_types:
             if len(name_col) == len(external_data_types):
                 break
-            name_col.append('')
-        df['id'] = name_col
-        df['detail_ids/item'] = df['item']
-        df['detail_ids/customer_cd'] = df['customer_cd']
-        df['detail_ids/meter_reading_date'] = df['meter_reading_date']
-        df['detail_ids/amount_use'] = df['amount_use']
+            name_col.append(str(header_id))
+        df['header_id/ Database ID'] = name_col
+        df['item'] = df['item']
+        df['customer_cd'] = df['customer_cd']
+        df['meter_reading_date'] = df['meter_reading_date']
+        df['amount_use'] = df['amount_use']
 
+        # sort
+        df_sorted = df.reset_index(drop=True)
 
+        # replace duplicated values
+        # header_cols = [c for c in FIELDS_AFTER if not c.startswith('summary_ids')]
+        # df_sorted.loc[df_sorted.duplicated(subset=['id']), header_cols] = ''
+        return df_sorted[FIELDS_AFTER]
+
+    def _transform_ifdb_yg_summary(self, data, header_id):
+        def _ymd(short_dt):
+            # convert 210203 to 20210203
+            dt = short_dt.strip()
+            if len(dt) != 6:
+                return ''
+            else:
+                return '-'.join(['20' + dt[:2], dt[2:4], dt[4:]])
+
+        FIELDS_BEFORE = FIELDS_MODEL[self.res_model]['FIELDS_BEFORE']
+        FIELDS_AFTER = FIELDS_MODEL[self.res_model]['FIELDS_AFTER']
+        # convert data to df
+        df = pd.DataFrame(data, columns=FIELDS_BEFORE, dtype=object).fillna('').astype(str)
+        for c in df.columns:
+            df[c] = df[c].str.strip()
+
+        # get data for transform
+        external_data_types = list(df['partner_id'])
+        name_col = []
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        upload_date_col = [now]
+        for el in external_data_types:
+            if len(name_col) == len(external_data_types):
+                break
+            name_col.append(str(header_id))
+            upload_date_col.append('')
+        df['header_id/ Database ID'] = name_col
+        df['partner_id'] = df['partner_id']
+        df['amount_use'] = df['amount_use']
+        df['item'] = df['item']
         # sort
         df_sorted = df.reset_index(drop=True)
 
@@ -432,10 +431,10 @@ class Import(models.TransientModel):
             yield FIELDS_AFTER
             # body
             df_res_trans = res
-            if self.res_model == 'ss_erp.ifdb.yg.header':
-                df_res_trans = self._transform_ifdb_yg(res)
             if self.res_model == 'ss_erp.ifdb.yg.summary':
-                df_res_trans = self._transform_ifdb_yg_summary(res)
+                df_res_trans = self._transform_ifdb_yg_summary(res, options.get('header_id'))
+            if self.res_model == 'ss_erp.ifdb.yg.detail':
+                df_res_trans = self._transform_ifdb_yg(res, options.get('header_id'))
             if self.res_model == 'ss_erp.ifdb.propane.sales.header':
                 df_res_trans = self._transform(res)
             for row in df_res_trans.itertuples(index=False, name=None):
