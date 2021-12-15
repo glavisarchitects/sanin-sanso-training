@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-
+from datetime import datetime
 
 class IFDBPropaneSalesHeader(models.Model):
     _name = 'ss_erp.ifdb.propane.sales.header'
@@ -108,11 +108,12 @@ class IFDBPropaneSalesHeader(models.Model):
                     continue
                 else:
                     if not success_dict.get(key):
+                        slip_date=datetime.strptime(line.slip_date,'%Y/%m/%d')
                         so = {
                             'partner_id': int(line.customer_business_partner_code),
                             'partner_invoice_id': int(line.customer_business_partner_code),
                             'partner_shipping_id': int(line.customer_business_partner_code),
-                            'date_order': line.slip_date,
+                            'date_order': slip_date,
                             'order_line': [(0, 0, {
                                 'product_id': int(line.codeommercial_product_code),
                                 'product_uom_qty': line.quantity,
@@ -139,7 +140,7 @@ class IFDBPropaneSalesHeader(models.Model):
                 })
 
         for key, value in success_dict.items():
-            sale_id = self.env['sale.order'].create(value)
+            sale_id = self.env['sale.order'].create(value['order'])
             success_dict[key]['sale_id'] = sale_id.id
 
         for line in exe_data:

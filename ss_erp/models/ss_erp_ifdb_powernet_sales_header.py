@@ -73,6 +73,7 @@ class IFDBPowerNetSalesHeader(models.Model):
         if not customer_id:
             raise UserError(
                 _('直売売上用の顧客コードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（powernet.direct.sales.dummy.customer_id）'))
+
         exe_data = self.powernet_sale_record_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
             key=lambda k: (k['sale_ref'],k['sales_date'], k['customer_code'], k['data_types']))
 

@@ -1,4 +1,11 @@
-from odoo import fields, models
+from odoo import fields, models, api
+
+
+class YoukiKanriDetail(models.Model):
+    _name = "ss_erp.ifdb.youki.kanri.detail"
+    _description = "Youki Kanri Detail"
+
+    from odoo import fields, models
 
 
 class YoukiKanriDetail(models.Model):
@@ -150,3 +157,16 @@ class YoukiKanriDetail(models.Model):
         string="在庫移動伝票参照",
         readonly=True
     )
+    sale_ref = fields.Char(string="SOチェック用",
+                           compute="_compute_sale_ref",
+                           store=True)
+
+    @api.depends("customer_business_partner_code", "slip_date")
+    def _compute_sale_ref(self):
+        for r in self:
+            sale_ref = ""
+            if r.customer_business_partner_code:
+                sale_ref+="%s" % r.customer_business_partner_code
+            if r.slip_date:
+                sale_ref+="%s" % r.slip_date
+            r.sale_ref = sale_ref
