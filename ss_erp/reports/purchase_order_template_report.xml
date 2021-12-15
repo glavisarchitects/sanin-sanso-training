@@ -20,8 +20,7 @@
                         <t t-if="o.picking_type_id and o.picking_type_id.default_location_dest_id">
                             <div><b>Delivery destination:</b> <span
                                     t-esc="o.picking_type_id.display_name"/></div>
-                            <div>* For direct delivery, refer to the direct delivery destination information at the
-                                bottom.</div>
+                            <div>※直送は下部の直送先情報参照</div>
                         </t>
                     </div>
                     <div class="col-3">
@@ -216,8 +215,7 @@
                                         <td><b>Payment terms</b></td>
                                         <td></td>
                                         <td>
-                                            <div style="word-wrap:break-word;">Dealine at the end of the payment at the
-                                                end of the following month according to our regulations</div>
+                                            <div style="word-wrap:break-word;">当社規定による、月末締切・翌月末支払</div>
                                         </td>
                                     </tr>
                                     <tr>

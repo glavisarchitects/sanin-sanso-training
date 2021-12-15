@@ -35,7 +35,8 @@ class YoukiKanri(models.Model):
         required=True,
         default="wait",
         index=True,
-        readonly=True
+        readonly=True,
+        compute='_compute_status',
     )
     youki_kanri_detail_ids = fields.One2many(comodel_name="ss_erp.ifdb.youki.kanri.detail",
                                              inverse_name="ifdb_youki_kanri_id")
