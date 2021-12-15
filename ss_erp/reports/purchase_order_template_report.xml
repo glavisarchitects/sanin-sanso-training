@@ -3,10 +3,10 @@
     <template id="report_purchaseorder_document">
         <t t-call="ss_erp.external_layout">
             <style type="text/css">
-                            div{
-                            font-family:meiryo;
-                            font-size:15px;
-                            }
+                div{
+                font-family:meiryo;
+                font-size:15px;
+                }
             </style>
             <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
             <div class="page">
@@ -20,7 +20,8 @@
                         <t t-if="o.picking_type_id and o.picking_type_id.default_location_dest_id">
                             <div><b>Delivery destination:</b> <span
                                     t-esc="o.picking_type_id.display_name"/></div>
-                            <div>* For direct delivery, refer to the direct delivery destination information at the bottom.</div>
+                            <div>* For direct delivery, refer to the direct delivery destination information at the
+                                bottom.</div>
                         </t>
                     </div>
                     <div class="col-3">
@@ -116,12 +117,12 @@
                 <div class="row">
                     <div class="col-6">
                         <b>Direct shipping information</b>
-<!--                        <t t-if="o.is_dropshipping">-->
-<!--                            <t t-if="o.x_is_construction or len(o.order_line) > 5">-->
-<!--                                <p style="page-break-before:always;"></p>-->
-<!--                            </t>-->
-                            <p t-field="o.x_dest_address_info"/>
-<!--                        </t>-->
+                        <!--                        <t t-if="o.is_dropshipping">-->
+                        <!--                            <t t-if="o.x_is_construction or len(o.order_line) > 5">-->
+                        <!--                                <p style="page-break-before:always;"></p>-->
+                        <!--                            </t>-->
+                        <p t-field="o.x_dest_address_info"/>
+                        <!--                        </t>-->
                     </div>
                     <div class="col-6">
                         <b>Remarks</b>
@@ -131,108 +132,111 @@
                 </div>
                 <br/>
                 <br/>
-
                 <t t-if="o.x_is_construction">
-                    <b><span>Construction information</span></b>
-                    <div class="row" style="border-bottom-style:hidden;border-top: 1px solid black;font-size: 13px;">
-                        <div class="col-4">
-                            <table style="border-style:hidden">
-                                <tr>
-                                    <td><b>Construction name</b></td>
-                                    <td style="width:10px;"></td>
-                                    <td><span  t-field="o.x_construction_name"/></td>
-                                </tr>
-                                <tr>
-                                    <td><b>Construction site</b></td>
-                                    <td></td>
-                                    <td><span  t-field="o.x_construction_sopt"/></td>
-                                </tr>
-                                <tr>
-                                    <td><b>Construction outline - Method</b></td>
-                                    <td></td>
-                                    <td><span>According to a separate design document</span></td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="col-4">
-                            <table style="border-style:hidden">
-                                <tr>
-                                    <td><b>Construction Term - Range</b></td>
-                                    <td style="width:10px;"></td>
-                                    <td>
-                                        <span  >
-                                            According to a separate design document and construction plan
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><b>Scheduled construction period</b></td>
-                                    <td></td>
-                                    <td>
-                                        <span   t-field="o.x_construction_period_start"/>
-                                        ~ <span
-                                            t-field="o.x_construction_period_end"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><b>Presence or absence of the current theory</b></td>
-                                    <td></td>
-                                    <td>
-                                        <div class="d-flex">
-                                            <div>
+                    <div style="page-break-inside: avoid">
+                        <b><span>Construction information</span></b>
+                        <div class="row"
+                             style="border-bottom-style:hidden;border-top: 1px solid black;font-size: 13px;">
+                            <div class="col-4">
+                                <table style="border-style:hidden">
+                                    <tr>
+                                        <td><b>Construction name</b></td>
+                                        <td style="width:10px;"></td>
+                                        <td><span t-field="o.x_construction_name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Construction site</b></td>
+                                        <td></td>
+                                        <td><span t-field="o.x_construction_sopt"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Construction outline - Method</b></td>
+                                        <td></td>
+                                        <td><span>According to a separate design document</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-4">
+                                <table style="border-style:hidden">
+                                    <tr>
+                                        <td><b>Construction Term - Range</b></td>
+                                        <td style="width:10px;"></td>
+                                        <td>
+                                            <span>
+                                                According to a separate design document and construction plan
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Scheduled construction period</b></td>
+                                        <td></td>
+                                        <td>
+                                            <span t-field="o.x_construction_period_start"/>
+                                            ~ <span
+                                                t-field="o.x_construction_period_end"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Presence or absence of the current theory</b></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="d-flex">
                                                 <div>
-                                                    <span t-field="o.x_explanation_check"/>
-                                                    <span style="margin-left:6px" t-esc="o.x_explanation_date and o.x_explanation_date.strftime('%Y年%m月%d日') or ''"/>
+                                                    <div>
+                                                        <span t-field="o.x_explanation_check"/>
+                                                        <span style="margin-left:6px"
+                                                              t-esc="o.x_explanation_date and o.x_explanation_date.strftime('%Y年%m月%d日') or ''"/>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div>
-                                            <span t-field="o.x_explanation_spot"/>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="col-4">
-                            <table style="border-style:hidden">
-                                <tr>
-                                    <td><b>Presence or absence of supplies</b></td>
-                                    <td style="width:10px;"></td>
-                                    <td>
-                                        <div >
                                             <div>
-                                                <span t-field="o.x_supplies_check"/>
-                                                <t t-if="o.x_supplies_check in ['exist']">
-                                                    <span t-field="o.x_supplies_info"/>
-                                                </t>
+                                                <span t-field="o.x_explanation_spot"/>
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><b>Payment terms</b></td>
-                                    <td></td>
-                                    <td>
-                                        <div style="word-wrap:break-word;">Dealine at the end of the payment at the end of the following month according to our regulations</div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    </td>
-                                    <td></td>
-                                    <td>
-									    <span>
-                                            Cash <span t-field="o.x_construction_payment_cash"/> %
-                                        </span>
-                                        <span style="margin-left:20px;">
-                                            Bills <span t-field="o.x_construction_payment_bill"/> %
-                                        </span>
-                                    </td>
-                                </tr>
-                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-4">
+                                <table style="border-style:hidden">
+                                    <tr>
+                                        <td><b>Presence or absence of supplies</b></td>
+                                        <td style="width:10px;"></td>
+                                        <td>
+                                            <div>
+                                                <div>
+                                                    <span t-field="o.x_supplies_check"/>
+                                                    <t t-if="o.x_supplies_check in ['exist']">
+                                                        <span t-field="o.x_supplies_info"/>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Payment terms</b></td>
+                                        <td></td>
+                                        <td>
+                                            <div style="word-wrap:break-word;">Dealine at the end of the payment at the
+                                                end of the following month according to our regulations</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <span>
+                                                Cash <span t-field="o.x_construction_payment_cash"/> %
+                                            </span>
+                                            <span style="margin-left:20px;">
+                                                Bills <span t-field="o.x_construction_payment_bill"/> %
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
-
                 </t>
                 <div class="oe_structure"/>
             </div>
