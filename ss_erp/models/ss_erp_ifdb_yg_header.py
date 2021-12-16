@@ -118,7 +118,7 @@ class IFDBYGHeader(models.Model):
             if detail.customer_cd[0:3] in success_dict:
                 line_data = {
                     'product_id': yamasan_product.id,
-                    'product_uom': uom.id,
+                    'product_uom_qty': uom.id,
                     'product_qty': float(detail.amount_use),
                 }
                 success_dict[detail.customer_cd[0:3]]['order']['order_line'].append((0, 0, line_data))
@@ -133,7 +133,7 @@ class IFDBYGHeader(models.Model):
                 total_amount_use = success_dict[line.partner_id]['total_amount_use']
                 standard_price_line={
                     'product_id': yamasan_product.id,
-                    'product_uom': uom.id,
+                    'product_uom_qty': uom.id,
                     'product_qty': total_amount_use,
                 }
                 order['order_line'] = [(0, 0, standard_price_line)] + order['order_line']

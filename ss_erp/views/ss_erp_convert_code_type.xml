@@ -57,7 +57,7 @@
         </record>
         <!-- ACTION -->
         <record id="ss_erp_convert_code_type_action" model="ir.actions.act_window">
-            <field name="name">Convert Code Type</field>
+            <field name="name">変換コード種別</field>
             <field name="res_model">ss_erp.convert.code.type</field>
             <field name="view_mode">tree,form</field>
         </record>

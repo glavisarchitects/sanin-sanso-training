@@ -116,7 +116,7 @@ class IFDBPropaneSalesHeader(models.Model):
                             'date_order': slip_date,
                             'order_line': [(0, 0, {
                                 'product_id': int(line.codeommercial_product_code),
-                                'product_qty': line.quantity,
+                                'product_uom_qty': line.quantity,
                                 'product_uom': int(line.unit_code)
                             })],
                         }
@@ -127,7 +127,7 @@ class IFDBPropaneSalesHeader(models.Model):
                     else:
                         order_line = {
                             'product_id': int(line.codeommercial_product_code),
-                            'product_qty': line.quantity,
+                            'product_uom_qty': line.quantity,
                             'product_uom': int(line.unit_code)
                         }
                         success_dict[key]['order']['order_line'].append(

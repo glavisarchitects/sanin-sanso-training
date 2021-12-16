@@ -68,11 +68,15 @@ class IFDBPowerNetSalesHeader(models.Model):
         self.ensure_one()
 
         customer_code = self.env['ir.config_parameter'].sudo().get_param('powernet.direct.sales.dummy.customer_id')
-        customer_id = self.env['res.partner'].search([('ref','=',customer_code)],limit=1)
-
-        if not customer_id:
+        if not customer_code:
             raise UserError(
                 _('直売売上用の顧客コードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（powernet.direct.sales.dummy.customer_id）'))
+
+        customer_id = self.env['res.partner'].search([('ref','=',customer_code)],limit=1)
+        if not customer_id:
+            raise UserError(
+                _('設定している取引先コードは存在しません。'))
+
 
         exe_data = self.powernet_sale_record_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
             key=lambda k: (k['sale_ref'],k['sales_date'], k['customer_code'], k['data_types']))
@@ -111,7 +115,7 @@ class IFDBPowerNetSalesHeader(models.Model):
             if not error_message:
                 order_line = {
                     'product_id': product_dict[line.product_code],
-                    'product_qty': line.quantity,
+                    'product_uom_qty': line.quantity,
                     'product_uom': uom_dict[line.unit_code],
                 }
                 if not success_dict.get(line.sale_ref):

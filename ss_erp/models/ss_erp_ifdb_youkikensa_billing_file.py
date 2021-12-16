@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from datetime import datetime
+from odoo.exceptions import UserError
+
 
 class YoukiKensaBilling(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
@@ -72,11 +74,14 @@ class YoukiKensaBilling(models.Model):
         self.ensure_one()
 
         supplier_code = self.env['ir.config_parameter'].sudo().get_param('container.inspection.center.supplier_id')
-        supplier_id = self.env['res.partner'].search([('ref', '=', supplier_code)], limit=1)
-
-        if not supplier_id:
+        if not supplier_code:
             raise UserError(
                 _('仕入先コードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（container.inspection.center.supplier_id）'))
+
+        supplier_id = self.env['res.partner'].search([('ref', '=', supplier_code)], limit=1)
+        if not supplier_id:
+            raise UserError(
+                _('設定している仕入先コードは存在しません。'))
 
         exe_data = self.youki_kensa_detail_ids.filtered(
             lambda line: line.status in ('wait', 'error') and line.product_code and not line.field_3).sorted(
