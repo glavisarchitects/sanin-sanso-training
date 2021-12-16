@@ -94,60 +94,62 @@ class IFDBPropaneSalesHeader(models.Model):
                 else:
                     error_message = '単位Ｃがプロダクト単位マスタに存在しません。'
 
-            key = line.slip_date + '_' + line.customer_business_partner_code
+            if line.slip_date and line.customer_business_partner_code:
+                key = line.slip_date + '_' + line.customer_business_partner_code
 
-            if line.customer_business_partner_code not in failed_customer_code:
-                if error_message:
+                if line.customer_business_partner_code not in failed_customer_code:
+                    if error_message:
+                        line.write({
+                            'status': 'error',
+                            'error_message': error_message
+                        })
+                        failed_customer_code.append(line.customer_business_partner_code)
+                        if success_dict.get(key, False):
+                            success_dict.pop(key, None)
+                        continue
+                    else:
+                        if not success_dict.get(key):
+                            slip_date=datetime.strptime(line.slip_date,'%Y/%m/%d')
+                            so = {
+                                'partner_id': int(line.customer_business_partner_code),
+                                'partner_invoice_id': int(line.customer_business_partner_code),
+                                'partner_shipping_id': int(line.customer_business_partner_code),
+                                'date_order': slip_date,
+                                'order_line': [(0, 0, {
+                                    'product_id': int(line.codeommercial_product_code),
+                                    'product_uom_qty': line.quantity,
+                                    'product_uom': int(line.unit_code)
+                                })],
+                            }
+                            success_dict[key] = {
+                                'order': so,
+                                'success': [line.id]
+                            }
+                        else:
+                            order_line = {
+                                'product_id': int(line.codeommercial_product_code),
+                                'product_uom_qty': line.quantity,
+                                'product_uom': int(line.unit_code)
+                            }
+                            success_dict[key]['order']['order_line'].append(
+                                (0, 0, order_line))
+                            success_dict[key]['success'].append(line.id)
+                else:
                     line.write({
                         'status': 'error',
                         'error_message': error_message
                     })
-                    failed_customer_code.append(line.customer_business_partner_code)
-                    if success_dict.get(key, False):
-                        success_dict.pop(key, None)
-                    continue
-                else:
-                    if not success_dict.get(key):
-                        slip_date=datetime.strptime(line.slip_date,'%Y/%m/%d')
-                        so = {
-                            'partner_id': int(line.customer_business_partner_code),
-                            'partner_invoice_id': int(line.customer_business_partner_code),
-                            'partner_shipping_id': int(line.customer_business_partner_code),
-                            'date_order': slip_date,
-                            'order_line': [(0, 0, {
-                                'product_id': int(line.codeommercial_product_code),
-                                'product_uom_qty': line.quantity,
-                                'product_uom': int(line.unit_code)
-                            })],
-                        }
-                        success_dict[key] = {
-                            'order': so,
-                            'success': [line.id]
-                        }
-                    else:
-                        order_line = {
-                            'product_id': int(line.codeommercial_product_code),
-                            'product_uom_qty': line.quantity,
-                            'product_uom': int(line.unit_code)
-                        }
-                        success_dict[key]['order']['order_line'].append(
-                            (0, 0, order_line))
-                        success_dict[key]['success'].append(line.id)
-            else:
-                line.write({
-                    'status': 'error',
-                    'error_message': error_message
-                })
 
         for key, value in success_dict.items():
             sale_id = self.env['sale.order'].create(value['order'])
             success_dict[key]['sale_id'] = sale_id.id
 
         for line in exe_data:
-            key = line.slip_date + '_' + line.customer_business_partner_code
-            if success_dict.get(key):
-                line.write({
-                    'status': 'success',
-                    'sale_id': success_dict[key]['sale_id'],
-                    'processing_date':datetime.now()
-                })
+            if line.slip_date and line.customer_business_partner_code:
+                key = line.slip_date + '_' + line.customer_business_partner_code
+                if success_dict.get(key):
+                    line.write({
+                        'status': 'success',
+                        'sale_id': success_dict[key]['sale_id'],
+                        'processing_date':datetime.now()
+                    })
