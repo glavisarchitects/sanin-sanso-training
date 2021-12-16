@@ -20,6 +20,10 @@ class ResponsibleDepartment(models.Model):
                            default=lambda self: fields.Date.today().replace(month=12, day=31, year=2099))
     code = fields.Char(string="Code", copy=False)
 
+    _sql_constraints = [
+        ("unique_department_code", "UNIQUE(code)", "コードは既に登録されています。")
+    ]
+
     @api.constrains("start_date", "end_date")
     def _check_dates(self):
         """End date should not be before start date, if not filled

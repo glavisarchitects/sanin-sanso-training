@@ -119,7 +119,7 @@ class IFDBYGHeader(models.Model):
                 line_data = {
                     'product_id': yamasan_product.id,
                     'product_uom': uom.id,
-                    'product_uom_qty': float(detail.amount_use),
+                    'product_qty': float(detail.amount_use),
                 }
                 success_dict[detail.customer_cd[0:3]]['order']['order_line'].append((0, 0, line_data))
                 success_dict[detail.customer_cd[0:3]]['total_amount_use'] -= float(detail.amount_use)
@@ -134,7 +134,7 @@ class IFDBYGHeader(models.Model):
                 standard_price_line={
                     'product_id': yamasan_product.id,
                     'product_uom': uom.id,
-                    'product_uom_qty': total_amount_use,
+                    'product_qty': total_amount_use,
                 }
                 order['order_line'] = [(0, 0, standard_price_line)] + order['order_line']
                 sale_id = self.env['sale.order'].create(order)
@@ -150,73 +150,6 @@ class IFDBYGHeader(models.Model):
                     # 'summary_id': line.id
                 })
 
-
-        # for detail in exe_detail_data:
-        #     if detail.customer_cd[0:3] in success_dict:
-        #         if product_dict.get(detail.item, False):
-        #             success_dict[detail.customer_cd[0:3]]['total_amount_use'] += detail.amount_use
-        #             line_data = {
-        #                 'product_id': product_dict[detail.item]['id'],
-        #                 'product_uom_qty': 1,
-        #                 'product_uom': product_dict[detail.item]['uom_id'][0],
-        #                 'price_unit': detail.amount_use * product_dict[detail.item]['list_price'],
-        #             }
-        #             success_dict[detail.customer_cd[0:3]]['order']['order_line'].append((0, 0, line_data))
-        #             success_dict[detail.customer_cd[0:3]]['product'] = product_dict[detail.item]
-        #         else:
-        #             product_id = self.env['product.product'].create({
-        #                 'name': detail.item
-        #             })
-        #             line_data = {
-        #                 'product_id': product_id.id,
-        #                 'product_uom_qty': 1,
-        #                 'product_uom': uom.id,
-        #                 'price_unit': detail.amount_use * product_id.list_price,
-        #             }
-        #             product_dict.update({
-        #                 product_id.name: {
-        #                     'id': product_id.id,
-        #                     'name': product_id.name,
-        #                     'list_price': product_id.list_price,
-        #                     'standard_price': product_id.standard_price,
-        #                     'uom_id': (product_id.uom_id.id, product_id.uom_id.name)
-        #                 }
-        #             })
-        #             success_dict[detail.customer_cd[0:3]]['order']['order_line'].append((0, 0, line_data))
-        #             success_dict[detail.customer_cd[0:3]]['product'] = product_dict[detail.item]
-        #
-        #     else:
-        #         failed_customer_cd.append(detail.customer_cd)
-
-        # for line in exe_data:
-        #     if success_dict.get(line.partner_id, False):
-        #         order = success_dict[line.partner_id]['order']
-        #         product = success_dict[line.partner_id]['product']
-        #         total_amount_use = success_dict[line.partner_id]['total_amount_use']
-        #         order_line = {
-        #             'product_id': product['id'],
-        #             'product_uom_qty': 1,
-        #             'product_uom': product['uom_id'][0],
-        #             'price_unit': (line.amount_use - total_amount_use) * product['standard_price'],
-        #         }
-        #         order['order_line'].append((0, 0, order_line))
-        #         sale_id = self.env['sale.order'].create(order)
-        #         success_dict[line.partner_id]['sale_id'] = sale_id.id
-        #         line.write({
-        #             'status': 'success',
-        #             'sale_id': sale_id.id
-        #         })
-        #         success_dict[line.partner_id].update({
-        #             'sale_id': sale_id.id,
-        #             'summary_id': line.id
-        #         })
-
-        # for detail in exe_detail_data:
-        #     if detail.customer_cd[0:3] in success_dict:
-        #         detail.write({
-        #             'summary_id': success_dict[detail.customer_cd[0:3]]['summary_id'],
-        #             'sale_id': success_dict[detail.customer_cd[0:3]]['sale_id'],
-        #         })
 
     def import_summary(self):
         return {

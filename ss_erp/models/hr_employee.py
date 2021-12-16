@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    employee_number = fields.Char(string='Employee Number', required=True)
+    employee_number = fields.Char(string='Employee Number', )
 
     organization_first = fields.Many2one('ss_erp.organization', string='Organization First', required=True)
     department_jurisdiction_first = fields.Many2many('ss_erp.responsible.department', 'dept_juris_first_rel',
@@ -21,18 +21,28 @@ class HrEmployee(models.Model):
     _sql_constraints = [(
         "employee_number_uniq",
         "UNIQUE(employee_number)",
-        "Same employee number exists!"
+        "同じ社員番号が存在しています"
     )]
 
     # Check Organization
-    @api.constrains("organization_first", "organization_second", "organization_third")
+    @api.constrains("organization_first", "organization_second", "organization_third","department_jurisdiction_first","department_jurisdiction_second", "department_jurisdiction_third")
     def _check_same_organization(self):
         for r in self:
             if r.organization_second or r.organization_third:
                 if r.organization_first.id == r.organization_second.id or \
                         r.organization_second.id == r.organization_third.id or \
                         r.organization_third.id == r.organization_first.id:
-                    raise ValidationError(_("Same organization is selected"))
+                    raise ValidationError(_("同一の組織が選択されています"))
+
+            if (r.organization_second and not r.department_jurisdiction_second) or (not r.organization_second and r.department_jurisdiction_second):
+                raise ValidationError(_("第二組織の(兼務・管轄部門のどちらか)片方が入力してはいけません"))
+
+            if not r.organization_second or r.organization_third:
+                raise ValidationError(_("第二組織が選択されていません"))
+
+            if (r.organization_third and not r.department_jurisdiction_third) or (not r.organization_third and r.department_jurisdiction_third):
+                raise ValidationError(_("第三組織の(兼務・管轄部門のどちらか)片方が入力してはいけません"))
+
 
     # Check Jurisdiction
     @api.constrains("department_jurisdiction_first", "department_jurisdiction_second", "department_jurisdiction_third")

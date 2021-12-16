@@ -111,7 +111,7 @@ class IFDBPowerNetSalesHeader(models.Model):
             if not error_message:
                 order_line = {
                     'product_id': product_dict[line.product_code],
-                    'product_uom_qty': line.quantity,
+                    'product_qty': line.quantity,
                     'product_uom': uom_dict[line.unit_code],
                 }
                 if not success_dict.get(line.sale_ref):

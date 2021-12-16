@@ -120,7 +120,7 @@ class YoukiKensaBilling(models.Model):
                             'date_order': line.sales_date,
                             'order_line': [(0, 0, {
                                 'product_id': product_dict[line.product_code].id,
-                                'product_uom_qty': line.return_quantity_for_sale,
+                                'product_qty': line.return_quantity_for_sale,
                                 'date_planned':line.sales_date
                             })],
                         }
@@ -130,7 +130,7 @@ class YoukiKensaBilling(models.Model):
                     else:
                         order_line = {
                             'product_id': product_dict[line.product_code].id,
-                            'product_uom_qty': line.return_quantity_for_sale,
+                            'product_qty': line.return_quantity_for_sale,
                             'date_planned': line.sales_date
                         }
                         success_dict[key]['order']['order_line'].append(

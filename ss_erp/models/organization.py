@@ -12,10 +12,10 @@ class Organization(models.Model):
     _order = 'complete_name'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string='Name')
+    name = fields.Char(string='組織名称')
     company_id = fields.Many2one(
         'res.company', string='Company', required=True,
-        readonly=True, default=lambda self: self.env.company)
+        default=lambda self: self.env.company)
     sequence = fields.Integer("Sequence")
     active = fields.Boolean(
         default=True, help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
@@ -86,6 +86,12 @@ class Organization(models.Model):
     def _check_recursion(self):
         if not self._check_m2m_recursion('child_ids'):
             raise ValidationError(_('Recursion found in child server actions'))
+
+    _sql_constraints = [(
+        'unique_organization_code',
+        'UNIQUE(organization_code)',
+        "組織コードはユニックでなければなりません。"
+    )]
 
     @api.model
     def _get_default_address_format(self):

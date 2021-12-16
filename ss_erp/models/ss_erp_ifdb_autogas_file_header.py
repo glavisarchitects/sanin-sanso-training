@@ -141,7 +141,7 @@ class IFDBAutogasFileHeader(models.Model):
                 quantity = float(line.quantity_2)/100
                 order_line = {
                     'product_id': product_dict[line.product_code],
-                    'product_uom_qty':quantity,
+                    'product_qty':quantity,
                     'product_uom': uom_id[0].id,
                 }
                 order_date = datetime.strptime(line.calendar_date,'%y%m%d')

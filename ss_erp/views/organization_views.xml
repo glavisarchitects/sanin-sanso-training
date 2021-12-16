@@ -25,13 +25,13 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
-                            <field name="company_id"/>
-                            <field name="organization_category_id"/>
+                            <field name="name" required="1"/>
+                            <field name="company_id" required="1"/>
+                            <field name="organization_category_id" required="1"/>
                             <field name="parent_id"/>
                         </group>
                         <group>
-                            <field name="organization_code"/>
+                            <field name="organization_code" required="1"/>
                             <field name="active" invisible="1"/>
                             <field name="start_date"/>
                             <field name="end_date"/>
@@ -52,7 +52,7 @@
                         <group>
                             <field name="organization_phone" widget="phone"/>
                             <field name="organization_fax"/>
-                            <field name="warehouse_id"/>
+<!--                            <field name="warehouse_id"/>-->
                         </group>
                     </group>
                 </sheet>

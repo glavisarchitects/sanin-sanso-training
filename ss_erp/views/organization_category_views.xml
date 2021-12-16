@@ -38,8 +38,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="company_id"/>
-                            <field name="hierarchy_number"/>
+                            <field name="company_id" required="1"/>
+                            <field name="hierarchy_number" required="1"/>
                             <field name="active" invisible="1" />
                         </group>
                     </group>
