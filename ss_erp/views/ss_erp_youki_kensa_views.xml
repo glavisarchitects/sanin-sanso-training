@@ -42,7 +42,14 @@
         <field name="arch" type="xml">
             <form string="容器検査所ファイル取込">
                 <header>
-
+                    <button type="object"
+                            name="action_import"
+                            string="アップロード"
+                            class="oe_highlight"/>
+                    <button type="object"
+                            name="action_processing_execution"
+                            string="処理実行"
+                            class="oe_highlight"/>
                 </header>
                 <sheet>
                     <group>
@@ -70,6 +77,20 @@
                                     <field name="slip_no" readonly="True"/>
                                     <field name="field_3" readonly="True"/>
                                     <field name="billing_abbreviation" readonly="True"/>
+                                    <field name="billing_code" readonly="True" optional="hide" />
+                                    <field name="customer_code" readonly="True" optional="hide" />
+                                    <field name="customer_abbreviation" readonly="True" optional="hide" />
+                                    <field name="product_code" readonly="True" optional="hide" />
+                                    <field name="product_name" readonly="True" optional="hide" />
+                                    <field name="unit_price" readonly="True" optional="hide" />
+                                    <field name="return_quantity_for_sale" readonly="True" optional="hide" />
+                                    <field name="net_sales_excluding_tax" readonly="True" optional="hide" />
+                                    <field name="consumption_tax" readonly="True" optional="hide" />
+                                    <field name="remarks" readonly="True" optional="hide" />
+                                    <field name="unit_cost" readonly="True" optional="hide" />
+                                    <field name="description" readonly="True" optional="hide" />
+                                    <field name="error_message" readonly="True" optional="hide" />
+                                    <field name="purchase_id" readonly="True" optional="hide" />
                                 </tree>
                             </field>
                         </page>
@@ -123,7 +144,20 @@
                 <field name="slip_no" readonly="True"/>
                 <field name="field_3" readonly="True"/>
                 <field name="billing_abbreviation" readonly="True"/>
-
+                <field name="billing_code" readonly="True" optional="hide" />
+                <field name="customer_code" readonly="True" optional="hide" />
+                <field name="customer_abbreviation" readonly="True" optional="hide" />
+                <field name="product_code" readonly="True" optional="hide" />
+                <field name="product_name" readonly="True" optional="hide" />
+                <field name="unit_price" readonly="True" optional="hide" />
+                <field name="return_quantity_for_sale" readonly="True" optional="hide" />
+                <field name="net_sales_excluding_tax" readonly="True" optional="hide" />
+                <field name="consumption_tax" readonly="True" optional="hide" />
+                <field name="remarks" readonly="True" optional="hide" />
+                <field name="unit_cost" readonly="True" optional="hide" />
+                <field name="description" readonly="True" optional="hide" />
+                <field name="error_message" readonly="True" optional="hide" />
+                <field name="purchase_id" readonly="True" optional="hide" />
             </tree>
         </field>
     </record>
@@ -131,7 +165,7 @@
     <record id="ss_erp_ifdb_youki_kensa_detail_action" model="ir.actions.act_window">
         <field name="name">容器検査所ファイル取込 ディテール</field>
         <field name="res_model">ss_erp.ifdb.youkikensa.billing.file.detail</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree</field>
     </record>
 
 

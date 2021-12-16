@@ -270,6 +270,29 @@ class Import(models.TransientModel):
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
+
+    def transform_youki_kensa_file(self, option, parent_context={}):
+        self.ensure_one()
+        youki_kensa = False
+        if parent_context and not any([self.import_file_header_id, self.import_file_header_model]):
+            self.import_file_header_model = parent_context["default_import_file_header_model"]
+            self.import_file_header_id = parent_context["default_import_file_header_id"]
+            youki_kensa = self.env[self.import_file_header_model].browse(
+                self.import_file_header_id
+            )
+        if not youki_kensa:
+            raise UserError(_("Missing File Header, please using `upload` option from file header!"))
+        data = self.file.split(b"\n")[1:]
+        new_data = [
+            b'"youkikensa_billing_file_header_id","sales_date","slip_no","field_3","billing_code","billing_abbreviation","customer_code","customer_abbreviation","product_code","product_name","unit_price","return_quantity_for_sale","net_sales_excluding_tax","consumption_tax","remarks","unit_cost","description"'
+        ]
+        for line in data:
+            if line == b"":
+                continue
+            new_line = b'"%s",' % (youki_kensa.name.encode("utf-8")) + line
+            new_data.append(new_line)
+        self.file = b"\n".join(new_data)
+
     def _transform(self, data):
         def _ymd(short_dt):
             # convert 210203 to 20210203

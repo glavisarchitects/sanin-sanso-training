@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="sequence" widget="handle"/>
-                <field name="company_id" groups="base.group_no_one,base.group_erp_manager"/>
+                <field name="company_id"/>
                 <field name="organization_code" string="Org code"/>
                 <field name="name" string="Org name"/>
                 <field name="parent_organization_code" string="Parent org code"/>
@@ -26,7 +26,7 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="company_id" groups="base.group_no_one,base.group_erp_manager"/>
+                            <field name="company_id"/>
                             <field name="organization_category_id"/>
                             <field name="parent_id"/>
                         </group>

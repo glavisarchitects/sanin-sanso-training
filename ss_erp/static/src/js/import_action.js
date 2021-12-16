@@ -36,6 +36,8 @@ odoo.define("ss_erp.import", function (require) {
                 return "powernet";
             } else if (this.res_model === "ss_erp.ifdb.youki.kanri.detail") {
                 return "youki_kanri";
+            } else if (this.res_model === "ss_erp.ifdb.youkikensa.billing.file.detail") {
+                return "youki_kensa";
             }
         },
 
@@ -60,6 +62,7 @@ odoo.define("ss_erp.import", function (require) {
             this.$buttons.filter(".oe_powernet_import_transform").on("click", this.onTransform.bind(this));
             this.$buttons.filter(".oe_autogas_import_transform").on("click", this.onTransform.bind(this));
             this.$buttons.filter(".oe_youki_kanri_import_transform").on("click", this.onTransform.bind(this));
+            this.$buttons.filter(".oe_youki_kensa_import_transform").on("click", this.onTransform.bind(this));
             this.$buttons.filter('.o_import_transform').on('click', function () {
                 this.transformed = true;
                 this['settings_changed']();
@@ -85,6 +88,12 @@ odoo.define("ss_erp.import", function (require) {
                 && this.parent_context.default_import_file_header_id
                 ) {
                 this.$buttons.filter(".oe_youki_kanri_import_transform").removeClass("d-none");
+            }
+            if (this.res_model === "ss_erp.ifdb.youkikensa.billing.file.detail"
+                && this.parent_context.default_import_file_header_model
+                && this.parent_context.default_import_file_header_id
+                ) {
+                this.$buttons.filter(".oe_youki_kensa_import_transform").removeClass("d-none");
             }
             if (this.transformed) {
                 this.$buttons.filter('.o_import_transform').addClass('d-none');

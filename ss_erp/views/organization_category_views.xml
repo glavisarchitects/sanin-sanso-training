@@ -38,7 +38,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="company_id" groups="base.group_no_one,base.group_erp_manager" />
+                            <field name="company_id"/>
                             <field name="hierarchy_number"/>
                             <field name="active" invisible="1" />
                         </group>

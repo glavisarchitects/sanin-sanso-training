@@ -111,31 +111,30 @@ class YoukiKanri(models.Model):
                     internal_code = uom['internal_code'].split(",")[1]
                     uom_dict[uom['external_code']] = int(internal_code)
         # Advisor C check
-        customer_branch_code = self.env['ss_erp.ifdb.youki.kanri.detail'].search_read([], ['customer_branch_code'])
-        partner_ids = self.env['res.partner'].search([('ref', '=', customer_branch_code)])
+        customer_branch_sub_list = []
+        customer_branch_sub_check = self.env['ss_erp.ifdb.youki.kanri.detail'].search_read([('customer_business_partner_code','!=',False)], ['customer_business_partner_code'])
+        for rec in customer_branch_sub_check:
+            customer_branch_sub_list.append(rec['customer_business_partner_code'])
+
+        partner_ids = self.env['res.partner'].search([('ref', 'in', customer_branch_sub_list)])
         partner_list = []
         for partner in partner_ids:
-            if partner['id'] not in partner_list:
-                partner_list.append(partner['id'])
+            if partner['ref'] not in partner_list:
+                partner_list.append(partner['ref'])
 
-        uom_uom_ids = self.env['uom.uom'].search_read([], ['id'])
-        uom_list = []
-        for uom in uom_uom_ids:
-            if uom['id'] not in uom_list:
-                uom_list.append(uom['id'])
-
-        product_product_ids = self.env['product.product'].search_read([], ['uom_id'])
+        # Commercial product C check
+        product_product_ids = self.env['product.product'].search([('default_code','!=',False)])
         product_list = []
         for product in product_product_ids:
-            if product['uom_id'] and product['uom_id'] not in product_list:
-                product_list.append(product['uom_id'])
+            if product['default_code']  not in product_list:
+                product_list.append(product['default_code'])
 
-        # Sub-branch C check
-        organization_ids = self.env['ss_erp.organization'].search_read([])
+        # Sub-branch C check and Commercial branch C check
+        organization_ids = self.env['ss_erp.organization'].search_read([], ['organization_code'])
         organization_list = []
         for organization_id in organization_ids:
-            if organization_id['id'] and organization_id['id'] not in organization_list:
-                organization_list.append(organization_id['id'])
+            if organization_id['organization_code'] and organization_id['organization_code'] not in organization_list:
+                organization_list.append(organization_id['organization_code'])
 
         failed_customer_code = []
         success_dict = {}
@@ -158,7 +157,7 @@ class YoukiKanri(models.Model):
                     error_message += '商商品Ｃがプロダクトマスタに存在しません。'
                 else:
                     error_message = '商商品Ｃがプロダクトマスタに存在しません。'
-            if line.unit_code not in uom_list:
+            if line.unit_code not in uom_dict:
                 if error_message:
                     error_message += '単位Ｃがプロダクト単位マスタに存在しません。'
                 else:
@@ -171,35 +170,34 @@ class YoukiKanri(models.Model):
                         'error_message': error_message
                     })
                     failed_customer_code.append(line.customer_business_partner_code)
-                    if success_dict.get(line.sale_ref, False):
-                        success_dict.pop(line.sale_ref, None)
+                    if success_dict.get(line.slip_processing_classification == 6,False):
+                    # if success_dict.get(line.sale_ref, False):
+                        success_dict.pop(line.slip_processing_classification, None)
                     continue
                 else:
-                    if not success_dict.get(line.sale_ref):
+                    order_date = datetime.strptime(line.slip_date,'%Y/%m/%d')
+                    if not success_dict.get(line.slip_processing_classification):
                         so = {
                             'partner_id': int(line.customer_business_partner_code),
                             'partner_invoice_id': int(line.customer_business_partner_code),
                             'partner_shipping_id': int(line.customer_business_partner_code),
-                            'date_order': line.slip_date,
+                            'date_order': order_date,
                             'order_line': [(0, 0, {
-                                'product_id': int(line.codeommercial_product_code),
+                                'product_id': line.codeommercial_product_code,
                                 'product_uom_qty': line.quantity,
                                 'product_uom': int(line.unit_code)
                             })],
                         }
-                        success_dict[line.sale_ref] = {
-                            'order': so,
-                            'success': [line.id]
-                        }
+                        success_dict[line.slip_processing_classification] = so
                     else:
                         order_line = {
-                            'product_id': int(line.codeommercial_product_code),
+                            'product_id': line.codeommercial_product_code,
                             'product_uom_qty': line.quantity,
                             'product_uom': int(line.unit_code)
                         }
-                        success_dict[line.sale_ref]['order']['order_line'].append(
-                            (0, 0, order_line))
-                        success_dict[line.sale_ref]['success'].append(line.id)
+
+                        success_dict[line.slip_processing_classification]['order_line'].append((0, 0, order_line))
+
             else:
                 line.write({
                     'status': 'error',
@@ -209,10 +207,12 @@ class YoukiKanri(models.Model):
         for key, value in success_dict.items():
             sale_id = self.env['sale.order'].create(value)
             success_dict[key]['sale_id'] = sale_id.id
+            # success_dict[key]['purchase_id'] = purchase_id.id
+            # success_dict[key]['inventory_order_id'] = inventory_order_id.id
 
         success_list = success_dict.keys()
         for line in exe_data:
-            if line.sale_ref in success_list:
+            if line.slip_processing_classification in success_list:
                 line.status = 'success'
-                line.sale_id = success_dict[line.sale_ref]['sale_id']
+                line.sale_id = success_dict[line.slip_processing_classification]['sale_id']
                 line.processing_date = datetime.now()

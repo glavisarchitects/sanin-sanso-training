@@ -148,5 +148,6 @@ class IFDBPropaneSalesHeader(models.Model):
             if success_dict.get(key):
                 line.write({
                     'status': 'success',
-                    'sale_id': success_dict[key]['sale_id']
+                    'sale_id': success_dict[key]['sale_id'],
+                    'processing_date':datetime.now()
                 })

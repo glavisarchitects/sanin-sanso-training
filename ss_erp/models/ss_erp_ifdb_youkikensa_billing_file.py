@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
-
+from datetime import datetime
 
 class YoukiKensaBilling(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
@@ -43,6 +43,14 @@ class YoukiKensaBilling(models.Model):
     youki_kensa_detail_ids = fields.One2many('ss_erp.ifdb.youkikensa.billing.file.detail',
                                              'youkikensa_billing_file_header_id')
 
+    _sql_constraints = [
+        (
+            "name_uniq",
+            "UNIQUE(name)", 
+            "Name is using for searching, please make it unique!"
+        ),
+    ]
+
     @api.depends('youki_kensa_detail_ids.status')
     def _compute_status(self):
         for record in self:
@@ -56,7 +64,7 @@ class YoukiKensaBilling(models.Model):
             else:
                 record.status = "wait"
 
-    def processing_execution(self):
+    def action_processing_execution(self):
         for r in self:
             r._processing_excution()
 
@@ -91,8 +99,8 @@ class YoukiKensaBilling(models.Model):
         success_dict = {}
         for line in exe_data:
             error_message = False
-            key = line.sales_date.strptime() + '_' + line.customer_code
-            if product_dict.get(line.product_code):
+            key = str(line.sales_date) + '_' + line.customer_code
+            if not product_dict.get(line.product_code):
                 error_message = '商品コードの変換に失敗しました。コード変換マスタを確認してください。'
 
             if key not in failed_purchase_orders:
@@ -110,9 +118,8 @@ class YoukiKensaBilling(models.Model):
                         po = {
                             'partner_id': supplier_id.id,
                             'date_order': line.sales_date,
-                            'picking_type_id':'incoming',
                             'order_line': [(0, 0, {
-                                'product_id': product_dict[line.product_code],
+                                'product_id': product_dict[line.product_code].id,
                                 'product_uom_qty': line.return_quantity_for_sale,
                                 'date_planned':line.sales_date
                             })],
@@ -122,7 +129,7 @@ class YoukiKensaBilling(models.Model):
                         }
                     else:
                         order_line = {
-                            'product_id': product_dict[line.product_code],
+                            'product_id': product_dict[line.product_code].id,
                             'product_uom_qty': line.return_quantity_for_sale,
                             'date_planned': line.sales_date
                         }
@@ -139,19 +146,39 @@ class YoukiKensaBilling(models.Model):
             success_dict[key]['po'] = po_id.id
 
         for line in exe_data:
-            key = line.sales_date.strptime() + '_' + line.customer_code
+            key = str(line.sales_date) + '_' + line.customer_code
             if success_dict.get(key):
                 line.write({
                     'status': 'success',
-                    'purchase_id': success_dict[key]['po']
+                    'purchase_id': success_dict[key]['po'],
+                    'processing_date':datetime.now()
                 })
+
+    def action_import(self):
+        self.ensure_one()
+        self.upload_date = fields.Datetime.now()
+        return {
+            "type": "ir.actions.client",
+            "tag": "import",
+            "params": {
+                "model": "ss_erp.ifdb.youkikensa.billing.file.detail",
+                "context": {
+                    "default_import_file_header_model": self._name,
+                    "default_import_file_header_id": self.id,
+                },
+            }
+        }
+
 
 
 class YoukiKensaDetail(models.Model):
     _name = 'ss_erp.ifdb.youkikensa.billing.file.detail'
     _description = 'Youki Kensa Detail'
 
-    youkikensa_billing_file_header_id = fields.Many2one('ss_erp.ifdb.youkikensa.billing.file.header')
+    youkikensa_billing_file_header_id = fields.Many2one(
+        'ss_erp.ifdb.youkikensa.billing.file.header',
+        ondelete="cascade"
+    )
     status = fields.Selection([
         ('wait', '処理待ち'),
         ('success', '成功'),
