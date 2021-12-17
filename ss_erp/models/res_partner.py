@@ -194,7 +194,7 @@ class ResPartner(models.Model):
     _sql_constraints = [
         (
             'constraint_uniq_company_name',
-            'unique(company_name)',
+            'unique(commercial_company_name)',
             _('申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。')
         ),
     ]
@@ -208,7 +208,7 @@ class ResPartner(models.Model):
     _sql_constraints = [
         (
             'constraint_uniq_contact_address',
-            'unique(contact_address)',
+            'unique(contact_address_complete)',
             _('申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。')
         ),
     ]
