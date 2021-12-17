@@ -55,7 +55,6 @@
                     <button type="object" attrs="{'invisible' : [('has_data_import', '=', True)]}"
                             name="action_import"
                             string="アップロード"
-                            attrs="{'invisible': [('autogas_data_record_ids', '=', [])]}"
                             class="oe_highlight"/>
                     <button type="object" attrs="{'invisible' : [('has_data_import', '=', True)]}"
                             name="action_processing_excution"
