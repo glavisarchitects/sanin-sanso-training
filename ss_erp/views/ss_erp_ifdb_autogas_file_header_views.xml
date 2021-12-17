@@ -56,7 +56,7 @@
                             name="action_import"
                             string="アップロード"
                             class="oe_highlight"/>
-                    <button type="object" attrs="{'invisible' : [('has_data_import', '=', True)]}"
+                    <button type="object"
                             name="action_processing_excution"
                             string="処理実行"
                             class="oe_highlight"/>

@@ -21,7 +21,7 @@
             <form string="プロパン売上（米子）ファイル取込">
                 <header>
                     <field name="has_data_import" invisible="1"/>
-                    <button name="btn_processing_execution" attrs="{'invisible' : [('has_data_import', '=', True)]}"
+                    <button name="btn_processing_execution"
                             type="object" string="処理実行"/>
                 </header>
                 <sheet>

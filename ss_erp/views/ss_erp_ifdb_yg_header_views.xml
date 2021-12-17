@@ -22,7 +22,6 @@
                 <header>
                     <field name="has_data_import" invisible="1"/>
                     <button name="btn_processing_execution" type="object" string="処理実行"
-                            attrs="{'invisible' : [('has_data_import', '=', True)]}"
                             class="btn btn-primary"/>
                     <button name="import_summary" type="object"
                             attrs="{'invisible' : [('has_data_import', '=', True)]}"
