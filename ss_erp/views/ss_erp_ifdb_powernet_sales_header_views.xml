@@ -49,11 +49,13 @@
         <field name="arch" type="xml">
             <form string="PowerNetファイル取込">
                 <header>
-                    <button name="action_import"
+                    <field name="has_data_import" invisible="1"/>
+                    <button name="action_import" attrs="{'invisible' : [('has_data_import', '=', True)]}"
                             string="アップロード"
                             type="object"
                             class="oe_highlight"/>
                     <button name="processing_execution" string="処理実行" type="object"
+                            attrs="{'invisible' : [('has_data_import', '=', True)]}"
                             class="oe_highlight"/>
                 </header>
                 <sheet>

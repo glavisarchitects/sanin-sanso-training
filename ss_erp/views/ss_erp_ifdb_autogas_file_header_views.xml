@@ -51,11 +51,13 @@
         <field name="arch" type="xml">
             <form string="オートガスPOS（松江）ファイル取込">
                 <header>
-                    <button type="object"
+                    <field name="has_data_import" invisible="1"/>
+                    <button type="object" attrs="{'invisible' : [('has_data_import', '=', True)]}"
                             name="action_import"
                             string="アップロード"
+                            attrs="{'invisible': [('autogas_data_record_ids', '=', [])]}"
                             class="oe_highlight"/>
-                    <button type="object"
+                    <button type="object" attrs="{'invisible' : [('has_data_import', '=', True)]}"
                             name="action_processing_excution"
                             string="処理実行"
                             class="oe_highlight"/>

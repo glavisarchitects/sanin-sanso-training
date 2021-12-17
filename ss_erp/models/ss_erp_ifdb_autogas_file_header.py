@@ -46,6 +46,17 @@ class IFDBAutogasFileHeader(models.Model):
         string="データレコード"
     )
 
+    has_data_import = fields.Boolean(compute='_compute_has_data_import')
+
+    #
+    @api.depends('autogas_data_record_ids')
+    def _compute_has_data_import(self):
+        for record in self:
+            if record.autogas_data_record_ids:
+                record.has_data_import = True
+            else:
+                record.has_data_import = False
+
     _sql_constraints = [
         (
             "name_uniq",

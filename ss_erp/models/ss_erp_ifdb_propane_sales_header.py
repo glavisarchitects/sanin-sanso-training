@@ -20,6 +20,17 @@ class IFDBPropaneSalesHeader(models.Model):
     sales_detail_ids = fields.One2many(
         'ss_erp.ifdb.propane.sales.detail', 'propane_sales_header_id',
         string='Propane sales file header')
+    has_data_import = fields.Boolean(compute='_compute_has_data_import')
+
+    #
+    @api.depends('sales_detail_ids')
+    def _compute_has_data_import(self):
+        for record in self:
+            if record.sales_detail_ids:
+                record.has_data_import = True
+            else:
+                record.has_data_import = False
+
 
     @api.depends('sales_detail_ids.status')
     def _compute_status(self):

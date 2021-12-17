@@ -24,6 +24,17 @@ class IFDBPowerNetSalesHeader(models.Model):
         inverse_name="powernet_sales_header_id",
         string="PowerNet販売記録の詳細"
     )
+    has_data_import = fields.Boolean(compute='_compute_has_data_import')
+
+    #
+    @api.depends('powernet_sale_record_ids')
+    def _compute_has_data_import(self):
+        for record in self:
+            if record.powernet_sale_record_ids:
+                record.has_data_import = True
+            else:
+                record.has_data_import = False
+
     _sql_constraints = [
         (
             "name_uniq",

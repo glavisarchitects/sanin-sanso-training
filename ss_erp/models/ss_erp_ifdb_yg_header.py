@@ -25,6 +25,17 @@ class IFDBYGHeader(models.Model):
     detail_ids = fields.One2many(
         'ss_erp.ifdb.yg.detail', 'header_id', '検針明細表')
 
+    has_data_import = fields.Boolean(compute='_compute_has_data_import')
+
+    #
+    @api.depends('detail_ids')
+    def _compute_has_data_import(self):
+        for record in self:
+            if record.detail_ids:
+                record.has_data_import = True
+            else:
+                record.has_data_import = False
+
     @api.depends('summary_ids.status')
     def _compute_status(self):
         for record in self:

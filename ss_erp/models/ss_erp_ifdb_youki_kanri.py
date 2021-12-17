@@ -40,6 +40,17 @@ class YoukiKanri(models.Model):
     )
     youki_kanri_detail_ids = fields.One2many(comodel_name="ss_erp.ifdb.youki.kanri.detail",
                                              inverse_name="ifdb_youki_kanri_id")
+    has_data_import = fields.Boolean(compute='_compute_has_data_import')
+
+    #
+    @api.depends('youki_kanri_detail_ids')
+    def _compute_has_data_import(self):
+        for record in self:
+            if record.youki_kanri_detail_ids:
+                record.has_data_import = True
+            else:
+                record.has_data_import = False
+
 
     _sql_constraints = [
         (
@@ -112,10 +123,10 @@ class YoukiKanri(models.Model):
                     uom_dict[uom['external_code']] = int(internal_code)
         # Advisor C check
         customer_branch_sub_list = []
-        customer_branch_sub_check = self.env['ss_erp.ifdb.youki.kanri.detail'].search_read([('customer_business_partner_code','!=',False)], ['customer_business_partner_code'])
+        customer_branch_sub_check = self.env['ss_erp.ifdb.youki.kanri.detail'].search_read(
+            [('customer_business_partner_code', '!=', False)], ['customer_business_partner_code'])
         for rec in customer_branch_sub_check:
             customer_branch_sub_list.append(rec['customer_business_partner_code'])
-
         partner_ids = self.env['res.partner'].search([('ref', 'in', customer_branch_sub_list)])
         partner_list = []
         for partner in partner_ids:
@@ -123,11 +134,11 @@ class YoukiKanri(models.Model):
                 partner_list.append(partner['ref'])
 
         # Commercial product C check
-        product_product_ids = self.env['product.product'].search([('default_code','!=',False)])
-        product_list = []
+        product_product_ids = self.env['product.product'].search_read([], ['default_code'])
+        product_dict = {}
         for product in product_product_ids:
-            if product['default_code']  not in product_list:
-                product_list.append(product['default_code'])
+            if product['default_code']:
+                product_dict[product['default_code']] = product['id']
 
         # Sub-branch C check and Commercial branch C check
         organization_ids = self.env['ss_erp.organization'].search_read([], ['organization_code'])
@@ -138,6 +149,7 @@ class YoukiKanri(models.Model):
 
         failed_customer_code = []
         success_dict = {}
+        success_po_dict = {}
         for line in exe_data:
             error_message = False
             if line.customer_business_partner_code not in partner_list:
@@ -152,7 +164,7 @@ class YoukiKanri(models.Model):
                     error_message += '商支店Ｃが組織マスタに存在しません。'
                 else:
                     error_message = '商支店Ｃが組織マスタに存在しません。'
-            if line.codeommercial_product_code not in product_list:
+            if (line.codeommercial_product_code) not in product_dict:
                 if error_message:
                     error_message += '商商品Ｃがプロダクトマスタに存在しません。'
                 else:
@@ -163,6 +175,7 @@ class YoukiKanri(models.Model):
                 else:
                     error_message = '単位Ｃがプロダクト単位マスタに存在しません。'
 
+            key = line.slip_processing_classification
             if line.customer_business_partner_code not in failed_customer_code:
                 if error_message:
                     line.write({
@@ -170,49 +183,94 @@ class YoukiKanri(models.Model):
                         'error_message': error_message
                     })
                     failed_customer_code.append(line.customer_business_partner_code)
-                    if success_dict.get(line.slip_processing_classification == 6,False):
-                    # if success_dict.get(line.sale_ref, False):
+
+                    if success_dict.get(line.slip_processing_classification, False):
                         success_dict.pop(line.slip_processing_classification, None)
                     continue
                 else:
-                    order_date = datetime.strptime(line.slip_date,'%Y/%m/%d')
-                    if not success_dict.get(line.slip_processing_classification):
-                        so = {
-                            'partner_id': int(line.customer_business_partner_code),
-                            'partner_invoice_id': int(line.customer_business_partner_code),
-                            'partner_shipping_id': int(line.customer_business_partner_code),
-                            'date_order': order_date,
-                            'order_line': [(0, 0, {
-                                'product_id': line.codeommercial_product_code,
+                    if key == '6':
+                        if not success_dict.get(key, 0) == 6:
+                            so = {
+                                'partner_id': int(line.customer_business_partner_code),
+                                'partner_invoice_id': int(line.customer_business_partner_code),
+                                'partner_shipping_id': int(line.customer_business_partner_code),
+                                'date_order': datetime.strptime(line.slip_date, '%Y/%m/%d'),
+                                'order_line': [(0, 0, {
+                                    'product_id': int(line.codeommercial_product_code),
+                                    'product_uom_qty': line.quantity,
+                                    'product_uom': int(line.unit_code)
+                                })],
+                            }
+                            success_dict[key] = {
+                                'order': so,
+                                'success': [line.id]
+                            }
+                        else:
+                            order_line = {
+                                'product_id': int(line.codeommercial_product_code),
                                 'product_uom_qty': line.quantity,
                                 'product_uom': int(line.unit_code)
-                            })],
-                        }
-                        success_dict[line.slip_processing_classification] = so
-                    else:
-                        order_line = {
-                            'product_id': line.codeommercial_product_code,
-                            'product_uom_qty': line.quantity,
-                            'product_uom': int(line.unit_code)
-                        }
+                            }
+                            success_dict[key]['order']['order_line'].append((0, 0, order_line))
+                            success_dict[key]['success'].append(line.id)
 
-                        success_dict[line.slip_processing_classification]['order_line'].append((0, 0, order_line))
+
+                    elif key == '7':
+                        if not success_po_dict.get(key,0) == 7:
+                            po = {
+                                'partner_id': int(line.customer_business_partner_code),
+                                'date_order': datetime.strptime(line.slip_date,'%Y/%m/%d'),
+                                'picking_type_id': self.env.ref('stock.picking_type_in').id,
+                                'order_line': [(0, 0, {
+                                    'product_id': int(line.codeommercial_product_code),
+                                    'product_qty': line.quantity,
+                                    'date_planned':datetime.strptime(line.slip_date,'%Y/%m/%d')
+                                })],
+                            }
+                            success_po_dict[key] = {
+                                'order': po,
+                                'success': [line.id]
+                            }
+                        else:
+                            order_line = {
+                                'product_id': int(line.codeommercial_product_code),
+                                'product_qty': line.quantity,
+                                'date_planned': datetime.strptime(line.slip_date,'%Y/%m/%d')
+                            }
+                            success_po_dict[key]['order']['order_line'].append((0, 0, order_line))
+                            success_po_dict[key]['success'].append(line.id)
 
             else:
                 line.write({
                     'status': 'error',
                     'error_message': error_message
                 })
-
+        # CREATE SO
         for key, value in success_dict.items():
-            sale_id = self.env['sale.order'].create(value)
+            sale_id = self.env['sale.order'].create(value['order'])
             success_dict[key]['sale_id'] = sale_id.id
-            # success_dict[key]['purchase_id'] = purchase_id.id
-            # success_dict[key]['inventory_order_id'] = inventory_order_id.id
 
+        # CREATE SOL
         success_list = success_dict.keys()
         for line in exe_data:
-            if line.slip_processing_classification in success_list:
-                line.status = 'success'
-                line.sale_id = success_dict[line.slip_processing_classification]['sale_id']
-                line.processing_date = datetime.now()
+            if success_dict.get(key) :
+                line.write({
+                    'status': 'success',
+                    'sale_id': success_dict[line.slip_processing_classification]['sale_id']
+                })
+
+        # CREATE PO
+        for key, value in success_po_dict.items():
+            po_id = self.env['purchase.order'].create(value['order'])
+            success_po_dict[key]['po'] = po_id.id
+
+        # CREATE POL
+        success_po_list = success_po_dict.keys()
+        for line in exe_data:
+            if success_po_dict.get(key) :
+                line.write({
+                    'status': 'success',
+                    'purchase_id': success_po_dict[key]['po']
+                })
+
+

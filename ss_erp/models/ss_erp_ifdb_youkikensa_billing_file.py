@@ -44,6 +44,17 @@ class YoukiKensaBilling(models.Model):
 
     youki_kensa_detail_ids = fields.One2many('ss_erp.ifdb.youkikensa.billing.file.detail',
                                              'youkikensa_billing_file_header_id')
+    has_data_import = fields.Boolean(compute='_compute_has_data_import')
+
+    #
+    @api.depends('youki_kensa_detail_ids')
+    def _compute_has_data_import(self):
+        for record in self:
+            if record.youki_kensa_detail_ids:
+                record.has_data_import = True
+            else:
+                record.has_data_import = False
+
 
     _sql_constraints = [
         (
