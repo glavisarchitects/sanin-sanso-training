@@ -112,7 +112,6 @@
                                     <field name="sale_id" readonly="True"/>
                                     <field name="processing_date" readonly="True" groups="base.group_no_one"/>
                                     <field name="customer_code" readonly="True"/>
-                                    <field name="validate_so" readonly="True" groups="base.group_no_one"/>
                                 </tree>
                             </field>
                         </page>

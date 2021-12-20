@@ -63,8 +63,6 @@
                 <field name="error_message" readonly="True" optional="hide" />
                 <field name="customer_code" readonly="True" optional="hide"
                     groups="base.group_no_one" />
-                <field name="validate_so" readonly="True" optional="hide"
-                    groups="base.group_no_one" />
                 <field name="status"
                        widget="badge"
                        decoration-info="status=='success'"
