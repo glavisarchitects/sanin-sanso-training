@@ -14,86 +14,6 @@ except (ImportError, ModuleNotFoundError):
         "pip3 install pandas\n"
     ))
 
-FIELDS_BEFORE_ifdb_propane_sales = [
-    'external_data_type',
-    'customer_branch_code',
-    'customer_branch_sub_code',
-    'customer_business_partner_code',
-    'customer_business_partner_branch_code',
-    'customer_delivery_code',
-    'direct_branch_code',
-    'direct_branch_sub_code',
-    'direct_business_partner_code',
-    'direct_business_partner_sub_code',
-    'direct_delivery_code',
-    'customer_name',
-    'codeommercial_branch_code',
-    'codeommercial_branch_sub_code',
-    'codeommercial_product_code',
-    'product_name',
-    'standard_name',
-    'standard',
-    'number',
-    'slip_number',
-    'codelassification_code',
-    'line_break',
-    'quantity',
-    'unit_code',
-    'unit_price',
-    'amount_of_money',
-    'unit_price_2',
-    'amount_2',
-    'unified_quantity',
-    'order_number',
-    'comment',
-    'codeommercial_branch_code2',
-    'codeommercial_branch_sub_code2',
-    'codeommercial_product_code2',
-    'amount_calculation_classification',
-    'slip_processing_classification'
-]
-
-FIELDS_AFTER_ifdb_propane_sales = [
-    'name',
-    'upload_date',
-    'sales_detail_ids/external_data_type',
-    'sales_detail_ids/customer_branch_code',
-    'sales_detail_ids/customer_branch_sub_code',
-    'sales_detail_ids/customer_business_partner_code',
-    'sales_detail_ids/customer_business_partner_branch_code',
-    'sales_detail_ids/customer_delivery_code',
-    'sales_detail_ids/direct_branch_code',
-    'sales_detail_ids/direct_branch_sub_code',
-    'sales_detail_ids/direct_business_partner_code',
-    'sales_detail_ids/direct_business_partner_sub_code',
-    'sales_detail_ids/direct_delivery_code',
-    'sales_detail_ids/customer_name',
-    'sales_detail_ids/codeommercial_branch_code',
-    'sales_detail_ids/codeommercial_branch_sub_code',
-    'sales_detail_ids/codeommercial_product_code',
-    'sales_detail_ids/product_name',
-    'sales_detail_ids/standard_name',
-    'sales_detail_ids/standard',
-    'sales_detail_ids/number',
-    'sales_detail_ids/slip_number',
-    'sales_detail_ids/codelassification_code',
-    'sales_detail_ids/line_break',
-    'sales_detail_ids/quantity',
-    'sales_detail_ids/unit_code',
-    'sales_detail_ids/unit_price',
-    'sales_detail_ids/amount_of_money',
-    'sales_detail_ids/unit_price_2',
-    'sales_detail_ids/amount_2',
-    'sales_detail_ids/unified_quantity',
-    'sales_detail_ids/order_number',
-    'sales_detail_ids/comment',
-    'sales_detail_ids/codeommercial_branch_code2',
-    'sales_detail_ids/codeommercial_branch_sub_code2',
-    'sales_detail_ids/codeommercial_product_code2',
-    'sales_detail_ids/amount_calculation_classification',
-    'sales_detail_ids/slip_processing_classification'
-]
-
 FIELDS_BEFORE_ifdb_yg = [
     'item',
     'customer_cd',
@@ -125,10 +45,6 @@ FIELDS_AFTER_ifdb_yg_summary = [
 ]
 
 FIELDS_MODEL = {
-    'ss_erp.ifdb.propane.sales.header': {
-        'FIELDS_BEFORE': FIELDS_BEFORE_ifdb_propane_sales,
-        'FIELDS_AFTER': FIELDS_AFTER_ifdb_propane_sales
-    },
     'ss_erp.ifdb.yg.summary': {
         'FIELDS_BEFORE': FIELDS_BEFORE_ifdb_yg_summary,
         'FIELDS_AFTER': FIELDS_AFTER_ifdb_yg_summary
@@ -156,22 +72,36 @@ class Import(models.TransientModel):
         model_field="import_file_header_model"
     )
 
-    def transform_autogas_file(self, options, parent_context={}):
+    def _get_ifdb_file_header(self, parent_context):
         self.ensure_one()
-        autogas_header = False
-        if parent_context and not any([self.import_file_header_id, self.import_file_header_model]):
+        if (
+            parent_context and 
+            not any([self.import_file_header_id, self.import_file_header_model])
+        ):
             self.import_file_header_model = parent_context["default_import_file_header_model"]
             self.import_file_header_id = parent_context["default_import_file_header_id"]
-            autogas_header = self.env[self.import_file_header_model].browse(
-                self.import_file_header_id
+        file_header = self.env[self.import_file_header_model].browse(
+            self.import_file_header_id
+        )
+        if not file_header:
+            raise UserError(
+                _("Missing File Header, please using `upload` option from file header!")
             )
-        if not autogas_header:
-            raise UserError(_("Missing File Header, please using `upload` option from file header!"))
+        return file_header
+
+    def transform_autogas_file(self, options, parent_context={}):
+        autogas_header = self._get_ifdb_file_header(parent_context)
         data = self.file.decode("utf-8").split("\r\n")
         # remove the first and last line
         data = data[1:-2]
         new_data = [
-            '"card_classification","processing_division","unused","group_division","actual_car_number","card_number","product_code","data_no","quantity_1","unit_price","amount_of_money","staff_code","processing_time","calendar_date","consumption_tax_output_classification","consumption_tax","credit_terminal_processing_serial_number","credit_classification","credit_data_no","tax_classification_code","filer1","quantity_2","filer2","autogas_file_header_id"'
+            '"card_classification","processing_division","unused","group_division",' +\
+            '"actual_car_number","card_number","product_code","data_no","quantity_1",' +\
+            '"unit_price","amount_of_money","staff_code","processing_time","calendar_date",' +\
+            '"consumption_tax_output_classification","consumption_tax",' +\
+            '"credit_terminal_processing_serial_number","credit_classification",' +\
+            '"credit_data_no","tax_classification_code","filer1","quantity_2",' +\
+            '"filer2","autogas_file_header_id"'
         ]
         for line in data:
             line_data, quantity_2 = line.split()
@@ -227,19 +157,22 @@ class Import(models.TransientModel):
         self.file = "\n".join(new_data).encode("utf-8")
 
     def transform_powernet_file(self, options, parent_context={}):
-        self.ensure_one()
-        powernet_header = False
-        if parent_context and not any([self.import_file_header_id, self.import_file_header_model]):
-            self.import_file_header_model = parent_context["default_import_file_header_model"]
-            self.import_file_header_id = parent_context["default_import_file_header_id"]
-            powernet_header = self.env[self.import_file_header_model].browse(
-                self.import_file_header_id
-            )
-        if not powernet_header:
-            raise UserError(_("Missing File Header, please using `upload` option from file header!"))
+        powernet_header = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")
         new_data = [
-            b'"powernet_sales_header_id","customer_code","billing_summary_code","sales_date","slip_type","slip_no","data_types","cash_classification","product_code","product_code_2","product_name","product_remarks","sales_category","quantity","unit_code","unit_price","amount_of_money","consumption_tax","sales_amount","quantity_after_conversion","search_remarks_1","search_remarks_2","search_remarks_3","search_remarks_4","search_remarks_5","search_remarks_6","search_remarks_7","search_remarks_8","search_remarks_9","search_remarks_10","sales_classification_code_1","sales_classification_code_2","sales_classification_code_3","consumer_sales_classification_code_1","consumer_sales_classification_code_2","consumer_sales_classification_code_3","consumer_sales_classification_code_4","consumer_sales_classification_code_5","product_classification_code_1","product_classification_code_2","product_classification_code_3"'
+            b'"powernet_sales_header_id","customer_code","billing_summary_code",' +\
+            b'"sales_date","slip_type","slip_no","data_types","cash_classification",' +\
+            b'"product_code","product_code_2","product_name","product_remarks",' +\
+            b'"sales_category","quantity","unit_code","unit_price","amount_of_money",' +\
+            b'"consumption_tax","sales_amount","quantity_after_conversion",' +\
+            b'"search_remarks_1","search_remarks_2","search_remarks_3","search_remarks_4",' +\
+            b'"search_remarks_5","search_remarks_6","search_remarks_7","search_remarks_8",' +\
+            b'"search_remarks_9","search_remarks_10","sales_classification_code_1",' +\
+            b'"sales_classification_code_2","sales_classification_code_3",' +\
+            b'"consumer_sales_classification_code_1","consumer_sales_classification_code_2",' +\
+            b'"consumer_sales_classification_code_3","consumer_sales_classification_code_4",' +\
+            b'"consumer_sales_classification_code_5","product_classification_code_1",' +\
+            b'"product_classification_code_2","product_classification_code_3"'
         ]
         for line in data:
             if line == b"":
@@ -249,19 +182,21 @@ class Import(models.TransientModel):
         self.file = b"\n".join(new_data)
 
     def transform_youki_kanri_file(self, option, parent_context={}):
-        self.ensure_one()
-        youki_kanri = False
-        if parent_context and not any([self.import_file_header_id, self.import_file_header_model]):
-            self.import_file_header_model = parent_context["default_import_file_header_model"]
-            self.import_file_header_id = parent_context["default_import_file_header_id"]
-            youki_kanri = self.env[self.import_file_header_model].browse(
-                self.import_file_header_id
-            )
-        if not youki_kanri:
-            raise UserError(_("Missing File Header, please using `upload` option from file header!"))
+        youki_kanri = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")
         new_data = [
-            b'"ifdb_youki_kanri_id","external_data_type","customer_branch_code","customer_branch_sub_code","customer_business_partner_code","customer_business_partner_branch_code","customer_delivery_code","direct_branch_code","direct_branch_sub_code","direct_business_partner_code","direct_business_partner_sub_code","direct_delivery_code","customer_name","codeommercial_branch_code","codeommercial_branch_sub_code","codeommercial_product_code","product_name","standard_name","standard","number","slip_date","codelassification_code","line_break","quantity","unit_code","unit_price","amount_of_money","unit_price_2","amount_2","unified_quantity","order_number","comment","codeommercial_branch_code2","codeommercial_branch_sub_code2","codeommercial_product_code2","amount_calculation_classification","slip_processing_classification"'
+            b'"ifdb_youki_kanri_id","external_data_type","customer_branch_code",' +\
+            b'"customer_branch_sub_code","customer_business_partner_code",' +\
+            b'"customer_business_partner_branch_code","customer_delivery_code",' +\
+            b'"direct_branch_code","direct_branch_sub_code","direct_business_partner_code",' +\
+            b'"direct_business_partner_sub_code","direct_delivery_code","customer_name",' +\
+            b'"codeommercial_branch_code","codeommercial_branch_sub_code",' +\
+            b'"codeommercial_product_code","product_name","standard_name","standard",' +\
+            b'"number","slip_date","codelassification_code","line_break","quantity",' +\
+            b'"unit_code","unit_price","amount_of_money","unit_price_2","amount_2",' +\
+            b'"unified_quantity","order_number","comment","codeommercial_branch_code2",' +\
+            b'"codeommercial_branch_sub_code2","codeommercial_product_code2",' +\
+            b'"amount_calculation_classification","slip_processing_classification"'
         ]
         for line in data:
             if line == b"":
@@ -270,21 +205,15 @@ class Import(models.TransientModel):
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
-
     def transform_youki_kensa_file(self, option, parent_context={}):
-        self.ensure_one()
-        youki_kensa = False
-        if parent_context and not any([self.import_file_header_id, self.import_file_header_model]):
-            self.import_file_header_model = parent_context["default_import_file_header_model"]
-            self.import_file_header_id = parent_context["default_import_file_header_id"]
-            youki_kensa = self.env[self.import_file_header_model].browse(
-                self.import_file_header_id
-            )
-        if not youki_kensa:
-            raise UserError(_("Missing File Header, please using `upload` option from file header!"))
+        youki_kensa = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")[1:]
         new_data = [
-            b'"youkikensa_billing_file_header_id","sales_date","slip_no","field_3","billing_code","billing_abbreviation","customer_code","customer_abbreviation","product_code","product_name","unit_price","return_quantity_for_sale","net_sales_excluding_tax","consumption_tax","remarks","unit_cost","description"'
+            b'"youkikensa_billing_file_header_id","sales_date","slip_no","field_3",' +\
+            b'"billing_code","billing_abbreviation","customer_code",' +\
+            b'"customer_abbreviation","product_code","product_name","unit_price",' +\
+            b'"return_quantity_for_sale","net_sales_excluding_tax","consumption_tax",' +\
+            b'"remarks","unit_cost","description"'
         ]
         for line in data:
             if line == b"":
@@ -293,81 +222,29 @@ class Import(models.TransientModel):
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
-    def _transform(self, data):
-        def _ymd(short_dt):
-            # convert 210203 to 20210203
-            dt = short_dt.strip()
-            if len(dt) != 6:
-                return ''
-            else:
-                return '-'.join(['20' + dt[:2], dt[2:4], dt[4:]])
-
-        FIELDS_BEFORE = FIELDS_MODEL[self.res_model]['FIELDS_BEFORE']
-        FIELDS_AFTER = FIELDS_MODEL[self.res_model]['FIELDS_AFTER']
-        # convert data to df
-        df = pd.DataFrame(data, columns=FIELDS_BEFORE, dtype=object).fillna('').astype(str)
-        for c in df.columns:
-            df[c] = df[c].str.strip()
-
-        # get data for transform
-        external_data_types = list(df['external_data_type'])
-        name_col = ['name', '']
-        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        upload_date_col = ['upload_date', now]
-        for el in external_data_types:
-            if len(name_col) == len(external_data_types):
-                break
-            name_col.append('')
-            upload_date_col.append('')
-        df['name'] = name_col
-        df['upload_date'] = upload_date_col
-        df['sales_detail_ids/external_data_type'] = df['external_data_type']
-        df['sales_detail_ids/customer_branch_code'] = df['customer_branch_code']
-        df['sales_detail_ids/customer_branch_sub_code'] = df['customer_branch_sub_code']
-        df['sales_detail_ids/customer_business_partner_code'] = df['customer_business_partner_code']
-        df['sales_detail_ids/customer_business_partner_branch_code'] = df['customer_business_partner_branch_code']
-        df['sales_detail_ids/customer_delivery_code'] = df['customer_delivery_code']
-        df['sales_detail_ids/direct_branch_code'] = df['direct_branch_code']
-        df['sales_detail_ids/direct_branch_sub_code'] = df['direct_branch_sub_code']
-        df['sales_detail_ids/direct_business_partner_code'] = df['direct_business_partner_code']
-        df['sales_detail_ids/direct_business_partner_sub_code'] = df['direct_business_partner_sub_code']
-        df['sales_detail_ids/direct_delivery_code'] = df['direct_delivery_code']
-        df['sales_detail_ids/customer_name'] = df['customer_name']
-        df['sales_detail_ids/codeommercial_branch_code'] = df['codeommercial_branch_code']
-        df['sales_detail_ids/codeommercial_branch_sub_code'] = df['codeommercial_branch_sub_code']
-        df['sales_detail_ids/codeommercial_product_code'] = df['codeommercial_product_code']
-        df['sales_detail_ids/product_name'] = df['product_name']
-        df['sales_detail_ids/standard_name'] = df['standard_name']
-        df['sales_detail_ids/standard'] = df['standard']
-        df['sales_detail_ids/number'] = df['number']
-        df['sales_detail_ids/slip_number'] = df['slip_number']
-        df['sales_detail_ids/codelassification_code'] = df['codelassification_code']
-        df['sales_detail_ids/line_break'] = df['line_break']
-        df['sales_detail_ids/quantity'] = df['quantity']
-        df['sales_detail_ids/unit_code'] = df['unit_code']
-        df['sales_detail_ids/unit_price'] = df['unit_price']
-        df['sales_detail_ids/amount_of_money'] = df['amount_of_money']
-        df['sales_detail_ids/unit_price_2'] = df['unit_price_2']
-        df['sales_detail_ids/amount_2'] = df['amount_2']
-        df['sales_detail_ids/unified_quantity'] = df['unified_quantity']
-        df['sales_detail_ids/order_number'] = df['order_number']
-        df['sales_detail_ids/comment'] = df['comment']
-        df['sales_detail_ids/codeommercial_branch_code2'] = df['codeommercial_branch_code2']
-        df['sales_detail_ids/codeommercial_branch_sub_code2'] = df['codeommercial_branch_sub_code2']
-        df['sales_detail_ids/codeommercial_product_code2'] = df['codeommercial_product_code2']
-        df['sales_detail_ids/amount_calculation_classification'] = df['amount_calculation_classification']
-        df['sales_detail_ids/slip_processing_classification'] = df['slip_processing_classification']
-
-
-        # sort
-        df_sorted = df.reset_index(drop=True)
-
-        # replace duplicated values
-        header_cols = [c for c in FIELDS_AFTER if not c.startswith('sales_detail_ids')]
-        # df_sorted.loc[df_sorted.duplicated(subset=['id']), header_cols] = ''
-        df_res_trans = df_sorted[FIELDS_AFTER]
-        df_res_trans = df_res_trans.iloc[1:]
-        return df_res_trans
+    def transform_propane_file(self, option, parent_context={}):
+        propane_sales_header = self._get_ifdb_file_header(parent_context)
+        data = self.file.split(b"\n")
+        new_data = [
+            b'"propane_sales_header_id","external_data_type","customer_branch_code",' +\
+            b'"customer_branch_sub_code","customer_business_partner_code",' +\
+            b'"customer_business_partner_branch_code","customer_delivery_code",' +\
+            b'"direct_branch_code","direct_branch_sub_code","direct_business_partner_code",' +\
+            b'"direct_business_partner_sub_code","direct_delivery_code","customer_name",' +\
+            b'"codeommercial_branch_code","codeommercial_branch_sub_code",' +\
+            b'"codeommercial_product_code","product_name","standard_name","standard",' +\
+            b'"number","slip_date","codelassification_code","line_break","quantity",' +\
+            b'"unit_code","unit_price","amount_of_money","unit_price_2","amount_2",' +\
+            b'"unified_quantity","order_number","comment","codeommercial_branch_code2",' +\
+            b'"codeommercial_branch_sub_code2","codeommercial_product_code2",' +\
+            b'"amount_calculation_classification","slip_processing_classification"'
+        ]
+        for line in data:
+            if line == b"":
+                continue
+            new_line = b'"%s",' % (propane_sales_header.name.encode("utf-8")) + line
+            new_data.append(new_line)
+        self.file = b"\n".join(new_data)
 
     def _transform_ifdb_yg(self, data, header_id):
         def _ymd(short_dt):
@@ -458,8 +335,6 @@ class Import(models.TransientModel):
                 df_res_trans = self._transform_ifdb_yg_summary(res, options.get('header_id'))
             if self.res_model == 'ss_erp.ifdb.yg.detail':
                 df_res_trans = self._transform_ifdb_yg(res, options.get('header_id'))
-            if self.res_model == 'ss_erp.ifdb.propane.sales.header':
-                df_res_trans = self._transform(res)
             for row in df_res_trans.itertuples(index=False, name=None):
                 yield row
         else:

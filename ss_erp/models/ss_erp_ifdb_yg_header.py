@@ -60,35 +60,24 @@ class IFDBYGHeader(models.Model):
         exe_detail_data = self.detail_ids.sorted(key=lambda k: (k['customer_cd']))
 
         # get customer code convert
-        external_partners = list(set(exe_data.mapped('partner_id')))
         yamasan_gas_type_ids = self.env['ss_erp.external.system.type'].search([('code', '=', 'yamasan_gas')])
         cust_code_type_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'customer')])
         cust_code_convert = self.env['ss_erp.code.convert'].search(
-            [('external_system', 'in', yamasan_gas_type_ids.ids), ('convert_code_type', 'in', cust_code_type_ids.ids)])
+            [('external_system', 'in', yamasan_gas_type_ids.ids), ('convert_code_type', 'in', cust_code_type_ids.ids)]).sorted(
+                key=lambda k: (k['external_code'], k['priority_conversion']))
 
         customer_dict = {}
-        for customer in external_partners:
-            customer_id = cust_code_convert.filtered(lambda x: x.external_code == customer).sorted(
-                key=lambda k: (k['priority_conversion']))
-            if customer_id:
-                customer_internal_code = customer_id[0].internal_code.id
-                customer_dict[customer] = customer_internal_code
-
-        # get product
-        # products = list(set(self.detail_ids.mapped('item')))
-        # product_ids = self.env['product.product'].search_read([('name', 'in', products)],
-        #                                                       ['name', 'uom_id', 'list_price', 'standard_price'])
-        # product_dict = {}
-        # for product in product_ids:
-        #     if product['name']:
-        #         product_dict[product['name']] = product
+        for customer in cust_code_convert:
+            if not customer_dict.get(uom['external_code']):
+                customer_dict[customer['external_code']] = customer['internal_code']
 
         failed_customer_code = []
         failed_customer_cd = []
         success_dict = {}
         for line in exe_data:
             error_message = False
-            if not customer_dict.get(line.partner_id, False):
+            partner_id = str(line.partner_id)
+            if not customer_dict.get(partner_id, False):
                 error_message = '販売店コードの変換に失敗しました。コード変換マスタを確認してください。'
             if line.partner_id not in failed_customer_code:
                 if error_message:
@@ -96,9 +85,9 @@ class IFDBYGHeader(models.Model):
                         'status': 'error',
                         'error_message': error_message
                     })
-                    failed_customer_code.append(line.partner_id)
-                    if success_dict.get(line.partner_id, False):
-                        success_dict.pop(line.partner_id, None)
+                    failed_customer_code.append(partner_id)
+                    if success_dict.get(partner_id, False):
+                        success_dict.pop(partner_id, None)
                     continue
                 else:
                     order_data = {
@@ -112,16 +101,17 @@ class IFDBYGHeader(models.Model):
                         'order_line': []
                     }
 
-                    success_dict[line.partner_id] = {
+                    success_dict[partner_id] = {
                         'order': order_data,
                         'total_amount_use': line.amount_use,
                         'detail_ids':[]
                     }
             else:
-                line.write({
-                    'status': 'error',
-                    'error_message': error_message
-                })
+                if error_message:
+                    line.write({
+                        'status': 'error',
+                        'error_message': error_message
+                    })
 
         uom = self.env.ref('uom.product_uom_cubic_meter')
         yamasan_product = self.env.ref('ss_erp.product_product_yamasan_gas')
@@ -139,9 +129,10 @@ class IFDBYGHeader(models.Model):
                 failed_customer_cd.append(detail.customer_cd)
 
         for line in exe_data:
-            if success_dict.get(line.partner_id, False):
-                order = success_dict[line.partner_id]['order']
-                total_amount_use = success_dict[line.partner_id]['total_amount_use']
+            partner_id = str(line.partner_id)
+            if success_dict.get(partner_id, False):
+                order = success_dict[partner_id]['order']
+                total_amount_use = success_dict[partner_id]['total_amount_use']
                 standard_price_line={
                     'product_id': yamasan_product.id,
                     'product_uom': uom.id,
@@ -149,16 +140,16 @@ class IFDBYGHeader(models.Model):
                 }
                 order['order_line'] = [(0, 0, standard_price_line)] + order['order_line']
                 sale_id = self.env['sale.order'].create(order)
-                success_dict[line.partner_id]['sale_id'] = sale_id.id
+                success_dict[partner_id]['sale_id'] = sale_id.id
                 line.write({
                     'status': 'success',
                     'sale_id': sale_id.id,
                     'processing_date':datetime.now(),
-                    'detail_ids':[(6, 0, success_dict[line.partner_id]['detail_ids'])]
+                    'detail_ids':[(6, 0, success_dict[partner_id]['detail_ids'])],
+                    'error_message':False
                 })
-                success_dict[line.partner_id].update({
+                success_dict[partner_id].update({
                     'sale_id': sale_id.id,
-                    # 'summary_id': line.id
                 })
 
 

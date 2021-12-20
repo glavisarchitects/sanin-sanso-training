@@ -9,7 +9,7 @@ class IFDBPowerNetSalesHeader(models.Model):
     _description = 'IFDB PowerNet Sales Header'
 
     upload_date = fields.Datetime('アップロード日時', index=True,
-		default=fields.Datetime.now())
+                                  default=fields.Datetime.now())
     name = fields.Char('名称')
     user_id = fields.Many2one('res.users', '担当者', index=True)
     branch_id = fields.Many2one('ss_erp.organization', '支店', index=True)
@@ -17,7 +17,7 @@ class IFDBPowerNetSalesHeader(models.Model):
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり')
-    ], string='ステータス', default="wait",compute='_compute_status')
+    ], string='ステータス', default="wait", compute='_compute_status')
 
     powernet_sale_record_ids = fields.One2many(
         comodel_name="ss_erp.ifdb.powernet.sales.detail",
@@ -83,71 +83,73 @@ class IFDBPowerNetSalesHeader(models.Model):
             raise UserError(
                 _('直売売上用の顧客コードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（powernet.direct.sales.dummy.customer_id）'))
 
-        customer_id = self.env['res.partner'].search([('ref','=',customer_code)],limit=1)
+        customer_id = self.env['res.partner'].search([('ref', '=', customer_code)], limit=1)
         if not customer_id:
             raise UserError(
                 _('設定している取引先コードは存在しません。'))
 
-
         exe_data = self.powernet_sale_record_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
-            key=lambda k: (k['sale_ref'],k['sales_date'], k['customer_code'], k['data_types']))
+            key=lambda k: (k['sale_ref'], k['sales_date'], k['customer_code'], k['data_types']))
 
         # Get list product uom exchange
         powernet_type_ids = self.env['ss_erp.external.system.type'].search([('code', '=', 'power_net')]).mapped('id')
-        convert_product_unit_type_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'product_unit')]).mapped('id')
-        uom_code_convert = self.env['ss_erp.code.convert'].search_read([('external_system', 'in', powernet_type_ids),('convert_code_type', 'in', convert_product_unit_type_ids)],['external_code','internal_code'])
+        convert_product_unit_type_ids = self.env['ss_erp.convert.code.type'].search(
+            [('code', '=', 'product_unit')]).mapped('id')
+        uom_code_convert = self.env['ss_erp.code.convert'].search(
+            [('external_system', 'in', powernet_type_ids), ('convert_code_type', 'in', convert_product_unit_type_ids)]).sorted(
+                key=lambda k: (k['external_code'], k['priority_conversion']))
+
         uom_dict = {}
         for uom in uom_code_convert:
             if not uom_dict.get(uom['external_code']):
-                if uom['external_code']:
-                    internal_code = uom['internal_code'].split(",")[1]
-                    uom_dict[uom['external_code']] = int(internal_code)
+                uom_dict[uom['external_code']] = uom['internal_code']
 
-        product_product_ids = self.env['product.product'].search_read([],['default_code'])
-        product_dict = {}
-        for product in product_product_ids:
-            if product['default_code']:
-                product_dict[product['default_code']] = product['id']
+        product_product_ids = self.env['product.product'].search([]).mapped('id')
 
         failed_so = []
         success_dict = {}
         for line in exe_data:
+            key = str(line.sales_date) + '_' + str(line.customer_code)
             error_message = False
-            if not product_dict.get(line.product_code):
+            if int(line.product_code) not in product_product_ids:
                 line.status = 'error'
                 error_message = '商品コードがプロダクトマスタに存在しません。'
 
             if not uom_dict.get(line.unit_code):
                 line.status = 'error'
                 if error_message:
-                    error_message+= '単位コードの変換に失敗しました。コード変換マスタを確認してください。'
+                    error_message += '単位コードの変換に失敗しました。コード変換マスタを確認してください。'
                 else:
-                    error_message= '単位コードの変換に失敗しました。コード変換マスタを確認してください。'
+                    error_message = '単位コードの変換に失敗しました。コード変換マスタを確認してください。'
+
             if not error_message:
-                order_line = {
-                    'product_id': product_dict[line.product_code],
-                    'product_uom_qty': line.quantity,
-                    'product_uom': uom_dict[line.unit_code],
-                }
-                if not success_dict.get(line.sale_ref):
-                    so = {
+                if key in failed_so:
+                    continue
+                else:
+                    order_line = {
+                        'product_id': int(line.product_code),
+                        'product_uom_qty': line.quantity,
+                        'product_uom': uom_dict[line.unit_code],
+                    }
+                    if not success_dict.get(key):
+                        so = {
                             'x_organization_id': self.branch_id.id,
-                            'partner_id': customer_id[0].id,
-                            'partner_invoice_id': customer_id[0].id,
-                            'partner_shipping_id': customer_id[0].id,
+                            'partner_id': customer_id.id,
+                            'partner_invoice_id': customer_id.id,
+                            'partner_shipping_id': customer_id.id,
                             'date_order': self.upload_date,
                             'state': 'draft',
                             'x_no_approval_required_flag': True,
                             'order_line': [(0, 0, order_line)]
                         }
-                    success_dict[line.sale_ref] = so
-                else:
-                    success_dict[line.sale_ref]['order_line'].append((0, 0, order_line))
+                        success_dict[key] = so
+                    else:
+                        success_dict[key]['order_line'].append((0, 0, order_line))
             else:
-                if line.sale_ref not in failed_so:
-                    failed_so.append(line.sale_ref)
-                if success_dict.get(line.sale_ref, False):
-                    success_dict.pop(line.sale_ref, None)
+                if key not in failed_so:
+                    failed_so.append(key)
+                if success_dict.get(key, False):
+                    success_dict.pop(key, None)
                 line.write({
                     'status': 'error',
                     'error_message': error_message
@@ -159,10 +161,14 @@ class IFDBPowerNetSalesHeader(models.Model):
 
         success_list = success_dict.keys()
         for line in exe_data:
-            if line.sale_ref in success_list:
-                line.status = 'success'
-                line.sale_id = success_dict[line.sale_ref]['sale_id']
-                line.processing_date = datetime.now()
+            key = str(line.sales_date) + '_' + str(line.customer_code)
+            if key in success_list:
+                line.update({
+                    'status': 'success',
+                    'sale_id': success_dict[key]['sale_id'],
+                    'processing_date': datetime.now(),
+                    'error_message': False,
+                })
 
 
 class IFDBPowerNetSalesHeadDetail(models.Model):
@@ -170,7 +176,7 @@ class IFDBPowerNetSalesHeadDetail(models.Model):
     _description = 'IFDB PowerNet Sales Detail'
 
     powernet_sales_header_id = fields.Many2one('ss_erp.ifdb.powernet.sales.header', 'PowerNetセールスヘッダー',
-                                               required=True,ondelete="cascade")
+                                               required=True, ondelete="cascade")
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
         ('success', '成功'),
@@ -219,16 +225,3 @@ class IFDBPowerNetSalesHeadDetail(models.Model):
     product_classification_code_3 = fields.Char('商品分類コード 3')
     error_message = fields.Char('エラーメッセージ')
     sale_id = fields.Many2one('sale.order', '販売オーダ参照')
-    sale_ref = fields.Char(string="SOチェック用",
-                           compute="_compute_sale_ref",
-                           store=True)
-
-    @api.depends("customer_code", "sales_date")
-    def _compute_sale_ref(self):
-        for r in self:
-            sale_ref = ""
-            if r.customer_code:
-                sale_ref+="%s" % r.customer_code
-            if r.sales_date:
-                sale_ref+="%s" % r.sales_date
-            r.sale_ref = sale_ref

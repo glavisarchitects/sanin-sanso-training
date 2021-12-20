@@ -32,6 +32,14 @@ class IFDBPropaneSalesHeader(models.Model):
                 record.has_data_import = False
 
 
+    _sql_constraints = [
+        (
+            "name_unique",
+            "UNIQUE(name)",
+            "Name is used for searching, please make it unique!"
+        ),
+    ]
+
     @api.depends('sales_detail_ids.status')
     def _compute_status(self):
         for record in self:
@@ -44,6 +52,19 @@ class IFDBPropaneSalesHeader(models.Model):
                     record.status = "wait"
             else:
                 record.status = "wait"
+
+    def action_import(self):
+        return {
+            "type": "ir.actions.client",
+            "tag": "import",
+            "params": {
+                "model": "ss_erp.ifdb.propane.sales.detail",
+                "context": {
+                    "default_import_file_header_model": self._name,
+                    "default_import_file_header_id": self.id,
+                },
+            }
+        }
 
     def btn_processing_execution(self):
         for record in self:
@@ -84,21 +105,25 @@ class IFDBPropaneSalesHeader(models.Model):
             error_message = False
             if int(line.customer_business_partner_code) not in partner_list:
                 error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
+
             if int(line.customer_branch_code) not in organization_list:
                 if error_message:
                     error_message += '顧支店Ｃが組織マスタに存在しません。'
                 else:
                     error_message = '顧支店Ｃが組織マスタに存在しません。'
+
             if int(line.codeommercial_branch_code) not in organization_list:
                 if error_message:
                     error_message += '商支店Ｃが組織マスタに存在しません。'
                 else:
                     error_message = '商支店Ｃが組織マスタに存在しません。'
+
             if int(line.codeommercial_product_code) not in product_list:
                 if error_message:
                     error_message += '商商品Ｃがプロダクトマスタに存在しません。'
                 else:
                     error_message = '商商品Ｃがプロダクトマスタに存在しません。'
+
             if int(line.unit_code) not in uom_list:
                 if error_message:
                     error_message += '単位Ｃがプロダクト単位マスタに存在しません。'
@@ -106,7 +131,7 @@ class IFDBPropaneSalesHeader(models.Model):
                     error_message = '単位Ｃがプロダクト単位マスタに存在しません。'
 
             if line.slip_date and line.customer_business_partner_code:
-                key = line.slip_date + '_' + line.customer_business_partner_code
+                key = str(line.slip_date) + '_' + str(line.customer_business_partner_code)
 
                 if line.customer_business_partner_code not in failed_customer_code:
                     if error_message:
@@ -156,11 +181,11 @@ class IFDBPropaneSalesHeader(models.Model):
             success_dict[key]['sale_id'] = sale_id.id
 
         for line in exe_data:
-            if line.slip_date and line.customer_business_partner_code:
-                key = line.slip_date + '_' + line.customer_business_partner_code
-                if success_dict.get(key):
-                    line.write({
-                        'status': 'success',
-                        'sale_id': success_dict[key]['sale_id'],
-                        'processing_date':datetime.now()
-                    })
+            key = str(line.slip_date) + '_' + str(line.customer_business_partner_code)
+            if success_dict.get(key):
+                line.write({
+                    'status': 'success',
+                    'sale_id': success_dict[key]['sale_id'],
+                    'processing_date':datetime.now(),
+                    'error_message': False
+                })

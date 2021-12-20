@@ -5,7 +5,9 @@ class IFDBPropaneSalesDetail(models.Model):
     _name = 'ss_erp.ifdb.propane.sales.detail'
     _description = 'Propane sales file details'
 
-    propane_sales_header_id = fields.Many2one('ss_erp.ifdb.propane.sales.header')
+    propane_sales_header_id = fields.Many2one(
+        'ss_erp.ifdb.propane.sales.header',
+        ondelete="cascade")
     status = fields.Selection([
         ('wait', '処理待ち'),
         ('success', '成功'),

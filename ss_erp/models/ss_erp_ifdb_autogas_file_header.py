@@ -100,33 +100,30 @@ class IFDBAutogasFileHeader(models.Model):
     def _processing_excution(self):
         self.ensure_one()
         exe_data = self.autogas_data_record_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
-            key=lambda k: (k['validate_so'],k['calendar_date'], k['card_number'],))
+            key=lambda k: (k['calendar_date'], k['card_number'],))
 
         # get customer code convert
-        external_partners = list(set(exe_data.mapped('customer_code')))
         autogas_type_ids = self.env['ss_erp.external.system.type'].search([('code', '=', 'auto_gas_pos')]).mapped('id')
         cust_code_type_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'customer')]).mapped('id')
-        cust_code_convert = self.env['ss_erp.code.convert'].search_read(
-            [('external_system', 'in', autogas_type_ids), ('convert_code_type', 'in', cust_code_type_ids)],['external_code','internal_code'])
+        cust_code_convert = self.env['ss_erp.code.convert'].search(
+            [('external_system', 'in', autogas_type_ids), ('convert_code_type', 'in', cust_code_type_ids)]).sorted(
+                key=lambda k: (k['external_code'], k['priority_conversion']))
 
         customer_dict = {}
         for customer in cust_code_convert:
             if not customer_dict.get(customer['external_code']):
-                if customer['external_code']:
-                    internal_code = customer['internal_code'].split(",")[1]
-                    customer_dict[customer['external_code']] = int(internal_code)
+                customer_dict[customer['external_code']] = customer['internal_code']
 
         # get product code convert
-        external_products = list(set(exe_data.mapped('product_code')))
         product_code_type_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'product')]).mapped('id')
-        product_code_convert = self.env['ss_erp.code.convert'].search_read(
-            [('external_system', 'in', autogas_type_ids), ('convert_code_type', 'in', product_code_type_ids)],['external_code','internal_code'])
+        product_code_convert = self.env['ss_erp.code.convert'].search(
+            [('external_system', 'in', autogas_type_ids), ('convert_code_type', 'in', product_code_type_ids)]).sorted(
+                key=lambda k: (k['external_code'], k['priority_conversion']))
+
         product_dict = {}
         for product in product_code_convert:
             if not product_dict.get(product['external_code']):
-                if product['external_code']:
-                    internal_code = product['internal_code'].split(",")[1]
-                    product_dict[product['external_code']] = int(internal_code)
+                product_dict[product['external_code']] = product['internal_code']
 
         uom_id = self.env['uom.uom'].search([('name', '=', 'L')], limit=1)
         if not uom_id:
@@ -138,6 +135,7 @@ class IFDBAutogasFileHeader(models.Model):
         success_dict = {}
         for line in exe_data:
             error_message = False
+            key = str(line.customer_code) + '_' + str(line.calendar_date)
             if not customer_dict.get(line.customer_code):
                 line.status = 'error'
                 error_message = '顧客コードの変換に失敗しました。コード変換マスタを確認してください。'
@@ -149,32 +147,35 @@ class IFDBAutogasFileHeader(models.Model):
                     error_message = '商品コードの変換に失敗しました。コード変換マスタを確認してください。'
 
             if not error_message:
-                quantity = float(line.quantity_2)/100
-                order_line = {
-                    'product_id': product_dict[line.product_code],
-                    'product_uom_qty':quantity,
-                    'product_uom': uom_id[0].id,
-                }
-                order_date = datetime.strptime(line.calendar_date,'%y%m%d')
-                if not success_dict.get(line.validate_so):
-                    so = {
-                            'x_organization_id': self.branch_id.id,
-                            'partner_id': customer_dict.get(line.customer_code),
-                            'partner_invoice_id': customer_dict.get(line.customer_code),
-                            'partner_shipping_id': customer_dict.get(line.customer_code),
-                            'date_order': order_date,
-                            'state': 'draft',
-                            'x_no_approval_required_flag': True,
-                            'order_line': [(0, 0, order_line)]
-                        }
-                    success_dict[line.validate_so] = so
+                if key in failed_so:
+                    continue
                 else:
-                    success_dict[line.validate_so]['order_line'].append((0, 0, order_line))
+                    quantity = float(line.quantity_2)/100
+                    order_line = {
+                        'product_id': product_dict[line.product_code],
+                        'product_uom_qty':quantity,
+                        'product_uom': uom_id.id,
+                    }
+                    order_date = datetime.strptime(line.calendar_date,'%y%m%d')
+                    if not success_dict.get(key):
+                        so = {
+                                'x_organization_id': self.branch_id.id,
+                                'partner_id': customer_dict.get(line.customer_code),
+                                'partner_invoice_id': customer_dict.get(line.customer_code),
+                                'partner_shipping_id': customer_dict.get(line.customer_code),
+                                'date_order': order_date,
+                                'state': 'draft',
+                                'x_no_approval_required_flag': True,
+                                'order_line': [(0, 0, order_line)]
+                            }
+                        success_dict[key] = so
+                    else:
+                        success_dict[key]['order_line'].append((0, 0, order_line))
             else:
-                if line.validate_so not in failed_so:
-                    failed_so.append(line.validate_so)
-                if success_dict.get(line.validate_so, False):
-                    success_dict.pop(line.validate_so, None)
+                if key not in failed_so:
+                    failed_so.append(key)
+                if success_dict.get(key, False):
+                    success_dict.pop(key, None)
                 line.write({
                     'status': 'error',
                     'error_message': error_message
@@ -186,7 +187,11 @@ class IFDBAutogasFileHeader(models.Model):
 
         success_list = success_dict.keys()
         for line in exe_data:
-            if line.validate_so in success_list:
-                line.status = 'success'
-                line.sale_id = success_dict[line.validate_so]['sale_id']
-                line.processing_date = datetime.now()
+            key = str(line.customer_code) + '_' + str(line.calendar_date)
+            if key in success_list:
+                line.update({
+                    'status':'success',
+                    'sale_id': success_dict[key]['sale_id'],
+                    'processing_date':datetime.now(),
+                    'error_message':False,
+                })

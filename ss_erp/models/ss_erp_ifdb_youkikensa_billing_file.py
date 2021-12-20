@@ -134,6 +134,7 @@ class YoukiKensaBilling(models.Model):
                         po = {
                             'partner_id': supplier_id.id,
                             'date_order': line.sales_date,
+                            'picking_type_id': self.env.ref('stock.picking_type_in').id,
                             'order_line': [(0, 0, {
                                 'product_id': product_dict[line.product_code].id,
                                 'product_qty': line.return_quantity_for_sale,
@@ -167,7 +168,8 @@ class YoukiKensaBilling(models.Model):
                 line.write({
                     'status': 'success',
                     'purchase_id': success_dict[key]['po'],
-                    'processing_date':datetime.now()
+                    'processing_date':datetime.now(),
+                    'error_message': False
                 })
 
     def action_import(self):
