@@ -108,8 +108,8 @@ class YoukiKensaBilling(models.Model):
 
         product_dict = {}
         for product in product_code_convert:
-            if not product_dict.get(product.external_code):
-                product_dict[product.external_code] = product.internal_code
+            if not product_dict.get(product['external_code']):
+                product_dict[product['external_code']] = product['internal_code'].id
 
         failed_purchase_orders = []
         success_dict = {}
@@ -136,7 +136,7 @@ class YoukiKensaBilling(models.Model):
                             'date_order': line.sales_date,
                             'picking_type_id': self.env.ref('stock.picking_type_in').id,
                             'order_line': [(0, 0, {
-                                'product_id': product_dict[line.product_code].id,
+                                'product_id': product_dict[line.product_code],
                                 'product_qty': line.return_quantity_for_sale,
                                 'date_planned':line.sales_date
                             })],
@@ -146,7 +146,7 @@ class YoukiKensaBilling(models.Model):
                         }
                     else:
                         order_line = {
-                            'product_id': product_dict[line.product_code].id,
+                            'product_id': product_dict[line.product_code],
                             'product_qty': line.return_quantity_for_sale,
                             'date_planned': line.sales_date
                         }

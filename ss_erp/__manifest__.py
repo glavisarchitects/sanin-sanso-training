@@ -79,6 +79,10 @@
         "views/ss_erp_youki_kanri_views.xml",
         "views/ss_erp_youki_kanri_detail_views.xml",
         "views/ss_erp_youki_kensa_views.xml",
+        "views/stock_inventory_views.xml",
+        "views/stock_inventory_line_views.xml",
+        "views/ss_erp_instruction_order_line_views.xml",
+        "views/ss_erp_instruction_order_views.xml",
 
         "views/webclient_templates.xml",
         "menu/menu_views.xml",
@@ -95,5 +99,6 @@
     "uninstall_hook": "uninstall_hook",
     'qweb': [
         'static/src/xml/import_custom.xml',
+        'static/src/xml/instruction_detail.xml',
     ],
 }

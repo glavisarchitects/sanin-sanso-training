@@ -89,7 +89,7 @@ class IFDBPowerNetSalesHeader(models.Model):
                 _('設定している取引先コードは存在しません。'))
 
         exe_data = self.powernet_sale_record_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
-            key=lambda k: (k['sale_ref'], k['sales_date'], k['customer_code'], k['data_types']))
+            key=lambda k: (k['sales_date'], k['customer_code'], k['data_types']))
 
         # Get list product uom exchange
         powernet_type_ids = self.env['ss_erp.external.system.type'].search([('code', '=', 'power_net')]).mapped('id')
@@ -102,7 +102,7 @@ class IFDBPowerNetSalesHeader(models.Model):
         uom_dict = {}
         for uom in uom_code_convert:
             if not uom_dict.get(uom['external_code']):
-                uom_dict[uom['external_code']] = uom['internal_code']
+                uom_dict[uom['external_code']] = uom['internal_code'].id
 
         product_product_ids = self.env['product.product'].search([]).mapped('id')
 

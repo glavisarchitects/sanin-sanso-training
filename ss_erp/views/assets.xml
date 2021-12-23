@@ -7,6 +7,8 @@
             <!-- <script type="text/javascript" src="/ss_erp/static/src/js/form_controller.js"></script> -->
             <script type="text/javascript" src="/ss_erp/static/src/js/views/list/list_editable_renderer.js"></script>
             <link rel="stylesheet" type="text/scss" href="/ss_erp/static/src/scss/sgvn.scss"></link>
+            <script type="text/javascript" src="/ss_erp/static/src/js/instruction_create_inventory_button_controller.js"></script>
+            <script type="text/javascript" src="/ss_erp/static/src/js/instruction_create_inventory_button_view.js"></script>
         </xpath>
     </template>
 </odoo>

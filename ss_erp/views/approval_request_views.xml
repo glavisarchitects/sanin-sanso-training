@@ -71,6 +71,7 @@
                 <field name="has_x_reject" invisible="1"/>
                 <field name="has_x_contact_form_id" invisible="1"/>
                 <field name="has_x_inventory_order_ids" invisible="1"/>
+                <field name="has_x_inventory_instruction_ids" invisible="1"/>
                 <field name="has_x_sale_order_ids" invisible="1"/>
                 <field name="has_x_account_move_ids" invisible="1"/>
                 <field name="has_x_payment_date" invisible="1"/>
@@ -147,6 +148,10 @@
                 <field name="x_inventory_order_ids" widget="many2many_tags" attrs="{
                     'invisible': [('has_x_inventory_order_ids', '=', 'no')],
                     'required': [('has_x_inventory_order_ids', '=', 'required')],
+                }"/>
+                <field name="x_inventory_instruction_ids" widget="many2many_tags" attrs="{
+                    'invisible': [('has_x_inventory_instruction_ids', '=', 'no')],
+                    'required': [('has_x_inventory_instruction_ids', '=', 'required')],
                 }"/>
                 <field name="x_purchase_order_ids" widget="many2many_tags" attrs="{
                     'invisible': [('has_x_purchase_order_ids', '=', 'no')],

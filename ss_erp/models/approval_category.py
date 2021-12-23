@@ -51,3 +51,9 @@ class ApprovalCategory(models.Model):
         CATEGORY_SELECTION, string="Deposit balance", default="no",)
     has_x_transfer_date = fields.Selection(
         CATEGORY_SELECTION, string="Remittance date", default="no",)
+    has_x_inventory_instruction_ids = fields.Selection(
+        CATEGORY_SELECTION, string="Inventory instruction", default="no",)
+    approval_type = fields.Selection(selection_add=[
+        ('inventory_request', 'Inventory request'),
+        ('inventory_request_manager', 'Inventory request Manager'),
+    ])

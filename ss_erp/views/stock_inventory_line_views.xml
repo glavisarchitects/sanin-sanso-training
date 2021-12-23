@@ -1,0 +1,28 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="stock_inventory_line_tree_inherit">
+            <field name="name">stock.inventory.line.inherit.tree</field>
+            <field name="model">stock.inventory.line</field>
+            <field name="inherit_id" ref="stock.stock_inventory_line_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="before">
+                    <field name="organization_id"/>
+                    <field name="type_id"/>
+                    <field name="location_id"/>
+                </xpath>
+                <xpath expr="//field[@name='difference_qty']" position="before">
+                    <field name="product_uom_id" string="unit"/>
+                </xpath>
+                <xpath expr="//field[@name='difference_qty']" position="after">
+                    <field name="product_cost"/>
+                </xpath>
+                <xpath expr="//field[@name='theoretical_qty']" position="attributes">
+                    <attribute name="string">On-hand inventory</attribute>
+                </xpath>
+                <xpath expr="//field[@name='product_qty']" position="attributes">
+                    <attribute name="string">Inventory quantity</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

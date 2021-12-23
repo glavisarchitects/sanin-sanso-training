@@ -107,18 +107,17 @@ class YoukiKanri(models.Model):
         for branch in branch_code_convert:
             if not branch_dict.get(branch['external_code']):
                 if branch['external_code']:
-                    branch_dict[branch['external_code']] = branch['internal_code']
+                    branch_dict[branch['external_code']] = branch['internal_code'].id
 
         # convert unit code
         convert_product_unit_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'product_unit')]).mapped(
             'id')
-        unit_code_convert = self.env['ss_erp.code.convert'].search_read(
-            [('external_system', 'in', youki_kanri_type_ids), ('convert_code_type', 'in', convert_product_unit_ids)],
-            ['external_code', 'internal_code'])
+        unit_code_convert = self.env['ss_erp.code.convert'].search(
+            [('external_system', 'in', youki_kanri_type_ids), ('convert_code_type', 'in', convert_product_unit_ids)])
         uom_dict = {}
         for uom in unit_code_convert:
             if not uom_dict.get(uom['external_code']):
-                uom_dict[uom['external_code']] = uom['internal_code']
+                uom_dict[uom['external_code']] = uom['internal_code'].id
 
         partner_list = self.env['res.partner'].search([]).mapped('id')
         product_list = self.env['product.product'].search([]).mapped('id')
@@ -151,7 +150,7 @@ class YoukiKanri(models.Model):
                 else:
                     error_message = '商商品Ｃがプロダクトマスタに存在しません。'
 
-            if uom_dict.get(line.unit_code):
+            if not uom_dict.get(line.unit_code):
                 if error_message:
                     error_message += '単位Ｃがプロダクト単位マスタに存在しません。'
                 else:
@@ -177,7 +176,7 @@ class YoukiKanri(models.Model):
                 else:
                     if line.slip_processing_classification == '6' or line.slip_processing_classification == 'A':
                         order_line = {
-                            'product_id': product_dict[line.codeommercial_product_code],
+                            'product_id': int(line.codeommercial_product_code),
                             'product_uom_qty': line.quantity if line.slip_processing_classification == '6' else 1,
                             'product_uom': uom_dict.get(line.unit_code)
                         }
@@ -199,7 +198,7 @@ class YoukiKanri(models.Model):
                             so_dict[key]['order']['order_line'].append((0, 0, order_line))
                     elif line.slip_processing_classification == '7':
                         order_line = {
-                            'product_id': int(product_dict[line.codeommercial_product_code]),
+                            'product_id': int(line.codeommercial_product_code),
                             'product_qty': line.quantity,
                             'product_uom': line.unit_code,
                             'date_planned': datetime.strptime(line.slip_date, '%Y/%m/%d')
@@ -219,13 +218,13 @@ class YoukiKanri(models.Model):
 
                     elif line.slip_processing_classification == '9':
                         order_line = {
-                            'product_id': product_dict[line.codeommercial_product_code],
+                            'product_id': int(line.codeommercial_product_code),
                             'product_uom_qty': float(line.quantity),
                             'product_uom': uom_dict.get(line.unit_code)
                         }
                         if not inventoryorder_dict.get(key, 0):
                             inv_order = {
-                                'organization_id': organization_dict[line.codeommercial_branch_code],
+                                'organization_id': int(line.codeommercial_branch_code),
                                 'state': 'draft',
                                 'scheduled_date': datetime.strptime(line.slip_date, '%Y/%m/%d'),
                                 'inventory_order_line_ids': [(0, 0, order_line)],

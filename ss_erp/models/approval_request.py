@@ -40,6 +40,8 @@ class ApprovalRequest(models.Model):
     x_is_multiple_approval = fields.Boolean(related='category_id.x_is_multiple_approval')
     multi_approvers_ids = fields.One2many(
         'ss_erp.multi.approvers', 'x_request_id', string='Multi-step approval', readonly=True, copy=False)
+    x_inventory_instruction_ids = fields.Many2many(
+        'ss_erp.instruction.order', 'instruction_request_rel', 'instruction_id', 'request_id', string='Inventory Instruction')
 
     last_approver = fields.Many2one('res.users',string = 'Last Approver')
     # FIELD RELATED
@@ -83,6 +85,8 @@ class ApprovalRequest(models.Model):
         related='category_id.has_x_bank_balance', store=True)
     has_x_transfer_date = fields.Selection(
         related='category_id.has_x_transfer_date', store=True)
+    has_x_inventory_instruction_ids = fields.Selection(
+        related='category_id.has_x_inventory_instruction_ids', store=True)
 
     hide_btn_cancel = fields.Boolean(compute='_compute_hide_btn_cancel')
     show_btn_temporary_approve = fields.Boolean(compute='_compute_show_btn_temporary_approve')

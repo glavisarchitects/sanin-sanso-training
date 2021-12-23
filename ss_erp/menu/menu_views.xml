@@ -29,15 +29,16 @@
     <!--    <menuitem id="menu_ss_erp_ifdb_propane_sales" name="Propane sales file" parent="sale.sale_order_menu"-->
     <!--              sequence="90"/>-->
 
-    <!--  parent menu  -->
+        <!-- Menu Stock -->
+    <menuitem id="menu_ss_erp_instruction_order_action" name="Inventory Plan" parent="stock.menu_stock_warehouse_mgmt" action="ss_erp_instruction_order_action" sequence="99" />
 
+    <!--  parent menu  -->
     <menuitem id="external_system_cooperation_importing_performance" name="実績情報取込"
               parent="ss_erp.external_system_cooperation_menu" sequence="50"/>
     <menuitem id="external_system_cooperation_imported_data" name="取込データ"
               parent="ss_erp.external_system_cooperation_menu" sequence="60"/>
 
     <!--end-->
-
 
     <menuitem id="menu_ss_erp_ifdb_propane_sales_header_action" name="プロパン売上（米子）ファイル取込"
               parent="ss_erp.external_system_cooperation_importing_performance"

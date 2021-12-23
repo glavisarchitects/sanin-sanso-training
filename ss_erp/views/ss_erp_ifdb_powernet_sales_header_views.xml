@@ -9,17 +9,17 @@
                 <field name="upload_date"/>
                 <field name="name"
                        filter_domain="[('name', 'ilike', self)]"/>
-                <group string="Group By">
-                    <filter name="flt_status"
-                            string="Status"
-                            context="{'group_by': 'status'}"/>
-                    <filter name="flt_branch"
-                            string="Branch"
-                            context="{'group_by': 'branch_id'}"/>
-                    <filter name="flt_user"
-                            string="User"
-                            context="{'group_by': 'user_id'}"/>
-                </group>
+<!--                <group string="Group By">-->
+<!--                    <filter name="flt_status"-->
+<!--                            string="Status"-->
+<!--                            context="{'group_by': 'status'}"/>-->
+<!--                    <filter name="flt_branch"-->
+<!--                            string="Branch"-->
+<!--                            context="{'group_by': 'branch_id'}"/>-->
+<!--                    <filter name="flt_user"-->
+<!--                            string="User"-->
+<!--                            context="{'group_by': 'user_id'}"/>-->
+<!--                </group>-->
             </search>
         </field>
     </record>
