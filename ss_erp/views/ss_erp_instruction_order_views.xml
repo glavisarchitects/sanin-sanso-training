@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="sequence" widget="handle"/>
+                <field name="name" string="See inventory"/>
                 <field name="organization_id"/>
                 <field name="type_id"/>
                 <field name="accounting_date"/>
@@ -19,8 +20,8 @@
         <field name="arch" type="xml">
             <form string="">
                 <header>
-                    <button name="search_action" string="Search" type="object" class="oe_highlight"/>
-                    <button name="display_action" string="Display" type="object" class="oe_highlight"/>
+                    <button name="search_action" string="Search" type="object" class="oe_highlight" attrs="{'invisible': [('create_uid', '=', False)]}"/>
+                    <button name="display_action" string="Display" type="object" class="oe_highlight" attrs="{'invisible': [('create_uid', '=', False)]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
                 </header>
                 <sheet>
@@ -35,6 +36,7 @@
                             <field name="organization_id"/>
                             <field name="type_id"/>
                             <field name="exhausted"/>
+                            <field name="create_uid" invisible="True"/>
                         </group>
                         <group>
                             <field name="accounting_date"/>

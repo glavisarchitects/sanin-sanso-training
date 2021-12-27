@@ -1,4 +1,4 @@
-@@ -0,0 +1,65 @@
+//@@ -0,0 +1,65 @@
 odoo.define('ss_erp.EditableListRenderer', function (require) {
 "use strict";
 

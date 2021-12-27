@@ -35,7 +35,7 @@
         "reports/action.xml",
 
         # VIEWS
-        "views/assets.xml",
+        # "views/assets.xml",
         "views/organization_category_views.xml",
         "views/organization_views.xml",
         "views/partner_rebate_views.xml",

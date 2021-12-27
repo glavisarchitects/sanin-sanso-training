@@ -37,7 +37,7 @@ class HrEmployee(models.Model):
             if (r.organization_second and not r.department_jurisdiction_second) or (not r.organization_second and r.department_jurisdiction_second):
                 raise ValidationError(_("第二組織の(兼務・管轄部門のどちらか)片方が入力してはいけません"))
 
-            if not r.organization_second or r.organization_third:
+            if not r.organization_second and r.organization_third:
                 raise ValidationError(_("第二組織が選択されていません"))
 
             if (r.organization_third and not r.department_jurisdiction_third) or (not r.organization_third and r.department_jurisdiction_third):

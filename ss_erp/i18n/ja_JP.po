@@ -6374,3 +6374,190 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri_detail__customer_business_partner_code
 msgid "顧枝Ｃ"
 msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_stock_inventory__organization_id
+#: model:ir.model.fields,field_description:ss_erp.field_stock_inventory_line__organization_id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order__organization_id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order_line__organization_id
+msgid "Organization in charge"
+msgstr "組織名"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_stock_inventory__type_id
+#: model:ir.model.fields,field_description:ss_erp.field_stock_inventory_line__type_id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order__type_id
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order_line__type_id
+msgid "Inventory type"
+msgstr "棚卸種別"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_stock_inventory_line__product_cost
+msgid "Unit price"
+msgstr "単価"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order__prefill_counted_quantity
+msgid "Inventory quantity"
+msgstr "棚卸数量"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__prefill_counted_quantity__counted
+msgid "Default to stock on hand"
+msgstr "手持在庫をデフォルト提案"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__prefill_counted_quantity__zero
+msgid "Default to zero"
+msgstr "ゼロをデフォルト提案"
+
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order__date
+msgid "Scheduled inventory date"
+msgstr "在庫調整日"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order__exhausted
+msgid "Include out-of-stock products"
+msgstr "在庫のないプロダクトを含める"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order__accounting_date
+msgid "Accounting Date"
+msgstr "会計日"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order__name
+msgid "Inventory reference"
+msgstr "棚卸参照"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__draft
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__draft
+msgid "Draft"
+msgstr "ドラフト"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__cancel
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__cancel
+msgid "Cancel"
+msgstr "ドラフト"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__confirm
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__confirm
+msgid "Confirm"
+msgstr "取消済"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__waiting
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__waiting
+
+msgid "Waiting"
+msgstr "承認待ち"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__approval
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__approval
+msgid "Approval"
+msgstr "承認依頼中"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__approved
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__approved
+msgid "Approved"
+msgstr "承認済み"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__done
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__done
+msgid "Done"
+msgstr "検証済"
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_instruction_order_form
+msgid "Search"
+msgstr "検索"
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_instruction_order_form
+msgid "Display"
+msgstr "表示"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order__location_ids
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order_line__location_id
+msgid "Location"
+msgstr "ロケーション"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order__product_ids
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order_line__product_id
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order_line__prod_lot_id
+msgid "Lot / Serial Number"
+msgstr "ロット/シリアル番号"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order_line__theoretical_qty
+msgid "Theoretical Qty"
+msgstr "理論数量"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order_line__product_qty
+msgid "Inventory quantity"
+msgstr "棚卸数量"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order_line__difference_qty
+msgid "Difference"
+msgstr "差異"
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_instruction_order_line_tree
+msgid "On Hand Inventory"
+msgstr "手持在庫"
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.stock_inventory_line_tree_inherit
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_instruction_order_line_tree
+msgid "Inventory quantity"
+msgstr "棚卸数量"
+
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_instruction_order_line_tree
+msgid "Unit"
+msgstr "プロダクト単位"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_instruction_order_line__product_cost
+msgid "Unit price"
+msgstr "単価"
+
+#. module: ss_erp
+#. openerp-web
+#: code:addons/ss_erp/static/src/xml/instruction_detail.xml:0
+#, python-format
+msgid "Voucher creation"
+msgstr "伝票作成"
+
+#. module: ss_erp
+#: model:ir.actions.server,name:ss_erp.model_stock_inventory_action_approval_request
+#: model:ir.actions.server,name:ss_erp.model_stock_inventory_instruction_action_approval_request
+msgid "Approval request"
+msgstr "承認依頼"
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.stock_inventory_line_tree_inherit
+msgid "On-hand inventory"
+msgstr "手持在庫"
+
+#. module: ss_erp
+#: model_terms:ir.ui.view,arch_db:ss_erp.stock_inventory_line_tree_inherit
+msgid "unit"
+msgstr "単位"

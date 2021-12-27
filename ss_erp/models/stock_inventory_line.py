@@ -13,4 +13,4 @@ class StockInventoryLine(models.Model):
         'ss_erp.organization', string='Organization name',
         relation='inventory_order_line_id.organization_id')
     type_id = fields.Many2one('product.template', string='Inventory type')
-    product_cost = fields.Many2one('product.product', string='Unit price')
+    product_cost = fields.Float(string='Unit price')
