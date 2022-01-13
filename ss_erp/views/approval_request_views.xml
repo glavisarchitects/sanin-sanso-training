@@ -157,10 +157,11 @@
                     'invisible': [('has_x_purchase_order_ids', '=', 'no')],
                     'required': [('has_x_purchase_order_ids', '=', 'required')],
                 }"/>
-                <field name="x_sale_order_ids" widget="many2many_tags" attrs="{
+                <field name="x_sale_order_ids"  attrs="{
                     'invisible': [('has_x_sale_order_ids', '=', 'no')],
                     'required': [('has_x_sale_order_ids', '=', 'required')],
-                }"/>
+                }"
+                />
                 <field name="x_account_move_ids" widget="many2many_tags" attrs="{
                     'invisible': [('has_x_account_move_ids', '=', 'no')],
                     'required': [('has_x_account_move_ids', '=', 'required')],

@@ -11,11 +11,11 @@ class OrganizationCategory(models.Model):
     name = fields.Char(string='Category name')
     company_id = fields.Many2one(
         'res.company', string='Company', required=True,
-        default=lambda self: self.env.company)
+        default=False)
     sequence = fields.Integer("Sequence")
     active = fields.Boolean(
-        default=True, help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
-    hierarchy_number = fields.Integer("Hierarchy")
+        default=True, )
+    hierarchy_number = fields.Integer("Hierarchy", )
     organization_count = fields.Integer(
         string="Organization Count", compute="_compute_organization_count",
         compute_sudo=True
@@ -24,11 +24,10 @@ class OrganizationCategory(models.Model):
         "ss_erp.organization", "organization_category_id", string="Organizations")
 
     _sql_constraints = [
-        ("name_uniq", "UNIQUE(name)", "Organization Category Name Should Be Unique!")
-    ]
-    _sql_constraints = [
+        ("name_uniq", "UNIQUE(name)", "Organization Category Name Should Be Unique!"),
         ("name_hierarchy_number", "UNIQUE(hierarchy_number)", "階層番号は既に登録されています。")
     ]
+
     @api.depends("organization_ids")
     def _compute_organization_count(self):
         for record in self:
@@ -36,15 +35,15 @@ class OrganizationCategory(models.Model):
 
     def action_view_organizations(self):
         organization_ids = self.organization_ids
-        action = self.env.ref('ss_erp_master.action_organizations')
+        action = self.env.ref('ss_erp.action_organizations')
         result = action.read()[0]
         result["context"] = {}
         organization_count = len(organization_ids)
         if organization_count != 1:
             result["domain"] = "[('organization_category_id', 'in', " + \
-                str(self.ids) + ")]"
+                               str(self.ids) + ")]"
             return result
-        res = self.env.ref('ss_erp_master.organization_view_form', False)
+        res = self.env.ref('ss_erp.organization_view_form', False)
         result["views"] = [(res and res.id or False, "form")]
         result["res_id"] = organization_ids.id
         return result
@@ -52,5 +51,6 @@ class OrganizationCategory(models.Model):
     def unlink(self):
         for record in self:
             if self.env['ss_erp.organization'].search([('organization_category_id', '=', record.id)]):
-                raise UserError(_('You can not delete organization category as other records still reference it. However, you can archive it.'))
+                raise UserError(_(
+                    'You can not delete organization category as other records still reference it. However, you can archive it.'))
         return super(OrganizationCategory, self).unlink()

@@ -254,6 +254,15 @@ class ApprovalRequest(models.Model):
         if self.requirer_document == 'required' and not self.attachment_number:
             raise UserError(_("You have to attach at lease one document."))
         self.write({'date_confirmed': fields.Datetime.now()})
+        if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
+            if self.x_inventory_order_ids:
+                self.x_inventory_order_ids.write({
+                    'state': 'approval'
+                })
+            if self.x_inventory_instruction_ids:
+                self.x_inventory_instruction_ids.write({
+                    'state': 'approval'
+                })
         if self.x_is_multiple_approval:
             self._genera_approver_ids()
 
@@ -422,6 +431,18 @@ class ApprovalRequest(models.Model):
                         so.sudo().write({'approval_status': 'in_process'})
 
             if request.request_status == 'approved':
+                if request.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
+                    if request.x_inventory_order_ids:
+                        request.x_inventory_order_ids.write({
+                            'state': 'done'
+                        })
+                        request.x_inventory_order_ids.mapped('instruction_order_id').write({
+                            'state': 'waiting'
+                        })
+                    if request.x_inventory_instruction_ids:
+                        request.x_inventory_instruction_ids.write({
+                            'state': 'approved'
+                        })
                 users = request.multi_approvers_ids.mapped('x_related_user_ids')
                 users |= request.request_owner_id
                 self.notify_approval(users=users, approver=request.last_approver)

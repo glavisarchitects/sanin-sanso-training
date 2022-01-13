@@ -60,6 +60,7 @@ class PartnerRebate(models.Model):
     partner_ref = fields.Char(
         related='partner_id.ref',
         string="Supplier code")
+
     active = fields.Boolean(
         string="Enable", default=True,
         help="Set active to false to hide the rebate contract without removing it.")
@@ -72,7 +73,7 @@ class PartnerRebate(models.Model):
         default=_get_default_date_end)
     rebate_price = fields.Float("Bounty",)
     rebate_standard = fields.Text("Reward criteria")
-    remarks = fields.Text("Memo")
+    memo = fields.Text("Memo")
     rebate_goal = fields.Char("The goal")
     rebate_products = fields.Text("Target product")
     currency_id = fields.Many2one(

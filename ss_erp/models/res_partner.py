@@ -214,21 +214,24 @@ class ResPartner(models.Model):
     # ]
     @api.constrains('phone')
     def _check_default_phone(self):
-        partner = self.search([('phone','=', self.phone)])
-        if len(partner) > 1:
-            raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
+        if self.phone:
+            partner = self.search([('phone','=', self.phone)])
+            if len(partner) > 1:
+                raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
     @api.constrains('company_name')
     def _check_default_company_name(self):
-        partner = self.search([('company_name','=', self.company_name)])
-        if len(partner) > 1:
-            raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
+        if self.company_name:
+            partner = self.search([('company_name','=', self.company_name)])
+            if len(partner) > 1:
+                raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
-    @api.constrains('contact_address')
+    @api.constrains('contact_address_complete')
     def _check_default_contact_address(self):
-        partner = self.search([('contact_address','=', self.contact_address)])
-        if len(partner) > 1:
-            raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
+        if self.contact_address_complete:
+            partner = self.search([('contact_address_complete','=', self.contact_address_complete)])
+            if len(partner) > 1:
+                raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
     @api.depends('is_company', 'x_contact_categ')
     def _compute_company_type(self):

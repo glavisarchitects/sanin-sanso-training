@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record model="ir.ui.view" id="organization_category_view_tree">
-        <field name="name">ss_erp.organization.category.view.form</field>
+        <field name="name">ss_erp.organization.category.view.tree</field>
         <field name="model">ss_erp.organization.category</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="sequence" widget="handle"/>
-                <field name="company_id" groups="base.group_no_one,base.group_erp_manager"/>
+                <field name="company_id"/>
                 <field name="name"/>
                 <field name="hierarchy_number"/>
             </tree>
@@ -24,20 +24,20 @@
                     <div class="oe_button_box" name="button_box">
                         <button type="object" name="action_view_organizations"
                             class="oe_stat_button" icon="fa-building"
-                            groups="base.group_no_one,base.group_erp_manager"
                             attrs="{'invisible': [('organization_count', '&lt;=', 0)]}">
                             <field name="organization_count" string="Organizations"
                                 groups="base.group_no_one,base.group_erp_manager"
                                 widget="statinfo" />
                         </button>
                     </div>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" required="1" />
-                        </h1>
-                    </div>
+<!--                    <div class="oe_title">-->
+<!--                        <h1>-->
+<!--                            <field name="name" required="1" />-->
+<!--                        </h1>-->
+<!--                    </div>-->
                     <group>
                         <group>
+                            <field name="name" required="1" string="カテゴリ名"/>
                             <field name="company_id" required="1"/>
                             <field name="hierarchy_number" required="1"/>
                             <field name="active" invisible="1" />

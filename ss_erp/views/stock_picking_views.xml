@@ -6,12 +6,12 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.vpicktree"/>
         <field name="arch" type="xml">
-            <field name="user_id" position="attributes">
-                <attribute name="string">Manager</attribute>
-            </field>     
+<!--            <field name="user_id" position="attributes">-->
+<!--                <attribute name="string">Business charge</attribute>-->
+<!--            </field>     -->
             <field name="name" position="after">
                 <field name="x_organization_id"/>
-                <field name="user_id" required="1"/>
+                <field name="user_id" string="業務担当" />
                 <field name="x_account_modify"/>
             </field>
             <field name="partner_id" position="attributes">
@@ -20,9 +20,10 @@
             <field name="origin" position="attributes">
                 <attribute name="string">Reference source</attribute>
             </field>
-            <field name="user_id" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>
+<!--            Transfer (UAT: P007) (1) Show Column "Business charge"-->
+<!--            <field name="user_id" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </field>-->
             <field name="location_id" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
@@ -44,7 +45,12 @@
                 <attribute name="string">Manager</attribute>
                 <attribute name="required">1</attribute>
             </field>
+
             <field name="location_dest_id" position="after">
+                <field name="x_organization_id" string="Source organization"/>
+                <field name="x_responsible_dept_id"/>
+                <field name="x_organization_dest_id"/>
+                <field name="x_responsible_dept_dest_id"/>
                 <field name="user_id" position="move"/>
                 <field name="has_lot_ids" invisible="1"/>
                 <field name="x_inspection_user_id" attrs="{'required':[('x_inspection_exist', '=', True)],
@@ -53,7 +59,8 @@
             <field name="origin" position="attributes">
                 <attribute name="string">Reference source</attribute>
             </field>
-            <field name="origin" position="after">
+            <field name="origin" position="before">
+                <field name="x_shipping_method" required="1" widget="radio" readonly="1"/>
                 <field name="x_account_modify"/>
                 <field name="x_inspection_exist" attrs="{'required':[('has_lot_ids', '=', True)],
                                 'invisible' :[('has_lot_ids', '=', False)]}"/>
@@ -64,14 +71,14 @@
             <group name="carrier_data" position="inside">
                 <field name="x_dest_address_info" attrs="{'readonly':1}"/>
             </group>
-            <field name="group_id" position="before">
-                <field name="x_organization_id"/>
-                <field name="x_responsible_dept_id"/>
-                <field name="x_mkt_user_id" attrs="{'readonly':1}"/>
-            </field>
+
             <field name="move_type" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
+            <page name="extra" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </page>
+
         </field>
     </record>
 

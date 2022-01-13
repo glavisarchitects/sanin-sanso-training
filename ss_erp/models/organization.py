@@ -19,8 +19,8 @@ class Organization(models.Model):
     sequence = fields.Integer("Sequence")
     active = fields.Boolean(
         default=True, help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
-    start_date = fields.Date(string="Valid start date", copy=False)
-    end_date = fields.Date(string="Expiration date", copy=False,
+    expire_start_date = fields.Date(string="Valid start date", copy=False)
+    expire_end_date = fields.Date(string="Expiration date", copy=False,
                            default=lambda self: fields.Date.today().replace(month=12, day=31, year=2099))
     child_ids = fields.One2many('ss_erp.organization', 'parent_id',
                                 string="Contains Organizations")
@@ -90,7 +90,7 @@ class Organization(models.Model):
     _sql_constraints = [(
         'unique_organization_code',
         'UNIQUE(organization_code)',
-        "組織コードはユニックでなければなりません。"
+        "組織コードはユニークでなければなりません。"
     )]
 
     @api.model

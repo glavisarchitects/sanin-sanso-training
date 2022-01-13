@@ -53,7 +53,7 @@ class PurchaseOrder(models.Model):
     ], string="Presence or absence of the current theory", default='no')
     x_explanation_date = fields.Date("Current date")
     x_explanation_spot = fields.Char("Current theory place")
-    x_construction_other = fields.Text("others")
+    x_construction_other = fields.Text("Others")
     x_construction_payment_cash = fields.Float("Cash")
     x_construction_payment_bill = fields.Float("Bills")
     x_construction_contract_notice = fields.Html(

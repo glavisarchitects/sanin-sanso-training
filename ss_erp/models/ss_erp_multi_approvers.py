@@ -23,7 +23,7 @@ class MultiApprovers(models.Model):
         'res.users', 'existing_request_users_approvers_rel', 'user_id', 'approver_id', string='Existing Request User', readonly=True)
     x_id = fields.Integer(string='ID', readonly=True, copy=True, store=True)
     x_request_id = fields.Many2one('approval.request', string='Request', copy=True, store=True)
-    x_write_date = fields.Datetime('Latest update date')
+    x_write_date = fields.Datetime('最新更新日')
     x_write_uid = fields.Many2one('res.users', string='Last updated')
     x_approval_seq = fields.Integer('Seq.', default=0)
     x_approver_group_ids = fields.Many2many(

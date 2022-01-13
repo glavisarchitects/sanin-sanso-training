@@ -43,7 +43,7 @@
                             <group>
                                 <field name="rebate_price" widget="monetary" options="{'currency_field': 'currency_id'}" required="1"/>
                                 <field name="rebate_standard"/>
-                                <field name="remarks" string="Remark"/>
+                                <field name="memo" string="Remark"/>
                             </group>
                             <group>
                                 <field name="rebate_goal"/>

@@ -3183,7 +3183,7 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.constraint,message:ss_erp.constraint_ss_erp_organization_category_name_uniq
 msgid "Organization Category Name Should Be Unique!"
-msgstr "組織名称はユニックでなければなりません！"
+msgstr "組織名称はユニークでなければなりません！"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__organization_code
@@ -3269,7 +3269,7 @@ msgstr "組織所在アドレス"
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__organization_phone
 msgid "Organization phone number"
-msgstr "組織電話番号"
+msgstr "組織代表Tel"
 
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_partner_rebate__organization_id
@@ -4849,7 +4849,7 @@ msgstr "運送"
 #: model:ir.model.fields,field_description:ss_erp.field_account_setup_bank_manual_config__acc_type
 #: model:ir.model.fields,field_description:ss_erp.field_res_partner_bank__acc_type
 msgid "Type"
-msgstr "タイプ"
+msgstr "預金種目"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_construction__license_figure

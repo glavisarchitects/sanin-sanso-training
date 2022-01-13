@@ -8,7 +8,10 @@
         <field name="arch" type="xml">   
             <field name="name" position="attributes">
                 <attribute name="string">Slip No.</attribute>
-            </field>  
+            </field>
+            <field name="company_id" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
             <field name="name" position="after">
                 <field name="x_bis_categ_id" optional="show"/>
                 <field name="x_responsible_dept_id" optional="show"/>
@@ -58,21 +61,28 @@
             <field name="date_approve" position="attributes">
                 <attribute name="optional">hide</attribute>
             </field>
+            <field name="company_id" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+
             <field name="partner_id" position="after">
                 <field name="x_organization_id"/>
             </field>
-            <field name="date_planned" position="attributes">
-                <attribute name="string">Requested delivery date</attribute>
-                <attribute name="optional">show</attribute>
+            <field name="user_id" position="attributes">
+                <attribute name="string">Purchasing person</attribute>
+                <attribute name="required">True</attribute>
             </field>
+
             <field name="activity_ids" position="attributes">
                 <attribute name="optional">hide</attribute>
             </field>
             <field name="origin" position="attributes">
                 <attribute name="string">Reference source</attribute>
             </field>
-            <field name="user_id" position="attributes">
-                <attribute name="string">Purchasing person</attribute>
+
+            <field name="date_planned" position="attributes">
+                <attribute name="string">Requested delivery date</attribute>
+                <attribute name="optional">show</attribute>
             </field>
             <field name="partner_id" position="attributes">
                 <attribute name="string">Supplier</attribute>
@@ -160,10 +170,10 @@
             <field name="fiscal_position_id" position="attributes">
                 <attribute name="string">Accounting position</attribute>
             </field>
-            <field name="user_id" position="attributes">
-                <attribute name="domain">[('share', '=', False),('partner_id.organization_id', '=', x_organization_id)]</attribute>
-                <attribute name="required">1</attribute>
-            </field>
+<!--            <field name="user_id" position="attributes">-->
+<!--                <attribute name="domain">[('share', '=', False),('partner_id.organization_id', '=', x_organization_id)]</attribute>-->
+<!--                <attribute name="required">1</attribute>-->
+<!--            </field>-->
             <field name="fiscal_position_id" position="after">
                 <field name="x_organization_id" options="{'no_create': True}" required="1" readonly="0"/>
                 <field name="x_responsible_dept_id" options="{'no_create': True}" required="1" readonly="0"/>
@@ -191,9 +201,9 @@
                         </group>
                         <group>
                             <field name="x_explanation_check" widget="radio" options="{'horizontal': true}"/>
-                            <field name="x_explanation_date" attrs="{'invisible': [('x_explanation_check', '=', 'no')]}"/>
-                            <field name="x_explanation_spot" attrs="{'invisible': [('x_explanation_check', '=', 'no')]}"/>
-                            <field name="x_construction_other" attrs="{'invisible': [('x_explanation_check', '=', 'no')]}"/>
+                            <field name="x_explanation_date" />
+                            <field name="x_explanation_spot" />
+                            <field name="x_construction_other" />
                             
                         </group>
                     </group>

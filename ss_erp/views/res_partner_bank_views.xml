@@ -14,6 +14,9 @@
             <xpath expr="//field[@name='acc_holder_name']" position="after">
                 <field name="x_acc_holder_furigana"/>
             </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
         </field>
     </record>
     <record model="ir.ui.view" id="res_partner_bank_inherit_tree">

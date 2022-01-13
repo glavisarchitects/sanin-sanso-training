@@ -75,10 +75,7 @@ class ProductPrice(models.Model):
             ])
             if len(product_pricelist_duplicate) > 0:
                 for exist in product_pricelist_duplicate:
-                    # if exist != self and ((exist.end_date > new_start_date and exist.start_date < new_end_date) or
-                    #                       (exist.start_date < new_end_date and exist.end_date < new_end_date) or
-                    #                       (exist.start_date < new_start_date and exist.end_date < new_end_date)):
-                    if (exist.start_date < new_start_date < exist.end_date) or (exist.start_date < new_end_date < exist.end_date):
+                    if (exist.start_date <= new_start_date <= exist.end_date) or (exist.start_date <= new_end_date <= exist.end_date):
                         raise ValidationError(_('既に登録されている条件と期間が重なっているため登録できません'))
 
     @api.model
