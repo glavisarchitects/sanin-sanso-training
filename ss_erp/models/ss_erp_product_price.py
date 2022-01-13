@@ -59,24 +59,21 @@ class ProductPrice(models.Model):
         new_end_date = (False if vals.get('end_date') is None else fields.Date.from_string(vals['end_date'])) or self.end_date
         # pricelist_class = 'pricelist_class' in vals or self.company_id.id
         # organization = 'pricelist_class' in vals or self.company_id.id
-        if new_company_id and new_pricelist_class and new_organization_id and new_partner_id and\
-                new_product_id and new_uom_id and new_start_date and new_end_date:
+        product_pricelist_duplicate = self.env['ss_erp.product.price'].search([
+            ('company_id', '=', new_company_id),
+            ('pricelist_class', '=', new_pricelist_class),
+            ('organization_id', '=', new_organization_id),
+            ('partner_id', '=', new_partner_id),
+            ('product_id', '=', new_product_id),
+            ('uom_id', '=', new_uom_id),
+            ('product_uom_qty_min', '=', new_product_uom_qty_min),
+            ('product_uom_qty_max', '=', new_product_uom_qty_max),
 
-            product_pricelist_duplicate = self.env['ss_erp.product.price'].search([
-                ('company_id', '=', new_company_id),
-                ('pricelist_class', '=', new_pricelist_class),
-                ('organization_id', '=', new_organization_id),
-                ('partner_id', '=', new_partner_id),
-                ('product_id', '=', new_product_id),
-                ('uom_id', '=', new_uom_id),
-                ('product_uom_qty_min', '=', new_product_uom_qty_min),
-                ('product_uom_qty_max', '=', new_product_uom_qty_max),
-
-            ])
-            if len(product_pricelist_duplicate) > 0:
-                for exist in product_pricelist_duplicate:
-                    if (exist.start_date <= new_start_date <= exist.end_date) or (exist.start_date <= new_end_date <= exist.end_date):
-                        raise ValidationError(_('既に登録されている条件と期間が重なっているため登録できません'))
+        ])
+        if len(product_pricelist_duplicate) > 0:
+            for exist in product_pricelist_duplicate:
+                if (exist.start_date <= new_start_date <= exist.end_date) or (exist.start_date <= new_end_date <= exist.end_date):
+                    raise ValidationError(_('既に登録されている条件と期間が重なっているため登録できません'))
 
     @api.model
     def create(self, vals):
