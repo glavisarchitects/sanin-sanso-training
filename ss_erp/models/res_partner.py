@@ -226,12 +226,12 @@ class ResPartner(models.Model):
             if len(partner) > 1:
                 raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
-    @api.constrains('contact_address_complete')
-    def _check_default_contact_address(self):
-        if self.contact_address_complete:
-            partner = self.search([('contact_address_complete','=', self.contact_address_complete)])
-            if len(partner) > 1:
-                raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
+    # @api.constrains('contact_address_complete')
+    # def _check_default_contact_address(self):
+    #     if self.contact_address_complete:
+    #         partner = self.search([('contact_address_complete','=', self.contact_address_complete)])
+    #         if len(partner) > 1:
+    #             raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
     @api.depends('is_company', 'x_contact_categ')
     def _compute_company_type(self):
