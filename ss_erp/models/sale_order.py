@@ -107,7 +107,6 @@ class SaleOrderLine(models.Model):
         return {'domain': {'x_pricelist': [('id', 'in', product_pricelist.ids)]
                            }}
 
-    #
     @api.onchange('x_pricelist')
     def _onchange_x_pricelist(self):
         if self.x_pricelist:
