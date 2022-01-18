@@ -18,7 +18,7 @@
         </record>
 
         <record id="group_branch_manager" model="res.groups">
-            <field name="name">Branch Manager</field>
+            <field name="name">支店営業担当</field>
             <field name="category_id" ref="module_category_organization"/>
             <field name="implied_ids" eval="[(4, ref('group_branch_employee'))]"/>
             <field name="comment">
@@ -38,7 +38,7 @@
         </record>
 
         <record id="group_sale_head" model="res.groups">
-            <field name="name">Sale Headquarters</field>
+            <field name="name">本社営業本部</field>
             <field name="category_id" ref="group_company"/>
             <field name="comment">
                 This group can access all records

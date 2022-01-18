@@ -1761,7 +1761,7 @@ msgid "Existing Request User"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__end_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__date_end
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__end_date
 msgid "Expiration date"
 msgstr "有効終了日"
@@ -4971,7 +4971,7 @@ msgid "Valid rebate"
 msgstr "有効データ"
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__start_date
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__date_start
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__start_date
 msgid "Valid start date"
 msgstr "有効開始日"

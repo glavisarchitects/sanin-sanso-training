@@ -21,18 +21,18 @@
                 </group>
                 <group string="Second organization (concurrent post)">
                     <group>
-                        <field name="organization_second" string="Organization" options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="organization_second" string="Organization" options="{'no_create': True, 'no_create_edit':True}" attrs="{'required': [('department_jurisdiction_second','!=',[])]}"/>
                     </group>
                     <group>
-                        <field name="department_jurisdiction_second" widget="many2many_tags" string="Jurisdiction" options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="department_jurisdiction_second" widget="many2many_tags" string="Jurisdiction" options="{'no_create': True, 'no_create_edit':True}" attrs="{'required': [('organization_second','!=',False)]}"/>
                     </group>
                 </group>
                 <group string="Third organization (concurrent post)">
                     <group>
-                        <field name="organization_third" string="Organization" options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="organization_third" string="Organization" options="{'no_create': True, 'no_create_edit':True}" attrs="{'required': [('department_jurisdiction_third','!=',[])]}"/>
                     </group>
                     <group>
-                        <field name="department_jurisdiction_third" widget="many2many_tags" string="Jurisdiction" options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="department_jurisdiction_third" widget="many2many_tags" string="Jurisdiction" options="{'no_create': True, 'no_create_edit':True}" attrs="{'required': [('organization_third','!=',False)]}"/>
                     </group>
                 </group>
             </xpath>

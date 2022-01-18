@@ -25,7 +25,7 @@ class HrEmployee(models.Model):
     )]
 
     # Check Organization
-    @api.constrains("organization_first", "organization_second", "organization_third","department_jurisdiction_first","department_jurisdiction_second", "department_jurisdiction_third")
+    @api.constrains("organization_first", "organization_second", "organization_third")
     def _check_same_organization(self):
         for r in self:
             if r.organization_second or r.organization_third:
@@ -34,15 +34,8 @@ class HrEmployee(models.Model):
                         r.organization_third.id == r.organization_first.id:
                     raise ValidationError(_("同一の組織が選択されています"))
 
-            if (r.organization_second and not r.department_jurisdiction_second) or (not r.organization_second and r.department_jurisdiction_second):
-                raise ValidationError(_("第二組織の(兼務・管轄部門のどちらか)片方が入力してはいけません"))
-
             if not r.organization_second and r.organization_third:
                 raise ValidationError(_("第二組織が選択されていません"))
-
-            if (r.organization_third and not r.department_jurisdiction_third) or (not r.organization_third and r.department_jurisdiction_third):
-                raise ValidationError(_("第三組織の(兼務・管轄部門のどちらか)片方が入力してはいけません"))
-
 
     # Check Jurisdiction
     @api.constrains("department_jurisdiction_first", "department_jurisdiction_second", "department_jurisdiction_third")

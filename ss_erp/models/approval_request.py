@@ -18,6 +18,8 @@ class ApprovalRequest(models.Model):
         'ss_erp.res.partner.form', string='Contact application form')
     x_inventory_order_ids = fields.Many2many(
         'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='Inventory slip')
+    # x_sale_order_ids = fields.Many2many(
+    #     'sale.order', 'sale_order_request_rel', 'sale_id', 'request_id', string='Quotation slip', states={'new': [('readonly', False)]},readonly=True)
     x_sale_order_ids = fields.Many2many(
         'sale.order', 'sale_order_request_rel', 'sale_id', 'request_id', string='Quotation slip')
     x_account_move_ids = fields.Many2many(

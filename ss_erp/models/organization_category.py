@@ -25,7 +25,8 @@ class OrganizationCategory(models.Model):
 
     _sql_constraints = [
         ("name_uniq", "UNIQUE(name)", "Organization Category Name Should Be Unique!"),
-        ("name_hierarchy_number", "UNIQUE(hierarchy_number)", "階層番号は既に登録されています。")
+        ("name_hierarchy_number", "UNIQUE(hierarchy_number)", "階層番号は既に登録されています。"),
+        ('check_hierarchy_number', 'CHECK(hierarchy_number > 0)', '階層番号は0より入力してください。'),
     ]
 
     @api.depends("organization_ids")

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from datetime import datetime, date
 
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    x_organization_id = fields.Many2one('ss_erp.organization', string="販売組織", copy=False)
-    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string="管轄部門", copy=False)
+    x_organization_id = fields.Many2one('ss_erp.organization', string="販売組織", copy=False, default=lambda self: self._get_default_x_organization_id())
+    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string="管轄部門", copy=False, default=lambda self: self._get_default_x_responsible_dept_id())
     x_no_approval_required_flag = fields.Boolean('承認不要フラグ?')
     approval_status = fields.Selection(
         string='承認済み区分',
@@ -18,7 +18,16 @@ class SaleOrder(models.Model):
                    ('approved', '承認済み')],
         required=False, default='out_of_process')
 
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].search([('user_id','=',self.env.user.id)], limit=1)
+        return employee_id.organization_first
+
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+        return employee_id.department_jurisdiction_first
+
     def action_confirm(self):
+
         if not self.x_no_approval_required_flag and self.approval_status != 'approved':
             raise UserError(_("Please complete approval flow before change to order"))
         return super(SaleOrder, self).action_confirm()
@@ -47,10 +56,7 @@ class SaleOrder(models.Model):
                      '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
                      ('company_id', '=', company_id), ('product_id', '=', line.product_id.id),
                      ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-                # print("###########################", product_pricelist)
 
-                # set False for pricelist core
-                self.order_id.pricelist_id = False
                 if len(product_pricelist) == 0:
                     # Can't find ss_erp_pricelist match with input condition
                     line.x_pricelist = False
@@ -111,3 +117,10 @@ class SaleOrderLine(models.Model):
     def _onchange_x_pricelist(self):
         if self.x_pricelist:
             self.price_unit = self.x_pricelist.price_unit
+
+    @api.constrains('x_expected_delivery_date')
+    def expected_delivery_date_constrains(self):
+        if self.x_expected_delivery_date:
+            current_date = fields.Date.today()
+            if self.x_expected_delivery_date < current_date:
+                raise ValidationError(_("納期は現在より過去の日付は設定できません。"))

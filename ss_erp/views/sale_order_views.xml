@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='validity_date']" position="before">
-                <field name="x_organization_id" required="1" options="{'no_open': True, 'no_quick_create': True}"/>
+                <field name="x_organization_id" string="販売組織" required="1" options="{'no_open': True, 'no_quick_create': True}"/>
                 <field name="x_responsible_dept_id" required="1" options="{'no_open': True, 'no_quick_create': True}"/>
             </xpath>
             <xpath expr="//field[@name='pricelist_id']" position="attributes">
@@ -22,6 +22,9 @@
                     ('x_is_customer', '=', True),
                     ]</attribute>
             </field>
+            <button name="update_prices" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </button>
 
             <xpath expr="//label[@for='pricelist_id']" position="attributes">
                 <attribute name="invisible">1</attribute>

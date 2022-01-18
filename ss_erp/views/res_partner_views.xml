@@ -103,11 +103,19 @@
                 }</attribute>
                 <attribute name="string">TEL直通</attribute>
             </xpath>
-            <xpath expr="//span[@name='address_name']" position="attributes">
-                <attribute name="attrs">{
-                    'invisible': [('has_address', '=', 'no')]
-                }</attribute>
+
+<!--            <xpath expr="//span[@name='address_name']" position="attributes">-->
+<!--                <attribute name="attrs">{-->
+<!--                    'invisible': [('has_address', '=', 'no')]-->
+<!--                }</attribute>-->
+<!--            </xpath>-->
+
+            <xpath expr="//span[@name='address_name']" position="replace">
+                <span class="o_form_label o_td_label" name="address_name" attrs="{'': [('has_address', '=', 'no')]}">
+                    <b attrs="{'invisible': ['&amp;', ('parent_id', '!=', False), ('type', '!=', False)]  }">取引先住所</b>
+                </span>
             </xpath>
+
             <xpath expr="//field[@name='street']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
@@ -404,12 +412,12 @@
                                     <field name="x_acc_holder_furigana"/>
                                 </tree>
                             </field>
-                            <button type="action" class="btn-link"
-                                name="%(base.action_res_partner_bank_account_form)d"
-                                context="{'search_default_partner_id': active_id, 'default_partner_id': active_id, 'form_view_ref': 'account.view_company_partner_bank_form'}"
-                                string="View accounts detail"
-                                colspan="2"
-                            />
+<!--                            <button type="action" class="btn-link"-->
+<!--                                name="%(base.action_res_partner_bank_account_form)d"-->
+<!--                                context="{'search_default_partner_id': active_id, 'default_partner_id': active_id, 'form_view_ref': 'account.view_company_partner_bank_form'}"-->
+<!--                                string="View accounts detail"-->
+<!--                                colspan="2" -->
+<!--                            />-->
                             </group>
                         <group string="Accounting Entries" name="accounting_entries" groups="account.group_account_readonly">
                             <field name="currency_id" invisible="1"/>

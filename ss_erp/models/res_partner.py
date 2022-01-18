@@ -16,10 +16,8 @@ class ResPartner(models.Model):
     organization_id = fields.Many2one(
         'ss_erp.organization', string='Organization')
     x_contact_categ = fields.Many2one(
-        'ss_erp.contact.category', string='Contact category', index=True,
-        default=lambda self: self.env.ref(
-            'ss_erp.ss_erp_contact_category_data_0', raise_if_not_found=False)
-    )
+        'ss_erp.contact.category', string='Contact category', index=True, raise_if_not_found=False)
+
     x_name_furigana = fields.Char(string="Furigana")
 
     # 20211129

@@ -11,8 +11,8 @@
                 <field name="name" string="Org name"/>
                 <field name="parent_organization_code" string="Parent org code"/>
                 <field name="parent_id"/>
-                <field name="expire_start_date"/>
-                <field name="expire_end_date"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
             </tree>
         </field>
     </record>
@@ -33,8 +33,8 @@
                         <group>
                             <field name="organization_code" required="1"/>
                             <field name="active" invisible="1"/>
-                            <field name="expire_start_date"/>
-                            <field name="expire_end_date"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
                         </group>
                     </group>
                     <group>
@@ -65,26 +65,26 @@
         </field>
     </record>
 
-    <!-- <record id="organization_view_search" model="ir.ui.view">
+    <record id="organization_view_search" model="ir.ui.view">
         <field name="name">ss_erp.organization.view.search</field>
         <field name="model">ss_erp.organization</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name" />
-                <field name="code" />
+                <field name="organization_code" />
                 <field name="organization_category_id" />
                 <field name="company_id" groups="base.group_multi_company" />
                 <separator />
-                <filter name="ftr_archived" string="Archived" domain="[('active', '=', False)]" />
+                <filter name="ftr_archived" string="アーカイブ済み" domain="[('active', '=', False)]" />
                 <group string="Group By" expand="0">
-                    <filter name="grp_org_categ" string="Org. Categories"
+                    <filter name="grp_org_categ" string="組織カテゴリ"
                         context="{'group_by': 'organization_category_id'}" />
-                    <filter name="grp_company" string="Companies"
+                    <filter name="grp_company" string="会社"
                         groups="base.group_multi_company" context="{'group_by': 'company_id'}" />
                 </group>
             </search>
         </field>
-    </record> -->
+    </record>
 
     <record id="action_organizations" model="ir.actions.act_window">
         <field name="name">Organization</field>

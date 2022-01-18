@@ -12,7 +12,6 @@ class PartnerRebate(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'partner_id'
 
-
     def _get_default_date_start(self):
         dt = datetime.strptime(str(fields.Datetime.now().replace(hour=0,minute=0,second=0)), '%Y-%m-%d %H:%M:%S')
         user = self.env.user
@@ -102,7 +101,6 @@ class PartnerRebate(models.Model):
                     raise ValidationError(_("The starting date cannot be after the ending date."))
                 elif record.date_start == record.date_end:
                     raise ValidationError(_("有効開始日と有効終了日が同じ日時になっています。"))
-
 
     # TODO: prepare display name if it happens
     # @api.model
