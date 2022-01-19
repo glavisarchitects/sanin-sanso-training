@@ -157,7 +157,7 @@
                     'invisible': [('has_x_purchase_order_ids', '=', 'no')],
                     'required': [('has_x_purchase_order_ids', '=', 'required')],
                 }"/>
-                <field name="x_sale_order_ids"  attrs="{
+                <field name="x_sale_order_ids" context="{'active_model': 'approval.request'}"  attrs="{
                     'invisible': [('has_x_sale_order_ids', '=', 'no')],
                     'required': [('has_x_sale_order_ids', '=', 'required')],
                 }"
@@ -204,4 +204,17 @@
             </xpath>
         </field>
     </record>
+
+    <record id="approval_request_view_kanban_inherit_ss_erp" model="ir.ui.view">
+        <field name="name">approval.request.view.kanban.inherit</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_request_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//a[@type='edit']" position="attributes">
+                <attribute name="t-if" separator=" "
+                    add="and record.user_status.raw_value == 'new'" />
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

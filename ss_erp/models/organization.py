@@ -19,8 +19,8 @@ class Organization(models.Model):
     sequence = fields.Integer("Sequence")
     active = fields.Boolean(
         default=True, help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
-    date_start = fields.Date(string="Valid start date", copy=False)
-    date_end = fields.Date(string="Expiration date", copy=False,
+    expire_start_date = fields.Date(string="Valid start date", copy=False)
+    expire_end_date = fields.Date(string="Expiration date", copy=False,
                            default=lambda self: fields.Date.today().replace(month=12, day=31, year=2099))
     # child_ids = fields.One2many('ss_erp.organization', 'parent_id',
     #                             string="Contains Organizations")
@@ -49,6 +49,8 @@ class Organization(models.Model):
         'Complete Name', compute='_compute_complete_name',
         store=True)
 
+    # user_ids = fields.One2many('res.users', 'organization_id', string='Related user',compute='_compute_users')
+
     @api.depends('name', 'parent_id.complete_name')
     def _compute_complete_name(self):
         for organization in self:
@@ -63,7 +65,7 @@ class Organization(models.Model):
         for record in self:
             record.parent_organization_code = record.parent_id.organization_code if record.parent_id else ''
 
-    @api.constrains("date_start", "date_end")
+    @api.constrains("expire_start_date", "expire_end_date")
     def _check_dates(self):
         """End date should not be before start date, if not filled
 
@@ -71,9 +73,9 @@ class Organization(models.Model):
         """
         for record in self:
             if (
-                record.date_start
-                and record.date_end
-                and record.date_start > record.date_end
+                record.expire_start_date
+                and record.expire_end_date
+                and record.expire_start_date > record.expire_end_date
             ):
                 raise ValidationError(
                     _("The starting date cannot be after the ending date.")
@@ -95,7 +97,7 @@ class Organization(models.Model):
     @api.constrains('organization_code')
     def _check_organization_code(self):
         for record in self:
-            organization_count = self.search_count(
+            organization_count = record.env['ss_erp.organization'].search_count(
                 [('organization_code', '=', record.organization_code)])
             if organization_count > 1:
                 raise ValidationError(_("組織コードはユニークでなければなりません。"))

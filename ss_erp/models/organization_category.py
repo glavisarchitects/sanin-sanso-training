@@ -23,11 +23,23 @@ class OrganizationCategory(models.Model):
     organization_ids = fields.One2many(
         "ss_erp.organization", "organization_category_id", string="Organizations")
 
-    _sql_constraints = [
-        ("name_uniq", "UNIQUE(name)", "Organization Category Name Should Be Unique!"),
-        ("name_hierarchy_number", "UNIQUE(hierarchy_number)", "階層番号は既に登録されています。"),
-        ('check_hierarchy_number', 'CHECK(hierarchy_number > 0)', '階層番号は0より入力してください。'),
-    ]
+    @api.constrains("name","company_id")
+    def _check_name(self):
+        for record in self:
+            organization_category_count = self.env['ss_erp.organization.category'].search_count(
+                [('name', '=', record.name),('company_id','=',record.company_id.id)])
+            if organization_category_count > 1:
+                raise ValidationError(_("同じ組織カテゴリが存在しています"))
+
+    @api.constrains("hierarchy_number","company_id")
+    def _check_hierarchy_number(self):
+        for record in self:
+            organization_category_count = self.env['ss_erp.organization.category'].search_count(
+                [('hierarchy_number', '=', record.hierarchy_number),('company_id','=',record.company_id.id)])
+            if organization_category_count > 1:
+                raise ValidationError(_("同じ階層番号が存在しています。"))
+            if record.hierarchy_number <= 0:
+                raise ValidationError(_("階層番号は入力してください。"))
 
     @api.depends("organization_ids")
     def _compute_organization_count(self):

@@ -18,11 +18,12 @@ class HrEmployee(models.Model):
     department_jurisdiction_third = fields.Many2many('ss_erp.responsible.department', 'dept_juris_third_rel',
                                                      string='Department Jurisdiction Third')
 
-    _sql_constraints = [(
-        "employee_number_uniq",
-        "UNIQUE(employee_number)",
-        "同じ社員番号が存在しています"
-    )]
+    @api.constrains("employee_number",)
+    def _check_same_employee_number(self):
+        for r in self:
+            employee_count = r.env['hr.employee'].search_count([('employee_number','=',r.employee_number)])
+            if employee_count > 1:
+                raise ValidationError(_("同じ社員番号が存在しています"))
 
     # Check Organization
     @api.constrains("organization_first", "organization_second", "organization_third")
@@ -45,3 +46,4 @@ class HrEmployee(models.Model):
                     r.department_jurisdiction_second.filtered(lambda m: m.id in r.department_jurisdiction_third.ids) or \
                     r.department_jurisdiction_third.filtered(lambda m: m.id in r.department_jurisdiction_first.ids):
                 raise ValidationError(_('Same jurisdiction selected'))
+

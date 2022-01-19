@@ -17,6 +17,7 @@ class SaleOrder(models.Model):
                    ('in_process', '承認中'),
                    ('approved', '承認済み')],
         required=False, default='out_of_process')
+    button_confirm_invisible = fields.Boolean(compute='_compute_button_confirm_invisible')
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].search([('user_id','=',self.env.user.id)], limit=1)

@@ -6,7 +6,7 @@ class ResCompany(models.Model):
     _inherit = "res.company"
 
     x_company_code = fields.Char(
-        string="会社コード", index=True, required=True,
+        string="会社コード", index=True,
     )
     x_payment_terms = fields.Html(
         string="支払条件当社規定", sanitize=True
@@ -18,13 +18,3 @@ class ResCompany(models.Model):
         string="下請工事の予定価格と見積期間", sanitize=True
     )
 
-    def _default_company_code(self):
-        if not isinstance(self.id, NewId):
-            return "%05d" % self.id
-        return ""
-
-    # _sql_constraints = [(
-    #     "company_code_uniq",
-    #     "UNIQUE(x_company_code)",
-    #     "Company code should be unique!"
-    # )]

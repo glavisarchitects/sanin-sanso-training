@@ -19,6 +19,14 @@ class ResPartner(models.Model):
         'ss_erp.contact.category', string='Contact category', index=True, raise_if_not_found=False)
 
     x_name_furigana = fields.Char(string="Furigana")
+    x_partner_categ = fields.Selection([
+        ('customer', 'Customer'),
+        ('vendor', 'Supplier'),
+        ('multi', 'Customers & Supplier'),
+        ('other', 'Other')],
+        string="Contact classification",
+        help=_("Select Other for contacts not related to the transaction"),
+        default='customer')
 
     # 20211129
     x_is_customer = fields.Boolean(
@@ -50,7 +58,7 @@ class ResPartner(models.Model):
         ('contract', '締結'),
         ('no_contract', '締結しない'),
         ('noting', '該当なし'),
-    ], string='Transaction basic contract', default='contract', index=True)
+    ], string='Transaction basic contract', index=True)
     x_contract_memo = fields.Text(string="Reason for fluctuation")
     x_found_year = fields.Char(string='Founding year')
     x_capital = fields.Float(string='Capital')

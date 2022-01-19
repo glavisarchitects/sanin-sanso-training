@@ -67,16 +67,17 @@
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="x_is_branch"/>
                 <field name="x_branch_name" attrs="{'invisible': [('x_is_branch', '=', False)], 'required': [('x_is_branch', '=', True)]}"/>
+                <field name="function" string="職位"/>
             </xpath>
-            <xpath expr="//field[@name='function']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
+<!--            <xpath expr="//field[@name='function']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
 <!--            <xpath expr="//field[@name='function']" position="before">-->
 <!--                <field name="x_is_vendor" invisible="1"/>-->
 <!--            </xpath>-->
 
             <xpath expr="//field[@name='type']" position="before">
-<!--                <field name="x_partner_categ" widget="radio" options="{'horizontal': true}" required="1"/>-->
+                <field name="x_partner_categ" widget="radio" options="{'horizontal': true}" required="1"/>
                 <field name="x_is_customer"/>
                 <field name="x_transaction_categ"  widget="many2many_checkboxes"
                        attrs="{'required': [('x_is_customer', '=', True)]
@@ -170,15 +171,20 @@
                     'required': [('has_website', '=', 'required')]
                 }</attribute>
             </xpath>
-            <xpath expr="//field[@name='website']" position="after">
-                <field name="lang"/>
+
+            <xpath expr="//field[@name='category_id']" position="before">
+                <xpath expr="//field[@name='title']" position="move" />
             </xpath>
-<!--            <xpath expr="//field[@name='title']" position="attributes">-->
-<!--                <attribute name="attrs">{-->
-<!--                    'invisible': [('has_title', '=', 'no')],-->
-<!--                    'required': [('has_title', '=', 'required')]-->
-<!--                }</attribute>-->
-<!--            </xpath>-->
+
+
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_title', '=', 'no')],
+                    'required': [('has_title', '=', 'required')]
+                }</attribute>
+
+            </xpath>
+
             <xpath expr="//field[@name='category_id']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_category_id', '=', 'no')],
