@@ -121,7 +121,8 @@ class SaleOrderLine(models.Model):
 
     @api.constrains('x_expected_delivery_date')
     def expected_delivery_date_constrains(self):
-        if self.x_expected_delivery_date:
-            current_date = fields.Date.today()
-            if self.x_expected_delivery_date < current_date:
-                raise ValidationError(_("納期は現在より過去の日付は設定できません。"))
+        for rec in self:
+            if rec.x_expected_delivery_date:
+                current_date = fields.Date.today()
+                if rec.x_expected_delivery_date < current_date:
+                    raise ValidationError(_("納期は現在より過去の日付は設定できません。"))
