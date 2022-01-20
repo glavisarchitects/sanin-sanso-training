@@ -11,12 +11,12 @@
     "depends": [
         "base", "delivery", "mail", "contacts", "purchase", "uom",
         "purchase_stock", "web", "account", "stock_dropshipping", "approvals", "hr",
-        "approvals_purchase_stock", "base_import"
+        "approvals_purchase_stock", "base_import","hr_expense"
     ],
     "data": [
         # SECURITY
-        "security/ir.model.access.csv",
         "security/x_security_groups_security.xml",
+        "security/ir.model.access.csv",
         "security/approval_security.xml",
         "security/rebate_security.xml",
 
@@ -84,6 +84,9 @@
         "views/stock_inventory_line_views.xml",
         "views/ss_erp_instruction_order_line_views.xml",
         "views/ss_erp_instruction_order_views.xml",
+        "views/hr_expense_views.xml",
+        "views/hr_expense_sheet_views.xml",
+        "views/ss_erp_hr_internal_note_views.xml",
 
         "views/webclient_templates.xml",
         "menu/menu_views.xml",

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_expense_sheet_view_form_inherit_payroll" model="ir.ui.view">
+        <field name="name">hr.expense.sheet.view.form.payroll</field>
+        <field name="model">hr.expense.sheet</field>
+        <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_mode']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='employee_id']" position="attributes">
+                <attribute name="string">申請者</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="x_organization_id" required="1"/>
+                <field name="x_responsible_id" required="1"/>
+            </xpath>
+            <xpath expr="//group[@name='employee_details']" position="after">
+                <group>
+                    <field name="x_request_date" required="1"/>
+                    <field name="user_id" string="承認者"/>
+                    <field name="payment_mode" position="move"/>
+                </group>
+            </xpath>
+
+            <xpath expr="//page[@name='expenses']/field[@name='expense_line_ids']/tree/field[@name='sale_order_id']" position="after">
+                <field name="unit_amount"/>
+            </xpath>
+            <xpath expr="//page[@name='expenses']/field[@name='expense_line_ids']/tree/field[@name='sale_order_id']" position="before">
+                <field name="account_id" required="1"/>
+                <field name="x_sub_account_id"/>
+            </xpath>
+            <xpath expr="//page[@name='expenses']/field[@name='expense_line_ids']/tree/field[@name='attachment_number']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//page[@name='expenses']/field[@name='expense_line_ids']/tree/button[@name='action_get_attachment_view']" position="attributes">
+                <attribute name="attrs">{'invisible': [('attachment_number', '=', 0)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

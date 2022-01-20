@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ss_erp_hr_expense_view_form" model="ir.ui.view">
+        <field name="name">ss.erp.hr.expense.view.form</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='analytic_tag_ids']" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='account_id']" position="attributes">
+                <attribute name="attrs">{'required': 1}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='employee_id']" position="attributes">
+                <attribute name="string">申請者</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="x_sub_account_id"/>
+                <field name="x_request_date" required="1"/>
+                <field name="x_organization_id" required="1"/>
+                <field name="x_responsible_id" required="1"/>
+
+            </xpath>
+        </field>
+    </record>
+    <record id="ss_erp_hr_expense_form_view_inherit" model="ir.ui.view">
+        <field name="name">ss.erp.hr.expense.form.inherit.sale.expense</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="sale_expense.hr_expense_form_view_inherit_sale_expense"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='sale_order_id']" position="attributes">
+                <attribute name="string">顧客請求受注伝票</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

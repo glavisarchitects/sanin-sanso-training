@@ -134,8 +134,14 @@ class InventoryOrder(models.Model):
                         'location_id': virtual_location.id,
                         'location_dest_id': line.location_dest_id.id,
                         'picking_type_id': in_coming.id,
-                        'x_organization_id': line.organization_id.id,
-                        'x_responsible_dept_id': line.responsible_dept_id.id,
+                        # 'x_organization_id': line.organization_id.id,
+                        # 'x_responsible_dept_id': line.responsible_dept_id.id,
+                        # 'x_organization_dest_id':self.organization_id.id,
+                        # 'x_responsible_dept_dest_id':self.responsible_dept_id.id,
+                        'x_organization_id': self.organization_id.id,
+                        'x_responsible_dept_id':self.responsible_dept_id.id,
+                        'x_organization_dest_id':line.organization_id.id,
+                        'x_responsible_dept_dest_id':line.responsible_dept_id.id,
                         'scheduled_date': self.scheduled_date,
                         'x_inventory_order_id': self.id,
                         'move_ids_without_package': [(0, 0, move_in)]
@@ -152,13 +158,14 @@ class InventoryOrder(models.Model):
                         'picking_type_id': out_going.id,
                         'x_organization_id': self.organization_id.id,
                         'x_responsible_dept_id': self.responsible_dept_id.id,
+                        'x_organization_dest_id': line.organization_id.id,
+                        'x_responsible_dept_dest_id': line.responsible_dept_id.id,
                         'user_id': self.user_id.id,
                         'scheduled_date': self.scheduled_date,
                         'x_inventory_order_id': self.id,
                         'move_ids_without_package': [(0, 0, move_out)]
                     }
                     source_out[key] = from_source_move
-
 
             for key,value in source_in.items():
                 self.env['stock.picking'].create(value)

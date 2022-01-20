@@ -28,10 +28,20 @@ class SaleOrder(models.Model):
         return employee_id.department_jurisdiction_first
 
     def action_confirm(self):
-
         if not self.x_no_approval_required_flag and self.approval_status != 'approved':
             raise UserError(_("Please complete approval flow before change to order"))
         return super(SaleOrder, self).action_confirm()
+
+    def action_draft(self):
+        orders = super(SaleOrder, self).action_draft()
+        return orders.write({
+            'approval_status': 'out_of_process',
+        })
+
+    def write(self, vals):
+        if not self.x_no_approval_required_flag and self.approval_status != 'out_of_process':
+            raise UserError(_("申請済みのため、内容変更はできません。"))
+        return super(SaleOrder, self).write(vals)
 
     def action_quotation_sent(self):
         if self.filtered(lambda so: not so.x_no_approval_required_flag and so.approval_status != 'approved'):
