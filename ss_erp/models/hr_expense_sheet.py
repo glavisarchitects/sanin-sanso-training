@@ -9,3 +9,9 @@ class HrExpenseSheet(models.Model):
     x_request_date = fields.Date(string='申請日')
     x_organization_id = fields.Many2one('ss_erp.organization', string='申請組織')
     x_responsible_id = fields.Many2one('ss_erp.responsible.department', string='申請部署')
+
+    @api.onchange('account_id')
+    def onchange_sub_account_id(self):
+        if self.account_id:
+            self.x_sub_account_id = self.env['account.account'].search(
+                [('x_sub_account_ids', 'in', self.account_id.id)]).id

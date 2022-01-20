@@ -29,7 +29,7 @@ class ResponsibleDepartment(models.Model):
                 if record != department:
                     if (department.start_date <= record.start_date <= department.end_date) or (
                                 department.start_date <= record.end_date <= department.end_date):
-                        raise ValidationError(_("有効期間は被ってしまいます。"))
+                        raise ValidationError(_("管轄部門は有効期間内でユニークでなければなりません。"))
 
     @api.constrains("start_date", "end_date")
     def _check_dates(self):

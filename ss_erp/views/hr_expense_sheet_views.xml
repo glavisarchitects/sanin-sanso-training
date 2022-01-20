@@ -42,6 +42,12 @@
             <xpath expr="//page[@name='expenses']/field[@name='expense_line_ids']/tree/button[@name='action_get_attachment_view']" position="attributes">
                 <attribute name="attrs">{'invisible': [('attachment_number', '=', 0)]}</attribute>
             </xpath>
+            <xpath expr="//page[@name='other_info']/group/group/field[@name='journal_id']" position="attributes">
+                <attribute name="string">経費仕訳帳</attribute>
+            </xpath>
+            <xpath expr="//page[@name='expenses']/field[@name='expense_line_ids']/tree/field[@name='sale_order_id']" position="attributes">
+                <attribute name="string">顧客請求受注伝票</attribute>
+            </xpath>
         </field>
     </record>
 

@@ -17,7 +17,12 @@ class SaleOrder(models.Model):
                    ('in_process', '承認中'),
                    ('approved', '承認済み')],
         required=False, default='out_of_process')
-    button_confirm_invisible = fields.Boolean(compute='_compute_button_confirm_invisible')
+    # pricelist_id = fields.Many2one(
+    #     'product.pricelist', string='Pricelist', check_company=True,  # Unrequired company
+    #     required=False, readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
+    #     domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", tracking=1,
+    #     help="If you change the pricelist, only newly added lines will be affected.")
+    # button_confirm_invisible = fields.Boolean(compute='_compute_button_confirm_invisible')
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].search([('user_id','=',self.env.user.id)], limit=1)
@@ -33,12 +38,15 @@ class SaleOrder(models.Model):
         return super(SaleOrder, self).action_confirm()
 
     def action_draft(self):
-        orders = super(SaleOrder, self).action_draft()
-        return orders.write({
+        orders = self.filtered(lambda s: s.state in ['cancel', 'sent'])
+        orders.update({
             'approval_status': 'out_of_process',
         })
 
+        super(SaleOrder, orders).action_draft()
+
     def write(self, vals):
+        print(vals)
         if not self.x_no_approval_required_flag and self.approval_status != 'out_of_process':
             raise UserError(_("申請済みのため、内容変更はできません。"))
         return super(SaleOrder, self).write(vals)
@@ -67,7 +75,7 @@ class SaleOrder(models.Model):
                      '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
                      ('company_id', '=', company_id), ('product_id', '=', line.product_id.id),
                      ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-
+                print("####################", product_pricelist)
                 if len(product_pricelist) == 0:
                     # Can't find ss_erp_pricelist match with input condition
                     line.x_pricelist = False
@@ -85,6 +93,7 @@ class SaleOrderLine(models.Model):
     x_pricelist = fields.Many2one('ss_erp.product.price', string="価格リスト", index=True)
     x_expected_delivery_date = fields.Date("納期予定日")
     x_remarks = fields.Char("備考")
+    price_unit = fields.Float('Unit Price', required=True, digits='Product Price', default=0.0, store=True)
 
     x_is_required_x_pricelist = fields.Boolean(default=True)
 
@@ -105,19 +114,24 @@ class SaleOrderLine(models.Model):
              '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
              ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
              ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-
+        print("####################", product_pricelist)
         self.x_is_required_x_pricelist = True
 
         # set False for pricelist core
         self.order_id.pricelist_id = False
         if len(product_pricelist) == 0:
             # Can't find ss_erp_pricelist match with input condition
-            self.x_pricelist = False
-            self.price_unit = self.product_id.lst_price
-            self.x_is_required_x_pricelist = False
+            self.update({
+                'x_pricelist': False,
+                'price_unit': self.product_id.lst_price,
+                'x_is_required_x_pricelist': False
+            })
+
+            # self.x_pricelist = False
+            # self.price_unit = self.product_id.lst_price
+            # self.x_is_required_x_pricelist = False
 
         elif len(product_pricelist) == 1:
-
             self.price_unit = product_pricelist.price_unit
             self.x_pricelist = product_pricelist
 
@@ -125,9 +139,11 @@ class SaleOrderLine(models.Model):
                            }}
 
     @api.onchange('x_pricelist')
-    def _onchange_x_pricelist(self):
+    def _compute_price_unit(self):
         if self.x_pricelist:
-            self.price_unit = self.x_pricelist.price_unit
+            self.write({
+                'price_unit': self.x_pricelist.price_unit,
+            })
 
     @api.constrains('x_expected_delivery_date')
     def expected_delivery_date_constrains(self):
@@ -136,3 +152,19 @@ class SaleOrderLine(models.Model):
                 current_date = fields.Date.today()
                 if rec.x_expected_delivery_date < current_date:
                     raise ValidationError(_("納期は現在より過去の日付は設定できません。"))
+
+    @api.model
+    def create(self, vals):
+        if self.x_pricelist:
+            vals.update({
+                'price_unit': self.x_pricelist.price_unit,
+            })
+        res = super(SaleOrderLine, self).create(vals)
+        return res
+
+    def write(self, vals):
+        if self.x_pricelist:
+            vals.update({
+                'price_unit': self.x_pricelist.price_unit,
+            })
+        return super(SaleOrderLine, self).write(vals)

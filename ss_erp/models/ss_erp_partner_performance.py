@@ -13,4 +13,5 @@ class PartnerPerformance(models.Model):
     accounting_period = fields.Char(string='Fiscal year')
     revenue = fields.Float(string="Amount of sales")
     ordinary_profit = fields.Float(string="Management profit")
-    partner_id = fields.Many2one('res.partner', string='Contact address')
+    partner_id = fields.Many2one('res.partner')
+    partner_form_id = fields.Many2one('ss_erp.res.partner.form')

@@ -5,11 +5,9 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='category_id']" position="after">
-                <field name="organization_id" invisible="1"/>
-            </xpath>
             <xpath expr="//field[@name='name']" position="after">
                 <field name="x_name_furigana" placeholder="フリガナ"/>
+                <field name="x_name_abbreviation" placeholder="略称"/>
                 <field name="has_parent_id" invisible="1"/>
                 <field name="has_ref" invisible="1"/>
                 <field name="has_address" invisible="1"/>
@@ -54,7 +52,7 @@
             <xpath expr="//field[@name='company_type']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            
+
             <xpath expr="//field[@name='ref']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -69,19 +67,18 @@
                 <field name="x_branch_name" attrs="{'invisible': [('x_is_branch', '=', False)], 'required': [('x_is_branch', '=', True)]}"/>
                 <field name="function" string="職位"/>
             </xpath>
-<!--            <xpath expr="//field[@name='function']" position="attributes">-->
-<!--                <attribute name="invisible">1</attribute>-->
-<!--            </xpath>-->
-<!--            <xpath expr="//field[@name='function']" position="before">-->
-<!--                <field name="x_is_vendor" invisible="1"/>-->
-<!--            </xpath>-->
+            <xpath expr="//field[@name='function']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//group[2]//field[@name='function']" position="before">
+                <field name="x_is_vendor"/>
+            </xpath>
 
             <xpath expr="//field[@name='type']" position="before">
-                <field name="x_partner_categ" widget="radio" options="{'horizontal': true}" required="1"/>
+<!--                <field name="x_partner_categ" widget="radio" options="{'horizontal': true}" required="1"/>-->
                 <field name="x_is_customer"/>
                 <field name="x_transaction_categ"  widget="many2many_checkboxes"
-                       attrs="{'required': [('x_is_customer', '=', True)]
-                }"/>
+                       attrs="{'required': ['|',('x_is_customer', '=', True),('x_is_vendor', '=', True)]}"/>
                 <field name="x_transaction_department" widget="many2many_tags" options="{'no_create': True, 'no_open': True, 'no_edit': True}" attrs="{'required': [('x_transaction_categ', '=', True)]}"/>
                 <field name="ref" widget="many2many_tags" string="Customer code" attrs="{
                     'invisible': [('has_ref', '=', 'no')],
@@ -94,22 +91,19 @@
                     'invisible': [('has_phone', '=', 'no')],
                     'required': [('has_phone', '=', 'required')],
                 }</attribute>
+            </xpath>
+            <xpath expr="//label[@for='phone']" position="attributes">
                 <attribute name="string">TEL代表</attribute>
             </xpath>
-
             <xpath expr="//field[@name='mobile']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_mobile', '=', 'no')],
                     'required': [('has_mobile', '=', 'required')]
                 }</attribute>
+            </xpath>
+            <xpath expr="//label[@for='mobile']" position="attributes">
                 <attribute name="string">TEL直通</attribute>
             </xpath>
-
-<!--            <xpath expr="//span[@name='address_name']" position="attributes">-->
-<!--                <attribute name="attrs">{-->
-<!--                    'invisible': [('has_address', '=', 'no')]-->
-<!--                }</attribute>-->
-<!--            </xpath>-->
 
             <xpath expr="//span[@name='address_name']" position="replace">
                 <span class="o_form_label o_td_label" name="address_name" attrs="{'': [('has_address', '=', 'no')]}">
@@ -215,7 +209,7 @@
                     'required': [('has_property_payment_term_id', '=', 'required')]
                 }</attribute>
             </xpath>
-            
+
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_property_supplier_payment_term_id', '=', 'no')],
@@ -267,9 +261,9 @@
                                 'required': [('has_performance_info', '=', 'required')]
                             }"  nolabel="1">
                                 <tree editable="bottom">
-                                    <field name="accounting_period" />
-                                    <field name="revenue" />
-                                    <field name="ordinary_profit" />
+                                    <field name="accounting_period" attrs="{'required': [('parent.has_performance_info', '=', 'required')]}"/>
+                                    <field name="revenue" attrs="{'required': [('parent.has_performance_info', '=', 'required')]}"/>
+                                    <field name="ordinary_profit" attrs="{'required': [('parent.has_performance_info', '=', 'required')]}"/>
                                 </tree>
                                 <form>
                                     <group>
@@ -291,11 +285,11 @@
                         'required': [('has_construction_info', '=', 'required')]
                     }" >
                         <tree editable="bottom">
-                            <field name="license_figure" />
-                            <field name="license_flag_1" />
-                            <field name="license_flag_2" />
-                            <field name="license_number" />
-                            <field name="license_period" />
+                            <field name="license_figure" attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
+                            <field name="license_flag_1" attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
+                            <field name="license_flag_2" attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
+                            <field name="license_number" attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
+                            <field name="license_period" attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
                         </tree>
                         <form>
                             <group>
@@ -309,7 +303,7 @@
                                     <field name="partner_id" invisible="1"/>
                                 </group>
                             </group>
-                            
+
                         </form>
                     </field>
                 </page>
@@ -336,41 +330,7 @@
                         <field name="fee_burden"/>
                         <field name="bill_site"/>
                     </tree>
-<!--                    <form>-->
-<!--                        <group>-->
-<!--                            <group>-->
-<!--                                <label for="more_than_amount" string="Transaction terms"/>-->
-<!--                                <div>-->
-<!--                                    <div class="o_row">-->
-<!--                                        <field name="more_than_amount"/>-->
-<!--                                        <span>10,000 yen or more</span>-->
-<!--                                        <field name="more_than_deadline"/>-->
-<!--                                        <span >Day closing</span>-->
-<!--                                        <field name="more_than_payment_site"/>-->
-<!--                                        <span >Post-payment</span>-->
-<!--                                    </div>-->
-<!--                                    <field name="more_than_payment_method" />-->
-<!--                                    <div class="o_row">-->
-<!--                                        <field name="less_than_amount"/>-->
-<!--                                        <span>10,000 yen or less</span>-->
-<!--                                        <field name="less_than_deadline"/>-->
-<!--                                        <span >Day closing</span>-->
-<!--                                        <field name="less_than_payment_site"/>-->
-<!--                                        <span >Post-payment</span>-->
-<!--                                    </div>-->
-<!--                                    <field name="less_than_payment_method" />-->
-<!--                                </div>-->
-<!--                                <field name="collecting_money" widget="radio" options="{'horizontal': true}"/>-->
-<!--                                <field name="fee_burden" widget="radio" options="{'horizontal': true}"/>-->
-<!--                                <label for="bill_site" string="Bill site"/>-->
-<!--                                <div>-->
-<!--                                    <span>Starting the closing date</span>-->
-<!--                                    <field name="bill_site"/>-->
-<!--                                    <span>Day</span>-->
-<!--                                </div>-->
-<!--                            </group>-->
-<!--                        </group>-->
-<!--                    </form>-->
+
                 </field>
             </xpath>
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="before">
@@ -410,20 +370,14 @@
                                 'required': [('has_bank_accounts', '=', 'required')]
                             }" >
                                 <tree editable="bottom">
-                                    <field name="bank_id"/>
-                                    <field name="x_bank_branch"/>
-                                    <field name="acc_number"/>
-                                    <field name="acc_type"/>
-                                    <field name="acc_holder_name"/>
-                                    <field name="x_acc_holder_furigana"/>
+                                    <field name="bank_id" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                    <field name="x_bank_branch" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                    <field name="acc_number" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                    <field name="acc_type" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                    <field name="acc_holder_name" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                    <field name="x_acc_holder_furigana" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
                                 </tree>
                             </field>
-<!--                            <button type="action" class="btn-link"-->
-<!--                                name="%(base.action_res_partner_bank_account_form)d"-->
-<!--                                context="{'search_default_partner_id': active_id, 'default_partner_id': active_id, 'form_view_ref': 'account.view_company_partner_bank_form'}"-->
-<!--                                string="View accounts detail"-->
-<!--                                colspan="2" -->
-<!--                            />-->
                             </group>
                         <group string="Accounting Entries" name="accounting_entries" groups="account.group_account_readonly">
                             <field name="currency_id" invisible="1"/>
@@ -455,36 +409,6 @@
         </field>
     </record>
 
-<!--     <record model="ir.ui.view" id="res_partner_inherit_sms_form">
-        <field name="name">res.partner.inherit.form</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="sms.res_partner_view_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//label[@for='phone']" position="attributes">
-                <attribute name="attrs">{
-                    'invisible': [('has_phone', '=', 'no')]
-                }</attribute>
-            </xpath>
-            <xpath expr="//field[@name='phone']" position="attributes">
-                <attribute name="attrs">{
-                    'invisible': [('has_phone', '=', 'no')],
-                    'required': [('has_phone', '=', 'required')]
-                }</attribute>
-            </xpath>
-            <xpath expr="//label[@for='mobile']" position="attributes">
-                <attribute name="attrs">{
-                    'invisible': [('has_mobile', '=', 'no')]
-                }</attribute>
-            </xpath>
-            <xpath expr="//field[@name='mobile']" position="attributes">
-                <attribute name="attrs">{
-                    'invisible': [('has_mobile', '=', 'no')],
-                    'required': [('has_mobile', '=', 'required')]
-                }</attribute>
-            </xpath>
-        </field>
-    </record> -->
-
     <record model="ir.ui.view" id="res_partner_view_form_inherit_mail">
         <field name="name">res.partner.inherit.form</field>
         <field name="model">res.partner</field>
@@ -513,7 +437,7 @@
                 <attribute name="attrs">{
                     'invisible': [('has_property_product_pricelist', '=', 'no')],
                     'required': [('has_property_product_pricelist', '=', 'required')]
-                }</attribute>    
+                }</attribute>
             </field>
         </field>
     </record>
@@ -527,12 +451,12 @@
                 <attribute name="attrs">{
                     'invisible': [('has_property_account_position_id', '=', 'no')],
                     'required': [('has_property_account_position_id', '=', 'required')]
-                }</attribute>    
+                }</attribute>
             </field>
         </field>
     </record>
     <record model="ir.ui.view" id="purchase.view_partner_property_form">
         <field name="active">False</field>
     </record>
-    
+
 </odoo>

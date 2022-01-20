@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='active_partner']" position="after">
                 <group string="Organization">
-                    <field name="organization_id" />
+<!--                    <field name="organization_id" />-->
                 </group>
             </xpath>
         </field>

@@ -81,6 +81,19 @@ class Organization(models.Model):
                     _("The starting date cannot be after the ending date.")
                 )
 
+    @api.constrains("expire_start_date", "expire_end_date", "organization_code")
+    def _check_organization_duration(self):
+        for record in self:
+            organization_ids = self.env['ss_erp.organization'].search([('organization_code','=',record.organization_code)])
+            for org in organization_ids:
+                if record != org:
+                    if record.expire_start_date and org.expire_start_date and org.expire_end_date:
+                        if org.expire_start_date <= record.expire_start_date <= org.expire_end_date:
+                            raise ValidationError(_("組織コードは有効期間内でユニークでなければなりません。"))
+                    if record.expire_end_date and org.expire_start_date and org.expire_end_date:
+                        if org.expire_start_date <= record.expire_end_date <= org.expire_end_date:
+                            raise ValidationError(_("組織コードは有効期間内でユニークでなければなりません。"))
+
     @api.constrains('parent_id')
     def _check_organization_recursion(self):
         if not self._check_recursion():
@@ -88,19 +101,21 @@ class Organization(models.Model):
         return True
 
     def action_unarchive(self):
-        organization_count = self.env['ss_erp.organization'].search_count(
-            [('organization_code', '=', self.organization_code)])
-        if organization_count > 0:
-            raise ValidationError(_("組織コードはユニークでなければなりません。"))
+        organization_ids = self.env['ss_erp.organization'].search([('organization_code','=',record.organization_code)])
+        for org in organization_ids:
+            if record != org:
+                if (org.expire_start_date <= self.expire_start_date <= org.expire_end_date) or (
+                        org.expire_start_date <= self.expire_end_date <= org.expire_end_date):
+                    raise ValidationError(_("組織コードは有効期間内でユニークでなければなりません。"))
         return super(Organization, self).action_unarchive()
 
-    @api.constrains('organization_code')
-    def _check_organization_code(self):
-        for record in self:
-            organization_count = record.env['ss_erp.organization'].search_count(
-                [('organization_code', '=', record.organization_code)])
-            if organization_count > 1:
-                raise ValidationError(_("組織コードはユニークでなければなりません。"))
+    # @api.constrains('organization_code')
+    # def _check_organization_code(self):
+    #     for record in self:
+    #         organization_count = record.env['ss_erp.organization'].search_count(
+    #             [('organization_code', '=', record.organization_code)])
+    #         if organization_count > 1:
+    #             raise ValidationError(_("組織コードはユニークでなければなりません。"))
 
     @api.model
     def _get_default_address_format(self):
