@@ -13,55 +13,66 @@ class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
     def _get_default_x_organization_id(self):
-        x_organization_id = self.x_mkt_user_id and self.x_mkt_user_id.organization_id and self.x_mkt_user_id.organization_id or False
-        return x_organization_id
+        employee_id = self.env['hr.employee'].search([('user_id','=',self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
+
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.department_jurisdiction_first
+        else:
+            return False
+
     x_bis_categ_id = fields.Many2one(
-        'ss_erp.bis.category', string="Transaction classification", copy=True, index=True)
-    x_rfq_issue_date = fields.Date("Quotation request date")
-    x_po_issue_date = fields.Date("Order sending date")
+        'ss_erp.bis.category', string="取引区分", copy=True, index=True)
+    x_rfq_issue_date = fields.Date("見積依頼日")
+    x_po_issue_date = fields.Date("発注送付日")
     x_desired_delivery = fields.Selection([
-        ('full', 'Hope for full payment'),
-        ('separated', 'Can be paid in installments'),
+        ('full', '完納希望'),
+        ('separated', '分納可能'),
     ], string="Desired delivery", default='full', copy=True)
-    x_dest_address_info = fields.Html("Direct shipping information")
-    x_truck_number = fields.Char("Car number")
+    x_dest_address_info = fields.Html("直送先情報")
+    x_truck_number = fields.Char("車番")
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string="Organization in charge", index=True, default=_get_default_x_organization_id)
+        'ss_erp.organization', string="担当組織", index=True,default=lambda self: self._get_default_x_organization_id())
     x_responsible_dept_id = fields.Many2one(
-        'ss_erp.responsible.department', string="Jurisdiction", index=True)
+        'ss_erp.responsible.department', string="管轄部門", index=True, default=lambda self: self._get_default_x_responsible_dept_id())
     x_mkt_user_id = fields.Many2one(
-        'res.users', string="Sales creator", index=True, default=lambda self: self.env.user)
+        'res.users', string="管轄部門", index=True, default=lambda self: self.env.user)
     x_is_construction = fields.Boolean(
-        "Is construction?", compute='_compute_show_construction', compute_sudo=True)
-    x_construction_name = fields.Char("Construction name")
-    x_construction_sopt = fields.Char("construction site")
+        "工事であるか", compute='_compute_show_construction', compute_sudo=True)
+    x_construction_name = fields.Char("工事名称")
+    x_construction_sopt = fields.Char("工事場所")
     x_construction_period_start = fields.Date(
-        "Scheduled construction period start")
+        "予定工期開始")
     x_construction_period_end = fields.Date(
-        "Scheduled construction period ends")
+        "予定工期終了")
     x_supplies_check = fields.Selection([
-        ('exist', 'Yes'),
-        ('no', 'No'),
-    ], string="Presence or absence of supplies", default='no')
-    x_supplies_info = fields.Char("Supplies")
-    x_construction_payment_term = fields.Char("Payment terms", readonly=True, default=_(
-        "Construction payment conditions (deadline at the end of the month and payment at the end of the following month according to our regulations)"))
+        ('exist', 'あり'),
+        ('no', 'なし'),
+    ], string="支給品有無", default='no')
+    x_supplies_info = fields.Char("支給品")
+    x_construction_payment_term = fields.Char("支払条件", readonly=True, default=_(
+        "工事支払条件（当社規定による、月末締切・翌月末支払）"))
 
     x_explanation_check = fields.Selection([
-        ('exist', 'Yes'),
-        ('no', 'No'),
-    ], string="Presence or absence of the current theory", default='no')
-    x_explanation_date = fields.Date("Current date")
-    x_explanation_spot = fields.Char("Current theory place")
-    x_construction_other = fields.Text("Others")
-    x_construction_payment_cash = fields.Float("Cash")
-    x_construction_payment_bill = fields.Float("Bills")
+        ('exist', 'あり'),
+        ('no', 'なし'),
+    ], string="現説の有無", default='no')
+    x_explanation_date = fields.Date("現説日付")
+    x_explanation_spot = fields.Char("現説場所")
+    x_construction_other = fields.Text("その他")
+    x_construction_payment_cash = fields.Float("現金")
+    x_construction_payment_bill = fields.Float("手形")
     x_construction_contract_notice = fields.Html(
-        "Notes on construction contract", copy=True, default=lambda self: self.env.user.company_id.x_construction_contract_notice)
-    x_construction_subcontract = fields.Html("Estimated price and estimated period for subcontracting work",
+        "工事契約における注記事項", copy=True, default=lambda self: self.env.user.company_id.x_construction_contract_notice)
+    x_construction_subcontract = fields.Html("下請工事の予定価格と見積期間",
                                              copy=True, default=lambda self: self.env.user.company_id.x_construction_subcontract)
     is_dropshipping = fields.Boolean(
-        'Is dropship', compute='_compute_is_dropshipping',)
+        '直送であるか', compute='_compute_is_dropshipping',)
 
     @api.depends('x_bis_categ_id')
     def _compute_show_construction(self):

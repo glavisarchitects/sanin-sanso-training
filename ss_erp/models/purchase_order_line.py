@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
-    x_fixed_cost = fields.Float("Purchase Fixed price")
+    x_fixed_cost = fields.Float("仕入定価")
 
     @api.onchange('product_id')
     def _onchange_product_id_sgvn(self):

@@ -11,16 +11,16 @@ class ResPartnerBank(models.Model):
 
     @api.model
     def _get_supported_account_types(self):
-        return [('bank', _('Normal')), ('checking', _('For the time being'))]
+        return [('bank', _('普通')), ('checking', _('当座'))]
 
     acc_type = fields.Selection(selection=lambda x: x.env['res.partner.bank'].get_supported_account_types(),
-                                string='Type', default='bank', required=True, index=True)
-    x_bank_branch = fields.Char(string='Branch', required=True, index=True)
-    x_acc_holder_furigana = fields.Char(string='Furigana', index=True)
+                                string='預金種目', default='bank', index=True)
+    x_bank_branch = fields.Char(string='支店', index=True)
+    x_acc_holder_furigana = fields.Char(string='フリガナ', index=True)
 
     # HuuPhong 2011/01/11
-    partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade', index=True, required=False,)
-    partner_form_id = fields.Many2one('ss_erp.res.partner.form', 'Account Holder', ondelete='cascade', index=True, required=False,)
+    partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade', index=True,)
+    partner_form_id = fields.Many2one('ss_erp.res.partner.form', 'Account Holder', ondelete='cascade', index=True,)
 
     @api.constrains('bank_id', 'x_bank_branch', 'acc_type', 'acc_number')
     def check_bank_account(self):

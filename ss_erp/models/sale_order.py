@@ -17,20 +17,20 @@ class SaleOrder(models.Model):
                    ('in_process', '承認中'),
                    ('approved', '承認済み')],
         required=False, default='out_of_process')
-    # pricelist_id = fields.Many2one(
-    #     'product.pricelist', string='Pricelist', check_company=True,  # Unrequired company
-    #     required=False, readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
-    #     domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", tracking=1,
-    #     help="If you change the pricelist, only newly added lines will be affected.")
-    # button_confirm_invisible = fields.Boolean(compute='_compute_button_confirm_invisible')
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].search([('user_id','=',self.env.user.id)], limit=1)
-        return employee_id.organization_first
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
 
     def _get_default_x_responsible_dept_id(self):
         employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
-        return employee_id.department_jurisdiction_first
+        if employee_id:
+            return employee_id.department_jurisdiction_first
+        else:
+            return False
 
     def action_confirm(self):
         if not self.x_no_approval_required_flag and self.approval_status != 'approved':

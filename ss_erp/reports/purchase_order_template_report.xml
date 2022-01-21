@@ -26,7 +26,7 @@
                     <div class="col-3">
                         <table style="border-style:hidden">
                             <tr>
-                                <td><b>Purchasing Person</b></td>
+                                <td><b>購買担当者</b></td>
                                 <td style="width:15px;"></td>
                                 <td><span t-field="o.user_id"/></td>
                             </tr>
@@ -36,14 +36,14 @@
                 <table class="table table-sm">
                     <thead>
                         <tr style="background-color:#f2f2f2;">
-                            <th name="th_expected_date"><strong>Product name</strong></th>
-                            <th name="th_quantity"><strong>Quantity</strong></th>
-                            <th name="th_uom"><strong>UOM</strong></th>
-                            <th name="th_price_unit"><strong>Price unit</strong></th>
-                            <th name="th_purchase_price"><strong>Purchase price</strong></th>
-                            <th name="th_tax"><strong>Tax</strong></th>
-                            <th name="th_fixed_price"><strong>Fixed price</strong></th>
-                            <th name="th_delivery_date"><strong>Delivery date</strong></th>
+                            <th name="th_expected_date"><strong>商品名</strong></th>
+                            <th name="th_quantity"><strong>数量</strong></th>
+                            <th name="th_uom"><strong>単位</strong></th>
+                            <th name="th_price_unit"><strong>仕入単価</strong></th>
+                            <th name="th_purchase_price"><strong>仕入価格</strong></th>
+                            <th name="th_tax"><strong>税</strong></th>
+                            <th name="th_fixed_price"><strong>定価</strong></th>
+                            <th name="th_delivery_date"><strong>納品予定日</strong></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,21 +89,21 @@
                     <div class="col-4">
                         <table class="table table-sm">
                             <tr class="border-black">
-                                <td name="td_subtotal_label"><strong>Subtotal</strong></td>
+                                <td name="td_subtotal_label"><strong>小計</strong></td>
                                 <td class="text-right">
                                     <span t-field="o.amount_untaxed"
                                           t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td name="td_taxes_label">Taxes</td>
+                                <td name="td_taxes_label">税</td>
                                 <td class="text-right">
                                     <span t-field="o.amount_tax"
                                           t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
                                 </td>
                             </tr>
                             <tr class="border-black o_total">
-                                <td name="td_amount_total_label"><strong>Total</strong></td>
+                                <td name="td_amount_total_label"><strong>合計</strong></td>
                                 <td class="text-right">
                                     <span t-field="o.amount_total"
                                           t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
@@ -115,16 +115,11 @@
                 <br/>
                 <div class="row">
                     <div class="col-6">
-                        <b>Direct shipping information</b>
-                        <!--                        <t t-if="o.is_dropshipping">-->
-                        <!--                            <t t-if="o.x_is_construction or len(o.order_line) > 5">-->
-                        <!--                                <p style="page-break-before:always;"></p>-->
-                        <!--                            </t>-->
+                        <b>直送先情報</b>
                         <p t-field="o.x_dest_address_info"/>
-                        <!--                        </t>-->
                     </div>
                     <div class="col-6">
-                        <b>Remarks</b>
+                        <b>備考</b>
                         <p t-field="o.notes"/>
                     </div>
 
@@ -133,41 +128,41 @@
                 <br/>
                 <t t-if="o.x_is_construction">
                     <div style="page-break-inside: avoid">
-                        <b><span>Construction information</span></b>
+                        <b><span>工事情報</span></b>
                         <div class="row"
                              style="border-bottom-style:hidden;border-top: 1px solid black;font-size: 13px;">
                             <div class="col-4">
                                 <table style="border-style:hidden">
                                     <tr>
-                                        <td><b>Construction name</b></td>
+                                        <td><b>工事名称</b></td>
                                         <td style="width:10px;"></td>
                                         <td><span t-field="o.x_construction_name"/></td>
                                     </tr>
                                     <tr>
-                                        <td><b>Construction site</b></td>
+                                        <td><b>工事場所</b></td>
                                         <td></td>
                                         <td><span t-field="o.x_construction_sopt"/></td>
                                     </tr>
                                     <tr>
-                                        <td><b>Construction outline - Method</b></td>
+                                        <td><b>工事概要・工法</b></td>
                                         <td></td>
-                                        <td><span>According to a separate design document</span></td>
+                                        <td><span>別途設計書による</span></td>
                                     </tr>
                                 </table>
                             </div>
                             <div class="col-4">
                                 <table style="border-style:hidden">
                                     <tr>
-                                        <td><b>Construction Term - Range</b></td>
+                                        <td><b>施工条件・範囲</b></td>
                                         <td style="width:10px;"></td>
                                         <td>
                                             <span>
-                                                According to a separate design document and construction plan
+                                                別途設計書、施工計画書による
                                             </span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><b>Scheduled construction period</b></td>
+                                        <td><b>予定工期</b></td>
                                         <td></td>
                                         <td>
                                             <span t-field="o.x_construction_period_start"/>
@@ -176,7 +171,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><b>Presence or absence of the current theory</b></td>
+                                        <td><b>現説の有無</b></td>
                                         <td></td>
                                         <td>
                                             <div class="d-flex">
@@ -198,7 +193,7 @@
                             <div class="col-4">
                                 <table style="border-style:hidden">
                                     <tr>
-                                        <td><b>Presence or absence of supplies</b></td>
+                                        <td><b>支給品有無</b></td>
                                         <td style="width:10px;"></td>
                                         <td>
                                             <div>
@@ -212,7 +207,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><b>Payment terms</b></td>
+                                        <td><b>支払条件</b></td>
                                         <td></td>
                                         <td>
                                             <div style="word-wrap:break-word;">当社規定による、月末締切・翌月末支払</div>
@@ -224,10 +219,10 @@
                                         <td></td>
                                         <td>
                                             <span>
-                                                Cash <span t-field="o.x_construction_payment_cash"/> %
+                                                現金 <span t-field="o.x_construction_payment_cash"/> %
                                             </span>
                                             <span style="margin-left:20px;">
-                                                Bills <span t-field="o.x_construction_payment_bill"/> %
+                                                手形 <span t-field="o.x_construction_payment_bill"/> %
                                             </span>
                                         </td>
                                     </tr>

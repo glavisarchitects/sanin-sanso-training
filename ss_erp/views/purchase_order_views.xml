@@ -68,6 +68,9 @@
             <field name="partner_id" position="after">
                 <field name="x_organization_id"/>
             </field>
+            <field name="origin" position="before">
+                <xpath expr="//field[@name='date_planned']" position="move"/>
+            </field>
             <field name="user_id" position="attributes">
                 <attribute name="string">Purchasing person</attribute>
                 <attribute name="required">True</attribute>
@@ -170,10 +173,6 @@
             <field name="fiscal_position_id" position="attributes">
                 <attribute name="string">Accounting position</attribute>
             </field>
-<!--            <field name="user_id" position="attributes">-->
-<!--                <attribute name="domain">[('share', '=', False),('partner_id.organization_id', '=', x_organization_id)]</attribute>-->
-<!--                <attribute name="required">1</attribute>-->
-<!--            </field>-->
             <field name="fiscal_position_id" position="after">
                 <field name="x_organization_id" options="{'no_create': True}" required="1" readonly="0"/>
                 <field name="x_responsible_dept_id" options="{'no_create': True}" required="1" readonly="0"/>

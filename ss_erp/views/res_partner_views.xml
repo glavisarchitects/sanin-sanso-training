@@ -373,7 +373,7 @@
                                     <field name="bank_id" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
                                     <field name="x_bank_branch" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
                                     <field name="acc_number" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
-                                    <field name="acc_type" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                    <field name="acc_type" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')], 'readonly':0}"/>
                                     <field name="acc_holder_name" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
                                     <field name="x_acc_holder_furigana" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
                                 </tree>
