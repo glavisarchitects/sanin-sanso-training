@@ -23,7 +23,7 @@ class ResPartnerForm(models.Model):
     x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_form_rel',
                                            'categ_id', 'partner_id', string="Transaction classification", index=True)
     x_transaction_department = fields.Many2many(
-        'ss_erp.bis.category', 'department_partner_form_rel', 'department_id', 'partner_id', string="Department",
+        'ss_erp.bis.category', 'department_partner_form_rel', 'department_id', 'partner_id', string="部門",
         index=True)
 
     property_account_payable_id = fields.Many2one('account.account', string="Account Payable",

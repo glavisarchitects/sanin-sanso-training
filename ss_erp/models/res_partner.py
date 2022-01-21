@@ -46,7 +46,7 @@ class ResPartner(models.Model):
         ('contract', '締結'),
         ('no_contract', '締結しない'),
         ('noting', '該当なし'),
-    ], string='Transaction basic contract', index=True, default='contract')
+    ], string='Transaction basic contract', index=True, default='no_contract')
     x_contract_memo = fields.Text(string="Reason for fluctuation")
     x_found_year = fields.Char(string='Founding year')
     x_capital = fields.Float(string='Capital')

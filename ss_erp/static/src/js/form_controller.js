@@ -36,7 +36,7 @@
                 // }
             }
         },
-        renderButtons: function(param) {
+        /* renderButtons: function(param) {
             this._super(param);
             this.showHideApprovalEditButton();
         },
@@ -66,6 +66,6 @@
                     }
                 });
             }
-        },
+        }, */
     });
 });

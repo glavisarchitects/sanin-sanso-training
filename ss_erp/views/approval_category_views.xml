@@ -16,6 +16,7 @@
                 <field name="has_x_sale_order_ids" widget="radio" options="{'horizontal': true}"/>
                 <field name="has_x_account_move_ids" widget="radio" options="{'horizontal': true}"/>
             </xpath>
+
             <xpath expr="//field[@name='is_manager_approver']" position="before">
                 <field name="x_is_multiple_approval"/>
                 <label for="multi_approvers_ids" colspan="4"
@@ -31,7 +32,9 @@
                     </tree>
                 </field>
             </xpath>
-
+            <field name="automated_sequence" position="attributes">
+                <attribute name="string">コード自動採番</attribute>
+            </field>
             <field name="is_manager_approver" position="attributes">
                 <attribute name="attrs">{'invisible': [('x_is_multiple_approval', '=', True)]}</attribute>
             </field>
@@ -59,7 +62,7 @@
                 </page>
                 <page string="Petty cash replenishment" name="replenishment">
                     <group>
-                        <group string="Small cash supply items">
+                        <group string="小口現金補給項目">
                             <field name="has_x_transfer_preferred_date" widget="radio" options="{'horizontal': true}"/>
                             <field name="has_x_present_date" widget="radio" options="{'horizontal': true}"/>
                             <field name="has_x_cash_balance" widget="radio" options="{'horizontal': true}"/>

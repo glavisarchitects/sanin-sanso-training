@@ -1495,12 +1495,8 @@ msgid "Customer Transaction Terms"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_res_partner__has_ref
-#: model:ir.model.fields,field_description:ss_erp.field_res_users__has_ref
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_contact_category__has_ref
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_powernet_sales_detail__customer_code
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_yg_detail__customer_cd
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__has_ref
 #: model_terms:ir.ui.view,arch_db:ss_erp.res_partner_inherit_form
 msgid "Customer code"
 msgstr "得意先コード"
@@ -1555,13 +1551,6 @@ msgstr "配送方法\t"
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__type__delivery
 msgid "Delivery to"
 msgstr "配送先"
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_res_partner__x_transaction_department
-#: model:ir.model.fields,field_description:ss_erp.field_res_users__x_transaction_department
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_transaction_department
-msgid "Department"
-msgstr "部署"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_hr_employee__department_jurisdiction_first
@@ -2001,7 +1990,7 @@ msgstr "創立年度"
 #: model:ir.model.fields,field_description:ss_erp.field_res_users__x_name_furigana
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__x_name_furigana
 msgid "Furigana"
-msgstr "ふりがな"
+msgstr "フリガナ"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__partner_latitude

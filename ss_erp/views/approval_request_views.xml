@@ -205,7 +205,7 @@
         </field>
     </record>
 
-    <record id="approval_request_view_kanban_inherit_ss_erp" model="ir.ui.view">
+    <!--<record id="approval_request_view_kanban_inherit_ss_erp" model="ir.ui.view">
         <field name="name">approval.request.view.kanban.inherit</field>
         <field name="model">approval.request</field>
         <field name="inherit_id" ref="approvals.approval_request_view_kanban"/>
@@ -215,6 +215,6 @@
                     add="and record.user_status.raw_value == 'new'" />
             </xpath>
         </field>
-    </record>
+    </record> -->
 
 </odoo>
