@@ -15,5 +15,15 @@ class HrExpense(models.Model):
     @api.onchange('account_id')
     def onchange_sub_account_id(self):
         if self.account_id:
-            self.x_sub_account_id = self.env['account.account'].search(
-                [('x_sub_account_ids', 'in', self.account_id.id)]).id
+            sub_accounts = self.account_id.x_sub_account_ids.ids
+            return {'domain': {'x_sub_account_id': [('id', 'in', sub_accounts)]
+                               }}
+
+    def _create_sheet_from_expenses(self):
+        res = super(HrExpense, self)._create_sheet_from_expenses()
+        res.update({
+            'x_request_date': self.x_request_date,
+            'x_organization_id': self.x_organization_id.id,
+            'x_responsible_id': self.x_responsible_id.id,
+        })
+        return res
