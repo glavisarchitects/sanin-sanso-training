@@ -44,11 +44,11 @@
                                 <span t-esc="o.partner_id.name"/> 殿
                             </div>
                             <div>
-                                <t t-if="o.partner_id.mobile">
-                                    TEL: <span t-esc="o.partner_id.mobile"/>
+                                <t t-if="o.partner_id.phone">
+                                    TEL: <span t-esc="o.partner_id.phone"/>
                                 </t>
-                                <t t-if="o.partner_id.x_fax_number">
-                                    <span style="margin-left:4px;"> FAX: <t t-esc="o.partner_id.x_fax_number"/></span>
+                                <t t-if="o.partner_id.x_fax">
+                                    <span style="margin-left:4px;"> FAX: <t t-esc="o.partner_id.x_fax"/></span>
                                 </t>
                             </div>
                             <div>
