@@ -68,9 +68,9 @@ class PurchaseOrder(models.Model):
     x_construction_payment_cash = fields.Float("現金")
     x_construction_payment_bill = fields.Float("手形")
     x_construction_contract_notice = fields.Html(
-        "工事契約における注記事項", copy=True, default=lambda self: self.env.user.company_id.x_construction_contract_notice)
+        "工事契約における注記事項", copy=True, default=lambda self: self.company_id.x_construction_contract_notice)
     x_construction_subcontract = fields.Html("下請工事の予定価格と見積期間",
-                                             copy=True, default=lambda self: self.env.user.company_id.x_construction_subcontract)
+                                             copy=True, default=lambda self: self.company_id.x_construction_subcontract)
     is_dropshipping = fields.Boolean(
         '直送であるか', compute='_compute_is_dropshipping',)
 
