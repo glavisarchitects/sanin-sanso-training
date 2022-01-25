@@ -8,9 +8,9 @@ class HrEmployee(models.Model):
 
     employee_number = fields.Char(string='Employee Number', )
 
-    organization_first = fields.Many2one('ss_erp.organization', string='Organization First', required=True)
+    organization_first = fields.Many2one('ss_erp.organization', string='Organization First',)
     department_jurisdiction_first = fields.Many2many('ss_erp.responsible.department', 'dept_juris_first_rel',
-                                                     string='Department Jurisdiction First', required=True)
+                                                     string='Department Jurisdiction First',)
     organization_second = fields.Many2one('ss_erp.organization', string='Organization Second')
     department_jurisdiction_second = fields.Many2many('ss_erp.responsible.department', 'dept_juris_second_rel',
                                                       string='Department Jurisdiction Second')
