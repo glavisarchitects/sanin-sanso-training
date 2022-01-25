@@ -207,9 +207,16 @@ class ResPartner(models.Model):
     def _check_default_phone(self):
         for record in self:
             if record.phone:
-                partner = self.env['res.partner'].search([('phone', '=', self.phone)])
+                partner = self.env['ss_erp.res.partner.form'].search([('phone', '=', self.phone)])
                 if len(partner) > 1:
                     raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
+
+    @api.constrains('x_transaction_categ')
+    def _check_transaction_categ(self):
+        for record in self:
+            if record.x_is_customer or record.x_is_vendor:
+                if len(record.x_transaction_categ) == 0:
+                    raise ValidationError(_("取引区分は入力してください。"))
 
     @api.constrains('company_name')
     def _check_default_company_name(self):

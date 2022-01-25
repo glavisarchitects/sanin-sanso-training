@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+from datetime import datetime
 
 import logging
 
@@ -11,15 +12,14 @@ class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
 
     x_department_id = fields.Many2one(
-        'ss_erp.responsible.department', string='Application department',default=lambda self:self._get_default_department())
+        'ss_erp.responsible.department', string='Application department',
+        default=lambda self: self._get_default_department())
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string='Application organization', default=lambda self:self._get_default_organization())
+        'ss_erp.organization', string='Application organization', default=lambda self: self._get_default_organization())
     x_contact_form_id = fields.Many2one(
         'ss_erp.res.partner.form', string='Contact application form')
     x_inventory_order_ids = fields.Many2many(
         'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='Inventory slip')
-    # x_sale_order_ids = fields.Many2many(
-    #     'sale.order', 'sale_order_request_rel', 'sale_id', 'request_id', string='Quotation slip', states={'new': [('readonly', False)]},readonly=True)
     x_sale_order_ids = fields.Many2many(
         'sale.order', 'sale_order_request_rel', 'sale_id', 'request_id', string='Quotation slip')
     x_account_move_ids = fields.Many2many(
@@ -43,9 +43,12 @@ class ApprovalRequest(models.Model):
     multi_approvers_ids = fields.One2many(
         'ss_erp.multi.approvers', 'x_request_id', string='Multi-step approval', readonly=True, copy=False)
     x_inventory_instruction_ids = fields.Many2many(
-        'ss_erp.instruction.order', 'instruction_request_rel', 'instruction_id', 'request_id', string='Inventory Instruction')
+        'ss_erp.instruction.order', 'instruction_request_rel', 'instruction_id', 'request_id',
+        string='Inventory Instruction')
 
-    last_approver = fields.Many2one('res.users',string = 'Last Approver')
+    x_approval_date = fields.Date('申請日',default=datetime.now())
+
+    last_approver = fields.Many2one('res.users', string='Last Approver')
     # FIELD RELATED
     has_x_organization = fields.Selection(
         related='category_id.has_x_organization', store=True)
@@ -97,31 +100,33 @@ class ApprovalRequest(models.Model):
     show_btn_refuse = fields.Boolean(compute='_compute_show_btn_refuse')
 
     def _get_default_department(self):
-        employee = self.env['hr.employee'].search([('user_id','=',self.env.user.id)],limit=1)
+        employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
         if employee:
             return employee[0].department_jurisdiction_first
         return False
 
     def _get_default_organization(self):
-        employee = self.env['hr.employee'].search([('user_id','=',self.env.user.id)],limit=1)
+        employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
         if employee:
             return employee[0].organization_first
         return False
 
     def _compute_show_btn_draft(self):
         for request in self:
-            request.show_btn_draft = True if request.request_owner_id == self.env.user and request.request_status in ['refused','cancel'] else False
+            request.show_btn_draft = True if request.request_owner_id == self.env.user and request.request_status in [
+                'refused', 'cancel'] else False
 
     def _compute_hide_btn_cancel(self):
         for request in self:
-            request.hide_btn_cancel = False if request.request_owner_id == self.env.user and request.request_status =='pending' else True
+            request.hide_btn_cancel = False if request.request_owner_id == self.env.user and request.request_status == 'pending' else True
 
     def _compute_show_btn_temporary_approve(self):
         for request in self:
             index_user = request._get_index_user_multi_approvers()
             request.show_btn_temporary_approve = True if index_user and index_user > 0 and \
-                request.user_status and request.user_status == 'pending' and \
-                request.multi_approvers_ids[index_user - 1].x_user_status != 'approved' and request.request_status =='pending' \
+                                                         request.user_status and request.user_status == 'pending' and \
+                                                         request.multi_approvers_ids[
+                                                             index_user - 1].x_user_status != 'approved' and request.request_status == 'pending' \
                 else False
 
     def _compute_show_btn_refuse(self):
@@ -134,23 +139,24 @@ class ApprovalRequest(models.Model):
                         if self.multi_approvers_ids[index].x_user_status in ['new', 'pending']:
                             if self.env.user in self.multi_approvers_ids[index].x_approver_group_ids:
                                 # if user == self.env.user and self.multi_approvers_ids[index].x_approver_group_ids.x_status == 'new':
-                                current_user_status = self.env['approval.approver'].search([('request_id','=',request.id),('user_id','=',self.env.user.id)], limit = 1)
-                                if current_user_status and current_user_status.status in ['new','pending']:
+                                current_user_status = self.env['approval.approver'].search(
+                                    [('request_id', '=', request.id), ('user_id', '=', self.env.user.id)], limit=1)
+                                if current_user_status and current_user_status.status in ['new', 'pending']:
                                     request.show_btn_refuse = True
                                     break
-                        index+=1
+                        index += 1
             else:
                 if request.request_status == 'pending':
                     if self.env.user in request.category_id.user_ids:
                         request.show_btn_refuse = True
-
 
     def _compute_show_btn_approve(self):
         for request in self:
             # ('user_status','!=','pending')
             index_user = request._get_index_user_multi_approvers()
             if request.user_status == 'pending' and (not index_user or (index_user > 0 and
-                         request.multi_approvers_ids[index_user - 1].x_user_status == 'approved')):
+                                                                        request.multi_approvers_ids[
+                                                                            index_user - 1].x_user_status == 'approved')):
                 request.show_btn_approve = True
             else:
                 request.show_btn_approve = False
@@ -159,8 +165,6 @@ class ApprovalRequest(models.Model):
     def _onchange_category_id(self):
         if self.x_is_multiple_approval:
             cate_approvers_ids = self.category_id.multi_approvers_ids
-            current_users = self.approver_ids.mapped('user_id')
-            new_users = cate_approvers_ids.mapped('x_approver_group_ids')
             multi_approvers_ids = self.env['ss_erp.multi.approvers']
 
             for multi_approvers_id in cate_approvers_ids:
@@ -168,19 +172,19 @@ class ApprovalRequest(models.Model):
                     'x_request_id': self.id,
                     'x_approval_seq': multi_approvers_id.x_approval_seq,
                     'x_user_status': 'new',
-                    'x_approver_group_ids': [(6, 0, multi_approvers_id.x_approver_group_ids.ids)] if multi_approvers_id.x_approver_group_ids else False,
-                    'x_related_user_ids': [(6, 0, multi_approvers_id.x_related_user_ids.ids)] if multi_approvers_id.x_related_user_ids else False,
+                    'x_approver_group_ids': [(6, 0,
+                                              multi_approvers_id.x_approver_group_ids.ids)] if multi_approvers_id.x_approver_group_ids else False,
+                    'x_related_user_ids': [(6, 0,
+                                            multi_approvers_id.x_related_user_ids.ids)] if multi_approvers_id.x_related_user_ids else False,
                     'x_is_manager_approver': multi_approvers_id.x_is_manager_approver,
                     'x_minimum_approvers': multi_approvers_id.x_minimum_approvers,
                 }
                 multi_approvers_ids += self.env['ss_erp.multi.approvers'].new(new_vals)
             self.multi_approvers_ids = multi_approvers_ids
-
         else:
             super(ApprovalRequest, self)._onchange_category_id()
 
     def _genera_approver_ids(self):
-        current_users = self.approver_ids.mapped('user_id')
         new_users = self.multi_approvers_ids.mapped('x_approver_group_ids')
 
         if any(multi_approvers.x_is_manager_approver for multi_approvers in self.multi_approvers_ids):
@@ -227,14 +231,14 @@ class ApprovalRequest(models.Model):
                     name=self.name, summary=self._description)
         if approver and self.request_status != 'approved':
             subject = _('%(name)s: %(summary)s is approve by %(approver)s',
-                    name=self.name, summary=self._description, approver=approver.name)
+                        name=self.name, summary=self._description, approver=approver.name)
 
         if approver and self.request_status == 'approved':
             subject = _('%(name)s: %(summary)s is approved',
-                    name=self.name, summary=self._description)
+                        name=self.name, summary=self._description)
         if self.request_status == 'refused':
             subject = _('%(name)s: %(summary)s is rejected',
-                    name=self.name, summary=self._description)
+                        name=self.name, summary=self._description)
 
         self.message_notify(
             partner_ids=partner_ids,
@@ -245,9 +249,9 @@ class ApprovalRequest(models.Model):
             email_layout_xmlid='mail.mail_notification_light',
         )
 
-
     # Override
     def action_confirm(self):
+        self = self.with_context(do_action=True)
         if not self.x_is_multiple_approval and len(self.approver_ids) < self.approval_minimum:
             raise UserError(
                 _("You have to add at least %s approvers to confirm your request.", self.approval_minimum))
@@ -305,6 +309,7 @@ class ApprovalRequest(models.Model):
                     self.notify_approval(users=users, approver=self.env.user)
 
     def action_approve(self, approver=None):
+        self = self.with_context(do_action=True)
         if self.x_is_multiple_approval:
             if not self._check_user_access_request():
                 raise UserError(_("We cannot approve this request."))
@@ -319,7 +324,8 @@ class ApprovalRequest(models.Model):
         if curren_multi_approvers:
             curren_multi_approvers.write({'x_user_status': 'refused'})
 
-    def action_refuse(self, approver=None, lost_reason = None):
+    def action_refuse(self, approver=None, lost_reason=None):
+        self = self.with_context(do_action=True)
         if self.x_is_multiple_approval:
             if not self._check_user_access_request():
                 raise UserError(_("We cannot refuse this request."))
@@ -332,6 +338,7 @@ class ApprovalRequest(models.Model):
         self.notify_approval(users=users, approver=self.env.user)
 
     def action_draft(self):
+        self = self.with_context(do_action=True)
         if self.request_owner_id != self.env.user:
             raise UserError(_("Only the applicant can back to draft."))
         super(ApprovalRequest, self).action_draft()
@@ -340,14 +347,14 @@ class ApprovalRequest(models.Model):
 
     def _cancel_multi_approvers(self):
         if self.request_owner_id != self.env.user:
-            raise UserError(_("Only the applicant can back to draft."))
+            raise UserError(_("申請者以外は取消することができません。"))
         self.multi_approvers_ids.write(
             {'x_existing_request_user_ids': [(5, 0, 0)], 'x_user_status': 'cancel'})
 
     def action_cancel(self):
         # self.sudo()._get_user_approval_activities(user=self.env.user).unlink()
         if self.request_owner_id != self.env.user:
-            raise UserError(_("Only the applicant can cancel."))
+            raise UserError(_("申請者以外は取消することができません。"))
         super(ApprovalRequest, self).action_cancel()
         if self.x_is_multiple_approval:
             self._cancel_multi_approvers()
@@ -360,6 +367,7 @@ class ApprovalRequest(models.Model):
         return index_current
 
     def action_temporary_approve(self):
+        self = self.with_context(do_action=True)
         if self.x_is_multiple_approval:
             if not self._check_user_access_request():
                 raise UserError(_("We cannot approve this request."))
@@ -375,7 +383,7 @@ class ApprovalRequest(models.Model):
                         if employee.parent_id.user_id:
                             all_users |= employee.parent_id.user_id
                     if all_users:
-                        approver = self.mapped('approver_ids').filtered(
+                        self.mapped('approver_ids').filtered(
                             lambda approver: approver.user_id in all_users
                         ).write({'status': 'approved'})
                         multi_approvers_id.write(
@@ -388,8 +396,6 @@ class ApprovalRequest(models.Model):
             if request.x_is_multiple_approval:
                 status_lst = request.mapped('multi_approvers_ids.x_user_status')
                 status_lst_pp = request.mapped('approver_ids.status')
-                # minimal_approver = request.approval_minimum if len(
-                #     status_lst) >= request.approval_minimum else len(status_lst)
                 if status_lst:
                     if status_lst.count('cancel'):
                         status = 'cancel'
@@ -397,7 +403,6 @@ class ApprovalRequest(models.Model):
                         status = 'refused'
                     elif status_lst.count('new') and (status_lst_pp.count('new') or not request.approver_ids):
                         status = 'new'
-                    # elif status_lst.count('approved') >= minimal_approver:
                     elif status_lst.count('approved') >= len(status_lst):
                         status = 'approved'
                     else:
@@ -422,9 +427,14 @@ class ApprovalRequest(models.Model):
                         status = 'pending'
                 else:
                     status = 'new'
+
             request.request_status = status
+
+            # 仕入先フォーム更新
             if request.x_contact_form_id:
                 request.x_contact_form_id.sudo().write({'approval_state': request.request_status})
+
+            # 見積・受注更新
             if request.x_sale_order_ids:
                 for so in request.x_sale_order_ids:
                     if status == 'approved':
@@ -432,6 +442,7 @@ class ApprovalRequest(models.Model):
                     elif status == 'pending':
                         so.sudo().write({'approval_status': 'in_process'})
 
+            # 棚卸更新
             if request.request_status == 'approved':
                 if request.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
                     if request.x_inventory_order_ids:
@@ -445,6 +456,20 @@ class ApprovalRequest(models.Model):
                         request.x_inventory_instruction_ids.write({
                             'state': 'approved'
                         })
+
                 users = request.multi_approvers_ids.mapped('x_related_user_ids')
                 users |= request.request_owner_id
                 self.notify_approval(users=users, approver=request.last_approver)
+
+    def write(self, vals):
+        # for attaching document
+        if "message_main_attachment_id" in vals:
+            return super().write(vals)
+        if (
+            self.filtered(lambda ar: ar.request_status != "new") and
+            not self._context.get("do_action", False)
+        ):
+            raise ValidationError(
+                _("Approval request can not be changed if not in `Draft` state!")
+            )
+        return super().write(vals)

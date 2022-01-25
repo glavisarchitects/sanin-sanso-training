@@ -4,7 +4,7 @@
     "summary": """
         山陰酸素工業
     """,
-    "version": "14.0.1.6",
+    "version": "14.0.1.7",
     "category": "",
     "website": "https://www.systemgear-vietnam.com/",
     "author": "SGVN",
@@ -36,7 +36,6 @@
         "reports/action.xml",
 
         # VIEWS
-        # "views/assets.xml",
         "views/organization_category_views.xml",
         "views/organization_views.xml",
         "views/partner_rebate_views.xml",
