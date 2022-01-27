@@ -6,12 +6,15 @@
     var FormController = require("web.FormController");
     var core = require("web.core");
 
+
     FormController.include({
         async _update(state, params) {
             return this._super(state, params).then(this.show_hide_buttons(state));
         },
         show_hide_buttons: function (state) {
             var self = this;
+//
+//            console.log(self)
             return self
                 ._rpc({
                     model: this.modelName,
