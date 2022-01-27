@@ -52,10 +52,10 @@
             </page>
 
             <xpath expr='//widget[@name="attach_document"]' position="attributes">
-                <attribute name="attrs">{'invisible': [('attachment_number', '&lt;', 1),('request_status','!=','new')]}</attribute>
+                <attribute name="attrs">{'invisible': ['|',('attachment_number', '&lt;', 1),('request_status','!=','new')]}</attribute>
             </xpath>
             <xpath expr='//widget[@name="attach_document"][2]' position="attributes">
-                <attribute name="attrs">{'invisible': [('attachment_number', '&lt;', 1),('request_status','!=','new')]}</attribute>
+                <attribute name="attrs">{'invisible': ['|',('attachment_number', '&gt;=', 1),('request_status','!=','new')]}</attribute>
             </xpath>
             <xpath expr="//field[@name='request_owner_id']" position="after">
                 <field name="x_department_id" attrs="{
@@ -167,7 +167,9 @@
                     'invisible': [('has_x_contact_form_id', '=', 'no')],
                     'required': [('has_x_contact_form_id', '=', 'required')],
                     'readonly':[('request_status','!=','new')]
-                }" options="{'no_quick_create': True}"/>
+                }" options="{'no_quick_create': True}"
+                    context="{'request_id': active_id}"
+                />
                 <field name="x_inventory_order_ids" attrs="{
                     'invisible': [('has_x_inventory_order_ids', '=', 'no')],
                     'required': [('has_x_inventory_order_ids', '=', 'required')],

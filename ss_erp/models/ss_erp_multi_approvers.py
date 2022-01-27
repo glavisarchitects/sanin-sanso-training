@@ -48,7 +48,7 @@ class MultiApprovers(models.Model):
             have_manager = 1 if record.x_is_manager_approver else 0
             if len(record.x_approver_group_ids) + have_manager < record.x_minimum_approvers:
                 raise UserError(
-                    _("You have to add at least %s approvers to multi-approvers.", record.x_minimum_approvers))
+                    _("最小限承認数より承認者を追加してください。"))
 
     def write(self, values):
         res = super(MultiApprovers, self).write(values)

@@ -2,6 +2,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import logging
+from lxml import etree
 
 _logger = logging.getLogger(__name__)
 
@@ -164,3 +165,17 @@ class ResPartnerForm(models.Model):
                 # Update partner with contact form
                 partner_id = self.env['res.partner'].browse(int(res_partner_id))
                 partner_id.sudo().write(vals)
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
+        res = super(ResPartnerForm, self).fields_view_get(view_id=view_id, view_type=view_type,
+                                                            toolbar=toolbar, submenu=submenu)
+        if toolbar:
+            doc = etree.XML(res['arch'])
+            if self._context.get('request_id'):
+                request_id = self.env['approval.request'].browse(self._context.get('request_id'))
+                if request_id.request_status == 'pending':
+                    for node_form in doc.xpath("//form"):
+                        node_form.set("edit", "false")
+                    res['arch'] = etree.tostring(doc)
+        return res

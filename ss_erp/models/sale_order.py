@@ -3,13 +3,16 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from datetime import datetime, date
+from lxml import etree
 
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    x_organization_id = fields.Many2one('ss_erp.organization', string="販売組織", copy=False, default=lambda self: self._get_default_x_organization_id())
-    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string="管轄部門", copy=False, default=lambda self: self._get_default_x_responsible_dept_id())
+    x_organization_id = fields.Many2one('ss_erp.organization', string="販売組織", copy=False,
+                                        default=lambda self: self._get_default_x_organization_id())
+    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string="管轄部門", copy=False,
+                                            default=lambda self: self._get_default_x_responsible_dept_id())
     x_no_approval_required_flag = fields.Boolean('承認不要フラグ?')
     approval_status = fields.Selection(
         string='承認済み区分',
@@ -18,8 +21,24 @@ class SaleOrder(models.Model):
                    ('approved', '承認済み')],
         required=False, default='out_of_process')
 
+    x_css = fields.Html(
+        string='CSS',
+        sanitize=False,
+        compute='_compute_css',
+        store=False,
+    )
+
+    @api.depends('approval_status')
+    def _compute_css(self):
+        for record in self:
+            # Modify below condition
+            if record.approval_status == 'in_process':
+                record.x_css = '<style>.o_form_button_edit {display: none !important;}</style>'
+            else:
+                record.x_css = False
+
     def _get_default_x_organization_id(self):
-        employee_id = self.env['hr.employee'].search([('user_id','=',self.env.user.id)], limit=1)
+        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
             return employee_id.organization_first
         else:
@@ -46,14 +65,12 @@ class SaleOrder(models.Model):
         super(SaleOrder, orders).action_draft()
 
     def write(self, vals):
-        print(vals)
-        if not self.x_no_approval_required_flag and self.approval_status != 'out_of_process':
-            raise UserError(_("申請済みのため、内容変更はできません。"))
+        self.ensure_one()
         return super(SaleOrder, self).write(vals)
 
     def action_quotation_sent(self):
-        if self.filtered(lambda so: not so.x_no_approval_required_flag and so.approval_status != 'approved'):
-            raise UserError(_('Only approved orders can be marked as sent directly.'))
+        if self.filtered(lambda so: not so.x_no_approval_required_flag and so.approval_status == 'in_process'):
+            raise UserError(_('未承認のため、見積を送信済みとしてマークすることができません。'))
         super(SaleOrder, self).action_quotation_sent()
 
     #
@@ -85,6 +102,21 @@ class SaleOrder(models.Model):
                 elif len(product_pricelist) == 1:
                     line.price_unit = product_pricelist.price_unit
                     line.x_pricelist = product_pricelist
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
+        res = super(SaleOrder, self).fields_view_get(view_id=view_id, view_type=view_type,
+                                                     toolbar=toolbar, submenu=submenu)
+        # print(self._context())
+        if toolbar:
+            doc = etree.XML(res['arch'])
+            if self._context.get('request_id'):
+                sale_order = self.env['sale.order'].browse(self._context.get('sale_quotation'))
+                if sale_order.approval_status == 'pending':
+                    for node_form in doc.xpath("//form"):
+                        node_form.set("edit", "false")
+                    res['arch'] = etree.tostring(doc)
+        return res
 
 
 class SaleOrderLine(models.Model):

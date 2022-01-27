@@ -7,73 +7,101 @@
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_right')]" position="replace">
                 <!--     HuuPhong20012022    don't show add shipping           -->
-<!--                <div class="oe_right" modifiers="{}">-->
-<!--					<button string="Add shipping" name="action_open_delivery_wizard" invisible="context.get('active_model')=='approval.request'"-->
-<!--                            type="object" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('order_line', '=', []), ('delivery_set', '=', True)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['order_line','=',[]],['delivery_set','=',true]]}" options="{}"/>-->
-<!--					<button string="Update shipping cost" name="action_open_delivery_wizard" invisible="context.get('active_model')=='approval.request'"-->
-<!--                            context="{'carrier_recompute':True}" type="object" class="text-warning btn-secondary" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('recompute_delivery_price', '=', False), ('delivery_set', '=', False)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['recompute_delivery_price','=',false],['delivery_set','=',false]]}" options="{}"/>-->
-<!--					<button string="Update shipping cost" name="action_open_delivery_wizard" invisible="context.get('active_model')=='approval.request'"-->
-<!--                            context="{'carrier_recompute':True}" type="object" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('recompute_delivery_price', '=', True), ('delivery_set', '=', False)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['recompute_delivery_price','=',true],['delivery_set','=',false]]}" options="{}"/>-->
-<!--				</div>-->
+                <!--                <div class="oe_right" modifiers="{}">-->
+                <!--					<button string="Add shipping" name="action_open_delivery_wizard" invisible="context.get('active_model')=='approval.request'"-->
+                <!--                            type="object" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('order_line', '=', []), ('delivery_set', '=', True)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['order_line','=',[]],['delivery_set','=',true]]}" options="{}"/>-->
+                <!--					<button string="Update shipping cost" name="action_open_delivery_wizard" invisible="context.get('active_model')=='approval.request'"-->
+                <!--                            context="{'carrier_recompute':True}" type="object" class="text-warning btn-secondary" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('recompute_delivery_price', '=', False), ('delivery_set', '=', False)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['recompute_delivery_price','=',false],['delivery_set','=',false]]}" options="{}"/>-->
+                <!--					<button string="Update shipping cost" name="action_open_delivery_wizard" invisible="context.get('active_model')=='approval.request'"-->
+                <!--                            context="{'carrier_recompute':True}" type="object" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('recompute_delivery_price', '=', True), ('delivery_set', '=', False)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['recompute_delivery_price','=',true],['delivery_set','=',false]]}" options="{}"/>-->
+                <!--				</div>-->
             </xpath>
+            <field name="partner_id" position="after">
+                <field name="x_css" invisible="1"/>
+            </field>
         </field>
     </record>
+
+<!--    <record id="view_quotation_tree_with_onboarding" model="ir.ui.view">-->
+<!--        <field name="name">view_quotation_tree_with_onboarding</field>-->
+<!--        <field name="model">sale.order</field>-->
+<!--        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>-->
+<!--        <field name="arch" type="xml">-->
+
+<!--            <xpath expr="//field[@name='name']" position="attr">-->
+<!--                &lt;!&ndash; Add new fields here &ndash;&gt;-->
+<!--            </xpath>-->
+
+<!--        </field>-->
+<!--    </record>-->
 
     <record id="sale_form_inherit" model="ir.ui.view">
         <field name="name">sale.order.view.form</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <form position="attributes">
+                <attribute name="options">{'edit':[('approval_status','in',('in_process','approved'))]}</attribute>
+            </form>
             <!--     Invisible btn when show from approval.request       -->
             <xpath expr="//header" position="replace">
                 <header>
-                <field name="authorized_transaction_ids" invisible="1"/>
-                <field name="x_no_approval_required_flag" invisible="1"/>
-                <field name="approval_status" invisible="1"/>
-                <button name="payment_action_capture" type="object" invisible="context.get('active_model')=='approval.request'"
-                        string="Capture Transaction" class="oe_highlight"
-                        attrs="{'invisible': [('authorized_transaction_ids', '=', [])]}"/>
-                <button name="payment_action_void" type="object" invisible="context.get('active_model')=='approval.request'"
-                        string="Void Transaction"
-                        confirm="Are you sure you want to void the authorized transaction? This action can't be undone."
-                        attrs="{'invisible': [('authorized_transaction_ids', '=', [])]}"/>
-                <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice" invisible="context.get('active_model')=='approval.request'"
-                    type="action" class="btn-primary"
-                    attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"/>
-                <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice" invisible="context.get('active_model')=='approval.request'"
-                    type="action" context="{'default_advance_payment_method': 'percentage'}"
-                    attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale')]}"/>
-                <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
-                        attrs="{'invisible': [('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
-                        string="Send by Email" type="object" class="btn-primary"/>
-                <button name="action_quotation_send" type="object" string="Send PRO-FORMA Invoice"
-                  groups="sale.group_proforma_sales" class="btn-primary"
-                  attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('invoice_count','&gt;=',1),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}" context="{'proforma': True}"/>
-                <button name="action_confirm" id="action_confirm" invisible="context.get('active_model')=='approval.request'"
-                    string="Confirm" class="btn-primary" type="object"
-                    attrs="{'invisible': ['|', ('state', 'not in', ['sent']),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"/>
-                <button name="action_confirm" invisible="context.get('active_model')=='approval.request'"
-                    string="Confirm" type="object"
-                    attrs="{'invisible': ['|', ('state', 'not in', ['draft']),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"/>
-                <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
-                        type="object" string="Send PRO-FORMA Invoice" groups="sale.group_proforma_sales"
-                        attrs="{'invisible': ['|', '|', ('state', '=', 'draft'), ('invoice_count','&gt;=',1),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}" context="{'proforma': True}"/>
-                <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
-                        attrs="{'invisible': [('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
-                        string="Send by Email" type="object" states="sent,sale"/>
-                <button name="action_cancel" type="object" invisible="context.get('active_model')=='approval.request'"
-                        string="Cancel" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale']), ('id', '=', False)]}"/>
-                <button name="action_draft" invisible="context.get('active_model')=='approval.request'"
-                        states="cancel" type="object" string="Set to Quotation"/>
-                <field name="state" invisible="context.get('active_model')=='approval.request'"
-                       widget="statusbar" statusbar_visible="draft,sent,sale"/>
+                    <field name="authorized_transaction_ids" invisible="1"/>
+                    <field name="x_no_approval_required_flag" invisible="1"/>
+                    <field name="approval_status" invisible="1"/>
+                    <button name="payment_action_capture" type="object"
+                            invisible="context.get('active_model')=='approval.request'"
+                            string="Capture Transaction" class="oe_highlight"
+                            attrs="{'invisible': [('authorized_transaction_ids', '=', [])]}"/>
+                    <button name="payment_action_void" type="object"
+                            invisible="context.get('active_model')=='approval.request'"
+                            string="Void Transaction"
+                            confirm="Are you sure you want to void the authorized transaction? This action can't be undone."
+                            attrs="{'invisible': [('authorized_transaction_ids', '=', [])]}"/>
+                    <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                            invisible="context.get('active_model')=='approval.request'"
+                            type="action" class="btn-primary"
+                            attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"/>
+                    <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                            invisible="context.get('active_model')=='approval.request'"
+                            type="action" context="{'default_advance_payment_method': 'percentage'}"
+                            attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale')]}"/>
+                    <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
+                            attrs="{'invisible': [('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
+                            string="Send by Email" type="object" class="btn-primary"/>
+                    <button name="action_quotation_send" type="object" string="Send PRO-FORMA Invoice"
+                            groups="sale.group_proforma_sales" class="btn-primary"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('invoice_count','&gt;=',1),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
+                            context="{'proforma': True}"/>
+                    <button name="action_confirm" id="action_confirm"
+                            invisible="context.get('active_model')=='approval.request'"
+                            string="Confirm" class="btn-primary" type="object"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['sent']),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"/>
+                    <button name="action_confirm" invisible="context.get('active_model')=='approval.request'"
+                            string="Confirm" type="object"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft']),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"/>
+                    <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
+                            type="object" string="Send PRO-FORMA Invoice" groups="sale.group_proforma_sales"
+                            attrs="{'invisible': ['|', '|', ('state', '=', 'draft'), ('invoice_count','&gt;=',1),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
+                            context="{'proforma': True}"/>
+                    <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
+                            attrs="{'invisible': [('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
+                            string="Send by Email" type="object" states="sent,sale"/>
+                    <button name="action_cancel" type="object"
+                            invisible="context.get('active_model')=='approval.request'"
+                            string="Cancel"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale']), ('id', '=', False)]}"/>
+                    <button name="action_draft" invisible="context.get('active_model')=='approval.request'"
+                            states="cancel" type="object" string="Set to Quotation"/>
+                    <field name="state" invisible="context.get('active_model')=='approval.request'"
+                           widget="statusbar" statusbar_visible="draft,sent,sale"/>
                 </header>
             </xpath>
 
 
-
             <xpath expr="//field[@name='validity_date']" position="before">
-                <field name="x_organization_id" string="販売組織" required="1" options="{'no_open': True, 'no_quick_create': True}"/>
+                <field name="x_organization_id" string="販売組織" required="1"
+                       options="{'no_open': True, 'no_quick_create': True}"/>
                 <field name="x_responsible_dept_id" required="1" options="{'no_open': True, 'no_quick_create': True}"/>
             </xpath>
             <xpath expr="//field[@name='pricelist_id']" position="attributes">
@@ -84,10 +112,10 @@
             <field name="partner_id" position="attributes">
                 <attribute name="options">{'no_create': True}</attribute>
                 <attribute name="domain">[
-                    '|',('company_id', '=', False),
+                    '|', ('company_id', '=', False),
                     ('company_id', '=', company_id),
                     ('x_is_customer', '=', True),
-                    ]</attribute>
+                ]</attribute>
             </field>
             <button name="update_prices" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -126,6 +154,7 @@
             </xpath>
         </field>
     </record>
+
 
 
     <!--  Change context order  -->

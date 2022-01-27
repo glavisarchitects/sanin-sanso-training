@@ -9,6 +9,9 @@
             <div name="button_box" position="attributes">
                 <attribute name="invisible">1</attribute>
             </div>
+            <field name="x_is_customer" position="after">
+                <field name="approval_state"/>
+            </field>
         </field>
     </record>
 

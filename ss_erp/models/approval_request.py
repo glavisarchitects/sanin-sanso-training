@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 from datetime import datetime
 
 import logging
@@ -251,7 +251,6 @@ class ApprovalRequest(models.Model):
 
     # Override
     def action_confirm(self):
-        self = self.with_context(do_action=True)
         if not self.x_is_multiple_approval and len(self.approver_ids) < self.approval_minimum:
             raise UserError(
                 _("You have to add at least %s approvers to confirm your request.", self.approval_minimum))
@@ -309,7 +308,6 @@ class ApprovalRequest(models.Model):
                     self.notify_approval(users=users, approver=self.env.user)
 
     def action_approve(self, approver=None):
-        self = self.with_context(do_action=True)
         if self.x_is_multiple_approval:
             if not self._check_user_access_request():
                 raise UserError(_("We cannot approve this request."))
@@ -325,7 +323,6 @@ class ApprovalRequest(models.Model):
             curren_multi_approvers.write({'x_user_status': 'refused'})
 
     def action_refuse(self, approver=None, lost_reason=None):
-        self = self.with_context(do_action=True)
         if self.x_is_multiple_approval:
             if not self._check_user_access_request():
                 raise UserError(_("We cannot refuse this request."))
@@ -338,7 +335,6 @@ class ApprovalRequest(models.Model):
         self.notify_approval(users=users, approver=self.env.user)
 
     def action_draft(self):
-        self = self.with_context(do_action=True)
         if self.request_owner_id != self.env.user:
             raise UserError(_("Only the applicant can back to draft."))
         super(ApprovalRequest, self).action_draft()
@@ -367,7 +363,6 @@ class ApprovalRequest(models.Model):
         return index_current
 
     def action_temporary_approve(self):
-        self = self.with_context(do_action=True)
         if self.x_is_multiple_approval:
             if not self._check_user_access_request():
                 raise UserError(_("We cannot approve this request."))
@@ -460,16 +455,3 @@ class ApprovalRequest(models.Model):
                 users = request.multi_approvers_ids.mapped('x_related_user_ids')
                 users |= request.request_owner_id
                 self.notify_approval(users=users, approver=request.last_approver)
-
-    def write(self, vals):
-        # for attaching document
-        if "message_main_attachment_id" in vals:
-            return super().write(vals)
-        if (
-            self.filtered(lambda ar: ar.request_status != "new") and
-            not self._context.get("do_action", False)
-        ):
-            raise ValidationError(
-                _("Approval request can not be changed if not in `Draft` state!")
-            )
-        return super().write(vals)
