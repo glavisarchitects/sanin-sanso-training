@@ -1163,7 +1163,7 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__complete_name
 msgid "Complete Name"
-msgstr "名称"
+msgstr "組織名称"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_partner_rebate_search
@@ -2785,7 +2785,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_propane_sales_header__name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_yg_detail__name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_yg_header__name
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_construction__name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance__name

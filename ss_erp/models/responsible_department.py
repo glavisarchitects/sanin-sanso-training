@@ -32,6 +32,16 @@ class ResponsibleDepartment(models.Model):
                                 department.start_date <= record.end_date <= department.end_date):
                         raise ValidationError(_("管轄部門は有効期間内でユニークでなければなりません。"))
 
+    def action_unarchive(self):
+        responsible_department_ids = self.env['ss_erp.responsible.department'].search(
+            [('code', '=', self.code), ('company_id', '=', self.company_id.id)])
+        for department in responsible_department_ids:
+            if self != department:
+                if (department.start_date <= self.start_date <= department.end_date) or (
+                        department.start_date <= self.end_date <= department.end_date):
+                    raise ValidationError(_("管轄部門は有効期間内でユニークでなければなりません。"))
+        return super(ResponsibleDepartment, self).action_unarchive()
+
     @api.constrains("start_date", "end_date")
     def _check_dates(self):
         """End date should not be before start date, if not filled
