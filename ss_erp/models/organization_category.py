@@ -13,8 +13,7 @@ class OrganizationCategory(models.Model):
         'res.company', string='Company', required=True,
         default=False)
     sequence = fields.Integer("Sequence")
-    active = fields.Boolean(
-        default=True, )
+    active = fields.Boolean(default=True, )
     hierarchy_number = fields.Integer("Hierarchy", )
     organization_count = fields.Integer(
         string="Organization Count", compute="_compute_organization_count",
@@ -23,19 +22,19 @@ class OrganizationCategory(models.Model):
     organization_ids = fields.One2many(
         "ss_erp.organization", "organization_category_id", string="Organizations")
 
-    @api.constrains("name","company_id")
+    @api.constrains("name", "company_id")
     def _check_name(self):
         for record in self:
             organization_category_count = self.env['ss_erp.organization.category'].search_count(
-                [('name', '=', record.name),('company_id','=',record.company_id.id)])
+                [('name', '=', record.name), ('company_id', '=', record.company_id.id)])
             if organization_category_count > 1:
                 raise ValidationError(_("同じ組織カテゴリが存在しています"))
 
-    @api.constrains("hierarchy_number","company_id")
+    @api.constrains("hierarchy_number", "company_id")
     def _check_hierarchy_number(self):
         for record in self:
             organization_category_count = self.env['ss_erp.organization.category'].search_count(
-                [('hierarchy_number', '=', record.hierarchy_number),('company_id','=',record.company_id.id)])
+                [('hierarchy_number', '=', record.hierarchy_number), ('company_id', '=', record.company_id.id)])
             if organization_category_count > 1:
                 raise ValidationError(_("同じ階層番号が存在しています。"))
             if record.hierarchy_number <= 0:

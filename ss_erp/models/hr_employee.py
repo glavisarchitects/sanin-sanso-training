@@ -8,9 +8,9 @@ class HrEmployee(models.Model):
 
     employee_number = fields.Char(string='Employee Number', )
 
-    organization_first = fields.Many2one('ss_erp.organization', string='Organization First',)
+    organization_first = fields.Many2one('ss_erp.organization', string='Organization First', )
     department_jurisdiction_first = fields.Many2many('ss_erp.responsible.department', 'dept_juris_first_rel',
-                                                     string='Department Jurisdiction First',)
+                                                     string='Department Jurisdiction First', )
     organization_second = fields.Many2one('ss_erp.organization', string='Organization Second')
     department_jurisdiction_second = fields.Many2many('ss_erp.responsible.department', 'dept_juris_second_rel',
                                                       string='Department Jurisdiction Second')
@@ -18,10 +18,10 @@ class HrEmployee(models.Model):
     department_jurisdiction_third = fields.Many2many('ss_erp.responsible.department', 'dept_juris_third_rel',
                                                      string='Department Jurisdiction Third')
 
-    @api.constrains("employee_number",)
+    @api.constrains("employee_number", )
     def _check_same_employee_number(self):
         for r in self:
-            employee_count = r.env['hr.employee'].search_count([('employee_number','=',r.employee_number)])
+            employee_count = r.env['hr.employee'].search_count([('employee_number', '=', r.employee_number)])
             if employee_count > 1:
                 raise ValidationError(_("同じ社員番号が存在しています"))
 
@@ -46,4 +46,3 @@ class HrEmployee(models.Model):
                     r.department_jurisdiction_second.filtered(lambda m: m.id in r.department_jurisdiction_third.ids) or \
                     r.department_jurisdiction_third.filtered(lambda m: m.id in r.department_jurisdiction_first.ids):
                 raise ValidationError(_('Same jurisdiction selected'))
-

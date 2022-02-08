@@ -46,7 +46,7 @@ class ApprovalRequest(models.Model):
         'ss_erp.instruction.order', 'instruction_request_rel', 'instruction_id', 'request_id',
         string='Inventory Instruction')
 
-    x_approval_date = fields.Date('申請日',default=datetime.now())
+    x_approval_date = fields.Date('申請日', default=datetime.now())
 
     last_approver = fields.Many2one('res.users', string='Last Approver')
     # FIELD RELATED

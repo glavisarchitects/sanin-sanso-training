@@ -19,34 +19,12 @@ class CodeConvert(models.Model):
     priority_conversion = fields.Boolean(string='Priority conversion destination', required=True, default=False)
     internal_code = fields.Reference(selection='_selection_target_model', store=True)
     value = fields.Text(required=False)
-
-    # @api.depends('convert_code_type')
-    # def _compute_resource_ref(self):
-    #     for line in self:
-    #         if line.convert_code_type:
-    #             value = line.value or ''
-    #             try:
-    #                 value = int(value)
-    #                 if not self.env[line.convert_code_type.model.model].search([('id', '=', value)]):
-    #                     record = list(self.env[line.convert_code_type.model.model]._search([], limit=1))
-    #                     value = record[0] if record else 0
-    #             except ValueError:
-    #                 record = list(self.env[line.convert_code_type.model.model]._search([], limit=1))
-    #                 value = record[0] if record else 0
-    #             line.internal_code = '%s,%s' % (line.convert_code_type.model.model, value)
-    #         else:
-    #             line.internal_code = False
-    #
-    # @api.onchange('internal_code')
-    # def _set_resource_ref(self):
-    #     for line in self:
-    #         if line.internal_code:
-    #             line.value = str(line.internal_code.id)
+    active = fields.Boolean(default=True, )
 
     @api.onchange('convert_code_type')
     def _onchange_convert_code_type(self):
         if self.convert_code_type:
-            record = list(self.env[self.convert_code_type.model.model]._search([], limit=1))
+            record = list(self.env[self.convert_code_type.model.model].search([], limit=1))
             value = record[0] if record else 0
             if value:
                 self.internal_code = '%s,%s' % (self.convert_code_type.model.model, value)

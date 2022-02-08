@@ -16,9 +16,6 @@
                 <!--                            context="{'carrier_recompute':True}" type="object" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('recompute_delivery_price', '=', True), ('delivery_set', '=', False)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['recompute_delivery_price','=',true],['delivery_set','=',false]]}" options="{}"/>-->
                 <!--				</div>-->
             </xpath>
-            <field name="partner_id" position="after">
-                <field name="x_css" invisible="1"/>
-            </field>
         </field>
     </record>
 

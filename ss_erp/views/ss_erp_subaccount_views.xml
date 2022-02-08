@@ -19,8 +19,8 @@
             <form string="">
                 <sheet>
                     <group>
-                        <field name="code"/>
-                        <field name="name"/>
+                        <field name="code" required="1"/>
+                        <field name="name" required="1"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">

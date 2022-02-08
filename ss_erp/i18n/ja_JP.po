@@ -1782,7 +1782,7 @@ msgstr ""
 #: model:ir.model,name:ss_erp.model_ss_erp_external_system_type
 #: model:ir.ui.menu,name:ss_erp.ss_erp_external_system_type_action_menu
 msgid "External System Type"
-msgstr ""
+msgstr "外部システム種別"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_code_convert_view_tree
@@ -1803,11 +1803,6 @@ msgstr "外部システム"
 #: model:ir.ui.menu,name:ss_erp.external_system_cooperation_menu
 msgid "External system cooperation"
 msgstr "外部システム連携"
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__name
-msgid "External system type name"
-msgstr "外部システム種別名"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.external_layout_standard

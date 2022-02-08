@@ -227,12 +227,12 @@ class ResPartner(models.Model):
                     raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
     @api.depends('is_company', 'x_contact_categ')
-    def _compute_company_type(self):
+    def compute_company_type(self):
         for partner in self:
             if partner.x_contact_categ and partner.x_contact_categ.company_type:
                 partner.company_type = partner.x_contact_categ.company_type
             else:
-                super(ResPartner, partner)._compute_company_type()
+                super(ResPartner, partner).compute_company_type()
 
     @api.onchange
     def _onchange_x_contact_categ(self):

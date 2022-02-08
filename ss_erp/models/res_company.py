@@ -1,5 +1,4 @@
 from odoo import fields, models
-from odoo.models import NewId
 
 
 class ResCompany(models.Model):

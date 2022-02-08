@@ -18,8 +18,6 @@
         "security/x_security_groups_security.xml",
         "security/ir.model.access.csv",
         "security/approval_security.xml",
-        "security/rebate_security.xml",
-        # "security/sale_order_security.xml",
 
         # DATA
         "data/bis_category_data.xml",

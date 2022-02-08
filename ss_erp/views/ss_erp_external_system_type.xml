@@ -7,12 +7,32 @@
             <field name="model">ss_erp.external.system.type</field>
             <field name="arch" type="xml">
                 <tree string="">
-                    <field name="code" />
-                    <field name="name" />
+                    <field name="code"/>
+                    <field name="name"/>
                 </tree>
             </field>
         </record>
         <!-- FORM VIEW -->
+
+        <record id="ss_erp_external_system_type_view_form" model="ir.ui.view">
+            <field name="name">ss_erp.external.system.type.view.form</field>
+            <field name="model">ss_erp.external.system.type</field>
+            <field name="arch" type="xml">
+                <form string="外部システム種別">
+                    <sheet>
+                        <group>
+                            <field name="code" required="1"/>
+                            <field name="name" required="1"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
 
         <!-- SEARCH VIEW -->
         <record id="ss_erp_external_system_type_view_search" model="ir.ui.view">
@@ -20,8 +40,8 @@
             <field name="model">ss_erp.external.system.type</field>
             <field name="arch" type="xml">
                 <search string="">
-                    <field name="code" />
-                    <field name="name" />
+                    <field name="code"/>
+                    <field name="name"/>
                 </search>
             </field>
         </record>
@@ -33,6 +53,6 @@
         </record>
 
         <!-- MENUITEM -->
-        
+
     </data>
 </odoo>

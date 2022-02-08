@@ -21,22 +21,6 @@ class SaleOrder(models.Model):
                    ('approved', '承認済み')],
         required=False, default='out_of_process')
 
-    x_css = fields.Html(
-        string='CSS',
-        sanitize=False,
-        compute='_compute_css',
-        store=False,
-    )
-
-    @api.depends('approval_status')
-    def _compute_css(self):
-        for record in self:
-            # Modify below condition
-            if record.approval_status == 'in_process':
-                record.x_css = '<style>.o_form_button_edit {display: none !important;}</style>'
-            else:
-                record.x_css = False
-
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
@@ -146,7 +130,6 @@ class SaleOrderLine(models.Model):
              '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
              ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
              ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-        print("####################", product_pricelist)
         self.x_is_required_x_pricelist = True
 
         # set False for pricelist core
@@ -158,10 +141,6 @@ class SaleOrderLine(models.Model):
                 'price_unit': self.product_id.lst_price,
                 'x_is_required_x_pricelist': False
             })
-
-            # self.x_pricelist = False
-            # self.price_unit = self.product_id.lst_price
-            # self.x_is_required_x_pricelist = False
 
         elif len(product_pricelist) == 1:
             self.price_unit = product_pricelist.price_unit

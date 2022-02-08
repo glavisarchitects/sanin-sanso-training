@@ -12,7 +12,5 @@ class ApprovalLost(models.TransientModel):
 
     def action_lost_reason_apply(self):
         request = self.env['approval.request'].browse(self.env.context.get('active_ids'))
-        request.sudo().write({'x_reject':self.lost_reason})
-        return request.action_refuse()
-
-
+        request.sudo().write({'x_reject': self.lost_reason})
+        return request.sudo().action_refuse()
