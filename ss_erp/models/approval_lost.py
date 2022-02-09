@@ -6,9 +6,9 @@ from odoo import api, fields, models
 class ApprovalLost(models.TransientModel):
     _name = 'ss_erp.approval.lost'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'Get Lost Reason'
+    _description = '却下理由'
 
-    lost_reason = fields.Char('Lost Reason')
+    lost_reason = fields.Char('却下理由')
 
     def action_lost_reason_apply(self):
         request = self.env['approval.request'].browse(self.env.context.get('active_ids'))

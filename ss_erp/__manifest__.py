@@ -6,8 +6,6 @@
     """,
     "version": "14.0.1.7",
     "category": "",
-    "website": "https://www.systemgear-vietnam.com/",
-    "author": "SGVN",
     "depends": [
         "base", "delivery", "mail", "contacts", "purchase", "uom",
         "purchase_stock", "web", "account", "stock_dropshipping", "approvals", "hr",
@@ -48,7 +46,6 @@
         "views/responsible_department_views.xml",
         "views/ss_erp_bis_category_views.xml",
         "views/stock_picking_views.xml",
-        # "views/web_access_rule_buttons.xml",
         "views/res_partner_bank_views.xml",
         "views/ss_erp_contact_category_views.xml",
         "views/approval_category_views.xml",

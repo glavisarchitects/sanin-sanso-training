@@ -11,9 +11,9 @@ class ResPartner(models.Model):
         return self.env['res.country'].search([('code', '=', 'JP'), ], limit=1)
 
     x_contact_categ = fields.Many2one(
-        'ss_erp.contact.category', string='連絡先カテゴリ', index=True, raise_if_not_found=False)
+        'ss_erp.contact.category', string='連絡先カテゴリ', index=True,)
 
-    x_name_abbreviation = fields.Char('略称')
+    x_name_abbreviation = fields.Char(string='略称')
     x_name_furigana = fields.Char(string="フリガナ")
 
     # 20211129
@@ -234,7 +234,7 @@ class ResPartner(models.Model):
             else:
                 super(ResPartner, partner).compute_company_type()
 
-    @api.onchange
+    @api.onchange("x_contact_categ")
     def _onchange_x_contact_categ(self):
         if self.x_contact_categ and self.x_contact_categ.type:
             self.type = self.x_contact_categ.type

@@ -5,8 +5,8 @@
         <field name="name">ss_erp.bis.category.view.tree</field>
         <field name="model">ss_erp.bis.category</field>
         <field name="arch" type="xml">
-            <tree string="Transaction Classifications" editable="top">
-                <field name="name" placeholder="ガス、器材、工事・・・" />
+            <tree string="取引区分" editable="top">
+                <field name="name" required="1" placeholder="ガス、器材、工事・・・" />
                 <field name="department" placeholder="LPガス、医療ガス、ハウジング・・・" />
             </tree>
         </field>
@@ -20,7 +20,7 @@
                 <field name="name" />
                 <field name="department" />
                 <group string="Group By" expand="0">
-                    <filter name="grp_department" string="Departments"
+                    <filter name="grp_department" string="部門"
                         context="{'group_by': 'department'}" />
                 </group>
             </search>

@@ -46,7 +46,7 @@
             </field>
 
             <xpath expr="//notebook" position="inside">
-                <page string="Pre-purchase approval" name="pre_purchase">
+                <page string="仕入事前承認" name="pre_purchase">
                     <group>
                         <group string="Purchase pre-approval items">
                             <field name="has_x_payment_date" widget="radio" options="{'horizontal': true}"/>

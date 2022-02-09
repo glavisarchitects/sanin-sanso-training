@@ -4,7 +4,7 @@
             <field name="name">ss_erp.lost.form</field>
             <field name="model">ss_erp.approval.lost</field>
             <field name="arch" type="xml">
-                <form string="Lost Reason">
+                <form string="却下理由">
                     <group class="oe_title">
                         <field name="lost_reason"/>
                     </group>
@@ -17,7 +17,7 @@
         </record>
 
         <record id="ss_erp_approval_lost_action" model="ir.actions.act_window">
-            <field name="name">Lost Reason</field>
+            <field name="name">却下理由</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">ss_erp.approval.lost</field>
             <field name="view_mode">form</field>

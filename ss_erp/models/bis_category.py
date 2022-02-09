@@ -12,3 +12,5 @@ class TransactionClassification(models.Model):
     department = fields.Char(
         string="部門", index=True
     )
+    active = fields.Boolean(
+        'Active', default=True,)

@@ -75,7 +75,6 @@
             </xpath>
 
             <xpath expr="//field[@name='type']" position="before">
-<!--                <field name="x_partner_categ" widget="radio" options="{'horizontal': true}" required="1"/>-->
                 <field name="x_is_customer"/>
                 <field name="x_transaction_categ"  widget="many2many_checkboxes"
                        attrs="{'required': ['|',('x_is_customer', '=', True),('x_is_vendor', '=', True)]}"/>
@@ -85,7 +84,9 @@
                     'required': [('has_ref', '=', 'required')]
                 }"/>
 
+
             </xpath>
+
             <xpath expr="//field[@name='phone']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_phone', '=', 'no')],
