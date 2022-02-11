@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+
     <record id="responsible_department_view_tree" model="ir.ui.view">
         <field name="name">ss.erp.responsible.department.view.tree</field>
         <field name="model">ss_erp.responsible.department</field>
@@ -22,10 +22,12 @@
         <field name="arch" type="xml">
             <form string="管轄部門">
                 <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
                         <group>
                             <field name="code" string="管轄部門コード" required="1"/>
                             <field name="company_id" required="1"/>
+                            <field name="active" invisible="1"/>
                         </group>
                         <group>
                             <field name="name" string='管轄部門名称' required="1"/>

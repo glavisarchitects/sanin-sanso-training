@@ -22,7 +22,9 @@
         <field name="model">ss_erp.organization</field>
         <field name="arch" type="xml">
             <form>
+
                 <sheet>
+                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
                         <group>
                             <field name="name" string="組織名称" required="1"/>
