@@ -220,7 +220,6 @@
                             <field name="x_approver_group_ids" widget="many2many_tags"/>
                             <field name="x_related_user_ids" widget="many2many_tags"/>
                             <field name="x_is_manager_approver" />
-                            <field name="x_write_date" />
                             <field name="x_user_status" />
                             <field name="x_minimum_approvers" />
                         </tree>
