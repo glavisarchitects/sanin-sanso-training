@@ -14,9 +14,9 @@ class Organization(models.Model):
 
     name = fields.Char(string='組織名称')
     company_id = fields.Many2one(
-        'res.company', string='Company', required=True,
+        'res.company', string='会社', required=True,
         default=lambda self: self.env.company)
-    sequence = fields.Integer("Sequence")
+    sequence = fields.Integer("シーケンス")
     active = fields.Boolean(
         default=True, help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
     expire_start_date = fields.Date(string="有効開始日", copy=False)
@@ -26,16 +26,16 @@ class Organization(models.Model):
     #                             string="Contains Organizations")
     parent_path = fields.Char(index=True)
     organization_code = fields.Char(
-        string="Organization Code", required=True, copy=False)
+        string="組織コード", required=True, copy=False)
     organization_category_id = fields.Many2one(
-        "ss_erp.organization.category", string="Organization category", ondelete="restrict",
+        "ss_erp.organization.category", string="組織カテゴリ", ondelete="restrict",
         check_company=True, help="Category of this organization")
     parent_id = fields.Many2one(
-        "ss_erp.organization", string="Parent organization", )
+        "ss_erp.organization", string="親組織", )
     parent_organization_code = fields.Char(
-        string="Parent organization code", compute="_compute_parent_organization_code", compute_sudo=True)
+        string="親組織コード", compute="_compute_parent_organization_code", compute_sudo=True)
     organization_country_id = fields.Many2one(
-        "res.country", string="Organization address / country", default=lambda self: self.env.ref('base.jp', raise_if_not_found=False))
+        "res.country", string="組織所在アドレス", default=lambda self: self.env.ref('base.jp', raise_if_not_found=False))
     organization_zip = fields.Char(string="Organization address / zip code")
     organization_state_id = fields.Many2one(
         "res.country.state", string="Organization address / prefecture")

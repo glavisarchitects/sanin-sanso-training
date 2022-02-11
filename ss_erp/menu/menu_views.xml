@@ -26,8 +26,6 @@
               parent="external_system_cooperation_other" action="ss_erp_external_system_type_action" sequence="40"/>
     <menuitem id="ss_erp_contact_category_action_menu" name="Contact Category" parent="contacts.res_partner_menu_config"
               action="ss_erp_contact_category_action" sequence="4"/>
-    <!--    <menuitem id="menu_ss_erp_ifdb_propane_sales" name="Propane sales file" parent="sale.sale_order_menu"-->
-    <!--              sequence="90"/>-->
 
         <!-- Menu Stock -->
     <menuitem id="menu_ss_erp_instruction_order_action" name="Inventory Plan" parent="stock.menu_stock_warehouse_mgmt" action="ss_erp_instruction_order_action" sequence="99" />
@@ -47,7 +45,6 @@
     <menuitem id="menu_ss_erp_ifdb_propane_sales_detail_action" name="プロパン売上（米子）取込データ"
               parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_propane_sales_detail_action"
               sequence="60"/>
-    <!--    <menuitem id="menu_ss_erp_ifdb_yg_parent" name="Yamasan gas supply" parent="sale.sale_order_menu" sequence="90"/>-->
     <menuitem id="menu_ss_erp_ifdb_yg_header_action" name="ヤマサンガスサプライファイル取込"
               parent="ss_erp.external_system_cooperation_importing_performance" action="ss_erp_ifdb_yg_header_action"
               sequence="10"/>

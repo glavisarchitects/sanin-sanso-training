@@ -51,6 +51,7 @@
         <field name="arch" type="xml">
             <search string="Jurisdiction">
                 <field name="name"/>
+                <filter name="archived" string="アーカイブ済み" domain="[('active', '=', False)]" />
             </search>
         </field>
     </record>

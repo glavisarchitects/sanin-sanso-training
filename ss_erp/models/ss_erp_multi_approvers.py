@@ -13,34 +13,26 @@ class MultiApprovers(models.Model):
     _order = 'x_approval_seq'
 
     x_company_id = fields.Many2one(
-        'res.company', related='x_request_id.company_id', readonly=True, copy=False, store=True, index=True)
-    x_create_date = fields.Datetime('Created date', readonly=True,
-                                    copy=True, store=True, index=False)
-    x_create_uid = fields.Many2one('res.users', string='Author',
-                                   readonly=True, copy=True, store=True, index=False)
-    x_display_name = fields.Char(string='display name', readonly=True)
+        'res.company', related='x_request_id.company_id', readonly=True, copy=False, store=True, index=True,string='会社')
+    x_display_name = fields.Char(string='表示名', readonly=True)
     x_existing_request_user_ids = fields.Many2many(
         'res.users', 'existing_request_users_approvers_rel', 'user_id', 'approver_id', string='Existing Request User', readonly=True)
-    x_id = fields.Integer(string='ID', readonly=True, copy=True, store=True)
-    x_request_id = fields.Many2one('approval.request', string='Request', copy=True, store=True)
-    x_write_date = fields.Datetime('最新更新日')
-    x_write_uid = fields.Many2one('res.users', string='Last updated')
+    x_request_id = fields.Many2one('approval.request', string='リクエスト', copy=True, store=True)
     x_approval_seq = fields.Integer('Seq.', default=0)
     x_approver_group_ids = fields.Many2many(
-        'res.users', 'approver_group_users_approvers_rel', 'user_id', 'approver_id', string='Approver group', store=True, copy=True)
+        'res.users', 'approver_group_users_approvers_rel', 'user_id', 'approver_id', string='承認者グループ', store=True, copy=True)
     x_related_user_ids = fields.Many2many(
-        'res.users', 'related_users_approvers_rel', 'user_id', 'approver_id', string='Stakeholder group', store=True, copy=True)
+        'res.users', 'related_users_approvers_rel', 'user_id', 'approver_id', string='関係者グループ', store=True, copy=True)
     x_is_manager_approver = fields.Boolean(
-        string='Manager approval', store=True, copy=True, default=False)
+        string='マネージャー承認', store=True, copy=True, default=False)
     x_user_status = fields.Selection([
-        ('new', 'New'),
-        ('pending', 'Unapproved'),
-        ('approved', 'Approved'),
-        ('refused', 'Rejected'),
-        ('cancel', 'Cancel'),
+        ('new', '新規'),
+        ('pending', '未承認'),
+        ('approved', '承認済'),
+        ('refused', '却下済'),
+        ('cancel', '取消'),
     ], string='status', default='new', readonly=True, store=True, copy=True)
-    x_minimum_approvers = fields.Integer('Minimum number of approved people')
-    # flag indicating current level of request
+    x_minimum_approvers = fields.Integer('最小限承認人数')
 
     @api.constrains("x_approver_group_ids", "x_minimum_approvers", "x_is_manager_approver")
     def _check_approver_group_minimum_approvers(self):

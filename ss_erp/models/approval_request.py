@@ -12,43 +12,43 @@ class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
 
     x_department_id = fields.Many2one(
-        'ss_erp.responsible.department', string='Application department',
+        'ss_erp.responsible.department', string='申請部署',
         default=lambda self: self._get_default_department())
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string='Application organization', default=lambda self: self._get_default_organization())
+        'ss_erp.organization', string='申請組織', default=lambda self: self._get_default_organization())
     x_contact_form_id = fields.Many2one(
-        'ss_erp.res.partner.form', string='Contact application form')
+        'ss_erp.res.partner.form', string='連絡先申請フォーム')
     x_inventory_order_ids = fields.Many2many(
-        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='Inventory slip')
+        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票')
     x_sale_order_ids = fields.Many2many(
-        'sale.order', 'sale_order_request_rel', 'sale_id', 'request_id', string='Quotation slip')
+        'sale.order', 'sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票')
     x_account_move_ids = fields.Many2many(
-        'account.move', 'account_move_request_rel', 'move_id', 'request_id', string='Purchase request slip')
+        'account.move', 'account_move_request_rel', 'move_id', 'request_id', string='仕入請求伝票')
     x_purchase_order_ids = fields.Many2many(
-        'purchase.order', 'purchase_request_rel', 'purchase_id', 'request_id', string='Quotation request slip')
-    x_payment_date = fields.Date('Invoice closing date')
-    x_purchase_material = fields.Text('Purchased products')
-    x_cash_amount = fields.Float('Cash purchase amount')
-    x_cash_payment_date = fields.Date('Cash payment date')
-    x_prepay_amount = fields.Float('Prepaid purchase amount')
-    x_prepay_payment_date = fields.Date('Prepaid payment date')
-    x_payment_reason = fields.Text('Reason for payment')
-    x_transfer_preferred_date = fields.Date('Desired remittance date')
-    x_present_date = fields.Date('Balance current date')
-    x_cash_balance = fields.Float('Cash balance')
-    x_bank_balance = fields.Float('Deposit balance')
-    x_reject = fields.Char('Reason for rejection')
-    x_transfer_date = fields.Date('Remittance date')
+        'purchase.order', 'purchase_request_rel', 'purchase_id', 'request_id', string='見積依頼伝票')
+    x_payment_date = fields.Date('請求書締日')
+    x_purchase_material = fields.Text('仕入商材')
+    x_cash_amount = fields.Float('現金仕入額')
+    x_cash_payment_date = fields.Date('現金支払日')
+    x_prepay_amount = fields.Float('前払仕入額')
+    x_prepay_payment_date = fields.Date('前払支払日')
+    x_payment_reason = fields.Text('支払理由')
+    x_transfer_preferred_date = fields.Date('送金希望日')
+    x_present_date = fields.Date('残高現在日')
+    x_cash_balance = fields.Float('現金残高')
+    x_bank_balance = fields.Float('預金残高')
+    x_reject = fields.Char('却下理由')
+    x_transfer_date = fields.Date('送金日')
     x_is_multiple_approval = fields.Boolean(related='category_id.x_is_multiple_approval')
     multi_approvers_ids = fields.One2many(
-        'ss_erp.multi.approvers', 'x_request_id', string='Multi-step approval', readonly=True, copy=False)
+        'ss_erp.multi.approvers', 'x_request_id', string='多段階承認', readonly=True, copy=False)
     x_inventory_instruction_ids = fields.Many2many(
         'ss_erp.instruction.order', 'instruction_request_rel', 'instruction_id', 'request_id',
-        string='Inventory Instruction')
+        string='指示伝票')
 
     x_approval_date = fields.Date('申請日', default=datetime.now())
 
-    last_approver = fields.Many2one('res.users', string='Last Approver')
+    last_approver = fields.Many2one('res.users', string='最終承認者')
     # FIELD RELATED
     has_x_organization = fields.Selection(
         related='category_id.has_x_organization', store=True)

@@ -1042,7 +1042,6 @@ msgstr "10,000円以上の締切日"
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_convert_code_type__code
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_external_system_type__code
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__code
 msgid "Code"
 msgstr "コード"
 
@@ -2784,7 +2783,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_payment_term__name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_performance__name
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__name
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__name
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_contact_category_view_form
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_res_partner_form_tree
 msgid "Name"
@@ -5338,11 +5336,6 @@ msgid "コメント"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_account_subaccount__code
-msgid "コード"
-msgstr ""
-
-#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_autogas_file_data_rec__status
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_autogas_file_header__status
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri__status
@@ -5616,19 +5609,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__has_partner
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_price__partner_id
 msgid "取引先"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri__customer_name
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri_detail__customer_name
-msgid "取引先名"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.actions.act_window,name:ss_erp.ss_erp_bis_category_action
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_bis_category__name
-#: model:ir.ui.menu,name:ss_erp.transaction_classification_menu
-msgid "取引区分"
 msgstr ""
 
 #. module: ss_erp
@@ -6041,11 +6021,6 @@ msgid "現金"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_inventory_order__name
-msgid "番号"
-msgstr ""
-
-#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri__direct_business_partner_code
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri_detail__direct_business_partner_code
 msgid "直取引先Ｃ"
@@ -6166,62 +6141,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri__unified_quantity
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri_detail__unified_quantity
 msgid "統一数量"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields.selection,name:ss_erp.selection__res_partner__x_contract_check__contract
-#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_res_partner_form__x_contract_check__contract
-msgid "締結"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields.selection,name:ss_erp.selection__res_partner__x_contract_check__no_contract
-#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_res_partner_form__x_contract_check__no_contract
-msgid "締結しない"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_stock_picking__x_inspection_exist
-msgid "良品検査実施有無"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_stock_picking__x_inspection_user_id
-msgid "良品検査担当者名"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_inventory_order_line__product_packaging
-msgid "荷姿"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri__line_break
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri_detail__line_break
-msgid "行区分"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_account_account__x_sub_account_ids
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_account_subaccount__name
-msgid "補助科目名"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.actions.act_window,name:ss_erp.subaccount_model_action
-#: model:ir.ui.menu,name:ss_erp.ss_erp_subaccount_menu
-msgid "補助科目表"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_inventory_order_line__product_uom_qty
-msgid "要求"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri__standard
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri_detail__standard
-msgid "規格"
 msgstr ""
 
 #. module: ss_erp

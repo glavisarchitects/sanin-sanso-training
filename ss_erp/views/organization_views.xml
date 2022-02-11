@@ -71,7 +71,7 @@
         <field name="model">ss_erp.organization</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name" />
+                <field name="name" string="組織名称"/>
                 <field name="organization_code" />
                 <field name="organization_category_id" />
                 <field name="company_id" groups="base.group_multi_company" />
