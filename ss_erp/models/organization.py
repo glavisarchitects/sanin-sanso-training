@@ -49,8 +49,6 @@ class Organization(models.Model):
         '組織名称', compute='_compute_complete_name',
         store=True)
 
-    # user_ids = fields.One2many('res.users', 'organization_id', string='Related user',compute='_compute_users')
-
     @api.depends('name', 'parent_id.complete_name')
     def _compute_complete_name(self):
         for organization in self:

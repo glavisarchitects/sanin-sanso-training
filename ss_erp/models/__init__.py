@@ -3,7 +3,6 @@
 from . import base_import
 from . import bis_category
 from . import mail_mail
-from . import model
 from . import organization
 from . import organization_category
 from . import partner_rebate
@@ -14,7 +13,6 @@ from . import ss_erp_contact_category
 from . import ss_erp_partner_construction
 from . import ss_erp_partner_performance
 from . import res_partner
-from . import res_users
 from . import purchase_order
 from . import responsible_department
 from . import stock_picking

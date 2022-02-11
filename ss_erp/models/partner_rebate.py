@@ -13,7 +13,7 @@ class PartnerRebate(models.Model):
     _rec_name = 'partner_id'
 
     def _get_default_date_start(self):
-        dt = datetime.strptime(str(fields.Datetime.now().replace(hour=0,minute=0,second=0)), '%Y-%m-%d %H:%M:%S')
+        dt = datetime.strptime(str(fields.Datetime.now().replace(hour=0, minute=0, second=0)), '%Y-%m-%d %H:%M:%S')
         user = self.env.user
         if user and user.tz:
             user_tz = user.tz
@@ -26,7 +26,7 @@ class PartnerRebate(models.Model):
         return datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
 
     def _get_default_date_end(self):
-        dt = datetime.strptime(str(fields.Datetime.now().replace(hour=23,minute=59,second=59)), '%Y-%m-%d %H:%M:%S')
+        dt = datetime.strptime(str(fields.Datetime.now().replace(hour=23, minute=59, second=59)), '%Y-%m-%d %H:%M:%S')
         user = self.env.user
         if user and user.tz:
             user_tz = user.tz
@@ -70,7 +70,7 @@ class PartnerRebate(models.Model):
     date_end = fields.Datetime(
         string="Contract end date",
         default=_get_default_date_end)
-    rebate_price = fields.Float("Bounty",)
+    rebate_price = fields.Float("Bounty", )
     rebate_standard = fields.Text("Reward criteria")
     memo = fields.Text("Memo")
     rebate_goal = fields.Char("The goal")
@@ -101,19 +101,6 @@ class PartnerRebate(models.Model):
                     raise ValidationError(_("The starting date cannot be after the ending date."))
                 elif record.date_start == record.date_end:
                     raise ValidationError(_("有効開始日と有効終了日が同じ日時になっています。"))
-
-    # TODO: prepare display name if it happens
-    # @api.model
-    # def create(self, vals):
-    #     if vals.get('name', _('New')) == _('New'):
-    #         vals['name'] = self.env['ir.sequence'].next_by_code(
-    #             'ss_erp.partner.rebate') or _('New')
-    #     result = super(PartnerRebate, self).create(vals)
-    #     return result
-
-    # @api.model
-    # def _default_organization_id(self):
-    #     return self.env.user.x_organization_id and self.env.user.x_organization_id.id
 
     def action_get_attachment_view(self):
         self.ensure_one()
