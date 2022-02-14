@@ -7,9 +7,9 @@
             <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="company_id"/>
-                <field name="organization_code" string="Org code"/>
-                <field name="name" string="Org name"/>
-                <field name="parent_organization_code" string="Parent org code"/>
+                <field name="organization_code" string="組織コード"/>
+                <field name="name" string="組織名称"/>
+                <field name="parent_organization_code" string="親組織コード"/>
                 <field name="parent_id"/>
                 <field name="expire_start_date"/>
                 <field name="expire_end_date"/>
@@ -27,7 +27,7 @@
                      <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
                         <group>
-                            <field name="name" string="組織名称" required="1"/>
+                            <field name="name" required="1"/>
                             <field name="company_id" required="1"/>
                             <field name="organization_category_id" required="1"/>
                             <field name="parent_id"/>
@@ -41,14 +41,14 @@
                     </group>
                     <group>
                         <group>
-                            <label for="organization_street" string="Organization location Address"/>
+                            <label for="organization_street" string="組織所在アドレス"/>
                             <div class="o_address_format">
-                                <field name="organization_street" placeholder="Street..." class="o_address_street"/>
-                                <field name="organization_street2" placeholder="Street 2..." class="o_address_street"/>
-                                <field name="organization_city" placeholder="City" class="o_address_city"/>
-                                <field name="organization_state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}" domain="[('country_id', '=', organization_country_id)]"/>
-                                <field name="organization_zip" placeholder="ZIP" class="o_address_zip"/>
-                                <field name="organization_country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                <field name="organization_street" placeholder="町名番地" class="o_address_street"/>
+                                <field name="organization_street2" placeholder="町名番地2" class="o_address_street"/>
+                                <field name="organization_city" placeholder="市区町村" class="o_address_city"/>
+                                <field name="organization_state_id" class="o_address_state" placeholder="都道府県" options="{'no_open': True, 'no_quick_create': True}" domain="[('country_id', '=', organization_country_id)]"/>
+                                <field name="organization_zip" placeholder="郵便番号" class="o_address_zip"/>
+                                <field name="organization_country_id" placeholder="国" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
                             </div>
                         </group>
                         <group>
@@ -74,7 +74,7 @@
                 <field name="name" string="組織名称"/>
                 <field name="organization_code" />
                 <field name="organization_category_id" />
-                <field name="company_id" groups="base.group_multi_company" />
+                <field name="company_id"/>
                 <separator />
                 <filter name="ftr_archived" string="アーカイブ済み" domain="[('active', '=', False)]" />
                 <group string="Group By" expand="0">
@@ -88,12 +88,12 @@
     </record>
 
     <record id="action_organizations" model="ir.actions.act_window">
-        <field name="name">Organization</field>
+        <field name="name">組織</field>
         <field name="res_model">ss_erp.organization</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
-                Click to create a New Organization.
+                新規組織を作成する
             </p>
         </field>
     </record>

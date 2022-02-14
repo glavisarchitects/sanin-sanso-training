@@ -38,47 +38,45 @@ class PartnerRebate(models.Model):
                 _logger.info(_("Unknown timezone {}".format(user_tz)))
         return datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
 
-    name = fields.Char(string='No.', default='New', readonly=1)
-    sequence = fields.Integer(string='Sequence', default=10)
+    name = fields.Char(string='名称', default='新規', readonly=1)
+    sequence = fields.Integer(string='シーケンス', default=10)
     company_id = fields.Many2one(
-        "res.company", string="Company",
+        "res.company", string="会社情報",
         default=lambda self: self.env.company.id, index=True
     )
     organization_id = fields.Many2one(
-        comodel_name="ss_erp.organization", string="Organization in charge",
+        comodel_name="ss_erp.organization", string="担当組織",
         copy=False, index=True,
-        help="Organization which create this record."
     )
     responsible_id = fields.Many2one(
-        'ss_erp.responsible.department', "Jurisdiction", index=True)
+        'ss_erp.responsible.department', "管轄部門", index=True)
     partner_id = fields.Many2one(
-        'res.partner', string='Supplier',
+        'res.partner', string='仕入先',
         change_default=True, tracking=True, index=True,
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-        help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
     partner_ref = fields.Char(
         related='partner_id.ref',
-        string="Supplier code")
+        string="仕入先コード")
 
     active = fields.Boolean(
         string="Enable", default=True,
         help="Set active to false to hide the rebate contract without removing it.")
     date_start = fields.Datetime(
-        string="Contract start date",
+        string="契約開始日",
         default=_get_default_date_start)
 
     date_end = fields.Datetime(
-        string="Contract end date",
+        string="契約終了日",
         default=_get_default_date_end)
-    rebate_price = fields.Float("Bounty", )
-    rebate_standard = fields.Text("Reward criteria")
-    memo = fields.Text("Memo")
-    rebate_goal = fields.Char("The goal")
-    rebate_products = fields.Text("Target product")
+    rebate_price = fields.Float("報奨金", )
+    rebate_standard = fields.Text("報奨金の基準")
+    memo = fields.Text("備考")
+    rebate_goal = fields.Char("目標")
+    rebate_products = fields.Text("対象品")
     currency_id = fields.Many2one(
         'res.currency', default=lambda self: self.env.company.currency_id)
     attachment_number = fields.Integer(
-        'Number of Attachments', compute='_compute_attachment_number')
+        '添付数', compute='_compute_attachment_number')
 
     def _compute_attachment_number(self):
         attachment_data = self.env['ir.attachment'].read_group([
@@ -98,9 +96,9 @@ class PartnerRebate(models.Model):
         for record in self:
             if record.date_start and record.date_end:
                 if record.date_start > record.date_end:
-                    raise ValidationError(_("The starting date cannot be after the ending date."))
+                    raise ValidationError(_("契約開始日は、契約終了日より先の日付は選択できません。"))
                 elif record.date_start == record.date_end:
-                    raise ValidationError(_("有効開始日と有効終了日が同じ日時になっています。"))
+                    raise ValidationError(_("契約開始日と契約終了日が同じ日時になっています。"))
 
     def action_get_attachment_view(self):
         self.ensure_one()
@@ -114,7 +112,7 @@ class PartnerRebate(models.Model):
 
     def action_add_attachment(self):
         action = {
-            'name': _("Attachment file"),
+            'name': _("添付ファイル"),
             'type': 'ir.actions.act_window',
             'views': [[False, 'form']],
             'target': 'new',

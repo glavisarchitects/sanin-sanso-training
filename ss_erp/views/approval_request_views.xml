@@ -15,8 +15,8 @@
                 <field name="hide_btn_cancel" invisible="1"/>
                 <field name="show_btn_temporary_approve" invisible="1"/>
                 <field name="show_btn_approve" invisible="1"/>
-                <button name="action_temporary_approve" string="Temporary Approve" type="object" attrs="{'invisible':[('show_btn_temporary_approve', '=', False)]}"/>
-                <button name="%(ss_erp.ss_erp_approval_lost_action)d" string="Refuse"
+                <button name="action_temporary_approve" string="承認" type="object" attrs="{'invisible':[('show_btn_temporary_approve', '=', False)]}"/>
+                <button name="%(ss_erp.ss_erp_approval_lost_action)d" string="却下"
                             type="action" context="{'default_approval_request': active_id}" attrs="{'invisible':[('show_btn_refuse','=',False)]}"/>
             </button>
             <button name="action_cancel" position="attributes">
@@ -34,18 +34,18 @@
             </button>
 
             <field name="request_owner_id" position="attributes">
-                <attribute name="string">Applicant</attribute>
+                <attribute name="string">申請者</attribute>
                 <attribute name="required">1</attribute>
                 <attribute name="attrs">{'readonly':[('request_status','!=','new')]}</attribute>
             </field>
             <field name="category_id" position="attributes">
-                <attribute name="string">Application type</attribute>
+                <attribute name="string">申請タイプ</attribute>
             </field>
             <field name="date_confirmed" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
             <page name="description" position="attributes">
-                <attribute name="string">explanation</attribute>
+                <attribute name="string">説明</attribute>
             </page>
             <page name="approvers" position="attributes">
                 <attribute name="attrs">{'invisible': [('x_is_multiple_approval', '=', True)]}</attribute>
@@ -213,7 +213,7 @@
                 }"/>
             </xpath>
             <xpath expr="//notebook" position="inside">
-                <page string="Multi-step approval" attrs="{'invisible': [('x_is_multiple_approval', '=', False)], 'readonly':[('request_status','!=','new')]}">
+                <page string="多段階承認" attrs="{'invisible': [('x_is_multiple_approval', '=', False)], 'readonly':[('request_status','!=','new')]}">
                     <field name="multi_approvers_ids" force_save="1">
                         <tree create="false" edit="false" delete="false">
                             <field name="x_approval_seq"/>

@@ -5,7 +5,7 @@
             <field name="name">ss_erp.partner.rebate.form</field>
             <field name="model">ss_erp.partner.rebate</field>
             <field name="arch" type="xml">
-                <form string="Rebate condition">
+                <form string="リベート条件">
                     <header>
                         <button name="action_add_attachment" string="Attachment file" type="object" icon="fa-paperclip" />
                     </header>
@@ -18,11 +18,6 @@
                                 <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
                             </button>
                         </div>
-                        <!-- <div class="oe_title">
-                            <h1>
-                                <field name="name" readonly="1"/>
-                            </h1>
-                        </div> -->
                         <group>
                             <group>
                                 <field name="company_id" string="About us" required="1"/>
@@ -39,11 +34,11 @@
                                 <field name="currency_id" groups="base.group_multi_currency"/>
                             </group>
                         </group>
-                        <group string="Contract detail">
+                        <group string="契約内容">
                             <group>
                                 <field name="rebate_price" widget="monetary" options="{'currency_field': 'currency_id'}" required="1"/>
                                 <field name="rebate_standard"/>
-                                <field name="memo" string="Remark"/>
+                                <field name="memo" string="備考"/>
                             </group>
                             <group>
                                 <field name="rebate_goal"/>
@@ -66,12 +61,12 @@
             <field name="arch" type="xml">
                 <tree string="" decoration-danger="date_end and date_end &lt; datetime.date.today().strftime('%Y-%m-%d')">
                     <field name="sequence" widget="handle"/>
-                    <!-- <field name="name" string="No. Rebate"/> -->
                     <field name="responsible_id"/>
                     <field name="partner_ref"/>
-                    <field name="partner_id" string="Suppiler"/>
+                    <field name="partner_id" string="仕入先（メーカー）"/>
                     <field name="date_start"/>
                     <field name="date_end"/>
+                    <field name="currency_id" invisible="1"/>
                     <field name="rebate_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                     <field name="rebate_standard"/>
                 </tree>
@@ -97,7 +92,7 @@
         </record>
 
         <record id="ss_erp_partner_rebate_action" model="ir.actions.act_window">
-            <field name="name">Rebate condition</field>
+            <field name="name">リベート条件</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">ss_erp.partner.rebate</field>
             <field name="view_mode">tree,form</field>

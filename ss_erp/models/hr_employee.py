@@ -6,17 +6,17 @@ from odoo.exceptions import UserError, ValidationError
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    employee_number = fields.Char(string='Employee Number', )
+    employee_number = fields.Char(string='従業員番号', )
 
-    organization_first = fields.Many2one('ss_erp.organization', string='Organization First', )
+    organization_first = fields.Many2one('ss_erp.organization', string='第一組織', )
     department_jurisdiction_first = fields.Many2many('ss_erp.responsible.department', 'dept_juris_first_rel',
-                                                     string='Department Jurisdiction First', )
-    organization_second = fields.Many2one('ss_erp.organization', string='Organization Second')
+                                                     string='第一組織管轄部門', )
+    organization_second = fields.Many2one('ss_erp.organization', string='第二組織')
     department_jurisdiction_second = fields.Many2many('ss_erp.responsible.department', 'dept_juris_second_rel',
-                                                      string='Department Jurisdiction Second')
-    organization_third = fields.Many2one('ss_erp.organization', string='Organization Third')
+                                                      string='第二組織管轄部門')
+    organization_third = fields.Many2one('ss_erp.organization', string='第三組織')
     department_jurisdiction_third = fields.Many2many('ss_erp.responsible.department', 'dept_juris_third_rel',
-                                                     string='Department Jurisdiction Third')
+                                                     string='第三組織管轄部門')
 
     @api.constrains("employee_number", )
     def _check_same_employee_number(self):
@@ -45,4 +45,4 @@ class HrEmployee(models.Model):
             if r.department_jurisdiction_first.filtered(lambda m: m.id in r.department_jurisdiction_second.ids) or \
                     r.department_jurisdiction_second.filtered(lambda m: m.id in r.department_jurisdiction_third.ids) or \
                     r.department_jurisdiction_third.filtered(lambda m: m.id in r.department_jurisdiction_first.ids):
-                raise ValidationError(_('Same jurisdiction selected'))
+                raise ValidationError(_('同一の管轄部門が選択されています'))

@@ -12,19 +12,23 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    def _get_default_x_organization_id(self):
-        employee_id = self.env['hr.employee'].search([('user_id','=',self.env.user.id)], limit=1)
-        if employee_id:
-            return employee_id.organization_first
-        else:
-            return False
+    @api.depends('x_mkt_user_id')
+    def _compute_default_x_organization_id(self):
+        for rec in self:
+            employee_id = self.env['hr.employee'].search([('user_id','=',rec.x_mkt_user_id.id)], limit=1)
+            if employee_id:
+                rec.x_organization_id = employee_id.organization_first
+            else:
+                rec.x_organization_id = False
 
-    def _get_default_x_responsible_dept_id(self):
-        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
-        if employee_id:
-            return employee_id.department_jurisdiction_first
-        else:
-            return False
+    @api.depends('x_mkt_user_id')
+    def _compute_default_x_responsible_dept_id(self):
+        for rec in self:
+            employee_id = self.env['hr.employee'].search([('user_id', '=', rec.x_mkt_user_id.id)], limit=1)
+            if employee_id:
+                rec.x_responsible_dept_id = employee_id.department_jurisdiction_first
+            else:
+                rec.x_responsible_dept_id = False
 
     x_bis_categ_id = fields.Many2one(
         'ss_erp.bis.category', string="取引区分", copy=True, index=True)
@@ -33,15 +37,15 @@ class PurchaseOrder(models.Model):
     x_desired_delivery = fields.Selection([
         ('full', '完納希望'),
         ('separated', '分納可能'),
-    ], string="Desired delivery", default='full', copy=True)
+    ], string="希望納品", default='full', copy=True)
     x_dest_address_info = fields.Html("直送先情報")
     x_truck_number = fields.Char("車番")
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string="担当組織", index=True,default=lambda self: self._get_default_x_organization_id())
+        'ss_erp.organization', string="担当組織", index=True, compute='_compute_default_x_organization_id')
     x_responsible_dept_id = fields.Many2one(
-        'ss_erp.responsible.department', string="管轄部門", index=True, default=lambda self: self._get_default_x_responsible_dept_id())
+        'ss_erp.responsible.department', string="管轄部門", index=True, compute='_compute_default_x_responsible_dept_id')
     x_mkt_user_id = fields.Many2one(
-        'res.users', string="管轄部門", index=True, default=lambda self: self.env.user)
+        'res.users', string="営業担当者", index=True, default=lambda self: self.env.user)
     x_is_construction = fields.Boolean(
         "工事であるか", compute='_compute_show_construction', compute_sudo=True)
     x_construction_name = fields.Char("工事名称")
@@ -91,14 +95,6 @@ class PurchaseOrder(models.Model):
                 record.is_dropshipping = True if route_id in record.mapped(
                     'product_id').mapped('route_ids') else False
 
-
-    @api.model
-    def _get_picking_type(self, company_id):
-        picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('name', 'ilike', 'Dropship%'), ('warehouse_id.company_id', '=', company_id)])
-        if not picking_type:
-            picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('name', 'ilike', 'Dropship%'), ('warehouse_id', '=', False)])
-        return picking_type[:1]
-
     def action_rfq_send(self):
         res = super(PurchaseOrder, self).action_rfq_send()
         if self.env.context.get('send_rfq', False):
@@ -123,7 +119,6 @@ class PurchaseOrder(models.Model):
             return self.env.ref('action_report_estimate_request').report_action(self)
         else:
             return self.env.ref('action_report_purchasequotation').report_action(self)
-        return res
 
     def _prepare_picking(self):
         res = super(PurchaseOrder, self)._prepare_picking()

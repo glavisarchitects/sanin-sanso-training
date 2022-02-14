@@ -35,48 +35,48 @@
                     <field name="approval_status" invisible="1"/>
                     <button name="payment_action_capture" type="object"
                             invisible="context.get('active_model')=='approval.request'"
-                            string="Capture Transaction" class="oe_highlight"
+                            string="トランザクションをキャプチャする" class="oe_highlight"
                             attrs="{'invisible': [('authorized_transaction_ids', '=', [])]}"/>
                     <button name="payment_action_void" type="object"
                             invisible="context.get('active_model')=='approval.request'"
-                            string="Void Transaction"
+                            string="無効な取引"
                             confirm="Are you sure you want to void the authorized transaction? This action can't be undone."
                             attrs="{'invisible': [('authorized_transaction_ids', '=', [])]}"/>
-                    <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                    <button name="%(sale.action_view_sale_advance_payment_inv)d" string="請求書作成"
                             invisible="context.get('active_model')=='approval.request'"
                             type="action" class="btn-primary"
                             attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"/>
-                    <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                    <button name="%(sale.action_view_sale_advance_payment_inv)d" string="請求書作成"
                             invisible="context.get('active_model')=='approval.request'"
                             type="action" context="{'default_advance_payment_method': 'percentage'}"
                             attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale')]}"/>
                     <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
                             attrs="{'invisible': [('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
-                            string="Send by Email" type="object" class="btn-primary"/>
-                    <button name="action_quotation_send" type="object" string="Send PRO-FORMA Invoice"
+                            string="Eメールで送信" type="object" class="btn-primary"/>
+                    <button name="action_quotation_send" type="object" string="見積送状を送付"
                             groups="sale.group_proforma_sales" class="btn-primary"
                             attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('invoice_count','&gt;=',1),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
                             context="{'proforma': True}"/>
                     <button name="action_confirm" id="action_confirm"
                             invisible="context.get('active_model')=='approval.request'"
-                            string="Confirm" class="btn-primary" type="object"
+                            string="確認" class="btn-primary" type="object"
                             attrs="{'invisible': ['|', ('state', 'not in', ['sent']),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"/>
                     <button name="action_confirm" invisible=""
-                            string="Confirm" type="object"
+                            string="確認" type="object"
                             attrs="{'invisible': ['|', ('state', 'not in', ['draft']),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"/>
                     <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
-                            type="object" string="Send PRO-FORMA Invoice" groups="sale.group_proforma_sales"
+                            type="object" string="見積送状を送付" groups="sale.group_proforma_sales"
                             attrs="{'invisible': ['|', '|', ('state', '=', 'draft'), ('invoice_count','&gt;=',1),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
                             context="{'proforma': True}"/>
                     <button name="action_quotation_send" invisible="1"
                             attrs="{'invisible': [('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
-                            string="Send by Email" type="object" states="sent,sale"/>
+                            string="Eメールで送信" type="object" states="sent,sale"/>
                     <button name="action_cancel" type="object"
                             invisible="context.get('active_model')=='approval.request'"
-                            string="Cancel"
+                            string="取消"
                             attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale']), ('id', '=', False)]}"/>
                     <button name="action_draft" invisible="context.get('active_model')=='approval.request'"
-                            states="cancel" type="object" string="Set to Quotation"/>
+                            states="cancel" type="object" string="見積に設定"/>
                     <field name="state" invisible="context.get('active_model')=='approval.request'"
                            widget="statusbar" statusbar_visible="draft,sent,sale"/>
                 </header>
@@ -103,9 +103,6 @@
                     ('company_id', '=', company_id),
                     ('x_is_customer', '=', True),
                 ]</attribute>
-<!--                <attribute name="readonly">-->
-<!--                    ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]-->
-<!--                </attribute>-->
             </field>
             <button name="update_prices" position="attributes">
                 <attribute name="invisible">1</attribute>

@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 
 class Organization(models.Model):
     _name = 'ss_erp.organization'
-    _description = 'Organization'
+    _description = '組織'
     _parent_name = "parent_id"
     _parent_store = True
     _rec_name = 'complete_name'
@@ -18,33 +18,32 @@ class Organization(models.Model):
         default=lambda self: self.env.company)
     sequence = fields.Integer("シーケンス")
     active = fields.Boolean(
-        default=True, help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
+        default=True,
+        help="If the active field is set to False, it will allow you to hide the payment terms without removing it.")
     expire_start_date = fields.Date(string="有効開始日", copy=False)
     expire_end_date = fields.Date(string="有効終了日", copy=False,
-                           default=lambda self: fields.Date.today().replace(month=12, day=31, year=2099))
-    # child_ids = fields.One2many('ss_erp.organization', 'parent_id',
-    #                             string="Contains Organizations")
+                                  default=lambda self: fields.Date.today().replace(month=12, day=31, year=2099))
     parent_path = fields.Char(index=True)
     organization_code = fields.Char(
         string="組織コード", required=True, copy=False)
     organization_category_id = fields.Many2one(
         "ss_erp.organization.category", string="組織カテゴリ", ondelete="restrict",
-        check_company=True, help="Category of this organization")
+        check_company=True, help="組織カテゴリ")
     parent_id = fields.Many2one(
         "ss_erp.organization", string="親組織", )
     parent_organization_code = fields.Char(
         string="親組織コード", compute="_compute_parent_organization_code", compute_sudo=True)
     organization_country_id = fields.Many2one(
-        "res.country", string="組織所在アドレス", default=lambda self: self.env.ref('base.jp', raise_if_not_found=False))
-    organization_zip = fields.Char(string="Organization address / zip code")
+        "res.country", string="組織住所/国", default=lambda self: self.env.ref('base.jp', raise_if_not_found=False))
+    organization_zip = fields.Char(string="組織住所/郵便番号")
     organization_state_id = fields.Many2one(
-        "res.country.state", string="Organization address / prefecture")
-    organization_city = fields.Char("Organization Address / City")
-    organization_street = fields.Char("Organization address / town name")
+        "res.country.state", string="組織住所/都道府県")
+    organization_city = fields.Char("組織住所/市区町村")
+    organization_street = fields.Char("組織住所/町名番地")
     organization_street2 = fields.Char(
-        "Organization address / town name address 2")
-    organization_phone = fields.Char("Organization phone number")
-    organization_fax = fields.Char("Organization Representative Fax")
+        "組織住所/町名番地2")
+    organization_phone = fields.Char("組織代表Tel")
+    organization_fax = fields.Char("組織代表Fax")
     complete_name = fields.Char(
         '組織名称', compute='_compute_complete_name',
         store=True)
@@ -71,19 +70,20 @@ class Organization(models.Model):
         """
         for record in self:
             if (
-                record.expire_start_date
-                and record.expire_end_date
-                and record.expire_start_date > record.expire_end_date
+                    record.expire_start_date
+                    and record.expire_end_date
+                    and record.expire_start_date > record.expire_end_date
             ):
                 raise ValidationError(
-                    _("The starting date cannot be after the ending date.")
+                    _("有効開始日は、終了日より先の日付は選択できません")
                 )
 
     @api.constrains("expire_start_date", "expire_end_date", "organization_code")
     def _check_organization_duration(self):
         for record in self:
             if record and record.organization_code:
-                organization_ids = self.env['ss_erp.organization'].search([('organization_code','=',record.organization_code)])
+                organization_ids = self.env['ss_erp.organization'].search(
+                    [('organization_code', '=', record.organization_code)])
                 for org in organization_ids:
                     if record != org:
                         if record.expire_start_date and org.expire_start_date and org.expire_end_date:
@@ -100,7 +100,7 @@ class Organization(models.Model):
         return True
 
     def action_unarchive(self):
-        organization_ids = self.env['ss_erp.organization'].search([('organization_code','=',self.organization_code)])
+        organization_ids = self.env['ss_erp.organization'].search([('organization_code', '=', self.organization_code)])
         for org in organization_ids:
             if self != org:
                 if (org.expire_start_date <= self.expire_start_date <= org.expire_end_date) or (

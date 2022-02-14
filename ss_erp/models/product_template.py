@@ -10,4 +10,4 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    x_fixed_cost = fields.Float("Purchase Fixed price", default=0)
+    x_fixed_cost = fields.Float("仕入定価", default=0)

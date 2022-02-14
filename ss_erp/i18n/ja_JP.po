@@ -1165,6 +1165,11 @@ msgid "Complete Name"
 msgstr "組織名称"
 
 #. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__name
+msgid "組織名称"
+msgstr "組織名称"
+
+#. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_partner_rebate_search
 msgid "Conditionsterm's end"
 msgstr "期間満了"
@@ -1883,11 +1888,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_autogas_file_data_rec__filer2
 msgid "Filer2"
 msgstr ""
-
-#. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.hr_employee_view_form_inherit
-msgid "First organization (main manager)"
-msgstr "第一組織（主務）"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__property_account_position_id
@@ -3185,16 +3185,6 @@ msgstr "第一組織（主務）"
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__organization_fax
 msgid "Organization Representative Fax"
 msgstr "組織代表Fax"
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_hr_employee__organization_second
-msgid "Organization Second"
-msgstr "第二組織（兼務）"
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_hr_employee__organization_third
-msgid "Organization Third"
-msgstr "第三組織（兼務）"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__organization_country_id

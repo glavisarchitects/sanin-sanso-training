@@ -2,7 +2,7 @@
 
 from . import base_import
 from . import bis_category
-from . import mail_mail
+# from . import mail_mail
 from . import organization
 from . import organization_category
 from . import partner_rebate
