@@ -112,11 +112,6 @@ class IfdbAutogasFileDataRec(models.Model):
         store=True,
         size=4
     )
-    # validate_so = fields.Char(
-    #     string="SOチェック用",
-    #     compute="_compute_validate_sale_order",
-    #     store=True
-    # )
 
     _sql_constraints = [
         ("card_number_length",
@@ -128,14 +123,3 @@ class IfdbAutogasFileDataRec(models.Model):
     def _compute_customer_code(self):
         for r in self:
             r.customer_code = r.card_number[7:11]
-
-    # @api.depends("customer_code", "calendar_date")
-    # def _compute_validate_sale_order(self):
-    #     for r in self:
-    #         validate_so = ""
-    #         if r.customer_code:
-    #             validate_so+="%s" % r.customer_code
-    #         if r.calendar_date:
-    #             validate_so+="%s" % r.calendar_date
-    #         r.validate_so = validate_so
-

@@ -24,7 +24,7 @@
             <form>
 
                 <sheet>
-                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                     <widget name="web_ribbon" title="アーカイブ済み" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
                         <group>
                             <field name="name" required="1"/>

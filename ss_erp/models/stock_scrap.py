@@ -6,9 +6,23 @@ class StockScrap(models.Model):
     _inherit = 'stock.scrap'
 
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string='担当組織',default=lambda self: self.env.user.organization_id)
+        'ss_erp.organization', string='担当組織', default=lambda self: self._get_default_x_organization_id())
     x_responsible_dept_id = fields.Many2one(
-        'ss_erp.responsible.department', string='管轄部門')
+        'ss_erp.responsible.department', string='管轄部門', default=lambda self: self._get_default_x_responsible_dept_id())
+
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
+
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.department_jurisdiction_first
+        else:
+            return False
 
     scrap_type = fields.Selection(
         string='廃棄種別',

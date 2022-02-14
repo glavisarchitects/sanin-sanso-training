@@ -37,8 +37,13 @@ class SaleOrder(models.Model):
 
     def action_confirm(self):
         if not self.x_no_approval_required_flag and self.approval_status != 'approved':
-            raise UserError(_("Please complete approval flow before change to order"))
+            raise UserError(_("確認する前に、承認フローを完了してください・"))
         return super(SaleOrder, self).action_confirm()
+
+    def _prepare_confirmation_values(self):
+        return {
+            'state': 'sale',
+        }
 
     def action_draft(self):
         orders = self.filtered(lambda s: s.state in ['cancel', 'sent'])
@@ -76,7 +81,6 @@ class SaleOrder(models.Model):
                      '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
                      ('company_id', '=', company_id), ('product_id', '=', line.product_id.id),
                      ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-                print("####################", product_pricelist)
                 if len(product_pricelist) == 0:
                     # Can't find ss_erp_pricelist match with input condition
                     line.x_pricelist = False
@@ -109,7 +113,7 @@ class SaleOrderLine(models.Model):
     x_pricelist = fields.Many2one('ss_erp.product.price', string="価格リスト", index=True)
     x_expected_delivery_date = fields.Date("納期予定日")
     x_remarks = fields.Char("備考")
-    price_unit = fields.Float('Unit Price', required=True, digits='Product Price', default=0.0, store=True)
+    price_unit = fields.Float('単価', required=True, digits='Product Price', default=0.0, store=True)
 
     x_is_required_x_pricelist = fields.Boolean(default=True)
 

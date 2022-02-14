@@ -29,7 +29,7 @@
             <form string="Product Price Form">
                 <sheet>
                     <!--invisible element-->
-                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <widget name="web_ribbon" title="アーカイブ済み" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <field name="active" invisible="1"/>
                     <field name="has_organization" invisible="1"/>
                     <field name="has_partner" invisible="1"/>

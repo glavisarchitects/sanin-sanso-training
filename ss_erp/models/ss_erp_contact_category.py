@@ -2,107 +2,106 @@
 from odoo import models, fields, api
 
 CONTACT_CATEGORY_SELECTION = [
-    ('required', 'Required'),
-    ('optional', 'Optional'),
-    ('no', 'No'),
+    ('required', '必須'),
+    ('optional', 'オプション'),
+    ('no', 'なし'),
 ]
 
 
 class ContactCategory(models.Model):
     _name = 'ss_erp.contact.category'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'Contact Category'
+    _description = '連絡先カテゴリ'
 
-    name = fields.Char(string='Name')
-    active = fields.Boolean('Active', default=True)
-    sequence = fields.Integer('Sequence', default=10)
+    name = fields.Char(string='名称')
+    active = fields.Boolean('有効', default=True)
+    sequence = fields.Integer('シーケンス', default=10)
     company_type = fields.Selection(
-        [('person', 'Person'), ('company', 'Company')], string='Company type')
+        [('person', '個人'), ('company', '会社')], string='会社タイプ')
     type = fields.Selection([
-        ('contact', 'Contacts'),
-        ('invoice', 'Invoice'),
-        ('delivery', 'Delivery to'),
-        ('for_rfq', 'Address for requesting a quote'),
-        ('for_po', 'Order destination'),
-        ('other', 'Other addresses'),
-        ('private', 'Personal address'),
-    ], string='Address type')
-    description = fields.Char(string='Explanation')
-    basic = fields.Char('Basic')
+        ('contact', '連絡先'),
+        ('invoice', '請求先'),
+        ('delivery', '配送先'),
+        ('for_rfq', '見積依頼送付先'),
+        ('for_po', '発注送付先'),
+        ('other', '他のアドレス'),
+        ('private', '個人アドレス'),
+    ], string='アドレスの種類')
+    description = fields.Char(string='説明')
     has_partner_info = fields.Boolean(
-        string="Account Overview tab", default=True)
+        string="取引先概要タブ", default=True)
     has_parent_id = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='related company', default='required')
+        CONTACT_CATEGORY_SELECTION, string='関連会社', default='optional')
     has_ref = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Customer code', default='required')
+        CONTACT_CATEGORY_SELECTION, string='取引先コード', default='optional')
     has_address = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Business address', default='required')
+        CONTACT_CATEGORY_SELECTION, string='取引先住所', default='optional')
     has_function = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Job title', default='required')
+        CONTACT_CATEGORY_SELECTION, string='職位', default='optional')
     has_phone = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='TEL representative', default='required')
+        CONTACT_CATEGORY_SELECTION, string='TEL代表', default='optional')
     has_mobile = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='TEL direct', default='required')
+        CONTACT_CATEGORY_SELECTION, string='TEL直通', default='optional')
     has_x_fax = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='FAX representative', default='required')
+        CONTACT_CATEGORY_SELECTION, string='FAX代表', default='optional')
     has_x_fax_payment = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Fax payment notice', default='required')
+        CONTACT_CATEGORY_SELECTION, string='FAX支払通知書', default='optional')
     has_x_contract_check = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Transaction basic contract', default='required')
+        CONTACT_CATEGORY_SELECTION, string='取引基本契約書', default='optional')
     has_email = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Email', default='required')
+        CONTACT_CATEGORY_SELECTION, string='Eメール', default='optional')
     has_website = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Website link', default='required')
+        CONTACT_CATEGORY_SELECTION, string='ウェブサイトリンク', default='optional')
     has_vat = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Tax ID', default='required')
+        CONTACT_CATEGORY_SELECTION, string='税ID', default='optional')
     has_title = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Title', default='required')
+        CONTACT_CATEGORY_SELECTION, string='タイトル', default='optional')
     has_category_id = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Tag', default='required')
+        CONTACT_CATEGORY_SELECTION, string='タグ', default='optional')
     has_x_found_year = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Founding year', default='required')
+        CONTACT_CATEGORY_SELECTION, string='創立年度', default='optional')
     has_x_capital = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Capital', default='required')
+        CONTACT_CATEGORY_SELECTION, string='資本金', default='optional')
     has_performance_info = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Achievement information', default='required')
+        CONTACT_CATEGORY_SELECTION, string='実績情報', default='optional')
     has_construction_info = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Construction permit', default='required')
+        CONTACT_CATEGORY_SELECTION, string='建設業許可', default='optional')
     has_user_id = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Sales person', default='required')
+        CONTACT_CATEGORY_SELECTION, string='販売担当者', default='optional')
     has_property_delivery_carrier_id = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Shipping method', default='required')
+        CONTACT_CATEGORY_SELECTION, string='配送方法', default='optional')
     has_team_id = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Sales team', default='required')
+        CONTACT_CATEGORY_SELECTION, string='販売チーム', default='optional')
     has_property_payment_term_id = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Payment terms', default='required')
+        CONTACT_CATEGORY_SELECTION, string='支払条件', default='optional')
     has_property_product_pricelist = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Price list', default='required')
+        CONTACT_CATEGORY_SELECTION, string='価格リスト', default='optional')
     has_sales_term = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Transaction terms', default='required')
+        CONTACT_CATEGORY_SELECTION, string='取引条件', default='optional')
     has_x_collecting_money = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Collecting money', default='required')
+        CONTACT_CATEGORY_SELECTION, string='集金', default='optional')
     has_x_fee_burden = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Fee burden', default='required')
+        CONTACT_CATEGORY_SELECTION, string='手数料負担', default='optional')
     has_x_bill_site = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Bill site', default='required')
+        CONTACT_CATEGORY_SELECTION, string='手形サイト', default='optional')
     has_x_purchase_user_id = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Purchasing person', default='required')
+        CONTACT_CATEGORY_SELECTION, string='購買担当者', default='optional')
     has_x_vendor_payment_term = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Payment terms and conditions', default='required')
+        CONTACT_CATEGORY_SELECTION, string='支払条件規定', default='optional')
     has_property_supplier_payment_term_id = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Payment terms', default='required')
+        CONTACT_CATEGORY_SELECTION, string='支払条件', default='optional')
     has_x_minimum_cost = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Minimum purchase price', default='required')
+        CONTACT_CATEGORY_SELECTION, string='最低仕入価格', default='optional')
     has_x_payment_terms = fields.Boolean(
-        string='Our regulations on payment terms', default=True)
+        string='支払条件の当社規定', default=True)
     has_property_account_position_id = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Accounting position', default='required')
+        CONTACT_CATEGORY_SELECTION, string='会計ポジション', default='optional')
     has_bank_accounts = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Bank accounts', default='required')
+        CONTACT_CATEGORY_SELECTION, string='銀行口座', default='optional')
     has_sales_note = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Sales related', default='required')
+        CONTACT_CATEGORY_SELECTION, string='販売関連', default='optional')
     has_purchase_note = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='Purchasing related', default='required')
+        CONTACT_CATEGORY_SELECTION, string='仕入関連', default='optional')
 
     @api.onchange('has_partner_info')
     def _onchange_has_partner_info(self):

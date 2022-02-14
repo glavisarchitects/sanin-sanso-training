@@ -13,7 +13,7 @@ class ResponsibleDepartment(models.Model):
     company_id = fields.Many2one(
         'res.company', string='会社',
         default=lambda self: self.env.company)
-    sequence = fields.Integer("Sequence")
+    sequence = fields.Integer("シーケンス")
     active = fields.Boolean(
         default=True, )
     start_date = fields.Date(string="有効開始日", copy=False)
@@ -55,5 +55,5 @@ class ResponsibleDepartment(models.Model):
                     and record.start_date > record.end_date
             ):
                 raise ValidationError(
-                    _("The starting date cannot be after the ending date.")
+                    _("有効開始日は、終了日より先の日付は選択できません。")
                 )

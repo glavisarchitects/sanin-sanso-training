@@ -22,9 +22,11 @@
         <field name="arch" type="xml">
             <form string="">
                 <sheet>
+                    <widget name="web_ribbon" title="アーカイブ済み" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" default_focus="1" placeholder="Name" required="1"/>
+                            <field name="name" default_focus="1" placeholder="名称" required="1"/>
                         </h1>
                     </div>
                     <group>
@@ -32,10 +34,11 @@
                             <field name="company_type" required="1"/>
                             <field name="type" required="1"/>
                             <field name="description"/>
+                            <field name="active" invisible="1"/>
                         </group>
                     </group>
                     <notebook colspan="4">
-                        <page string="Basic" name="categ_basic" autofocus="autofocus">
+                        <page string="基本" name="categ_basic" autofocus="autofocus">
                             <group>
                                 <group>
                                     <field name="has_parent_id" widget="radio" options="{'horizontal': true}"/>
@@ -56,7 +59,7 @@
                                     <field name="has_category_id" widget="radio" options="{'horizontal': true}"/>                                </group>
                             </group>
                         </page>
-                        <page string="Business partner overview" name="categ_partner_overview">
+                        <page string="取引先概要" name="categ_partner_overview">
                             <group>
                                 <group>
                                     <field name="has_partner_info" widget="boolean_toggle"/>
@@ -67,7 +70,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Sale &amp; Buy" name="categ_sale_and_buy">
+                        <page string="販売 &amp; 購買" name="categ_sale_and_buy">
                             <group>
                                 <group>
                                     <field name="has_user_id" widget="radio" options="{'horizontal': true}"/>
@@ -90,14 +93,14 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Total" name="categ_total">
+                        <page string="会計" name="categ_total">
                             <group>
                                 <group>
                                     <field name="has_bank_accounts" widget="radio" options="{'horizontal': true}"/>
                                 </group>
                             </group>
                         </page>
-                        <page string="Internal note" name="categ_internal_note">
+                        <page string="内部注記" name="categ_internal_note">
                             <group>
                                 <group>
                                     <field name="has_sales_note" widget="radio" options="{'horizontal': true}"/>
@@ -128,7 +131,7 @@
     </record>
     <!-- ACTION -->
     <record id="ss_erp_contact_category_action" model="ir.actions.act_window">
-        <field name="name">Contact Category</field>
+        <field name="name">連絡先カテゴリ</field>
         <field name="res_model">ss_erp.contact.category</field>
         <field name="view_mode">tree,form</field>
     </record>
