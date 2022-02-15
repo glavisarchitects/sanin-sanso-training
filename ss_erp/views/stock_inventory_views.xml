@@ -13,7 +13,7 @@
                 </xpath>
                 <xpath expr="//field[@name='product_ids']" position="after">
                     <field name="organization_id"/>
-                    <field name="type_id"/>
+<!--                    <field name="type_id"/>-->
                 </xpath>
             </field>
         </record>
