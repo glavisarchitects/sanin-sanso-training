@@ -3143,11 +3143,6 @@ msgid "Organization Count"
 msgstr "組織数"
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_hr_employee__organization_first
-msgid "Organization First"
-msgstr "第一組織（主務）"
-
-#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__organization_fax
 msgid "Organization Representative Fax"
 msgstr "組織代表Fax"
