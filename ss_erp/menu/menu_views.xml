@@ -45,7 +45,7 @@
 
 
     <!-- Menu Stock -->
-    <menuitem id="menu_ss_erp_instruction_order_action" name="Inventory Plan" parent="stock.menu_stock_warehouse_mgmt"
+    <menuitem id="menu_ss_erp_instruction_order_action" name="棚卸計画" parent="stock.menu_stock_warehouse_mgmt"
               action="ss_erp_instruction_order_action" sequence="99"/>
 
     <!--  インポートデータの親メニュー  -->

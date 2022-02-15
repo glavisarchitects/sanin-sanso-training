@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="sequence" widget="handle"/>
-                <field name="name" string="See inventory"/>
+                <field name="name"/>
                 <field name="organization_id"/>
                 <field name="type_id"/>
                 <field name="accounting_date"/>
@@ -20,8 +20,8 @@
         <field name="arch" type="xml">
             <form string="">
                 <header>
-                    <button name="search_action" string="Search" type="object" class="oe_highlight" attrs="{'invisible': [('create_uid', '=', False)]}"/>
-                    <button name="display_action" string="Display" type="object" class="oe_highlight" attrs="{'invisible': [('create_uid', '=', False)]}"/>
+                    <button name="search_action" string="検索" type="object" class="oe_highlight" attrs="{'invisible': [('create_uid', '=', False)]}"/>
+                    <button name="display_action" string="表示" type="object" class="oe_highlight" attrs="{'invisible': [('create_uid', '=', False)]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
                 </header>
                 <sheet>
@@ -63,7 +63,7 @@
         </field>
     </record>
     <record id="ss_erp_instruction_order_action" model="ir.actions.act_window">
-        <field name="name">Inventory Plan</field>
+        <field name="name">棚卸計画</field>
         <field name="res_model">ss_erp.instruction.order</field>
         <field name="view_mode">tree,form</field>
     </record>
