@@ -84,7 +84,7 @@
 
             <xpath expr="//group[@name='order_details']//div[1]" position="replace">
                 <div class="o_td_label">
-                                <label for="date_order" string="Quotation Date"/>
+                                <label for="date_order" string="見積日"/>
                 </div>
             </xpath>
 

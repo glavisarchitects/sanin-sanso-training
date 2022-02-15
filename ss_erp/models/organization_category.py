@@ -8,19 +8,19 @@ class OrganizationCategory(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Organization category'
 
-    name = fields.Char(string='Category name')
+    name = fields.Char(string='カテゴリ名')
     company_id = fields.Many2one(
-        'res.company', string='Company', required=True,
+        'res.company', string='会社', required=True,
         default=False)
-    sequence = fields.Integer("Sequence")
+    sequence = fields.Integer("シーケンス")
     active = fields.Boolean(default=True, )
-    hierarchy_number = fields.Integer("Hierarchy", )
+    hierarchy_number = fields.Integer("階層", )
     organization_count = fields.Integer(
-        string="Organization Count", compute="_compute_organization_count",
+        string="組織数", compute="_compute_organization_count",
         compute_sudo=True
     )
     organization_ids = fields.One2many(
-        "ss_erp.organization", "organization_category_id", string="Organizations")
+        "ss_erp.organization", "organization_category_id", string="組織")
 
     @api.constrains("name", "company_id")
     def _check_name(self):

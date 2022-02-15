@@ -977,16 +977,6 @@ msgid "Cash purchase amount"
 msgstr "現金仕入額"
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category__name
-msgid "Category name"
-msgstr "組織カテゴリ"
-
-#. module: ss_erp
-#: model:ir.model.fields,help:ss_erp.field_ss_erp_organization__organization_category_id
-msgid "Category of this organization"
-msgstr "組織カテゴリ"
-
-#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__channel_ids
 msgid "Channels"
 msgstr ""
@@ -1112,15 +1102,8 @@ msgid "Commercial product C2"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model,name:ss_erp.model_res_company
-#: model_terms:ir.ui.view,arch_db:ss_erp.organization_category_view_search
-msgid "Companies"
-msgstr "会社"
-
-#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_multi_approvers__x_company_id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization__company_id
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category__company_id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_partner_rebate__company_id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__company_id
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_responsible_department__company_id
@@ -2048,11 +2031,6 @@ msgid "Hide Btn Cancel"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_organization_category__hierarchy_number
-msgid "Hierarchy"
-msgstr "階層"
-
-#. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__purchase_order__x_desired_delivery__full
 msgid "Hope for full payment"
 msgstr "完納希望"
@@ -2172,13 +2150,6 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,help:ss_erp.field_ss_erp_res_partner_form__team_id
 msgid "If set, this Sales Team will be used for sales and assignments related to this partner"
-msgstr ""
-
-#. module: ss_erp
-#: model:ir.model.fields,help:ss_erp.field_ss_erp_organization__active
-#: model:ir.model.fields,help:ss_erp.field_ss_erp_organization_category__active
-#: model:ir.model.fields,help:ss_erp.field_ss_erp_responsible_department__active
-msgid "If the active field is set to False, it will allow you to hide the payment terms without removing it."
 msgstr ""
 
 #. module: ss_erp
@@ -3138,11 +3109,6 @@ msgstr "組織コード"
 #: model_terms:ir.ui.view,arch_db:ss_erp.nama_model_tree
 msgid "Org name"
 msgstr "組織名称"
-
-#. module: ss_erp
-#: model:ir.ui.menu,name:ss_erp.menu_organization_category_setting
-msgid "Org. Categories"
-msgstr "組織カテゴリ"
 
 #. module: ss_erp
 #: model:ir.actions.act_window,name:ss_erp.action_organizations
