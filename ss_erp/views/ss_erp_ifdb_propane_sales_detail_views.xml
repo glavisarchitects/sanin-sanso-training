@@ -26,13 +26,13 @@
                 <field name="customer_branch_code"/>
                 <field name="customer_branch_sub_code"/>
                 <field name="customer_business_partner_code"/>
-                <filter name="error" string="Error" domain="[('status', '=', 'error')]"/>
-                <filter name="wait" string="Waiting" domain="[('status', '=', 'wait')]"/>
-                <filter name="done" string="Done" domain="[('status', '=', 'success')]"/>
+                <filter name="error" string="エラー" domain="[('status', '=', 'error')]"/>
+                <filter name="wait" string="処理待ち" domain="[('status', '=', 'wait')]"/>
+                <filter name="done" string="成功" domain="[('status', '=', 'success')]"/>
                 <group expand="0" string="Group By">
-                    <filter string='Status' name="status_group" domain="[]" context="{'group_by': 'status'}"/>
-                    <filter string='Header' name="header_group" domain="[]" context="{'group_by': 'propane_sales_header_id'}"/>
-                    <filter string='Sale order' name="sale_order_group" domain="[]" context="{'group_by': 'sale_id'}"/>
+                    <filter string='ステータス' name="status_group" domain="[]" context="{'group_by': 'status'}"/>
+                    <filter string='ヘッダ' name="header_group" domain="[]" context="{'group_by': 'propane_sales_header_id'}"/>
+                    <filter string='販売オーダー' name="sale_order_group" domain="[]" context="{'group_by': 'sale_id'}"/>
                 </group>
             </search>
         </field>

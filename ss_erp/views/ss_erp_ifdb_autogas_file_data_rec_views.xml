@@ -15,13 +15,13 @@
                        filter_domain="[('group_division', 'ilike', self)]" />
                 <group string="Group By">
                     <filter name="flt_status"
-                            string="Status"
+                            string="ステータス"
                             context="{'group_by': 'status'}" />
                     <filter name="flt_file_head"
-                            string="File"
+                            string="ファイル"
                             context="{'group_by': 'autogas_file_header_id'}" />
                     <filter name="flt_sale_order"
-                            string="Sale Order"
+                            string="販売オーダー"
                             context="{'group_by': 'sale_id'}" />
                 </group>
             </search>

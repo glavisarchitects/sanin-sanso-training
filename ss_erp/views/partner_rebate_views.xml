@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <form string="リベート条件">
                     <header>
-                        <button name="action_add_attachment" string="Attachment file" type="object" icon="fa-paperclip" />
+                        <button name="action_add_attachment" string="ドキュメントを添付" type="object" icon="fa-paperclip" />
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
@@ -15,7 +15,7 @@
                                 class="oe_stat_button"
                                 icon="fa-file-text-o"
                                 type="object">
-                                <field name="attachment_number" widget="statinfo" string="Documents" options="{'reload_on_button': true}"/>
+                                <field name="attachment_number" widget="statinfo" string="ドキュメント" options="{'reload_on_button': true}"/>
                             </button>
                         </div>
                         <group>

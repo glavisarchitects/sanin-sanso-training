@@ -120,11 +120,11 @@
         <field name="arch" type="xml">
             <search string="">
                 <field name="name"/>
-                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <filter string="アーカイブ済み" name="inactive" domain="[('active', '=', False)]"/>
                 <separator/>
                 <group expand="0" name="group_by" string="Group By">
-                    <filter name="group_company_type" string="Company Type" context="{'group_by': 'company_type'}"/>
-                    <filter name="group_type" string="Address type" context="{'group_by': 'type'}"/>
+                    <filter name="group_company_type" string="会社タイプ" context="{'group_by': 'company_type'}"/>
+                    <filter name="group_type" string="アドレスの種類" context="{'group_by': 'type'}"/>
                 </group>
             </search>
         </field>

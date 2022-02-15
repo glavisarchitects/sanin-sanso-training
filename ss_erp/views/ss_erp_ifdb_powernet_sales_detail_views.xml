@@ -71,7 +71,7 @@
                 <group string="Group By">
                     <field name="status"/>
                     <filter name="flt_status"
-                            string="Status"
+                            string="ステータス"
                             context="{'group_by': 'status'}"/>
                 </group>
             </search>

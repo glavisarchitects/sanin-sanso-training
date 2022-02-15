@@ -6,7 +6,7 @@
         <field name="name">ss_erp.hr.internal.note.view.list</field>
         <field name="model">ss_erp.hr.internal.note</field>
         <field name="arch" type="xml">
-            <tree editable="bottom" create="1" edit="1" string="Expenses">
+            <tree editable="bottom" create="1" edit="1" string="経費">
                 <field name="organization_id" required="1"/>
                 <field name="name" required="1"/>
                 <field name="ref" domain="[('x_organization_id','=', organization_id)]" widget="many2many_tags"/>

@@ -1,24 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="ss_erpview_order_form_with_carrier_inherit" model="ir.ui.view">
-        <field name="name">sale.order.view.form</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="delivery.view_order_form_with_carrier"/>
-        <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('oe_right')]" position="replace">
-                <!--     HuuPhong20012022    don't show add shipping           -->
-                <!--                <div class="oe_right" modifiers="{}">-->
-                <!--					<button string="Add shipping" name="action_open_delivery_wizard" invisible="context.get('active_model')=='approval.request'"-->
-                <!--                            type="object" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('order_line', '=', []), ('delivery_set', '=', True)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['order_line','=',[]],['delivery_set','=',true]]}" options="{}"/>-->
-                <!--					<button string="Update shipping cost" name="action_open_delivery_wizard" invisible="context.get('active_model')=='approval.request'"-->
-                <!--                            context="{'carrier_recompute':True}" type="object" class="text-warning btn-secondary" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('recompute_delivery_price', '=', False), ('delivery_set', '=', False)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['recompute_delivery_price','=',false],['delivery_set','=',false]]}" options="{}"/>-->
-                <!--					<button string="Update shipping cost" name="action_open_delivery_wizard" invisible="context.get('active_model')=='approval.request'"-->
-                <!--                            context="{'carrier_recompute':True}" type="object" attrs="{'invisible': ['|', '|',('is_all_service', '=', True), ('recompute_delivery_price', '=', True), ('delivery_set', '=', False)]}" modifiers="{'invisible':['|','|',['is_all_service','=',true],['recompute_delivery_price','=',true],['delivery_set','=',false]]}" options="{}"/>-->
-                <!--				</div>-->
-            </xpath>
-        </field>
-    </record>
-
     <record id="sale_form_inherit" model="ir.ui.view">
         <field name="name">sale.order.view.form</field>
         <field name="model">sale.order</field>

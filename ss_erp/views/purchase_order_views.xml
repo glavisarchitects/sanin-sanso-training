@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
         <field name="arch" type="xml">   
             <field name="name" position="attributes">
-                <attribute name="string">Slip No.</attribute>
+                <attribute name="string">伝票No.</attribute>
             </field>
             <field name="company_id" position="attributes">
                 <attribute name="optional">hide</attribute>
@@ -20,7 +20,7 @@
                 <field name="x_organization_id" optional="show"/>
             </field>
             <field name="date_order" position="attributes"> 
-                <attribute name="string">Response date</attribute>
+                <attribute name="string">回答期日</attribute>
                 <attribute name="optional">show</attribute>
                 <attribute name="widget">date</attribute>
             </field>
@@ -28,17 +28,17 @@
                 <attribute name="optional">hide</attribute>
             </field>
             <field name="origin" position="attributes">
-                <attribute name="string">Reference source</attribute>
+                <attribute name="string">参照元</attribute>
             </field>
             <field name="user_id" position="attributes">
-                <attribute name="string">Purchasing person</attribute>
+                <attribute name="string">購買担当者</attribute>
                 <attribute name="required">True</attribute>
             </field>
             <field name="partner_id" position="attributes">
-                <attribute name="string">Supplier</attribute>
+                <attribute name="string">仕入先</attribute>
             </field>
             <field name="invoice_status" position="attributes">
-                <attribute name="string">Invoice Status</attribute>
+                <attribute name="string">請求ステータス</attribute>
             </field>
             
         </field>
@@ -52,7 +52,7 @@
         <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
         <field name="arch" type="xml">     
             <field name="name" position="attributes">
-                <attribute name="string">Slip No.</attribute>
+                <attribute name="string">伝票No.</attribute>
             </field>
             <field name="name" position="after">
                 <field name="x_bis_categ_id" required="1" optional="show"/>
@@ -72,7 +72,7 @@
                 <xpath expr="//field[@name='date_planned']" position="move"/>
             </field>
             <field name="user_id" position="attributes">
-                <attribute name="string">Purchasing person</attribute>
+                <attribute name="string">購買担当者</attribute>
                 <attribute name="required">True</attribute>
             </field>
 
@@ -80,21 +80,21 @@
                 <attribute name="optional">hide</attribute>
             </field>
             <field name="origin" position="attributes">
-                <attribute name="string">Reference source</attribute>
+                <attribute name="string">参照元</attribute>
             </field>
 
             <field name="date_planned" position="attributes">
-                <attribute name="string">Requested delivery date</attribute>
+                <attribute name="string">要求納期</attribute>
                 <attribute name="optional">show</attribute>
             </field>
             <field name="partner_id" position="attributes">
-                <attribute name="string">Supplier</attribute>
+                <attribute name="string">仕入先</attribute>
             </field>
             <field name="invoice_status" position="before">
                 <field name="state"/>
             </field>
             <field name="invoice_status" position="attributes">
-                <attribute name="string">Invoice Status</attribute>
+                <attribute name="string">請求ステータス</attribute>
                 <attribute name="optional">hide</attribute>
             </field>
         </field>
@@ -121,7 +121,7 @@
             </field>
 
             <xpath expr="//form/sheet/group[1]/group[2]/field[@name='date_order']" position="attributes">
-                <attribute name="string">Response date</attribute>
+                <attribute name="string">回答期日</attribute>
                 <attribute name="widget">date</attribute>
 
             </xpath>
@@ -138,12 +138,12 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//form/sheet/group[1]/group[2]/field[@name='date_order']" position="before">
-                <field name="create_date" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}" string="Created date" widget="date"/>
+                <field name="create_date" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}" string="作成日" widget="date"/>
                 <field name="x_rfq_issue_date" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}" widget="date"/>
             </xpath>
 
             <xpath expr="//form/sheet/group[1]/group[2]/div[@name='date_planned_div']" position="after">
-                <field name="date_planned" string="Requested delivery date" widget="date"/>
+                <field name="date_planned" string="要求納期" widget="date"/>
                 <field name="x_desired_delivery" required="1"/>
                 <field name="user_id" domain="[('share', '=', False),('partner_id.organization_id', '=', x_organization_id)]" widget="many2one_avatar_user" position="move"/>
             </xpath>
@@ -151,19 +151,19 @@
                 <field name="x_po_issue_date" attrs="{'invisible': [('state','!=','purchase')]}"/>
             </xpath>
             <xpath expr="//form/sheet/group[1]/group[2]/label[@for='date_approve']" position="attributes">
-                <attribute name="string">Order confirmation date</attribute>
+                <attribute name="string">発注確定日</attribute>
             </xpath>
             <xpath expr="//page[@name='products']/field/tree/field[@name='name']" position="after">
-                <field name="x_fixed_cost" string="Fixed price"/>
+                <field name="x_fixed_cost" string="定価"/>
             </xpath>
             <xpath expr="//page[@name='products']/field/tree/field[@name='product_uom']" position="attributes">
                 <attribute name="options">{'no_create': True}</attribute>
             </xpath>
             <field name="picking_type_id" position="attributes">
-                <attribute name="string">Arrival type</attribute>
+                <attribute name="string">入荷タイプ</attribute>
             </field>
             <field name="dest_address_id" position="attributes">
-                <attribute name="string">Direct delivery</attribute>
+                <attribute name="string">直送</attribute>
             </field>
             <field name="incoterm_id" position="after">
                 <field name="x_dest_address_info" attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')]}"/>
@@ -171,7 +171,7 @@
             </field>
             
             <field name="fiscal_position_id" position="attributes">
-                <attribute name="string">Accounting position</attribute>
+                <attribute name="string">会計ポジション</attribute>
             </field>
             <field name="fiscal_position_id" position="after">
                 <field name="x_organization_id" options="{'no_create': True}" required="1" readonly="0"/>
@@ -182,7 +182,7 @@
             </field>
             
             <page name="purchase_delivery_invoice" position="after">
-                <page string="Construction information" name="construction_information" attrs="{'invisible': [('x_is_construction', '=', False)]}">
+                <page string="工事情報" name="construction_information" attrs="{'invisible': [('x_is_construction', '=', False)]}">
                     <group>
                         <group name="construction_info">
                             <field name="x_construction_name"/>
@@ -226,10 +226,10 @@
                         </group>
                     </group>
                     <group>
-                        <group name="group_contract" string="Notes on construction contract">
+                        <group name="group_contract" string="工事契約における注記事項">
                             <field name="x_construction_contract_notice" nolabel="1" readonly="1"/>
                         </group>
-                        <group name="group_subcontract" string="Estimated price and estimated period for subcontracting work">
+                        <group name="group_subcontract" string="下請工事の予定価格と見積期間">
                             <field name="x_construction_subcontract" nolabel="1" readonly="1"/>
                         </group>
                     </group>

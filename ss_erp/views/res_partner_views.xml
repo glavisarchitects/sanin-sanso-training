@@ -242,11 +242,11 @@
                 }</attribute>
             </xpath>
             <xpath expr="//page[@name='contact_addresses']" position="after">
-                <page string="Business Partner Overview" name="business_partner_overview" attrs="{
+                <page string="取引先概要" name="business_partner_overview" attrs="{
                     'invisible': [('has_partner_info', '=', False)],
                 }">
                     <group>
-                        <group string="Basic information">
+                        <group string="基本情報">
                             <field name="x_found_year" attrs="{
                                 'invisible': [('has_x_found_year', '=', 'no')],
                                 'required': [('has_x_found_year', '=', 'required')]
@@ -256,7 +256,7 @@
                                 'required': [('has_x_capital', '=', 'required')]
                             }"/>
                         </group>
-                        <group string="Performance information" >
+                        <group string="業績情報" >
                             <field name="performance_ids" widget="one2many" attrs="{
                                 'invisible': [('has_performance_info', '=', 'no')],
                                 'required': [('has_performance_info', '=', 'required')]
@@ -280,7 +280,7 @@
                             </field>
                         </group>
                     </group>
-                    <separator string="Construction permit"/>
+                    <separator string="建設業許可"/>
                     <field name="construction_ids" widget="one2many" attrs="{
                         'invisible': [('has_construction_info', '=', 'no')],
                         'required': [('has_construction_info', '=', 'required')]
@@ -310,7 +310,7 @@
                 </page>
             </xpath>
             <xpath expr="//group[@name='sale']" position="inside">
-                <label for="x_payment_terms_ids" string="Transaction terms" attrs="{
+                <label for="x_payment_terms_ids" string="取引条件" attrs="{
                     'invisible': [('has_x_payment_terms', '=', 'no')],
                 }" colspan="4"/>
                 <field name="x_payment_terms_ids" colspan="4" widget="one2many" nolabel="1"
@@ -356,7 +356,7 @@
                     'invisible': [('has_x_minimum_cost', '=', 'no')],
                     'required': [('has_x_minimum_cost', '=', 'required')]
                 }"/>
-                <label for="x_payment_terms" colspan="4" string="Our regulations on payment terms" attrs="{
+                <label for="x_payment_terms" colspan="4" string="支払条件の当社規定" attrs="{
                     'invisible': [('has_x_payment_terms', '=', False)],
                 }"/>
                 <field colspan="4" name="x_payment_terms" nolabel="1" attrs="{
@@ -364,8 +364,8 @@
                 }"/>
             </xpath>
             <xpath expr="//page[@name='accounting']" position="replace">
-                <page string="Invoicing" name="accounting" attrs="{'invisible': [('is_company','=',False),('parent_id','!=',False)]}" modifiers="{'invisible':[['is_company','=',false],['parent_id','!=',false]]}">
-                        <group string="Bank Accounts" name="banks" modifiers="{}">
+                <page string="会計" name="accounting" attrs="{'invisible': [('is_company','=',False),('parent_id','!=',False)]}" modifiers="{'invisible':[['is_company','=',false],['parent_id','!=',false]]}">
+                        <group string="銀行口座" name="banks" modifiers="{}">
                             <field name="bank_ids" widget="one2many" nolabel="1" attrs="{
                                 'invisible': [('has_bank_accounts', '=', 'no')],
                                 'required': [('has_bank_accounts', '=', 'required')]
@@ -380,7 +380,7 @@
                                 </tree>
                             </field>
                             </group>
-                        <group string="Accounting Entries" name="accounting_entries" groups="account.group_account_readonly">
+                        <group string="勘定科目設定" name="accounting_entries" groups="account.group_account_readonly">
                             <field name="currency_id" invisible="1"/>
                             <field name="property_account_receivable_id"/>
                             <field name="property_account_payable_id"/>
@@ -389,7 +389,7 @@
             </xpath>
             <xpath expr="//page[@name='internal_notes']/field[@name='comment']" position="before">
                 <group>
-                    <group string="Sale" attrs="{
+                    <group string="販売" attrs="{
                         'invisible': [('has_sales_note', '=', 'no')],
                         'required': [('has_sales_note', '=', 'required')],
                     }">
@@ -397,7 +397,7 @@
                         <field name="x_customer_material"/>
                         <field name="x_customer_monthly_total_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                     </group>
-                    <group string="Purchase" attrs="{
+                    <group string="購買" attrs="{
                         'invisible': [('has_purchase_note', '=', 'no')],
                         'required': [('has_purchase_note', '=', 'required')],
                     }">

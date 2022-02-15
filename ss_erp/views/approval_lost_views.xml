@@ -9,8 +9,8 @@
                         <field name="lost_reason"/>
                     </group>
                     <footer>
-                        <button name="action_lost_reason_apply" string="Submit" type="object" class="btn-primary"/>
-                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                        <button name="action_lost_reason_apply" string="却下" type="object" class="btn-primary"/>
+                        <button string="取消" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
             </field>

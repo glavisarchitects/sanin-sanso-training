@@ -20,7 +20,7 @@
         <field name="model">ss_erp.res.partner.form</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name" string="Name"/>
+                <field name="name" string="名称"/>
                 <field name="function" invisible="1"/>
                 <field name="phone" class="o_force_ltr" optional="show"/>
                 <field name="email" optional="show"/>
@@ -40,7 +40,7 @@
     </record>
 
     <record id="action_ss_erp_res_partner_form" model="ir.actions.act_window">
-        <field name="name">Res Partner Form</field>
+        <field name="name">連絡先フォーム</field>
         <field name="res_model">ss_erp.res.partner.form</field>
         <field name="view_mode">tree,form</field>
     </record>

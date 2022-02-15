@@ -6,8 +6,7 @@
         <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='active_partner']" position="after">
-                <group string="Organization">
-<!--                    <field name="organization_id" />-->
+                <group string="組織">
                 </group>
             </xpath>
         </field>

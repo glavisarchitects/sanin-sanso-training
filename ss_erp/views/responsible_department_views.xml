@@ -5,7 +5,7 @@
         <field name="name">ss.erp.responsible.department.view.tree</field>
         <field name="model">ss_erp.responsible.department</field>
         <field name="arch" type="xml">
-            <tree string="Jurisdiction">
+            <tree string="管轄部門">
                 <field name="sequence" widget="handle"/>
                 <field name="code" string="管轄部門コード"/>
                 <field name="name" string="管轄部門名称"/>
@@ -49,7 +49,7 @@
         <field name="name">ss.erp.responsible.department.view.search</field>
         <field name="model">ss_erp.responsible.department</field>
         <field name="arch" type="xml">
-            <search string="Jurisdiction">
+            <search string="管轄部門">
                 <field name="name"/>
                 <filter name="archived" string="アーカイブ済み" domain="[('active', '=', False)]" />
             </search>
@@ -57,7 +57,7 @@
     </record>
 
     <record id="responsible_department_view_action" model="ir.actions.act_window">
-        <field name="name">Jurisdiction</field>
+        <field name="name">管轄部門</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">ss_erp.responsible.department</field>
         <field name="view_mode">tree,form</field>
