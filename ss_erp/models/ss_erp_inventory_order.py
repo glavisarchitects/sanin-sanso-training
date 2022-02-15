@@ -8,7 +8,7 @@ class InventoryOrder(models.Model):
     _name = 'ss_erp.inventory.order'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
-    _description = 'Inventory Order'
+    _description = '移動伝票'
 
     """
     Is an intermediate model use for transfer product between organization
@@ -16,7 +16,6 @@ class InventoryOrder(models.Model):
 
     company_id = fields.Many2one('res.company', string='会社', copy=False)
     name = fields.Char('番号', copy=False)
-    # picking_type_id = fields.Many2one('stock.picking.type', 'オペレーションタイプ')
     organization_id = fields.Many2one('ss_erp.organization', '移動元組織')
     responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動元管轄部門')
     location_id = fields.Many2one('stock.location', '移動元ロケーション')

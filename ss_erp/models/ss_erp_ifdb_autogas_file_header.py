@@ -6,7 +6,7 @@ from datetime import datetime
 class IFDBAutogasFileHeader(models.Model):
     _name = "ss_erp.ifdb.autogas.file.header"
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = "Autogas File Header"
+    _description = "オートガスPOSヘッダ"
 
     upload_date = fields.Datetime(
         string="アップロード日時",

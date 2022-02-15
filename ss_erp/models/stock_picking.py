@@ -20,8 +20,7 @@ class StockPicking(models.Model):
     x_organization_dest_id = fields.Many2one('ss_erp.organization', string='移動先組織')
     x_mkt_user_id = fields.Many2one(
         'res.users', string="営業担当")
-    x_shipping_method = fields.Selection([('transport', '配車（移動元）'), ('pick_up', '配車（移動先）'), ('outsourcing', '宅配')],
-                                         '配送方法', related='x_inventory_order_id.shipping_method')
+    x_shipping_method = fields.Selection(related='x_inventory_order_id.shipping_method')
     # TODO
     x_import_id = fields.Char("Capture ID", copy=False)
     x_inspection_user_id = fields.Many2one(

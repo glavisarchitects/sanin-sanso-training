@@ -7,7 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 class YoukiKensaBilling(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _name = 'ss_erp.ifdb.youkikensa.billing.file.header'
-    _description = 'Youki Kensa Billing'
+    _description = '容器検査'
 
     name = fields.Char(string='名称')
     upload_date = fields.Datetime(
@@ -22,26 +22,6 @@ class YoukiKensaBilling(models.Model):
         ('error', 'エラーあり'),
     ], string='ステータス', default='wait', index=True,compute='_compute_status')
 
-    # processing_date = fields.Datetime('処理日時')
-    # sales_date = fields.Datetime('処理日時')
-    # slip_date = fields.Char('伝票No')
-    # field_3 = fields.Char('フィールド3')
-    # billing_code = fields.Char('請求先コード')
-    # billing_abbreviation = fields.Char('請求先略称')
-    # customer_code = fields.Char('得意先コード')
-    # customer_abbreviation = fields.Char('得意先略称')
-    # product_code = fields.Char('商品コード')
-    # product_name = fields.Char('商品名')
-    # unit_price = fields.Char('単価')
-    # sales_return_quantity = fields.Char('販売返品数量')
-    # net_sales_excluding_tax = fields.Char('税抜純売上高')
-    # consumption_tax = fields.Char('消費税')
-    # remarks = fields.Char('備考')
-    # unit_cost = fields.Char('単位原価')
-    # description = fields.Char('摘要')
-    # error_message = fields.Char('エラーメッセージ')
-    # purchase_id = fields.Many2one('purchase.order', '購買オーダ参照')
-
     youki_kensa_detail_ids = fields.One2many('ss_erp.ifdb.youkikensa.billing.file.detail',
                                              'youkikensa_billing_file_header_id')
     has_data_import = fields.Boolean(compute='_compute_has_data_import')
@@ -55,14 +35,6 @@ class YoukiKensaBilling(models.Model):
             else:
                 record.has_data_import = False
 
-
-    # _sql_constraints = [
-    #     (
-    #         "name_uniq",
-    #         "UNIQUE(name)",
-    #         "Name is using for searching, please make it unique!"
-    #     ),
-    # ]
     @api.constrains("name")
     def _check_name(self):
         for record in self:

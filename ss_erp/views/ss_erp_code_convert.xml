@@ -8,9 +8,9 @@
             <field name="arch" type="xml">
                 <tree string="" duplicate="false">
                     <field name="external_system"/>
-                    <field name="convert_code_type" string="Code type"/>
-                    <field name="external_code" string="External code"/>
-                    <field name="internal_code" string="Odoo code"/>
+                    <field name="convert_code_type" string="コード種別"/>
+                    <field name="external_code" string="外部コード"/>
+                    <field name="internal_code" string="Odooコード"/>
                     <field name="priority_conversion"/>
                 </tree>
             </field>
@@ -68,7 +68,7 @@
         </record>
         <!-- ACTION -->
         <record id="ss_erp_code_convert_action" model="ir.actions.act_window">
-            <field name="name">Convert Code</field>
+            <field name="name">コード変換</field>
             <field name="res_model">ss_erp.code.convert</field>
             <field name="view_mode">tree,form</field>
         </record>

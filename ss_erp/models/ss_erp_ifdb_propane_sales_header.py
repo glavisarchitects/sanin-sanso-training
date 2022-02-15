@@ -2,22 +2,23 @@ from odoo import models, fields, api, _
 from datetime import datetime
 from odoo.exceptions import ValidationError
 
+
 class IFDBPropaneSalesHeader(models.Model):
     _name = 'ss_erp.ifdb.propane.sales.header'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'Propane sales'
+    _description = '米子プロパン売上ヘッダ'
 
     name = fields.Char(string='名称')
     upload_date = fields.Datetime(
         string='アップロード日時', index=True, required=True,
-		default=fields.Datetime.now())
+        default=fields.Datetime.now())
     user_id = fields.Many2one('res.users', string='担当者')
     branch_id = fields.Many2one('ss_erp.organization', string='支店')
     status = fields.Selection([
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり'),
-    ], string='ステータス', default='wait', index=True,compute='_compute_status')
+    ], string='ステータス', default='wait', index=True, compute='_compute_status')
     sales_detail_ids = fields.One2many(
         'ss_erp.ifdb.propane.sales.detail', 'propane_sales_header_id',
         string='Propane sales file header')
@@ -31,15 +32,6 @@ class IFDBPropaneSalesHeader(models.Model):
                 record.has_data_import = True
             else:
                 record.has_data_import = False
-
-
-    # _sql_constraints = [
-    #     (
-    #         "name_unique",
-    #         "UNIQUE(name)",
-    #         "Name is used for searching, please make it unique!"
-    #     ),
-    # ]
 
     @api.constrains("name")
     def _check_name(self):
@@ -82,7 +74,7 @@ class IFDBPropaneSalesHeader(models.Model):
     def _processing_excution(self):
         self.ensure_one()
         exe_data = self.sales_detail_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
-            key=lambda k: (k['slip_date'],k['customer_business_partner_code']))
+            key=lambda k: (k['slip_date'], k['customer_business_partner_code']))
 
         partner_ids = self.env['res.partner'].search_read([], ['id'])
         partner_list = []
@@ -154,7 +146,7 @@ class IFDBPropaneSalesHeader(models.Model):
                         continue
                     else:
                         if not success_dict.get(key):
-                            slip_date=datetime.strptime(line.slip_date,'%Y/%m/%d')
+                            slip_date = datetime.strptime(line.slip_date, '%Y/%m/%d')
                             so = {
                                 'partner_id': int(line.customer_business_partner_code),
                                 'partner_invoice_id': int(line.customer_business_partner_code),
@@ -195,6 +187,6 @@ class IFDBPropaneSalesHeader(models.Model):
                 line.write({
                     'status': 'success',
                     'sale_id': success_dict[key]['sale_id'],
-                    'processing_date':datetime.now(),
+                    'processing_date': datetime.now(),
                     'error_message': False
                 })

@@ -8,9 +8,9 @@ class StockInventoryLine(models.Model):
 
     inventory_order_line_id = fields.Many2one(
         'ss_erp.instruction.order.line',
-            string='Inventory instruction detail number')
+            string='棚卸指示明細番号')
     organization_id = fields.Many2one(
-        'ss_erp.organization', string='Organization name',
+        'ss_erp.organization', string='組織名',
         related='inventory_order_line_id.organization_id')
-    type_id = fields.Many2one('product.template', string='Inventory type')
-    product_cost = fields.Float(string='Unit price')
+    type_id = fields.Many2one(related='inventory_order_line_id.type_id', string='棚卸種別')
+    product_cost = fields.Float(string='単価')

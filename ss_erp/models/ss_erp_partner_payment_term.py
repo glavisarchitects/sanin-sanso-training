@@ -12,9 +12,9 @@ PAYMENT_METHOD = [
 class PartnerPaymentTerm(models.Model):
     _name = 'ss_erp.partner.payment.term'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'Customer Transaction Terms'
+    _description = '取引条件'
 
-    name = fields.Char(string='Name')
+    name = fields.Char(string='名称')
     more_than_amount = fields.Float(string='万円以上金額')
     more_than_deadline = fields.Char(
         string='万円以上の締日')

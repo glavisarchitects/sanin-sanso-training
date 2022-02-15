@@ -6,37 +6,37 @@ from odoo.tools import float_compare, float_is_zero
 
 class InstructionOrderLine(models.Model):
     _name = 'ss_erp.instruction.order.line'
-    _description = 'Instruction Slip Details'
+    _description = '指示伝票明細'
 
     @api.model
     def _domain_location_id(self):
         return "[('usage', 'in', ['internal', 'transit'])]"
 
-    categ_id = fields.Many2one('product.category', string='Product category')
-    company_id = fields.Many2one('res.company', string='society')
-    difference_qty = fields.Float(string='Difference', compute='_compute_difference', readonly=True)
-    display_name = fields.Char(string='Display Name')
-    inventory_date = fields.Datetime(string='Inventory adjustment date')
-    inventory_id = fields.Many2one('stock.inventory', string='Stock')
-    is_editable = fields.Boolean(string='Is it editable?')
-    location_id = fields.Many2one('stock.location', string='Location', required=True,
+    categ_id = fields.Many2one('product.category', string='プロダクトカテゴリ')
+    company_id = fields.Many2one('res.company', string='会社')
+    difference_qty = fields.Float(string='差異', compute='_compute_difference', readonly=True)
+    display_name = fields.Char(string='表示名')
+    inventory_date = fields.Datetime(string='在庫調整日')
+    inventory_id = fields.Many2one('stock.inventory', string='在庫')
+    is_editable = fields.Boolean(string='編集可能か')
+    location_id = fields.Many2one('stock.location', string='ロケーション', required=True,
                                   domain=lambda self: self._domain_location_id())
-    outdated = fields.Boolean(string='The quantity is out of date')
-    package_id = fields.Many2one('stock.quant.package', string='Packing')
-    partner_id = fields.Many2one('res.partner', string='Owner')
-    prod_lot_id = fields.Many2one('stock.production.lot', string='Lot / Serial Number')
-    product_id = fields.Many2one('product.product', string='Product', required=True)
-    product_qty = fields.Float(string='Inventory quantity')
-    product_tracking = fields.Selection(string='Tracking', related='product_id.tracking')
-    product_uom_id = fields.Many2one('uom.uom', string='Product unit', required=True)
-    state = fields.Selection(string='Status', related='inventory_id.state')
-    theoretical_qty = fields.Float(readonly=True)
-    order_id = fields.Many2one('ss_erp.instruction.order', string='Order reference', required=True, ondelete='cascade')
+    outdated = fields.Boolean(string='数量が古くなっています')
+    package_id = fields.Many2one('stock.quant.package', string='梱包')
+    partner_id = fields.Many2one('res.partner', string='オーナー')
+    prod_lot_id = fields.Many2one('stock.production.lot', string='ロット/シリアル番号')
+    product_id = fields.Many2one('product.product', string='プロダクト', required=True)
+    product_qty = fields.Float(string='棚卸数量')
+    product_tracking = fields.Selection(string='追跡', related='product_id.tracking')
+    product_uom_id = fields.Many2one('uom.uom', string='プロダクト単位', required=True)
+    state = fields.Selection(string='ステータス', related='inventory_id.state')
+    theoretical_qty = fields.Float(readonly=True, string='理論数量')
+    order_id = fields.Many2one('ss_erp.instruction.order', string='オーダ参照', required=True, ondelete='cascade')
     organization_id = fields.Many2one('ss_erp.organization', related='order_id.organization_id',
-                                      string='Organization name')
-    type_id = fields.Many2one('product.template', related='order_id.type_id', string='Inventory type')
-    stock_inventory_line_id = fields.Many2one('stock.inventory.line', string='Inventory details')
-    product_cost = fields.Float(string='Unit price')
+                                      string='組織名')
+    type_id = fields.Many2one('product.template', related='order_id.type_id', string='棚卸種別')
+    stock_inventory_line_id = fields.Many2one('stock.inventory.line', string='棚卸明細')
+    product_cost = fields.Float(string='単価')
 
     @api.depends('product_qty', 'theoretical_qty')
     def _compute_difference(self):
@@ -94,7 +94,6 @@ class InstructionOrderLine(models.Model):
         res._check_no_duplicate_line()
         return res
 
-
     def _check_no_duplicate_line(self):
         domain = [('product_id', 'in', self.product_id.ids), ('location_id', 'in', self.location_id.ids)]
         groupby_fields = ['product_id', 'location_id', 'partner_id', 'package_id', 'prod_lot_id', 'inventory_id']
@@ -103,7 +102,8 @@ class InstructionOrderLine(models.Model):
             key = tuple([group[field] and group[field][0] for field in groupby_fields])
             lines_count[key] = group['__count']
         for line in self:
-            key = (line.product_id.id, line.location_id.id, line.partner_id.id, line.package_id.id, line.prod_lot_id.id, line.inventory_id.id)
+            key = (line.product_id.id, line.location_id.id, line.partner_id.id, line.package_id.id, line.prod_lot_id.id,
+                   line.inventory_id.id)
             if lines_count[key] > 1:
                 raise UserError(_("There is already one Instruction detail for this product,"
                                   " you should rather modify this one instead of creating a new one."))

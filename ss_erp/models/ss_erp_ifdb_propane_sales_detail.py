@@ -3,7 +3,7 @@ from odoo import models, fields, api
 
 class IFDBPropaneSalesDetail(models.Model):
     _name = 'ss_erp.ifdb.propane.sales.detail'
-    _description = 'Propane sales file details'
+    _description = '米子プロパン売上明細'
 
     propane_sales_header_id = fields.Many2one(
         'ss_erp.ifdb.propane.sales.header',

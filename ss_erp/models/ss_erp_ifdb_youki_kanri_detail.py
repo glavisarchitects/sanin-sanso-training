@@ -3,7 +3,7 @@ from odoo import fields, models, api
 
 class YoukiKanriDetail(models.Model):
     _name = "ss_erp.ifdb.youki.kanri.detail"
-    _description = "Youki Kanri Detail"
+    _description = "容器管理詳細"
 
     ifdb_youki_kanri_id = fields.Many2one(
         comodel_name="ss_erp.ifdb.youki.kanri",

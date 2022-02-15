@@ -6,7 +6,7 @@ from datetime import datetime
 class IFDBYGHeader(models.Model):
     _name = 'ss_erp.ifdb.yg.header'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'Yamasan Gas Supply Header'
+    _description = 'ヤマサンガスヘッダ'
 
     name = fields.Char(string='名称')
     upload_date = fields.Datetime(

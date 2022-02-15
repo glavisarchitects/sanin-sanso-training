@@ -7,11 +7,11 @@ class PartnerPerformance(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = '業績情報'
 
-    name = fields.Char(string='Name')
-    active = fields.Boolean('Active', default=True)
-    sequence = fields.Integer('Sequence', default=10)
-    accounting_period = fields.Char(string='Fiscal year')
-    revenue = fields.Float(string="Amount of sales")
-    ordinary_profit = fields.Float(string="Management profit")
-    partner_id = fields.Many2one('res.partner')
-    partner_form_id = fields.Many2one('ss_erp.res.partner.form')
+    name = fields.Char(string='名称')
+    active = fields.Boolean('有効', default=True)
+    sequence = fields.Integer('シーケンス')
+    accounting_period = fields.Char(string='決算期')
+    revenue = fields.Float(string="売上高")
+    ordinary_profit = fields.Float(string="経営利益")
+    partner_id = fields.Many2one('res.partner',string="連絡先")
+    partner_form_id = fields.Many2one('ss_erp.res.partner.form',string="連絡先フォーム")

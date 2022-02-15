@@ -7,4 +7,4 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     x_partner_id = fields.Many2one(
-        'res.users', string="Contact name", required=False,)
+        'res.users', string="連絡先名", required=False,)

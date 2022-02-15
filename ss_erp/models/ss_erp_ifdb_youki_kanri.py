@@ -6,7 +6,7 @@ from odoo.exceptions import ValidationError
 class YoukiKanri(models.Model):
     _name = "ss_erp.ifdb.youki.kanri"
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = "Youki Kanri"
+    _description = "容器管理ヘッダ"
 
     name = fields.Char(
         string="名称"

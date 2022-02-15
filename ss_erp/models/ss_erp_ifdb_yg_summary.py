@@ -23,4 +23,4 @@ class IFDBYGSummary(models.Model):
     sale_id = fields.Many2one('sale.order', string='販売オーダ参照')
     error_message = fields.Char(string='エラーメッセージ')
     detail_ids = fields.One2many(
-        'ss_erp.ifdb.yg.detail', 'summary_id', string='YG detail')
+        'ss_erp.ifdb.yg.detail', 'summary_id', string='ヤマサンガス検針明細表')

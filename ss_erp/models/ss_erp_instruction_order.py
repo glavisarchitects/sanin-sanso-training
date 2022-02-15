@@ -8,30 +8,30 @@ from odoo.osv import expression
 class InstructionOrder(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _name = 'ss_erp.instruction.order'
-    _description = 'Instruction Slip'
+    _description = '指示伝票'
 
-    name = fields.Char(default='New', string='Inventory reference', )
-    sequence = fields.Integer(string='Sequence')
-    accounting_date = fields.Datetime("Accounting date", default=lambda self: fields.Datetime.now())
-    company_id = fields.Many2one('res.company', string='Company', required=True, readonly=True,
+    name = fields.Char(default='New', string='棚卸参照', )
+    sequence = fields.Integer(string='シーケンス')
+    accounting_date = fields.Datetime("会計日", default=lambda self: fields.Datetime.now())
+    company_id = fields.Many2one('res.company', string='会社', required=True, readonly=True,
                                  default=lambda self: self.env.company)
-    date = fields.Datetime(string='Scheduled inventory date')
-    exhausted = fields.Boolean(string='Include out-of-stock products')
+    date = fields.Datetime(string='在庫調整日')
+    exhausted = fields.Boolean(string='在庫のないプロダクトを含める')
     # line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Inventory')
-    location_ids = fields.Many2many(
-        'stock.location', 'location_instruction_rel', 'location_id', 'restruction_id',
-        string='Location'
-    )
+    # location_ids = fields.Many2many(
+    #     'stock.location', 'location_instruction_rel', 'location_id', 'restruction_id',
+    #     string='ロケーション'
+    # )
     # move_ids = fields.One2many('stock.move', 'inventory_id', string='Generated inventory movement')
     prefill_counted_quantity = fields.Selection([
         ('counted', '手持在庫をデフォルト提案'),
         ('zero', 'ゼロをデフォルト提案'),
-    ], string='Inventory quantity')
-    product_ids = fields.Many2many(
-        'product.product', 'product_instruction_rel', 'product_id', 'instruction_id',
-        string='Product'
-    )
-    start_empty = fields.Boolean(string='Empty inventory')
+    ], string='棚卸数量')
+    # product_ids = fields.Many2many(
+    #     'product.product', 'product_instruction_rel', 'product_id', 'instruction_id',
+    #     string='プロダクト'
+    # )
+    start_empty = fields.Boolean(string='空の在庫')
     state = fields.Selection([
         ('draft', 'ドラフト'),
         ('cancel', '取消済'),
@@ -43,18 +43,18 @@ class InstructionOrder(models.Model):
     ], string='State', default='draft')
     line_ids = fields.One2many('ss_erp.instruction.order.line', 'order_id')
     location_ids = fields.Many2many(
-        'stock.location', string='Locations',
+        'stock.location', string='ロケーション',
         readonly=True, check_company=True,
         states={'draft': [('readonly', False)]},
         domain="[('company_id', '=', company_id), ('usage', 'in', ['internal', 'transit'])]")
     product_ids = fields.Many2many(
-        'product.product', string='Products', check_company=True,
+        'product.product', string='プロダクト', check_company=True,
         domain="[('type', '=', 'product'), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         readonly=True,
         states={'draft': [('readonly', False)]}, )
-    organization_id = fields.Many2one('ss_erp.organization', string='Organization name')
-    type_id = fields.Many2one('product.template', string='Inventory type')
-    stock_inventory_id = fields.Many2one('stock.inventory', string='Inventory slip number')
+    organization_id = fields.Many2one('ss_erp.organization', string='組織名')
+    type_id = fields.Many2one('product.template', string='棚卸種別')
+    stock_inventory_id = fields.Many2one('stock.inventory', string='棚卸伝票番号')
 
     @api.model
     def create(self, vals):
@@ -69,14 +69,14 @@ class InstructionOrder(models.Model):
         for record in self:
             if not record.accounting_date:
                 raise ValidationError(_(
-                    "Please select Accounting Date."))
-            if record.accounting_date.date() > fields.Date.today():
+                    "会計日を選択してください。"))
+            if record.accounting_date.date() < fields.Date.today():
                 raise ValidationError(
                     _(
-                        "The estimated shipping date cannot be set earlier than the current date"))
+                        "出荷予定日は現在より過去の日付は設定できません。"))
             elif record.accounting_date.date() < record.date.date():
                 raise ValidationError(
-                    _("Please select a date after the scheduled inventory date for the accounting date.")
+                    _("会計日は棚卸予定日以降の日付を選択してください。")
                 )
 
     @api.constrains('organization_id')
@@ -84,7 +84,7 @@ class InstructionOrder(models.Model):
         for record in self:
             if not record.organization_id:
                 raise ValidationError(
-                    _("Please select your organization name.")
+                    _("組織名を選択してください。")
                 )
 
     @api.constrains('type_id')
@@ -92,14 +92,14 @@ class InstructionOrder(models.Model):
         for record in self:
             if not record.type_id:
                 raise ValidationError(
-                    _("Please select an inventory type."))
+                    _("棚卸種別を選択してください。"))
 
     @api.constrains('date')
     def _check_date(self):
         for record in self:
             if not record.date:
                 raise ValidationError(
-                    _("Please select an estimated inventory date."))
+                    _("棚卸予定日を選択してください。"))
 
     def display_action(self):
         self.ensure_one()

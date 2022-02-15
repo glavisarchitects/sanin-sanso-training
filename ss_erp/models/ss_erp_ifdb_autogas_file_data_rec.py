@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError
 
 class IfdbAutogasFileDataRec(models.Model):
     _name = "ss_erp.ifdb.autogas.file.data.rec"
-    _description = "Autogas File Data Record"
+    _description = "オートガスPOS詳細"
 
     autogas_file_header_id = fields.Many2one(
         comodel_name="ss_erp.ifdb.autogas.file.header",

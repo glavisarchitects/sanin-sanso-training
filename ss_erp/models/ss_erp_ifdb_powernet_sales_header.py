@@ -6,7 +6,7 @@ from datetime import datetime
 class IFDBPowerNetSalesHeader(models.Model):
     _name = 'ss_erp.ifdb.powernet.sales.header'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'IFDB PowerNet Sales Header'
+    _description = 'PowerNetヘッダ'
 
     upload_date = fields.Datetime('アップロード日時', index=True,
                                   default=fields.Datetime.now())
@@ -181,7 +181,7 @@ class IFDBPowerNetSalesHeader(models.Model):
 
 class IFDBPowerNetSalesHeadDetail(models.Model):
     _name = 'ss_erp.ifdb.powernet.sales.detail'
-    _description = 'IFDB PowerNet Sales Detail'
+    _description = 'PowerNet詳細'
 
     powernet_sales_header_id = fields.Many2one('ss_erp.ifdb.powernet.sales.header', 'PowerNetセールスヘッダー',
                                                required=True, ondelete="cascade")

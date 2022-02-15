@@ -6,19 +6,16 @@ from odoo.exceptions import UserError
 class StockInventory(models.Model):
     _inherit = 'stock.inventory'
 
-    organization_id = fields.Many2one('ss_erp.organization', string='Organization in charge', states={'draft': [('readonly', False)]}, readonly=True)
-    type_id = fields.Many2one('product.template', string='Inventory type', states={'draft': [('readonly', False)]}, readonly=True)
-    instruction_order_id = fields.Many2one('ss_erp.instruction.order', string='Inventory plan')
+    organization_id = fields.Many2one('ss_erp.organization', string='担当組織', states={'draft': [('readonly', False)]}, readonly=True)
+    instruction_order_id = fields.Many2one('ss_erp.instruction.order', string='棚卸指示伝票')
     state = fields.Selection(string='Status', selection=[
-        ('draft', 'Draft'),
-        ('cancel', 'Cancelled'),
-        ('confirm', 'In Progress'),
-        ('approval', 'Approval'),
-        ('done', 'Validated')],
+        ('draft', 'ドラフト'),
+        ('cancel', '取消済'),
+        ('confirm', '進行中'),
+        ('approval', '承認依頼中'),
+        ('done', '承認完了')],
         copy=False, index=True, readonly=True, tracking=True,
         default='draft')
-    state = fields.Selection(selection_add=[('approval', 'Approval')])
-    name = fields.Char()
 
     def action_start(self):
         res = super().action_start()

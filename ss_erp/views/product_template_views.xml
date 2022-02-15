@@ -6,11 +6,11 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             <group name="bill" position="after">
-                <group name="po-setting" string="Setting Purchase Order" >
+                <group name="po-setting" string="購買設定" >
                 </group>
                 <group name="po-empty">
                 </group>
-                <group name="po-info" string="Purchase Order Information">
+                <group name="po-info" string="購買情報">
                     <field name="x_fixed_cost" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                 </group>
 

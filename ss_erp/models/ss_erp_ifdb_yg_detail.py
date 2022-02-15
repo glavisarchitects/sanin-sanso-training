@@ -7,7 +7,6 @@ class IFDBYGDetail(models.Model):
     _description = 'ヤマサンガスサプライ取込データ（検針明細表）'
     _order = 'customer_cd'
 
-    # name = fields.Char(string='Name')
     summary_id = fields.Many2one('ss_erp.ifdb.yg.summary',string='ヤマサンガスサプライ検針集計表')
     header_id = fields.Many2one(
         'ss_erp.ifdb.yg.header', string='ヤマサンガスサプライヘッダ', related=False, store=True)
