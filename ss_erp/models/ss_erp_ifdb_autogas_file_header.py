@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
 
 
@@ -57,13 +57,20 @@ class IFDBAutogasFileHeader(models.Model):
             else:
                 record.has_data_import = False
 
-    _sql_constraints = [
-        (
-            "name_uniq",
-            "UNIQUE(name)",
-            "File Header Name is used for searching, please make it unique!"
-        )
-    ]
+    # _sql_constraints = [
+    #     (
+    #         "name_uniq",
+    #         "UNIQUE(name)",
+    #         "File Header Name is used for searching, please make it unique!"
+    #     )
+    # ]
+    @api.constrains("name")
+    def _check_name(self):
+        for record in self:
+            name_unique = self.env['ss_erp.ifdb.autogas.file.header'].search_count(
+                [('name', '=', record.name)])
+            if name_unique > 1:
+                raise ValidationError(_("ファイルヘッダー名は検索に使用されます。一意にしてください。"))
 
     @api.depends('autogas_data_record_ids.status')
     def _compute_status(self):

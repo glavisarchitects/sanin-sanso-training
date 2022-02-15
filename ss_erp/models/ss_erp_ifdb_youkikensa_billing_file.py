@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from datetime import datetime
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class YoukiKensaBilling(models.Model):
@@ -56,13 +56,22 @@ class YoukiKensaBilling(models.Model):
                 record.has_data_import = False
 
 
-    _sql_constraints = [
-        (
-            "name_uniq",
-            "UNIQUE(name)", 
-            "Name is using for searching, please make it unique!"
-        ),
-    ]
+    # _sql_constraints = [
+    #     (
+    #         "name_uniq",
+    #         "UNIQUE(name)",
+    #         "Name is using for searching, please make it unique!"
+    #     ),
+    # ]
+    @api.constrains("name")
+    def _check_name(self):
+        for record in self:
+            name_unique = self.env['ss_erp.ifdb.youkikensa.billing.file.header'].search_count(
+                [('name', '=', record.name)])
+            if name_unique > 1:
+                raise ValidationError(_("ファイルヘッダー名は検索に使用されます。一意にしてください。"))
+
+
 
     @api.depends('youki_kensa_detail_ids.status')
     def _compute_status(self):

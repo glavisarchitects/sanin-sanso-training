@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from datetime import datetime
+from odoo.exceptions import ValidationError
 
 class IFDBPropaneSalesHeader(models.Model):
     _name = 'ss_erp.ifdb.propane.sales.header'
@@ -32,13 +33,21 @@ class IFDBPropaneSalesHeader(models.Model):
                 record.has_data_import = False
 
 
-    _sql_constraints = [
-        (
-            "name_unique",
-            "UNIQUE(name)",
-            "Name is used for searching, please make it unique!"
-        ),
-    ]
+    # _sql_constraints = [
+    #     (
+    #         "name_unique",
+    #         "UNIQUE(name)",
+    #         "Name is used for searching, please make it unique!"
+    #     ),
+    # ]
+
+    @api.constrains("name")
+    def _check_name(self):
+        for record in self:
+            name_unique = self.env['ss_erp.ifdb.propane.sales.header'].search_count(
+                [('name', '=', record.name)])
+            if name_unique > 1:
+                raise ValidationError(_("ファイルヘッダー名は検索に使用されます。一意にしてください。"))
 
     @api.depends('sales_detail_ids.status')
     def _compute_status(self):

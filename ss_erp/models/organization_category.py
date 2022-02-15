@@ -41,9 +41,9 @@ class OrganizationCategory(models.Model):
                 raise ValidationError(_("階層番号は入力してください。"))
 
     def action_unarchive(self):
-        organization_category_count = self.env['ss_erp.organization.category'].search_count(
+        organization_category_count = self.env['ss_erp.organization.category'].search(
             [('hierarchy_number', '=', self.hierarchy_number), ('company_id', '=', self.company_id.id)])
-        if organization_category_count > 1:
+        if len(organization_category_count) > 0:
             raise ValidationError(_("同じ階層番号が存在しています。"))
         return super(OrganizationCategory, self).action_unarchive()
 

@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 
 
 class IfdbAutogasFileDataRec(models.Model):
@@ -113,11 +113,16 @@ class IfdbAutogasFileDataRec(models.Model):
         size=4
     )
 
-    _sql_constraints = [
-        ("card_number_length",
-        "CHECK(LENGTH(card_number) >= 12)",
-        "Card Number length must be bigger than 12")
-    ]
+    # _sql_constraints = [
+    #     ("card_number_length",
+    #     "CHECK(LENGTH(card_number) >= 12)",
+    #     "Card Number length must be bigger than 12")
+    # ]
+    @api.constrains("card_number")
+    def _check_card_number(self):
+        for record in self:
+            if len(record.card_number) >= 12:
+                raise ValidationError(_("カード番号の長さは12より大きくする必要があります"))
 
     @api.depends("card_number")
     def _compute_customer_code(self):
