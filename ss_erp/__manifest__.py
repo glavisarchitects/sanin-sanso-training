@@ -9,7 +9,7 @@
     "depends": [
         "base", "delivery", "mail", "contacts", "purchase", "uom",
         "purchase_stock", "web", "account", "stock_dropshipping", "approvals", "hr",
-        "approvals_purchase_stock", "base_import","hr_expense"
+        "approvals_purchase_stock", "base_import","hr_expense", "sale_expense"
     ],
     "data": [
         # SECURITY

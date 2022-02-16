@@ -29,14 +29,14 @@
             </xpath>
         </field>
     </record>
-<!--    <record id="ss_erp_hr_expense_form_view_inherit" model="ir.ui.view">-->
-<!--        <field name="name">ss.erp.hr.expense.form.inherit.sale.expense</field>-->
-<!--        <field name="model">hr.expense</field>-->
-<!--        <field name="inherit_id" ref="sale_expense.hr_expense_form_view_inherit_sale_expense"/>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <xpath expr="//field[@name='sale_order_id']" position="attributes">-->
-<!--                <attribute name="string">顧客請求受注伝票</attribute>-->
-<!--            </xpath>-->
-<!--        </field>-->
-<!--    </record>-->
+    <record id="ss_erp_hr_expense_form_view_inherit" model="ir.ui.view">
+        <field name="name">ss.erp.hr.expense.form.inherit.sale.expense</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="sale_expense.hr_expense_form_view_inherit_sale_expense"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='sale_order_id']" position="attributes">
+                <attribute name="string">顧客請求受注伝票</attribute>
+            </xpath>
+        </field>
+    </record>
 </odoo>
