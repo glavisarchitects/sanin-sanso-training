@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-        <report 
+        <record
             id="action_report_purchaseorder"
             string="Purchase order"
             model="purchase.order" 
@@ -11,7 +11,7 @@
             paperformat="paperformat_purchaseorder_a4"
         />
 
-        <report 
+        <record
             id="action_report_purchasequotation"
             string="Quotation request form"
             model="purchase.order" 
