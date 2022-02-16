@@ -13,7 +13,6 @@
     ],
     "data": [
         # SECURITY
-        "security/x_security_groups_security.xml",
         "security/ir.model.access.csv",
         "security/approval_security.xml",
 

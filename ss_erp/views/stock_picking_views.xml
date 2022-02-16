@@ -12,10 +12,10 @@
                 <field name="x_account_modify"/>
             </field>
             <field name="partner_id" position="attributes">
-                <attribute name="string">Contact address</attribute>
+                <attribute name="string">連絡先</attribute>
             </field>
             <field name="origin" position="attributes">
-                <attribute name="string">Reference source</attribute>
+                <attribute name="string">参照元</attribute>
             </field>
             <field name="location_id" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -32,10 +32,10 @@
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
             <field name="partner_id" position="attributes">
-                <attribute name="string">Arrival source</attribute>
+                <attribute name="string">入荷元</attribute>
             </field>
             <field name="user_id" position="attributes">
-                <attribute name="string">Manager</attribute>
+                <attribute name="string">担当者</attribute>
                 <attribute name="required">1</attribute>
             </field>
 
@@ -55,7 +55,7 @@
                             'invisible' :[('x_inspection_exist', '=', False)]}"/>
             </field>
             <field name="origin" position="attributes">
-                <attribute name="string">Reference source</attribute>
+                <attribute name="string">参照元</attribute>
             </field>
             <field name="origin" position="before">
                 <field name="x_shipping_method" readonly="1" widget="radio"/>
@@ -64,7 +64,7 @@
                                 'invisible' :[('has_lot_ids', '=', False)]}"/>
             </field>
             <field name="carrier_id" position="attributes">
-                <attribute name="string">Shipping company</attribute>
+                <attribute name="string">運送会社</attribute>
             </field>
             <group name="carrier_data" position="inside">
                 <field name="x_dest_address_info" attrs="{'readonly':1}"/>
@@ -85,7 +85,6 @@
         <field name="inherit_id" ref="stock.view_move_line_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='location_dest_id']" position="after">
-                <!-- Add new fields here -->
                 <field name="x_partner_id"/>
             </xpath>
 
