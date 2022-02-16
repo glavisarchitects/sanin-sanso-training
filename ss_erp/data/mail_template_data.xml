@@ -27,7 +27,7 @@
                     </p>
                 </div>
             </field>
-            <field name="report_template" ref="ss_erp.action_report_purchasequotation"/>
+            <field name="report_template" ref="ss_erp.action_report_purchase_quotation"/>
             <field name="report_name">RFQ_${(object.name or '').replace('/','_')}</field>
             <field name="lang">${object.partner_id.lang}</field>
             <field name="auto_delete" eval="True"/>
@@ -60,7 +60,7 @@
                         % endif
                     </p>
                 </div></field>
-            <field name="report_template" ref="ss_erp.action_report_purchaseorder"/>
+            <field name="report_template" ref="ss_erp.action_report_purchase_order"/>
             <field name="report_name">PO_${(object.name or '').replace('/','_')}</field>
             <field name="lang">${object.partner_id.lang}</field>
             <field name="auto_delete" eval="True"/>
