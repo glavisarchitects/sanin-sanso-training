@@ -26,7 +26,7 @@ class PurchaseOrder(models.Model):
         for rec in self:
             employee_id = self.env['hr.employee'].search([('user_id', '=', rec.x_mkt_user_id.id)], limit=1)
             if employee_id:
-                rec.x_responsible_dept_id = employee_id.department_jurisdiction_first
+                rec.x_responsible_dept_id = employee_id.department_jurisdiction_first[0]
             else:
                 rec.x_responsible_dept_id = False
 

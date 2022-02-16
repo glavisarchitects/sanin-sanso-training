@@ -37,6 +37,6 @@ class HrExpense(models.Model):
     def _get_default_x_responsible_dept_id(self):
         employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
-            return employee_id.department_jurisdiction_first
+            return employee_id.department_jurisdiction_first[0]
         else:
             return False
