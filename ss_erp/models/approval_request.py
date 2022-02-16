@@ -101,8 +101,8 @@ class ApprovalRequest(models.Model):
 
     def _get_default_department(self):
         employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
-        if employee:
-            return employee[0].department_jurisdiction_first
+        if employee and employee.department_jurisdiction_first:
+            return employee.department_jurisdiction_first[0]
         return False
 
     def _get_default_organization(self):

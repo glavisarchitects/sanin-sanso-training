@@ -1,18 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!--        <report-->
-<!--            id="action_report_purchaseorder"-->
-<!--            string="Purchase order"-->
-<!--            model="purchase.order" -->
-<!--            report_type="qweb-pdf"-->
-<!--            file="ss_erp.report_purchaseorder"-->
-<!--            name="ss_erp.report_purchaseorder"-->
-<!--            print_report_name="'PO - %s' % (object.name)"-->
-<!--            paperformat="paperformat_purchaseorder_a4"-->
-<!--        />-->
-
         <record id="action_report_purchase_order" model="ir.actions.report">
-            <field name="name">購買発注書</field>
+            <field name="name">発注書</field>
             <field name="model">purchase.order</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">ss_erp.report_purchase_order</field>
@@ -20,21 +9,10 @@
             <field name="print_report_name">'発注書 - %s' % (object.name)</field>
             <field name="paperformat_id" ref="ss_erp.paperformat_purchaseorder_a4"/>
             <field name="binding_type">report</field>
+            <field name="binding_model_id" ref="model_purchase_order"/>
         </record>
-
-<!--        <report-->
-<!--            id="action_report_purchasequotation"-->
-<!--            string="Quotation request form"-->
-<!--            model="purchase.order" -->
-<!--            report_type="qweb-pdf"-->
-<!--            file="ss_erp.report_purchasequotation"-->
-<!--            name="ss_erp.report_purchasequotation"-->
-<!--            print_report_name="'Request for Quotation - %s' % (object.name)"-->
-<!--            paperformat="paperformat_purchasequotation_a4"-->
-<!--        />-->
-
         <record id="action_report_purchase_quotation" model="ir.actions.report">
-            <field name="name">購買見積依頼書</field>
+            <field name="name">見積依頼書</field>
             <field name="model">purchase.order</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">ss_erp.report_purchase_quotation</field>
@@ -42,5 +20,6 @@
             <field name="print_report_name">'見積依頼書 - %s' % (object.name)</field>
             <field name="paperformat_id" ref="ss_erp.paperformat_purchaseorder_a4"/>
             <field name="binding_type">report</field>
+            <field name="binding_model_id" ref="model_purchase_order"/>
         </record>
 </odoo>

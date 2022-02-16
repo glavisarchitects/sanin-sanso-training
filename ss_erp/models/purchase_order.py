@@ -25,7 +25,7 @@ class PurchaseOrder(models.Model):
     def _compute_default_x_responsible_dept_id(self):
         for rec in self:
             employee_id = self.env['hr.employee'].search([('user_id', '=', rec.x_mkt_user_id.id)], limit=1)
-            if employee_id:
+            if employee_id and employee_id.department_jurisdiction_first:
                 rec.x_responsible_dept_id = employee_id.department_jurisdiction_first[0]
             else:
                 rec.x_responsible_dept_id = False
