@@ -12,23 +12,19 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    @api.depends('x_mkt_user_id')
-    def _compute_default_x_organization_id(self):
-        for rec in self:
-            employee_id = self.env['hr.employee'].search([('user_id','=',rec.x_mkt_user_id.id)], limit=1)
-            if employee_id:
-                rec.x_organization_id = employee_id.organization_first
-            else:
-                rec.x_organization_id = False
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
 
-    @api.depends('x_mkt_user_id')
-    def _compute_default_x_responsible_dept_id(self):
-        for rec in self:
-            employee_id = self.env['hr.employee'].search([('user_id', '=', rec.x_mkt_user_id.id)], limit=1)
-            if employee_id and employee_id.department_jurisdiction_first:
-                rec.x_responsible_dept_id = employee_id.department_jurisdiction_first[0]
-            else:
-                rec.x_responsible_dept_id = False
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id and employee_id.department_jurisdiction_first:
+            return employee_id.department_jurisdiction_first[0]
+        else:
+            return False
 
     x_bis_categ_id = fields.Many2one(
         'ss_erp.bis.category', string="取引区分", copy=True, index=True)
@@ -41,9 +37,9 @@ class PurchaseOrder(models.Model):
     x_dest_address_info = fields.Html("直送先情報")
     x_truck_number = fields.Char("車番")
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string="担当組織", index=True, compute='_compute_default_x_organization_id')
+        'ss_erp.organization', string="担当組織", index=True, default=lambda self: self._get_default_x_organization_id())
     x_responsible_dept_id = fields.Many2one(
-        'ss_erp.responsible.department', string="管轄部門", index=True, compute='_compute_default_x_responsible_dept_id')
+        'ss_erp.responsible.department', string="管轄部門", index=True, default=lambda self: self._get_default_x_responsible_dept_id())
     x_mkt_user_id = fields.Many2one(
         'res.users', string="営業担当者", index=True, default=lambda self: self.env.user)
     x_is_construction = fields.Boolean(
