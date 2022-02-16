@@ -11,101 +11,60 @@ class ResPartner(models.Model):
         return self.env['res.country'].search([('code', '=', 'JP'), ], limit=1)
 
     x_contact_categ = fields.Many2one(
-        'ss_erp.contact.category', string='連絡先カテゴリ', index=True,)
+        'ss_erp.contact.category', string='連絡先カテゴリ', index=True, tracking=True)
 
-    x_name_abbreviation = fields.Char(string='略称')
-    x_name_furigana = fields.Char(string="フリガナ")
+    x_name_abbreviation = fields.Char(string='略称', tracking=True)
+    x_name_furigana = fields.Char(string="フリガナ", tracking=True)
 
     # 20211129
-    x_is_customer = fields.Boolean(
-        string='得意先',
-        index=True,
-        default=True,
-        required=False)
-    x_is_vendor = fields.Boolean(
-        string='仕入先',
-        index=True,
-        default=True,
-        required=False)
+    x_is_customer = fields.Boolean( string='得意先', index=True, default=True, required=False, tracking=True)
+    x_is_vendor = fields.Boolean(string='仕入先', index=True, default=True, required=False, tracking=True)
     type = fields.Selection(selection_add=[
         ('for_rfq', '見積依頼送付先'),
         ('for_po', '発注送付先'),
     ])
     x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_rel',
-                                           'categ_id', 'partner_id', string="取引区分", index=True)
+                                           'categ_id', 'partner_id', string="取引区分", index=True, tracking=True)
     x_transaction_department = fields.Many2many(
-        'ss_erp.bis.category', 'department_partner_rel', 'department_id', 'partner_id', string="部門", index=True)
+        'ss_erp.bis.category', 'department_partner_rel', 'department_id', 'partner_id', string="部門", index=True, tracking=True)
     x_is_branch = fields.Boolean(string="Organization in charge", default=True, help=_(
-        "担当拠点、支店、営業所、出張所がある場合はチェック"))
+        "担当拠点、支店、営業所、出張所がある場合はチェック"), tracking=True)
 
     x_branch_name = fields.Many2one(
-        'ss_erp.organization', string='担当組織')
-    x_fax = fields.Char('FAX representative')
-    x_fax_payment = fields.Char('Fax payment notice')
+        'ss_erp.organization', string='担当組織', tracking=True)
+    x_fax = fields.Char('FAX代表', tracking=True)
+    x_fax_payment = fields.Char('FAX支払通知書', tracking=True)
     x_contract_check = fields.Selection([
         ('contract', '締結'),
         ('no_contract', '締結しない'),
         ('noting', '該当なし'),
-    ], string='Transaction basic contract', index=True, default='no_contract')
-    x_contract_memo = fields.Text(string="Reason for fluctuation")
-    x_found_year = fields.Char(string='Founding year')
-    x_capital = fields.Float(string='Capital')
-    x_more_than_amount = fields.Float(string='Amount of 10,000 yen or more')
-    x_more_than_deadline = fields.Float(
-        string='Closing date of 10,000 yen or more')
-    x_more_than_payment_site = fields.Char(
-        string='Payment site for 10,000 yen or more')
-    x_more_than_payment_method = fields.Selection([
-        ('cash', '現金'),
-        ('check', '小切手'),
-        ('transfer', '振込'),
-        ('bills', '手形'),
-        ('offset', '相殺'),
-    ], string='Payment method of 10,000 yen or more', default='transfer')
-    x_less_than_amount = fields.Float(string='Amount of less than 10,000 yen')
-    x_less_than_deadline = fields.Char(
-        string='Closing date of 10,000 yen or less')
-    x_less_than_payment_site = fields.Char(
-        'Payment site for 10,000 yen or less')
-    less_than_payment_method = fields.Selection([
-        ('cash', '現金'),
-        ('check', '小切手'),
-        ('transfer', '振込'),
-        ('bills', '手形'),
-        ('offset', '相殺'),
-    ], string='Payment method of 10,000 yen or less', default='transfer')
-    x_collecting_money = fields.Selection([
-        ('yes', '有'),
-        ('no', '無'),
-    ], string='Collecting money', default='no')
-    x_fee_burden = fields.Selection([
-        ('other_side', '先方'),
-        ('our_side', '当方'),
-    ], string='Fee burden', default='other_side')
-    x_bill_site = fields.Char('Bill site', )
+    ], string='取引基本契約書', index=True, default='no_contract', tracking=True)
+    x_contract_memo = fields.Text(string="変動理由", tracking=True)
+    x_found_year = fields.Char(string='創立年度', tracking=True)
+    x_capital = fields.Float(string='資本金', tracking=True)
     x_purchase_user_id = fields.Many2one(
-        'res.users', string='Purchasing person', index=True)
+        'res.users', string='購買担当者', index=True)
     x_vendor_payment_term = fields.Selection([
         ('ss_rule', '当社規定(規則参照)'),
         ('other', 'その他'),
-    ], string='Payment terms and conditions')
-    x_other_payment_term = fields.Char(string='Other payment terms')
-    x_other_payment_reason = fields.Text(string='Reason for fluctuation')
-    x_minimum_cost = fields.Float(string='Minimum purchase price')
+    ], string='支払条件規定', tracking=True)
+    x_other_payment_term = fields.Char(string='その他支払条件', tracking=True)
+    x_other_payment_reason = fields.Text(string='変動理由', tracking=True)
+    x_minimum_cost = fields.Float(string='最低仕入価格', tracking=True)
     x_payment_terms = fields.Html(
-        related='company_id.x_payment_terms', string='Our regulations on payment terms')
-    x_customer_contract_route = fields.Text(string='Sales motive')
-    x_customer_material = fields.Text(string='Products for sale')
+        related='company_id.x_payment_terms', string='支払条件の当社規定', tracking=True)
+    x_customer_contract_route = fields.Text(string='販売動機', tracking=True)
+    x_customer_material = fields.Text(string='販売商材', tracking=True)
     x_customer_monthly_total_price = fields.Float(
-        string='Monthly sales amount')
-    x_vendor_contract_route = fields.Text(string='Purchasing motive')
-    x_vendor_material = fields.Text(string='Purchased products')
+        string='月間販売額', tracking=True)
+    x_vendor_contract_route = fields.Text(string='仕入動機', tracking=True)
+    x_vendor_material = fields.Text(string='仕入商材', tracking=True)
     x_vendor_monthly_total_price = fields.Float(
-        string='Monthly purchase amount')
+        string='月間仕入額', tracking=True)
     performance_ids = fields.One2many(
-        'ss_erp.partner.performance', 'partner_id', string='Partner performance')
+        'ss_erp.partner.performance', 'partner_id', string='業績情報', tracking=True)
     construction_ids = fields.One2many(
-        'ss_erp.partner.construction', 'partner_id')
+        'ss_erp.partner.construction', 'partner_id', tracking=True)
     # ADDITIONAL FIELD RELATED
     has_parent_id = fields.Selection(
         related='x_contact_categ.has_parent_id', store=True, )

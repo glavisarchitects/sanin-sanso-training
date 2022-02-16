@@ -20,7 +20,7 @@
 
     <!--    連絡先フォーム-->
     <menuitem id="ss_erp_res_partner_form_menu" name="連絡先フォーム" action="action_ss_erp_res_partner_form"
-              parent="contacts.res_partner_menu_config" groups="base.group_no_one" sequence="8"/>
+              parent="contacts.res_partner_menu_config" sequence="8"/>
 
     <!--    連絡先カテゴリ-->
     <menuitem id="ss_erp_contact_category_action_menu" name="連絡先カテゴリ" parent="contacts.res_partner_menu_config"
@@ -34,9 +34,9 @@
     <menuitem id="external_system_cooperation_menu" name="外部システム連携" parent="sale.sale_menu_root"
               sequence="5"/>
 
-    <menuitem id="external_system_cooperation_other" name="Other" parent="external_system_cooperation_menu"
+    <menuitem id="external_system_cooperation_other" name="その他" parent="external_system_cooperation_menu"
               sequence="100"/>
-    <menuitem id="ss_erp_code_convert_action_menu" name="Convert Code" parent="ss_erp.external_system_cooperation_other"
+    <menuitem id="ss_erp_code_convert_action_menu" name="コード変換" parent="ss_erp.external_system_cooperation_other"
               action="ss_erp_code_convert_action" sequence="1"/>
     <menuitem id="ss_erp_convert_code_type_action_menu" name="変換コード種別"
               parent="external_system_cooperation_other" action="ss_erp_convert_code_type_action" sequence="30"/>
@@ -75,10 +75,10 @@
               sequence="20"/>
     <menuitem id="menu_ss_erp_ifdb_powernet_saleshead" name="Powernetファイル取込"
               parent="ss_erp.external_system_cooperation_importing_performance"
-              action="ss_erp_ifdb_powernet_sales_header_action" sequence="20" groups="sales_team.group_sale_manager"/>
+              action="ss_erp_ifdb_powernet_sales_header_action" sequence="20"/>
     <menuitem id="menu_ss_erp_ifdb_powernet_salesdetail" name="Powernet取込データ"
               parent="ss_erp.external_system_cooperation_imported_data" sequence="30"
-              action="ss_erp_ifdb_powernet_sales_detail_action" groups="sales_team.group_sale_manager"/>
+              action="ss_erp_ifdb_powernet_sales_detail_action"/>
     <menuitem id="ss_erp_ifdb_autogas_file_data_rec_menu" name="オートガスPOS（松江）取込データ"
               action="ss_erp_ifdb_autogas_file_data_rec_action"
               sequence="50"
@@ -94,7 +94,6 @@
             id="ss_erp_youki_kanri_detail_menu"
             name="容器管理システムデータ"
             action="ss_erp_ifdb_youki_kanri_detail_action"
-            groups="sales_team.group_sale_manager"
             parent="ss_erp.external_system_cooperation_imported_data"
             sequence="35"/>
 
@@ -104,7 +103,6 @@
 
     <menuitem id="ss_erp_youki_kensa_detail_menu"
               action="ss_erp_ifdb_youki_kensa_detail_action"
-              groups="sales_team.group_sale_manager"
               parent="ss_erp.external_system_cooperation_imported_data"
               sequence="36"/>
 </odoo>
