@@ -17,7 +17,6 @@
         "security/ir.model.access.csv",
         "security/approval_security.xml",
 
-
         # DATA
         "data/bis_category_data.xml",
         "data/ir_sequence_data.xml",
