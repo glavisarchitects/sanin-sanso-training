@@ -23,7 +23,7 @@ class HrEmployee(models.Model):
         for r in self:
             employee_count = r.env['hr.employee'].search_count([('employee_number', '=', r.employee_number)])
             if employee_count > 1:
-                raise ValidationError(_("同じ社員番号が存在しています"))
+                raise ValidationError(_("同じ従業員番号が存在しています"))
 
     # Check Organization
     @api.constrains("organization_first", "organization_second", "organization_third")

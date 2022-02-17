@@ -180,11 +180,23 @@
                     'required': [('has_x_inventory_instruction_ids', '=', 'required')],
                     'readonly':[('request_status','!=','new')]
                 }"/>
-                <field name="x_purchase_order_ids" widget="many2many_tags" attrs="{
+                <field name="x_purchase_order_ids" attrs="{
                     'invisible': [('has_x_purchase_order_ids', '=', 'no')],
                     'required': [('has_x_purchase_order_ids', '=', 'required')],
                     'readonly':[('request_status','!=','new')]
-                }"/>
+                }">
+                    <tree>
+                        <field name="name" string="伝票No."/>
+                        <field name="x_bis_categ_id" string="取引区分"/>
+                        <field name="x_responsible_dept_id" string="管轄部門"/>
+                        <field name="partner_id" string="仕入先"/>
+                        <field name="user_id" string="購買担当者"/>
+                        <field name="x_organization_id" string="担当組織"/>
+                        <field name="date_order" string="回答期日"/>
+                        <field name="amount_total" string="合計"/>
+                        <field name="state" string="ステータス"/>
+                    </tree>
+                </field>
                 <field name="x_sale_order_ids" context="{'active_model': 'approval.request'}"  attrs="{
                     'invisible': [('has_x_sale_order_ids', '=', 'no')],
                     'required': [('has_x_sale_order_ids', '=', 'required')],
@@ -193,19 +205,28 @@
                     domain="[('state', '=', 'draft')]"
                 >
                     <tree>
-                        <field name="name"/>
-                        <field name="date_order"/>
-                        <field name="partner_id"/>
-                        <field name="user_id" />
-                        <field name="amount_total" />
-                        <field name="state" />
+                        <field name="name" string="伝票No."/>
+                        <field name="date_order" string="作成日"/>
+                        <field name="partner_id" string="顧客"/>
+                        <field name="user_id" string="販売担当者"/>
+                        <field name="amount_total" string="合計"/>
+                        <field name="state" string="ステータス"/>
                     </tree>
                 </field>
-                <field name="x_account_move_ids" widget="many2many_tags" attrs="{
+                <field name="x_account_move_ids" context="{'active_model': 'approval.request'}" attrs="{
                     'invisible': [('has_x_account_move_ids', '=', 'no')],
                     'required': [('has_x_account_move_ids', '=', 'required')],
                     'readonly':[('request_status','!=','new')]
-                }"/>
+                }">
+                    <tree>
+                        <field name="name"/>
+                        <field name="invoice_partner_display_name" string="取引先"/>
+                        <field name="invoice_date" string="請求日"/>
+                        <field name="invoice_date_due" string="期日"/>
+                        <field name="amount_total_signed" string="合計"/>
+                        <field name="state" string="ステータス"/>
+                    </tree>
+                </field>
                 <field name="x_reject" attrs="{
                     'invisible': ['|',('has_x_reject', '=', 'no'),'&amp;',('has_x_reject', '!=', 'no'),('request_status','!=','refused')],
                     'required': [('has_x_reject', '=', 'required')],
