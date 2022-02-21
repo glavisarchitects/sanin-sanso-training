@@ -18,7 +18,7 @@
                 <div class="row">
                     <div class="col-9">
                         <t t-if="o.picking_type_id and o.picking_type_id.default_location_dest_id">
-                            <div><b>Delivery destination:</b> <span
+                            <div><b>納品先:</b> <span
                                     t-esc="o.picking_type_id.display_name"/></div>
                             <div>※直送は下部の直送先情報参照</div>
                         </t>
