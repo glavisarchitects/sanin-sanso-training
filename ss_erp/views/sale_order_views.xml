@@ -108,17 +108,41 @@
             <xpath expr="//label[@for='pricelist_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-<!--`            <xpath expr="//page[@name='order_lines']//field[@name='order_line']" position="replace">-->
-<!--                 <field name="order_line"-->
-<!--                       attrs="{'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}"/>-->
-<!--            </xpath>`-->
-
-<!--            <field name="order_line"-->
-<!--                   attrs="{'readonly': ['|',('parent.state', 'not in', ['draft']),'&amp;',('parent.approval_status', 'not in', ['out_of_process']),('parent.state', 'in', ['draft'])]}"/>-->
-            <field name="partner_id"
-                   attrs="{'readonly': ['|',('parent.state', 'not in', ['draft']),'&amp;',('parent.approval_status', 'not in', ['out_of_process']),('parent.state', 'in', ['draft'])]}"/>
-<!--            <field name="note"-->
-<!--                   attrs="{'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}"/>-->
+            <field name="partner_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="partner_invoice_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="partner_shipping_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="sale_order_template_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="validity_date" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="date_order" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="payment_term_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
 
             <xpath expr="//page[@name='order_lines']//field[@name='order_line']" position="attributes">
                  <attribute name="attrs">
@@ -129,7 +153,7 @@
             <xpath expr="//field[@name='order_line']//tree//field[@name='tax_id']" position="after">
                 <field name="x_is_required_x_pricelist" invisible="1"/>
                 <field name="x_pricelist" attrs="{'required':[ ('x_is_required_x_pricelist', '=', True)], }"/>
-                <field name="x_expected_delivery_date" attrs="{'readonly':[ ('parent.state', '=', 'sale')]}"/>
+                <field name="x_expected_delivery_date" readonly="0"/>
             </xpath>
 
             <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="attributes">
