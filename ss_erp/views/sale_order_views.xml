@@ -146,7 +146,7 @@
 
             <xpath expr="//page[@name='order_lines']//field[@name='order_line']" position="attributes">
                  <attribute name="attrs">
-                       {'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}
+                       {'readonly': [('approval_status', 'in', ['in_process','approved'])]}
                  </attribute>
             </xpath>
 
