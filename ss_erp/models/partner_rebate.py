@@ -38,6 +38,20 @@ class PartnerRebate(models.Model):
                 _logger.info(_("Unknown timezone {}".format(user_tz)))
         return datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
 
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
+
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id and employee_id.department_jurisdiction_first:
+            return employee_id.department_jurisdiction_first[0]
+        else:
+            return False
+
     name = fields.Char(string='名称', default='新規', readonly=1)
     sequence = fields.Integer(string='シーケンス', default=10)
     company_id = fields.Many2one(
@@ -46,10 +60,10 @@ class PartnerRebate(models.Model):
     )
     organization_id = fields.Many2one(
         comodel_name="ss_erp.organization", string="担当組織",
-        copy=False, index=True,
+        copy=False, index=True, default=lambda self: self._get_default_x_organization_id()
     )
     responsible_id = fields.Many2one(
-        'ss_erp.responsible.department', "管轄部門", index=True)
+        'ss_erp.responsible.department', "管轄部門", index=True, default=lambda self: self._get_default_x_responsible_dept_id())
     partner_id = fields.Many2one(
         'res.partner', string='仕入先',
         change_default=True, tracking=True, index=True,

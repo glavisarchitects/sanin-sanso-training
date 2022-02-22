@@ -74,7 +74,8 @@ class InstructionOrder(models.Model):
                 raise ValidationError(
                     _(
                         "出荷予定日は現在より過去の日付は設定できません。"))
-            elif record.accounting_date.date() < record.date.date():
+            elif record.accounting_date and record.date and \
+                    record.accounting_date.date() < record.date.date():
                 raise ValidationError(
                     _("会計日は棚卸予定日以降の日付を選択してください。")
                 )

@@ -11,14 +11,14 @@ class StockScrap(models.Model):
         'ss_erp.responsible.department', string='管轄部門', default=lambda self: self._get_default_x_responsible_dept_id())
 
     def _get_default_x_organization_id(self):
-        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
             return employee_id.organization_first
         else:
             return False
 
     def _get_default_x_responsible_dept_id(self):
-        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id and employee_id.department_jurisdiction_first:
             return employee_id.department_jurisdiction_first[0]
         else:

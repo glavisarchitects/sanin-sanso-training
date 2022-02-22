@@ -12,10 +12,9 @@ class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
 
     x_department_id = fields.Many2one(
-        'ss_erp.responsible.department', string='申請部署',
-        default=lambda self: self._get_default_department())
+        'ss_erp.responsible.department', string='申請部署',)
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string='申請組織', default=lambda self: self._get_default_organization())
+        'ss_erp.organization', string='申請組織')
     x_contact_form_id = fields.Many2one(
         'ss_erp.res.partner.form', string='連絡先申請フォーム')
     x_inventory_order_ids = fields.Many2many(
@@ -99,17 +98,17 @@ class ApprovalRequest(models.Model):
     show_btn_draft = fields.Boolean(compute='_compute_show_btn_draft')
     show_btn_refuse = fields.Boolean(compute='_compute_show_btn_refuse')
 
-    def _get_default_department(self):
-        employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
-        if employee and employee.department_jurisdiction_first:
-            return employee.department_jurisdiction_first[0]
-        return False
-
-    def _get_default_organization(self):
-        employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
-        if employee:
-            return employee[0].organization_first
-        return False
+    # def _get_default_department(self):
+    #     employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+    #     if employee and employee.department_jurisdiction_first:
+    #         return employee.department_jurisdiction_first[0]
+    #     return False
+    #
+    # def _get_default_organization(self):
+    #     employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+    #     if employee:
+    #         return employee[0].organization_first
+    #     return False
 
     def _compute_show_btn_draft(self):
         for request in self:
