@@ -8,7 +8,7 @@ import pytz
 
 class PartnerRebate(models.Model):
     _name = 'ss_erp.partner.rebate'
-    _description = 'Rebate condition'
+    _description = 'リベート条件'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'partner_id'
 
