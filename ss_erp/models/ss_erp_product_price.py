@@ -50,7 +50,7 @@ class ProductPrice(models.Model):
     @api.constrains('price_unit')
     def _check_raise_price_price_unit(self):
         for rec in self:
-            if not rec.price_unit:
+            if rec.price_unit < 0:
                 raise ValidationError(_("単価を入力して下さい。"))
 
     @api.constrains('product_uom_qty_min', 'product_uom_qty_max')

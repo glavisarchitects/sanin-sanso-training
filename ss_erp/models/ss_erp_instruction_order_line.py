@@ -38,6 +38,12 @@ class InstructionOrderLine(models.Model):
     stock_inventory_line_id = fields.Many2one('stock.inventory.line', string='棚卸明細')
     product_cost = fields.Float(string='単価')
 
+    def init(self):
+        field = self.env['ir.model.fields'].search(
+            [('model_id.model', '=', 'ss_erp.instruction.order.line'), ('name', '=', 'product_qty')], limit=1)
+        if field and field.ttype == 'many2one':
+            self._cr.execute('alter table ss_erp_instruction_order_line drop column product_qty;')
+
     @api.depends('product_qty', 'theoretical_qty')
     def _compute_difference(self):
         for line in self:

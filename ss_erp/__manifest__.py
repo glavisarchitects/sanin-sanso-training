@@ -99,5 +99,6 @@
     'qweb': [
         'static/src/xml/import_custom.xml',
         'static/src/xml/instruction_detail.xml',
+        'static/src/xml/instruction_view.xml',
     ],
 }
