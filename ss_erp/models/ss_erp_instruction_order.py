@@ -10,7 +10,7 @@ class InstructionOrder(models.Model):
     _name = 'ss_erp.instruction.order'
     _description = '指示伝票'
 
-    name = fields.Char(default='新規`', string='棚卸参照', )
+    name = fields.Char(default='新規', string='棚卸参照', )
     sequence = fields.Integer(string='シーケンス')
     accounting_date = fields.Datetime("会計日", default=lambda self: fields.Datetime.now())
     company_id = fields.Many2one('res.company', string='会社', required=True, readonly=True,
