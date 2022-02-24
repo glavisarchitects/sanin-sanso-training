@@ -173,6 +173,12 @@ class InstructionOrder(models.Model):
             'state': 'cancel'
         })
 
+    def action_draft(self):
+        instruction_orders = self.filtered(lambda s: s.state in ['cancel'])
+        instruction_orders.update({
+            'state': 'draft',
+        })
+
     def _action_start(self):
         for order in self:
             if not order.line_ids and not order.start_empty:

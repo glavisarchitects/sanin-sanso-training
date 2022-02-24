@@ -26,6 +26,8 @@
                             attrs="{'invisible': ['|',('create_uid', '=', False),('state','=','cancel')]}"/>
                     <button name="action_cancel_draft" string="棚卸取消" type="object"
                             attrs="{'invisible': ['|',('create_uid', '=', False),('state','=','cancel')]}"/>
+                    <button name="action_draft" string="ドラフトに戻す" type="object"
+                            attrs="{'invisible': [('state','!=','cancel')]}"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
                 </header>
