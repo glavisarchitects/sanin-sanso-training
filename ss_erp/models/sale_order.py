@@ -63,7 +63,7 @@ class SaleOrder(models.Model):
         super(SaleOrder, self).action_quotation_sent()
 
     #
-    @api.onchange('date_order', 'partner_id', 'company_id')
+    @api.onchange('date_order', 'partner_id', 'company_id', 'organization_id')
     def _onchange_get_line_product_price_list_from_date_order(self):
         if self.order_line:
             for line in self.order_line:
