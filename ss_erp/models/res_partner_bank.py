@@ -30,5 +30,5 @@ class ResPartnerBank(models.Model):
                  ('acc_type', '=', record.acc_type), ('acc_number', '=', record.acc_number),
                  ], limit=1)
             if exist_account and exist_account != record:
-                raise ValidationError(_("口座情報は既に登録済みの可能性があります。"))
+                raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 

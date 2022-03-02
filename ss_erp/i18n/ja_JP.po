@@ -3844,7 +3844,7 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__ref
 msgid "Reference"
-msgstr ""
+msgstr "取引先コード"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_kpis_tree
@@ -6414,3 +6414,9 @@ msgstr "手持在庫"
 #: model_terms:ir.ui.view,arch_db:ss_erp.stock_inventory_line_tree_inherit
 msgid "unit"
 msgstr "単位"
+
+#. module: base
+#: model:ir.model.fields,field_description:base.field_res_partner__ref
+#: model_terms:ir.ui.view,arch_db:base.view_partner_form
+msgid "Reference"
+msgstr "取引先コード"
