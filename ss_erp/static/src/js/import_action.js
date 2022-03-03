@@ -9,13 +9,14 @@ odoo.define("ss_erp.import", function (require) {
     var _lt = core._lt;
     var session = require('web.session');
     var StateMachine = window.StateMachine;
-    
     var DataImportCustom = BaseImport.DataImport.include({
 
         init: function () {
             this._super.apply(this, arguments);
             this.transformed = false;
+
         },
+
 
         import_options: function () {
             var options = this._super.apply(this, arguments);
@@ -71,6 +72,36 @@ odoo.define("ss_erp.import", function (require) {
                 this.transformed = true;
                 this['settings_changed']();
             }.bind(this));
+
+            this.$buttons.filter('.o_import_validate').on('click', function(){
+                var self = this;
+                this._rpc({
+                    model: 'base_import.import',
+                    method: 'parse_preview',
+                    args: [this.id, this.import_options()],
+                    }).then(function (data) {
+                    const header_data = data.headers;
+                    const preview_data = data.preview;
+//                    self.val = _.map(prices, v => [v[9]])
+//                    var iterator = self.val.values();
+
+                    var price_unit_col = -1
+                    for (let index = 0, len = header_data.length; index < len; ++index) {
+                         if(header_data[index] == "price_unit"){
+                            price_unit_col = index
+                         }
+                    }
+                    if(price_unit_col != -1){
+                        for (let row_data = 0, len = preview_data.length; row_data < len; ++row_data) {
+                            if(preview_data[row_data][price_unit_col] == ""){
+                                    var message = _t("単価がブランクのレコードはあります。ご確認ください。");
+                                    self.do_warn(_t("Warning"), message,false);
+                                    return Promise.resolve();
+                            }
+                        }
+                    }
+                });
+            }.bind(this));
         },
 
         onpreviewing: function () {
@@ -107,6 +138,7 @@ odoo.define("ss_erp.import", function (require) {
             this._super.apply(this, arguments);
             this.transformed = false;
         },
+
 
     });
 
