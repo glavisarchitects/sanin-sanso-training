@@ -82,22 +82,19 @@ class ProductPrice(models.Model):
         val_check = [
             ('company_id', '=', new_company_id),
             ('pricelist_class', '=', new_pricelist_class),
+            ('partner_id', '=', new_partner_id),
+            ('organization_id', '=', new_organization_id),
             ('product_id', '=', new_product_id),
             ('uom_id', '=', new_uom_id),
             ('product_uom_qty_min', '=', new_product_uom_qty_min),
             ('product_uom_qty_max', '=', new_product_uom_qty_max),
-
         ]
-        if new_partner_id:
-            val_check.append(('partner_id', '=', new_partner_id))
-        if new_organization_id:
-            val_check.append(('organization_id', '=', new_organization_id))
 
-        product_pricelist_duplicate = self.env['ss_erp.product.price'].search(val_check)
+
+        product_pricelist_duplicate = self.env['ss_erp.product.price'].search(val_check).filtered(lambda x:x.id != self.id)
         if product_pricelist_duplicate:
             for exist in product_pricelist_duplicate:
-                if exist != self and ((exist.start_date <= new_start_date <= exist.end_date) or (
-                        exist.start_date <= new_end_date <= exist.end_date)):
+                if (exist.start_date <= new_start_date <= exist.end_date) or (exist.start_date <= new_end_date <= exist.end_date):
                     raise ValidationError(_('既に登録されている条件と期間が重なっているため登録できません'))
 
     @api.model

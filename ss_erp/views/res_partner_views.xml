@@ -323,11 +323,11 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='sales_purchases']" position="after">
-                <page string="Payment Terms" name="payment_terms" attrs="{
+                <page string="支払条件" name="payment_terms" attrs="{
                     'invisible': [('has_x_payment_terms', '=', False)],
                 }">
                     <field name="x_payment_terms_ids" colspan="4" widget="one2many" nolabel="1"
-                           attrs="{'invisible': [('x_payment_terms_ids', '=', 'no')],'required': [('x_payment_terms_ids', '=', 'required')]}">
+                           attrs="{'required': [('x_payment_terms_ids', '=', 'required')]}">
                         <tree editable="top">
                             <field name="more_than_amount"/>
                             <field name="more_than_deadline"/>

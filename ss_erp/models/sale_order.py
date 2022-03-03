@@ -110,6 +110,7 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    x_approval_status = fields.Selection(related="order_id.approval_status", store=True)
     x_pricelist = fields.Many2one('ss_erp.product.price', string="価格リスト", index=True)
     x_expected_delivery_date = fields.Date("納期予定日")
     x_remarks = fields.Char("備考")
