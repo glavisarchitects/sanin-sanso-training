@@ -154,12 +154,12 @@
             <!--      New tree for order line      -->
             <xpath expr="//field[@name='order_line']//tree" position="replace">
                 <field name="approval_status" invisible="1"/>
-                <tree string="Sales Order Lines" editable="bottom" delete="0">
+                <tree string="Sales Order Lines" editable="bottom">
                     <control>
-                        <create name="add_product_control" string="Add a product"/>
-                        <create name="add_section_control" string="Add a section"
+                        <create name="add_product_control" string="プロダクト追加"/>
+                        <create name="add_section_control" string="セクション追加"
                                 context="{'default_display_type': 'line_section'}"/>
-                        <create name="add_note_control" string="Add a note"
+                        <create name="add_note_control" string="ノート追加"
                                 context="{'default_display_type': 'line_note'}"/>
                     </control>
 
@@ -202,7 +202,8 @@
                           }"
                            domain="[('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
                            widget="product_configurator"/>
-                    <field name="name" widget="section_and_note_text" optional="show" attrs="{'readonly':[('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
+                    <field name="name" widget="section_and_note_text" optional="show"
+                           attrs="{'readonly':[('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
                     <field
                             name="analytic_tag_ids"
                             optional="hide"
@@ -281,7 +282,8 @@
                     />
                     <!--        Some field custom                -->
                     <field name="x_is_required_x_pricelist" invisible="1"/>
-                    <field name="x_pricelist" attrs="{'readonly':[('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
+                    <field name="x_pricelist"
+                           attrs="{'readonly':[('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
                     <field name="x_expected_delivery_date"/>
                     <!--                    End-->
 
@@ -290,7 +292,8 @@
                            widget="product_discount"/>
 
                     <!--        Some field custom                -->
-                    <field name="x_remarks" attrs="{'required':[ ('discount', '!=', 0)], 'readonly':[('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
+                    <field name="x_remarks"
+                           attrs="{'required':[ ('discount', '!=', 0)], 'readonly':[('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
                     <!--                    End-->
                     <field name="price_subtotal" widget="monetary"
                            groups="account.group_show_line_subtotals_tax_excluded"/>
@@ -336,8 +339,6 @@
             <!--            </xpath>-->
         </field>
     </record>
-
-
 
 
     <!--  Change context order  -->

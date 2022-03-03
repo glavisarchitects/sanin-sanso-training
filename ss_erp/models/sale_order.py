@@ -118,6 +118,13 @@ class SaleOrderLine(models.Model):
 
     x_is_required_x_pricelist = fields.Boolean(default=True)
 
+    # date_order = fields.Many2one(related='order_id.date_order', string='Date Order', store=True, readonly=True)
+    # organization_id = fields.Many2one(related='order_id.organization_id', string='Organization', store=True, readonly=True)
+    #
+    # @api.onchange('date_order', 'order_partner_id', 'company_id', 'organization_id')
+    # def _onchange_get_line_product_price_list_from_date_order(self):
+
+
     # onchange auto caculate price unit from pricelist
     @api.onchange('product_id', 'product_uom_qty', 'product_uom')
     def _onchange_get_product_price_list(self):
