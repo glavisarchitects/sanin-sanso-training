@@ -63,6 +63,7 @@ class ProductPrice(models.Model):
     # Check condition prevent duplicate pricelist
     def _check_duplicate_pricelist(self, vals):
         new_company_id = (False if vals.get('company_id') is None else vals['company_id']) or self.company_id.id
+        new_name = (False if vals.get('name') is None else vals['name']) or self.name
         new_pricelist_class = (False if vals.get('pricelist_class') is None else vals[
             'pricelist_class']) or self.pricelist_class.id
         new_organization_id = (False if vals.get('organization_id') is None else vals[
@@ -81,6 +82,7 @@ class ProductPrice(models.Model):
 
         val_check = [
             ('company_id', '=', new_company_id),
+            ('name', '=', new_name),
             ('pricelist_class', '=', new_pricelist_class),
             ('partner_id', '=', new_partner_id),
             ('organization_id', '=', new_organization_id),
@@ -90,11 +92,12 @@ class ProductPrice(models.Model):
             ('product_uom_qty_max', '=', new_product_uom_qty_max),
         ]
 
-
-        product_pricelist_duplicate = self.env['ss_erp.product.price'].search(val_check).filtered(lambda x:x.id != self.id)
+        product_pricelist_duplicate = self.env['ss_erp.product.price'].search(val_check).filtered(
+            lambda x: x.id != self.id)
         if product_pricelist_duplicate:
             for exist in product_pricelist_duplicate:
-                if (exist.start_date <= new_start_date <= exist.end_date) or (exist.start_date <= new_end_date <= exist.end_date):
+                if (exist.start_date <= new_start_date <= exist.end_date) or (
+                        exist.start_date <= new_end_date <= exist.end_date):
                     raise ValidationError(_('既に登録されている条件と期間が重なっているため登録できません'))
 
     @api.model
