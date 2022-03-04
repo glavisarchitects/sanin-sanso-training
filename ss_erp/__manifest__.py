@@ -4,7 +4,7 @@
     "summary": """
         山陰酸素工業
     """,
-    "version": "14.0.1.9",
+    "version": "14.0.1.10",
     "category": "",
     "depends": [
         "base", "delivery", "mail", "contacts", "purchase", "uom",

@@ -14,7 +14,7 @@ odoo.define('ss_erp.hide_edit_btn', function (require) {
                     this.renderer.$('.o_field_x2many_list_row_add').addClass('d-none');
                     this.renderer.$('.o_list_record_remove').addClass('d-none');
                 } else {
-                    this.renderer.$('.o_field_x2many_list_row_add').show;
+                    this.renderer.$('.o_field_x2many_list_row_add').show();
                 }
             }
         },

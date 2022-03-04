@@ -19,8 +19,8 @@ class ResPartnerBank(models.Model):
     x_acc_holder_furigana = fields.Char(string='フリガナ', index=True)
 
     # HuuPhong 2011/01/11
-    partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade', index=True,)
-    partner_form_id = fields.Many2one('ss_erp.res.partner.form', 'Account Holder', ondelete='cascade', index=True,)
+    partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade',required=False)
+    partner_form_id = fields.Many2one('ss_erp.res.partner.form', 'Account Holder', ondelete='cascade')
 
     @api.constrains('bank_id', 'x_bank_branch', 'acc_type', 'acc_number')
     def check_bank_account(self):
