@@ -103,7 +103,8 @@ class ProductPrice(models.Model):
         return super(ProductPrice, self).create(vals)
 
     def write(self, vals):
-        self._check_duplicate_pricelist(vals)
+        for record in self:
+            record._check_duplicate_pricelist(vals)
         return super(ProductPrice, self).write(vals)
 
 

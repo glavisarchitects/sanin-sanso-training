@@ -87,13 +87,13 @@ odoo.define("ss_erp.import", function (require) {
 
                     var price_unit_col = -1
                     for (let index = 0, len = header_data.length; index < len; ++index) {
-                         if(header_data[index] == "price_unit"){
+                         if(header_data[index] === "price_unit" || header_data[index] === "単価"){
                             price_unit_col = index
                          }
                     }
                     if(price_unit_col != -1){
                         for (let row_data = 0, len = preview_data.length; row_data < len; ++row_data) {
-                            if(preview_data[row_data][price_unit_col] == ""){
+                            if(preview_data[row_data][price_unit_col] === ""){
                                     var message = _t("単価がブランクのレコードはあります。ご確認ください。");
                                     self.do_warn(_t("Warning"), message,false);
                                     return Promise.resolve();
