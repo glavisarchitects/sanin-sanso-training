@@ -150,22 +150,23 @@ class SaleOrderLine(models.Model):
              '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
              ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
              ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-        self.x_is_required_x_pricelist = True
+
 
         # set False for pricelist core
         self.order_id.pricelist_id = False
-        if product_pricelist:
-            if len(product_pricelist) == 0:
-                # Can't find ss_erp_pricelist match with input condition
-                self.update({
-                    'x_pricelist': False,
-                    'price_unit': self.product_id.lst_price,
-                    'x_is_required_x_pricelist': False
-                })
+        if len(product_pricelist) == 0:
+            # Can't find ss_erp_pricelist match with input condition
+            self.update({
+                'x_pricelist': False,
+                'price_unit': self.product_id.lst_price,
+                'x_is_required_x_pricelist': False
+            })
 
-            elif len(product_pricelist) == 1:
-                self.price_unit = product_pricelist.price_unit
-                self.x_pricelist = product_pricelist
+        elif len(product_pricelist) == 1:
+            self.price_unit = product_pricelist.price_unit
+            self.x_pricelist = product_pricelist
+        else:
+            self.x_is_required_x_pricelist = True
 
             # return {'domain': {'x_pricelist': [('id', 'in', product_pricelist.ids)]
             #                    }}
