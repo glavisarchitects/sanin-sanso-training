@@ -45,8 +45,13 @@
                 <field name="has_x_payment_terms" invisible="1"/>
             </xpath>
             <xpath expr="//h1" position="after">
-                <field name="x_name_furigana" placeholder="フリガナ"/>
-                <field name="x_name_abbreviation" placeholder="略称"/>
+                <div>
+                    <field name="x_name_furigana" placeholder="フリガナ"/>
+                </div>
+                <div>
+                    <field name="x_name_abbreviation" placeholder="略称"/>
+
+                </div>
             </xpath>
             <xpath expr="//field[@name='type']" position="attributes">
                 <attribute name="invisible">1</attribute>
