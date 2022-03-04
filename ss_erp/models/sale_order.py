@@ -9,16 +9,16 @@ from lxml import etree
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    x_organization_id = fields.Many2one('ss_erp.organization', string="販売組織", copy=False,
+    x_organization_id = fields.Many2one('ss_erp.organization', string="販売組織", copy=True,
                                         default=lambda self: self._get_default_x_organization_id())
-    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string="管轄部門", copy=False,
+    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string="管轄部門", copy=True,
                                             default=lambda self: self._get_default_x_responsible_dept_id())
     x_no_approval_required_flag = fields.Boolean('承認不要フラグ?')
     approval_status = fields.Selection(
         string='承認済み区分',
         selection=[('out_of_process', '未承認'),
                    ('in_process', '承認中'),
-                   ('approved', '承認済み')],
+                   ('approved', '承認済み')],copy=False,
         required=False, default='out_of_process')
 
     def _get_default_x_organization_id(self):
@@ -38,7 +38,15 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         if not self.x_no_approval_required_flag and self.approval_status != 'approved':
             raise UserError(_("確認する前に、承認フローを完了してください・"))
-        return super(SaleOrder, self).action_confirm()
+        res = super(SaleOrder, self).action_confirm()
+
+        if self.picking_ids:
+            self.picking_ids.update({
+                'user_id': self.user_id and self.user_id.id or False,
+                'x_organization_id': self.x_organization_id and self.x_organization_id.id or False,
+                'x_responsible_dept_id': self.x_responsible_dept_id and self.x_responsible_dept_id.id or False,}
+            )
+        return res
 
     def _prepare_confirmation_values(self):
         return {
@@ -63,7 +71,7 @@ class SaleOrder(models.Model):
         super(SaleOrder, self).action_quotation_sent()
 
     #
-    @api.onchange('date_order', 'partner_id', 'company_id', 'organization_id')
+    @api.onchange('date_order', 'partner_id', 'company_id', 'x_organization_id')
     def _onchange_get_line_product_price_list_from_date_order(self):
         if self.order_line:
             for line in self.order_line:
@@ -90,6 +98,7 @@ class SaleOrder(models.Model):
                 elif len(product_pricelist) == 1:
                     line.price_unit = product_pricelist.price_unit
                     line.x_pricelist = product_pricelist
+
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
@@ -124,7 +133,6 @@ class SaleOrderLine(models.Model):
     # @api.onchange('date_order', 'order_partner_id', 'company_id', 'organization_id')
     # def _onchange_get_line_product_price_list_from_date_order(self):
 
-
     # onchange auto caculate price unit from pricelist
     @api.onchange('product_id', 'product_uom_qty', 'product_uom')
     def _onchange_get_product_price_list(self):
@@ -146,20 +154,21 @@ class SaleOrderLine(models.Model):
 
         # set False for pricelist core
         self.order_id.pricelist_id = False
-        if len(product_pricelist) == 0:
-            # Can't find ss_erp_pricelist match with input condition
-            self.update({
-                'x_pricelist': False,
-                'price_unit': self.product_id.lst_price,
-                'x_is_required_x_pricelist': False
-            })
+        if product_pricelist:
+            if len(product_pricelist) == 0:
+                # Can't find ss_erp_pricelist match with input condition
+                self.update({
+                    'x_pricelist': False,
+                    'price_unit': self.product_id.lst_price,
+                    'x_is_required_x_pricelist': False
+                })
 
-        elif len(product_pricelist) == 1:
-            self.price_unit = product_pricelist.price_unit
-            self.x_pricelist = product_pricelist
+            elif len(product_pricelist) == 1:
+                self.price_unit = product_pricelist.price_unit
+                self.x_pricelist = product_pricelist
 
-        return {'domain': {'x_pricelist': [('id', 'in', product_pricelist.ids)]
-                           }}
+            # return {'domain': {'x_pricelist': [('id', 'in', product_pricelist.ids)]
+            #                    }}
 
     @api.onchange('x_pricelist')
     def _compute_price_unit(self):

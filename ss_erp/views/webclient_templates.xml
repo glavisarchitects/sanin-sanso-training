@@ -3,6 +3,7 @@
     <template id="assets_backend" inherit_id="web.assets_backend" name="Additional alert">
         <xpath expr="//script[last()]" position="after">
             <script type="text/javascript" src="/ss_erp/static/src/js/import_action.js"></script>
+            <script type="text/javascript" src="/ss_erp/static/src/js/hide_edit_buttons.js"></script>
             <script type="text/javascript"
                     src="/ss_erp/static/src/js/instruction_create_inventory_button_controller.js"></script>
             <script type="text/javascript"

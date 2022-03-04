@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <form position="attributes">
                 <attribute name="options">{'edit': [('approval_status', 'in', ('in_process', 'approved'))]}</attribute>
+                <attribute name="js_class">custom_form</attribute>
             </form>
             <!--     Invisible btn when show from approval.request       -->
             <xpath expr="//header" position="replace">
@@ -230,7 +231,7 @@
                             name="qty_delivered"
                             decoration-info="(not display_type and invoice_status == 'to invoice')"
                             decoration-bf="(not display_type and invoice_status == 'to invoice')"
-                            string="Delivered"
+                            string="配送済"
                             attrs="{
                                 'column_invisible': [('parent.state', 'not in', ['sale', 'done'])],
                                 'readonly': [('qty_delivered_method', '!=', 'manual')]
@@ -243,7 +244,7 @@
                             name="qty_invoiced"
                             decoration-info="(not display_type and invoice_status == 'to invoice')"
                             decoration-bf="(not display_type and invoice_status == 'to invoice')"
-                            string="Invoiced"
+                            string="請求済"
                             attrs="{'column_invisible': [('parent.state', 'not in', ['sale', 'done'])],
                                     'readonly':[('x_approval_status', 'in', ['in_process', 'approved'])]}"
                             optional="show"
@@ -253,7 +254,7 @@
                     <field
                             name="product_uom"
                             force_save="1"
-                            string="UoM"
+                            string="単位"
                             attrs="{
                                 'readonly': ['|',('product_uom_readonly', '=', True), ('x_approval_status', 'in', ['in_process', 'approved'])],
                                 'required': [('display_type', '=', False)],
@@ -283,11 +284,19 @@
                     <!--        Some field custom                -->
                     <field name="x_is_required_x_pricelist" invisible="1"/>
                     <field name="x_pricelist"
+                           domain="['&amp;', '&amp;', '&amp;', '&amp;', '&amp;',
+                                     '|', ('organization_id', '=', parent.x_organization_id), ('organization_id', '=', False),
+                                     '|', ('uom_id', '=', product_uom), ('uom_id', '=', False),
+                                     '|', ('product_uom_qty_min', '&lt;=', product_uom_qty), ('product_uom_qty_min', '=', 0),
+                                     '|', ('product_uom_qty_max', '&gt;=', product_uom_qty), ('product_uom_qty_max', '=', 0),
+                                     '|', ('partner_id', '=', parent.partner_id), ('partner_id', '=', False),
+                                     ('company_id', '=', parent.company_id), ('product_id', '=', product_id),
+                                     ('start_date', '&lt;=', parent.date_order), ('end_date', '&gt;=', parent.date_order)]"
                            attrs="{'readonly':[('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
                     <field name="x_expected_delivery_date"/>
                     <!--                    End-->
 
-                    <field name="discount" string="Disc.%" groups="product.group_discount_per_so_line" optional="show"
+                    <field name="discount" string="割引%" groups="product.group_discount_per_so_line" optional="show"
                            attrs="{'readonly':['|', ('discount', '!=', 0), ('x_approval_status', 'in', ['in_process', 'approved'])]}"
                            widget="product_discount"/>
 
