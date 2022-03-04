@@ -166,6 +166,7 @@ class SaleOrderLine(models.Model):
             self.price_unit = product_pricelist.price_unit
             self.x_pricelist = product_pricelist
         else:
+            self.x_pricelist = False
             self.x_is_required_x_pricelist = True
 
             # return {'domain': {'x_pricelist': [('id', 'in', product_pricelist.ids)]
