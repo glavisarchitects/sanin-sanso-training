@@ -19,8 +19,8 @@ class ResPartnerBank(models.Model):
     x_acc_holder_furigana = fields.Char(string='フリガナ', index=True)
 
     # HuuPhong 2011/01/11
-    partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade', index=True,)
-    partner_form_id = fields.Many2one('ss_erp.res.partner.form', 'Account Holder', ondelete='cascade', index=True,)
+    partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade',required=False)
+    partner_form_id = fields.Many2one('ss_erp.res.partner.form', 'Account Holder', ondelete='cascade')
 
     @api.constrains('bank_id', 'x_bank_branch', 'acc_type', 'acc_number')
     def check_bank_account(self):
@@ -30,5 +30,5 @@ class ResPartnerBank(models.Model):
                  ('acc_type', '=', record.acc_type), ('acc_number', '=', record.acc_number),
                  ], limit=1)
             if exist_account and exist_account != record:
-                raise ValidationError(_("口座情報は既に登録済みの可能性があります。"))
+                raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 

@@ -967,7 +967,7 @@ msgstr "現金残高"
 #: model:ir.model.fields,field_description:ss_erp.field_approval_request__has_x_cash_payment_date
 #: model:ir.model.fields,field_description:ss_erp.field_approval_request__x_cash_payment_date
 msgid "Cash payment date"
-msgstr "現金仕入支払日"
+msgstr "現金支払日"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_approval_category__has_x_cash_amount
@@ -3501,7 +3501,7 @@ msgstr "仕入事前承認"
 #: model:ir.model.fields,field_description:ss_erp.field_approval_request__has_x_prepay_payment_date
 #: model:ir.model.fields,field_description:ss_erp.field_approval_request__x_prepay_payment_date
 msgid "Prepaid payment date"
-msgstr "前払仕入支払日"
+msgstr "前払支払日"
 
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_approval_category__has_x_prepay_amount
@@ -3844,7 +3844,7 @@ msgstr ""
 #. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_res_partner_form__ref
 msgid "Reference"
-msgstr ""
+msgstr "取引先コード"
 
 #. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.purchase_order_kpis_tree
@@ -6295,13 +6295,13 @@ msgstr "ドラフト"
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__cancel
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__cancel
 msgid "Cancel"
-msgstr "ドラフト"
+msgstr "取消"
 
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__confirm
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__confirm
 msgid "Confirm"
-msgstr "取消済"
+msgstr "確認"
 
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__waiting
@@ -6414,3 +6414,24 @@ msgstr "手持在庫"
 #: model_terms:ir.ui.view,arch_db:ss_erp.stock_inventory_line_tree_inherit
 msgid "unit"
 msgstr "単位"
+
+#. module: base
+#: model:ir.model.fields,field_description:base.field_res_partner__ref
+#: model_terms:ir.ui.view,arch_db:base.view_partner_form
+msgid "Reference"
+msgstr "取引先コード"
+
+#. module: approvals
+#: model:ir.model.fields,field_description:approvals.field_approval_request__request_owner_id
+msgid "Request Owner"
+msgstr "申請者"
+
+#. module: approvals
+#: model:ir.model.fields,field_description:approvals.field_approval_request__category_id
+msgid "Category"
+msgstr "申請タイプ"
+
+#. module: approvals
+#: model:ir.model.fields,field_description:approvals.field_approval_request__name
+msgid "Approval Subject"
+msgstr "承認申請"

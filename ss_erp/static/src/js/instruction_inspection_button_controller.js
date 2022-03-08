@@ -1,4 +1,4 @@
-odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
+odoo.define('ss_erp.InstructionInspectionController', function (require) {
     "use strict";
 
     var core = require('web.core');
@@ -7,45 +7,45 @@ odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
     var _t = core._t;
     var qweb = core.qweb;
 
-    var InventoryValidationController = ListController.extend({
+    var InstructionInspectionController = ListController.extend({
         events: _.extend({
-            'click .o_button_instruction_create_inventory': '_onCreateInventory'
+            'click .o_button_instruction_inspection': '_onInstructionInspection'
         }, ListController.prototype.events),
-        /**
-         * @override
-         */
+
         init: function (parent, model, renderer, params) {
             var context = renderer.state.getContext();
             this.inventory_id = context.active_id;
             return this._super.apply(this, arguments);
         },
 
-        // -------------------------------------------------------------------------
-        // Public
-        // -------------------------------------------------------------------------
-
-        /**
-         * @override
-         */
-        renderButtons: function () {
+        _updateSelectionBox: function () {
             this._super.apply(this, arguments);
-            var $validationButton = $(qweb.render('InstructionDetails.Buttons'));
-            this.$buttons.prepend($validationButton);
+            var self = this;
+            if (self.selectedRecords.length) {
+                var ids = this.getSelectedIds()
+                self._rpc({
+                    model: 'ss_erp.instruction.order',
+                    method: 'search_read',
+                    domain: [['id', 'in', ids],
+                        ['state', '=', 'approved']
+                    ],
+                    fields: ['id'],
+                }).then(function (res) {
+                    if (res.length && res.length == self.selectedRecords.length) {
+                        var $inspectionButton = $(qweb.render('InstructionInspection.Buttons'));
+                        if (!self.$buttons.find('.o_button_instruction_inspection').length) {
+                            self.$buttons.prepend($inspectionButton);
+                        }
+                    } else {
+                        self.$buttons.find('.o_button_instruction_inspection').remove()
+                    }
+                });
+            } else {
+                self.$buttons.find('.o_button_instruction_inspection').remove()
+            }
         },
 
-        // -------------------------------------------------------------------------
-        // Handlers
-        // -------------------------------------------------------------------------
-
-        /**
-         * Handler called when user click on validation button in inventory lines
-         * view. Makes an rpc to try to validate the inventory, then will go back on
-         * the inventory view form if it was validated.
-         * This method could also open a wizard in case something was missing.
-         *
-         * @private
-         */
-        _onCreateInventory: function () {
+        _onInstructionInspection: function () {
             var self = this;
             var prom = Promise.resolve();
             var recordID = this.renderer.getEditableRecordID();
@@ -56,11 +56,10 @@ odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
             }
 
             prom.then(function () {
-                var res_ids = self.getSelectedIds();
                 self._rpc({
                     model: 'ss_erp.instruction.order',
-                    method: 'action_create_inventory',
-                    args: [self.inventory_id, res_ids]
+                    method: 'action_inspection',
+                    args: [self.getSelectedIds()]
                 }).then(function (res) {
                     var exitCallback = function (infos) {
                         // In case we discarded a wizard, we do nothing to stay on
@@ -71,7 +70,7 @@ odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
                         // ... but in any other cases, we go back on the inventory form.
                         self.do_notify(
                             false,
-                            _t("The inventory has been created"));
+                            _t("The Instruction has been verify"));
                         self.trigger_up('history_back');
                     };
 
@@ -85,6 +84,6 @@ odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
         },
     });
 
-    return InventoryValidationController;
+    return InstructionInspectionController;
 
 });

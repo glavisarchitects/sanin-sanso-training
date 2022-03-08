@@ -11,7 +11,7 @@ class HrInternalNote(models.Model):
     ref = fields.Many2many('hr.expense.sheet', string='参照元')
 
     def _get_default_x_organization_id(self):
-        employee_id = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
             return employee_id.organization_first
         else:

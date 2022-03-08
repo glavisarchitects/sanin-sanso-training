@@ -47,15 +47,23 @@ class ProductPrice(models.Model):
                 raise ValidationError(_("有効終了日は、開始日より過去の日付は選択できません"))
 
     #
+    @api.constrains('price_unit')
+    def _check_raise_price_price_unit(self):
+        for rec in self:
+            if rec.price_unit < 0:
+                raise ValidationError(_("単価を入力して下さい。"))
+
     @api.constrains('product_uom_qty_min', 'product_uom_qty_max')
     def _check_raise_price_min_max(self):
-        if self.price_unit:
-            if self.product_uom_qty_min > self.product_uom_qty_max:
-                raise ValidationError(_("数量範囲(最大値)以下を入力して下さい。"))
+        for rec in self:
+            if rec.price_unit:
+                if rec.product_uom_qty_min > rec.product_uom_qty_max:
+                    raise ValidationError(_("数量範囲(最大値)以下を入力して下さい。"))
 
     # Check condition prevent duplicate pricelist
     def _check_duplicate_pricelist(self, vals):
         new_company_id = (False if vals.get('company_id') is None else vals['company_id']) or self.company_id.id
+        new_name = (False if vals.get('name') is None else vals['name']) or self.name
         new_pricelist_class = (False if vals.get('pricelist_class') is None else vals[
             'pricelist_class']) or self.pricelist_class.id
         new_organization_id = (False if vals.get('organization_id') is None else vals[
@@ -74,20 +82,19 @@ class ProductPrice(models.Model):
 
         val_check = [
             ('company_id', '=', new_company_id),
+            ('name', '=', new_name),
             ('pricelist_class', '=', new_pricelist_class),
+            ('partner_id', '=', new_partner_id),
+            ('organization_id', '=', new_organization_id),
             ('product_id', '=', new_product_id),
             ('uom_id', '=', new_uom_id),
             ('product_uom_qty_min', '=', new_product_uom_qty_min),
             ('product_uom_qty_max', '=', new_product_uom_qty_max),
-
         ]
-        if new_partner_id:
-            val_check.append(('partner_id', '=', new_partner_id))
-        if new_organization_id:
-            val_check.append(('organization_id', '=', new_organization_id))
 
-        product_pricelist_duplicate = self.env['ss_erp.product.price'].search(val_check)
-        if product_pricelist_duplicate and product_pricelist_duplicate != self:
+        product_pricelist_duplicate = self.env['ss_erp.product.price'].search(val_check).filtered(
+            lambda x: x.id != self.id)
+        if product_pricelist_duplicate:
             for exist in product_pricelist_duplicate:
                 if (exist.start_date <= new_start_date <= exist.end_date) or (
                         exist.start_date <= new_end_date <= exist.end_date):
@@ -99,7 +106,8 @@ class ProductPrice(models.Model):
         return super(ProductPrice, self).create(vals)
 
     def write(self, vals):
-        self._check_duplicate_pricelist(vals)
+        for record in self:
+            record._check_duplicate_pricelist(vals)
         return super(ProductPrice, self).write(vals)
 
 

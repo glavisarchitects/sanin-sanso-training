@@ -16,6 +16,8 @@ class ResPartner(models.Model):
     x_name_abbreviation = fields.Char(string='略称', tracking=True)
     x_name_furigana = fields.Char(string="フリガナ", tracking=True)
 
+    ref = fields.Char(string='取引先コード', index=True)
+
     # 20211129
     x_is_customer = fields.Boolean( string='得意先', index=True, default=True, required=False, tracking=True)
     x_is_vendor = fields.Boolean(string='仕入先', index=True, default=True, required=False, tracking=True)
@@ -177,11 +179,11 @@ class ResPartner(models.Model):
                 if len(record.x_transaction_categ) == 0:
                     raise ValidationError(_("取引区分は入力してください。"))
 
-    @api.constrains('company_name')
+    @api.constrains('name')
     def _check_default_company_name(self):
         for record in self:
-            if record.company_name:
-                partner = self.search([('company_name', '=', self.company_name)])
+            if record.name:
+                partner = self.search([('name', '=', self.name)])
                 if len(partner) > 1:
                     raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 

@@ -4,7 +4,7 @@
     "summary": """
         山陰酸素工業
     """,
-    "version": "14.0.1.9",
+    "version": "14.0.1.10",
     "category": "",
     "depends": [
         "base", "delivery", "mail", "contacts", "purchase", "uom",
@@ -99,5 +99,6 @@
     'qweb': [
         'static/src/xml/import_custom.xml',
         'static/src/xml/instruction_detail.xml',
+        'static/src/xml/instruction_view.xml',
     ],
 }

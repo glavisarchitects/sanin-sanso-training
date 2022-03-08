@@ -10,7 +10,7 @@ class InstructionOrder(models.Model):
     _name = 'ss_erp.instruction.order'
     _description = '指示伝票'
 
-    name = fields.Char(default='New', string='棚卸参照', )
+    name = fields.Char(default='新規', string='棚卸参照', )
     sequence = fields.Integer(string='シーケンス')
     accounting_date = fields.Datetime("会計日", default=lambda self: fields.Datetime.now())
     company_id = fields.Many2one('res.company', string='会社', required=True, readonly=True,
@@ -18,19 +18,19 @@ class InstructionOrder(models.Model):
     date = fields.Datetime(string='在庫調整日')
     exhausted = fields.Boolean(string='在庫のないプロダクトを含める')
     # line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Inventory')
-    # location_ids = fields.Many2many(
-    #     'stock.location', 'location_instruction_rel', 'location_id', 'restruction_id',
-    #     string='ロケーション'
-    # )
+    location_ids = fields.Many2many(
+        'stock.location', 'location_instruction_rel', 'location_id', 'restruction_id',
+        string='ロケーション'
+    )
     # move_ids = fields.One2many('stock.move', 'inventory_id', string='Generated inventory movement')
     prefill_counted_quantity = fields.Selection([
         ('counted', '手持在庫をデフォルト提案'),
         ('zero', 'ゼロをデフォルト提案'),
     ], string='棚卸数量')
-    # product_ids = fields.Many2many(
-    #     'product.product', 'product_instruction_rel', 'product_id', 'instruction_id',
-    #     string='プロダクト'
-    # )
+    product_ids = fields.Many2many(
+        'product.product', 'product_instruction_rel', 'product_id', 'instruction_id',
+        string='プロダクト'
+    )
     start_empty = fields.Boolean(string='空の在庫')
     state = fields.Selection([
         ('draft', 'ドラフト'),
@@ -73,8 +73,9 @@ class InstructionOrder(models.Model):
             if record.accounting_date.date() < fields.Date.today():
                 raise ValidationError(
                     _(
-                        "出荷予定日は現在より過去の日付は設定できません。"))
-            elif record.accounting_date.date() < record.date.date():
+                        "会計日は現在より過去の日付は設定できません。"))
+            elif record.accounting_date and record.date and \
+                    record.accounting_date.date() < record.date.date():
                 raise ValidationError(
                     _("会計日は棚卸予定日以降の日付を選択してください。")
                 )
@@ -118,7 +119,7 @@ class InstructionOrder(models.Model):
         action = {
             'type': 'ir.actions.act_window',
             'view_mode': 'tree',
-            'name': _('Instruction slip details'),
+            'name': _('棚卸計画詳細'),
             'res_model': 'ss_erp.instruction.order.line',
         }
         context = {
@@ -129,7 +130,10 @@ class InstructionOrder(models.Model):
         domain = [
             ('order_id', '=', self.id),
         ]
-        action['view_id'] = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree').id
+        view_id = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree').id
+        if self.stock_inventory_id and self.stock_inventory_id.state != 'draft':
+            view_id = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree_non_edit').id
+        action['view_id'] = view_id
         action['context'] = context
         action['domain'] = domain
         return action
@@ -139,7 +143,7 @@ class InstructionOrder(models.Model):
         action = {
             'type': 'ir.actions.act_window',
             'view_mode': 'tree',
-            'name': _('Instruction slip details'),
+            'name': _('棚卸計画詳細'),
             'res_model': 'ss_erp.instruction.order.line',
         }
         context = {
@@ -151,10 +155,29 @@ class InstructionOrder(models.Model):
             ('order_id', '=', self.id),
             ('organization_id', '=', self.organization_id.id)
         ]
-        action['view_id'] = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree').id
+        view_id = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree').id
+        if self.stock_inventory_id and self.stock_inventory_id.state != 'draft':
+            view_id = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree_non_edit').id
+        action['view_id'] = view_id
         action['context'] = context
         action['domain'] = domain
         return action
+
+    def action_cancel_draft(self):
+        for record in self:
+            if record.stock_inventory_id:
+                record.stock_inventory_id.write({
+                    'state': 'cancel'
+                })
+        self.write({
+            'state': 'cancel'
+        })
+
+    def action_draft(self):
+        instruction_orders = self.filtered(lambda s: s.state in ['cancel'])
+        instruction_orders.update({
+            'state': 'draft',
+        })
 
     def _action_start(self):
         for order in self:
@@ -241,7 +264,8 @@ class InstructionOrder(models.Model):
             vals += self._get_exhausted_inventory_lines_vals({(l['product_id'], l['location_id']) for l in vals})
         return vals
 
-    def action_create_inventory(self):
+    def action_create_inventory(self, ids):
+        lines = self.env['ss_erp.instruction.order.line'].browse(ids)
         if not self.stock_inventory_id:
             inventory_data = {
                 'name': self.env['ir.sequence'].next_by_code('stock.inventory.name'),
@@ -267,3 +291,33 @@ class InstructionOrder(models.Model):
             inventory_data['line_ids'] = line_ids
             stock_inventory_id = self.env['stock.inventory'].create(inventory_data)
             self.stock_inventory_id = stock_inventory_id
+        elif self.stock_inventory_id and self.stock_inventory_id.state == 'draft':
+            for line in lines:
+                inventory_line_id = self.env['stock.inventory.line'].search([('inventory_order_line_id', '=', line.id)],
+                                                                            limit=1)
+                if inventory_line_id:
+                    inventory_line_id.write({
+                        'product_id': line.product_id.id,
+                        'product_uom_id': line.product_uom_id.id,
+                        'location_id': line.location_id.id,
+                        'prod_lot_id': line.prod_lot_id.id,
+                        'inventory_order_line_id': line.id,
+                        'product_qty': line.product_qty,
+                    })
+                else:
+                    self.env['stock.inventory.line'].create({
+                        'inventory_id': self.stock_inventory_id.id,
+                        'product_id': line.product_id.id,
+                        'product_uom_id': line.product_uom_id.id,
+                        'location_id': line.location_id.id,
+                        'prod_lot_id': line.prod_lot_id.id,
+                        'inventory_order_line_id': line.id,
+                        'product_qty': line.product_qty,
+                    })
+
+    @api.model
+    def action_inspection(self, ids):
+        instructions = self.browse(ids)
+        instructions.write({
+            'state': 'done'
+        })

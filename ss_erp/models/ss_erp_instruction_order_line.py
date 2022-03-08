@@ -38,6 +38,12 @@ class InstructionOrderLine(models.Model):
     stock_inventory_line_id = fields.Many2one('stock.inventory.line', string='棚卸明細')
     product_cost = fields.Float(string='単価')
 
+    def init(self):
+        field = self.env['ir.model.fields'].search(
+            [('model_id.model', '=', 'ss_erp.instruction.order.line'), ('name', '=', 'product_qty')], limit=1)
+        if field and field.ttype == 'many2one':
+            self._cr.execute('alter table ss_erp_instruction_order_line drop column product_qty;')
+
     @api.depends('product_qty', 'theoretical_qty')
     def _compute_difference(self):
         for line in self:
@@ -91,19 +97,19 @@ class InstructionOrderLine(models.Model):
             if 'product_id' in values and 'product_uom_id' not in values:
                 values['product_uom_id'] = product.product_tmpl_id.uom_id.id
         res = super(InstructionOrderLine, self).create(vals_list)
-        res._check_no_duplicate_line()
+        # res._check_no_duplicate_line()
         return res
 
-    def _check_no_duplicate_line(self):
-        domain = [('product_id', 'in', self.product_id.ids), ('location_id', 'in', self.location_id.ids)]
-        groupby_fields = ['product_id', 'location_id', 'partner_id', 'package_id', 'prod_lot_id', 'inventory_id']
-        lines_count = {}
-        for group in self.read_group(domain, ['product_id'], groupby_fields, lazy=False):
-            key = tuple([group[field] and group[field][0] for field in groupby_fields])
-            lines_count[key] = group['__count']
-        for line in self:
-            key = (line.product_id.id, line.location_id.id, line.partner_id.id, line.package_id.id, line.prod_lot_id.id,
-                   line.inventory_id.id)
-            if lines_count[key] > 1:
-                raise UserError(_("There is already one Instruction detail for this product,"
-                                  " you should rather modify this one instead of creating a new one."))
+    # def _check_no_duplicate_line(self):
+    #     domain = [('product_id', 'in', self.product_id.ids), ('location_id', 'in', self.location_id.ids)]
+    #     groupby_fields = ['product_id', 'location_id', 'partner_id', 'package_id', 'prod_lot_id', 'inventory_id']
+    #     lines_count = {}
+    #     for group in self.read_group(domain, ['product_id'], groupby_fields, lazy=False):
+    #         key = tuple([group[field] and group[field][0] for field in groupby_fields])
+    #         lines_count[key] = group['__count']
+    #     for line in self:
+    #         key = (line.product_id.id, line.location_id.id, line.partner_id.id, line.package_id.id, line.prod_lot_id.id,
+    #                line.inventory_id.id)
+    #         if lines_count[key] > 1:
+    #             raise UserError(_("There is already one Instruction detail for this product,"
+    #                               " you should rather modify this one instead of creating a new one."))

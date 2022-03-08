@@ -57,3 +57,4 @@ from . import stock_inventory_line
 from . import hr_expense
 from . import hr_expense_sheet
 from . import ss_erp_hr_internal_note
+# from . import sale_report

@@ -16,6 +16,9 @@ class StockInventory(models.Model):
         ('done', '承認完了')],
         copy=False, index=True, readonly=True, tracking=True,
         default='draft')
+    name = fields.Char()
+    type_id = fields.Many2one('product.template', string='Inventory type', states={'draft': [('readonly', False)]},
+                              readonly=True)
 
     def action_start(self):
         res = super().action_start()
@@ -38,3 +41,12 @@ class StockInventory(models.Model):
         self.write({'date': fields.Datetime.now()})
         self.post_inventory()
         return True
+
+    def action_cancel_draft(self):
+        res = super().action_cancel_draft()
+        for inventory in self:
+            if inventory.instruction_order_id:
+                inventory.instruction_order_id.write({
+                    'state': 'draft'
+                })
+        return res
