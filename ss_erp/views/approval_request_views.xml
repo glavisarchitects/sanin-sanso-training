@@ -171,68 +171,137 @@
                 }" options="{'no_quick_create': True}"
                     context="{'request_id': active_id}"
                 />
-                <field name="x_inventory_order_ids" attrs="{
-                    'invisible': [('has_x_inventory_order_ids', '=', 'no')],
-                    'required': [('has_x_inventory_order_ids', '=', 'required')],
-                    'readonly':[('request_status','!=','new')]
-                }"/>
-                <field name="x_inventory_instruction_ids" widget="many2many_tags" attrs="{
-                    'invisible': [('has_x_inventory_instruction_ids', '=', 'no')],
-                    'required': [('has_x_inventory_instruction_ids', '=', 'required')],
-                    'readonly':[('request_status','!=','new')]
-                }"/>
-                <field name="x_purchase_order_ids" attrs="{
-                    'invisible': [('has_x_purchase_order_ids', '=', 'no')],
-                    'required': [('has_x_purchase_order_ids', '=', 'required')],
-                    'readonly':[('request_status','!=','new')]
-                }">
-                    <tree>
-                        <field name="name" string="伝票No."/>
-                        <field name="x_bis_categ_id" string="取引区分"/>
-                        <field name="x_responsible_dept_id" string="管轄部門"/>
-                        <field name="partner_id" string="仕入先"/>
-                        <field name="user_id" string="購買担当者"/>
-                        <field name="x_organization_id" string="担当組織"/>
-                        <field name="date_order" string="回答期日"/>
-                        <field name="amount_total" string="合計"/>
-                        <field name="state" string="ステータス"/>
-                    </tree>
-                </field>
-                <field name="x_sale_order_ids" context="{'active_model': 'approval.request'}"  attrs="{
-                    'invisible': [('has_x_sale_order_ids', '=', 'no')],
-                    'required': [('has_x_sale_order_ids', '=', 'required')],
-                    'readonly':[('request_status','!=','new')]
-                }"
-                    domain="[('state', '=', 'draft')]"
-                >
-                    <tree>
-                        <field name="name" string="伝票No."/>
-                        <field name="date_order" string="作成日"/>
-                        <field name="partner_id" string="顧客"/>
-                        <field name="user_id" string="販売担当者"/>
-                        <field name="amount_total" string="合計"/>
-                        <field name="state" string="ステータス"/>
-                    </tree>
-                </field>
-                <field name="x_account_move_ids" context="{'active_model': 'approval.request'}" attrs="{
-                    'invisible': [('has_x_account_move_ids', '=', 'no')],
-                    'required': [('has_x_account_move_ids', '=', 'required')],
-                    'readonly':[('request_status','!=','new')]
-                }">
-                    <tree>
-                        <field name="name"/>
-                        <field name="invoice_partner_display_name" string="取引先"/>
-                        <field name="invoice_date" string="請求日"/>
-                        <field name="invoice_date_due" string="期日"/>
-                        <field name="amount_total_signed" string="合計"/>
-                        <field name="state" string="ステータス"/>
-                    </tree>
-                </field>
+<!--                <field name="x_inventory_order_ids" attrs="{-->
+<!--                    'invisible': [('has_x_inventory_order_ids', '=', 'no')],-->
+<!--                    'required': [('has_x_inventory_order_ids', '=', 'required')],-->
+<!--                    'readonly':[('request_status','!=','new')]-->
+<!--                }"/>-->
+<!--                <field name="x_inventory_instruction_ids" widget="many2many_tags" attrs="{-->
+<!--                    'invisible': [('has_x_inventory_instruction_ids', '=', 'no')],-->
+<!--                    'required': [('has_x_inventory_instruction_ids', '=', 'required')],-->
+<!--                    'readonly':[('request_status','!=','new')]-->
+<!--                }"/>-->
+<!--                <field name="x_purchase_order_ids" attrs="{-->
+<!--                    'invisible': [('has_x_purchase_order_ids', '=', 'no')],-->
+<!--                    'required': [('has_x_purchase_order_ids', '=', 'required')],-->
+<!--                    'readonly':[('request_status','!=','new')]-->
+<!--                }">-->
+<!--                    <tree>-->
+<!--                        <field name="name" string="伝票No."/>-->
+<!--                        <field name="x_bis_categ_id" string="取引区分"/>-->
+<!--                        <field name="x_responsible_dept_id" string="管轄部門"/>-->
+<!--                        <field name="partner_id" string="仕入先"/>-->
+<!--                        <field name="user_id" string="購買担当者"/>-->
+<!--                        <field name="x_organization_id" string="担当組織"/>-->
+<!--                        <field name="date_order" string="回答期日"/>-->
+<!--                        <field name="amount_total" string="合計"/>-->
+<!--                        <field name="state" string="ステータス"/>-->
+<!--                    </tree>-->
+<!--                </field>-->
+<!--                <field name="x_sale_order_ids" context="{'active_model': 'approval.request'}"  attrs="{-->
+<!--                    'invisible': [('has_x_sale_order_ids', '=', 'no')],-->
+<!--                    'required': [('has_x_sale_order_ids', '=', 'required')],-->
+<!--                    'readonly':[('request_status','!=','new')]-->
+<!--                }"-->
+<!--                    domain="[('state', '=', 'draft')]"-->
+<!--                >-->
+<!--                    <tree>-->
+<!--                        <field name="name" string="伝票No."/>-->
+<!--                        <field name="date_order" string="作成日"/>-->
+<!--                        <field name="partner_id" string="顧客"/>-->
+<!--                        <field name="user_id" string="販売担当者"/>-->
+<!--                        <field name="amount_total" string="合計"/>-->
+<!--                        <field name="state" string="ステータス"/>-->
+<!--                    </tree>-->
+<!--                </field>-->
+<!--                <field name="x_account_move_ids" context="{'active_model': 'approval.request'}" attrs="{-->
+<!--                    'invisible': [('has_x_account_move_ids', '=', 'no')],-->
+<!--                    'required': [('has_x_account_move_ids', '=', 'required')],-->
+<!--                    'readonly':[('request_status','!=','new')]-->
+<!--                }">-->
+<!--                    <tree>-->
+<!--                        <field name="name"/>-->
+<!--                        <field name="invoice_partner_display_name" string="取引先"/>-->
+<!--                        <field name="invoice_date" string="請求日"/>-->
+<!--                        <field name="invoice_date_due" string="期日"/>-->
+<!--                        <field name="amount_total_signed" string="合計"/>-->
+<!--                        <field name="state" string="ステータス"/>-->
+<!--                    </tree>-->
+<!--                </field>-->
                 <field name="x_reject" attrs="{
                     'invisible': ['|',('has_x_reject', '=', 'no'),'&amp;',('has_x_reject', '!=', 'no'),('request_status','!=','refused')],
                     'required': [('has_x_reject', '=', 'required')],
                     'readonly':[('request_status','!=','new')]
                 }"/>
+            </xpath>
+            <xpath expr="//page[@name='description']" position="after">
+                <page string="見積依頼伝票" name="purchase_order" attrs="{'invisible': [('has_x_purchase_order_ids', '=', 'no')]}">
+                    <field name="x_purchase_order_ids" attrs="{
+                        'invisible': [('has_x_purchase_order_ids', '=', 'no')],
+                        'required': [('has_x_purchase_order_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }">
+                        <tree>
+                            <field name="name" string="伝票No."/>
+                            <field name="x_bis_categ_id" string="取引区分"/>
+                            <field name="x_responsible_dept_id" string="管轄部門"/>
+                            <field name="partner_id" string="仕入先"/>
+                            <field name="user_id" string="購買担当者"/>
+                            <field name="x_organization_id" string="担当組織"/>
+                            <field name="date_order" string="回答期日"/>
+                            <field name="amount_total" string="合計"/>
+                            <field name="state" string="ステータス"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="見積伝票" name="sale_order" attrs="{'invisible': [('has_x_sale_order_ids', '=', 'no')]}">
+                    <field name="x_sale_order_ids" context="{'active_model': 'approval.request'}"  attrs="{
+                        'invisible': [('has_x_sale_order_ids', '=', 'no')],
+                        'required': [('has_x_sale_order_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }"
+                        domain="[('state', '=', 'draft')]"
+                    >
+                        <tree>
+                            <field name="name" string="伝票No."/>
+                            <field name="date_order" string="作成日"/>
+                            <field name="partner_id" string="顧客"/>
+                            <field name="user_id" string="販売担当者"/>
+                            <field name="amount_total" string="合計"/>
+                            <field name="state" string="ステータス"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="仕入請求伝票" name="account_move" attrs="{'invisible': [('has_x_account_move_ids', '=', 'no')]}">
+                    <field name="x_account_move_ids" context="{'active_model': 'approval.request'}" attrs="{
+                        'invisible': [('has_x_account_move_ids', '=', 'no')],
+                        'required': [('has_x_account_move_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }">
+                        <tree>
+                            <field name="name"/>
+                            <field name="invoice_partner_display_name" string="取引先"/>
+                            <field name="invoice_date" string="請求日"/>
+                            <field name="invoice_date_due" string="期日"/>
+                            <field name="amount_total_signed" string="合計"/>
+                            <field name="state" string="ステータス"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="棚卸伝票" name="inventory_order" attrs="{'invisible': [('has_x_inventory_order_ids', '=', 'no')]}">
+                    <field name="x_inventory_order_ids" attrs="{
+                        'invisible': [('has_x_inventory_order_ids', '=', 'no')],
+                        'required': [('has_x_inventory_order_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }"/>
+                </page>
+                <page string="指示伝票" name="inventory_instruction" attrs="{'invisible': [('has_x_inventory_instruction_ids', '=', 'no')]}">
+                    <field name="x_inventory_instruction_ids" widget="many2many_tags" attrs="{
+                        'invisible': [('has_x_inventory_instruction_ids', '=', 'no')],
+                        'required': [('has_x_inventory_instruction_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }"/>
+                </page>
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="多段階承認" attrs="{'invisible': [('x_is_multiple_approval', '=', False)], 'readonly':[('request_status','!=','new')]}">
