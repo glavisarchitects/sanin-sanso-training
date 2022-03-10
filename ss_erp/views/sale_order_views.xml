@@ -343,6 +343,7 @@
 
 <!--                        20220310-->
                         <xpath expr="//field[@name='order_line']//tree//field[@name='discount']" position="after">
+                            <field name="x_approval_status" invisible="1"/>
                             <field name="x_remarks" attrs="{
                                 'required':[('discount', '!=', 0)],
                                 'readonly':['|',('state','in',('done','cancel','sale')),('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
