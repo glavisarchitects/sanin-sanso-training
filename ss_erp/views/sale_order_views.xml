@@ -343,19 +343,19 @@
                         <xpath expr="//field[@name='order_line']//tree//field[@name='discount']" position="after">
                             <field name="x_remarks" attrs="{
                                 'required':[('discount', '!=', 0)],
-                                'readonly':['|',('state','in',('done','cancel','order')),('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
+                                'readonly':['|',('state','in',('done','cancel','sale')),('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
                         </xpath>
 
                         <xpath expr="//field[@name='order_line']//tree//field[@name='discount']" position="attributes">
-                            <attribute name="attrs">{'readonly':['|',('state','in',('done','cancel','order')),('x_approval_status', 'in', ['in_process', 'approved'])]}</attribute>
+                            <attribute name="attrs">{'readonly':['|',('state','in',('done','cancel','sale')),('x_approval_status', 'in', ['in_process', 'approved'])]}</attribute>
                         </xpath>
 
                         <xpath expr="//field[@name='order_line']//tree//field[@name='product_uom_qty']" position="attributes">
-                            <attribute name="attrs">{'required': True, 'readonly':['|',('state','in',('done','cancel','order')),('x_approval_status', 'in', ['in_process', 'approved'])]}</attribute>
+                            <attribute name="attrs">{'required': True, 'readonly':['|',('state','in',('done','cancel','sale')),('x_approval_status', 'in', ['in_process', 'approved'])]}</attribute>
                         </xpath>
                         <xpath expr="//field[@name='order_line']//tree//field[@name='tax_id']" position="attributes">
                             <attribute name="attrs">
-                                {'readonly':['|','|',('state','in',('done','cancel','order')),('qty_invoiced','>',0),('x_approval_status', 'in', ['in_process', 'approved'])]}
+                                {'readonly':['|','|',('state','in',('done','cancel','sale')),('qty_invoiced','>',0),('x_approval_status', 'in', ['in_process', 'approved'])]}
                             </attribute>
                         </xpath>
 
