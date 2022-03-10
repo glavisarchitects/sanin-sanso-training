@@ -5,7 +5,7 @@
         <field name="name">purchase.order.inherit.purchase.order.tree</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
-        <field name="arch" type="xml">   
+        <field name="arch" type="xml">
             <field name="name" position="attributes">
                 <attribute name="string">伝票No.</attribute>
             </field>
@@ -19,7 +19,7 @@
             <field name="partner_id" position="after">
                 <field name="x_organization_id" optional="show"/>
             </field>
-            <field name="date_order" position="attributes"> 
+            <field name="date_order" position="attributes">
                 <attribute name="string">回答期日</attribute>
                 <attribute name="optional">show</attribute>
                 <attribute name="widget">date</attribute>
@@ -40,17 +40,17 @@
             <field name="invoice_status" position="attributes">
                 <attribute name="string">請求ステータス</attribute>
             </field>
-            
+
         </field>
     </record>
-    
+
 
     <!-- List view for Purchase Order -->
     <record id="purchase_order_view_tree" model="ir.ui.view">
         <field name="name">purchase.order.view.tree</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
-        <field name="arch" type="xml">     
+        <field name="arch" type="xml">
             <field name="name" position="attributes">
                 <attribute name="string">伝票No.</attribute>
             </field>
@@ -107,13 +107,16 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//button[@name='print_quotation']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <field name="partner_id" position="attributes">
                 <attribute name="options">{'no_create': True}</attribute>
                 <attribute name="domain">[
-                    '|',('company_id', '=', False),
+                    '|', ('company_id', '=', False),
                     ('company_id', '=', company_id),
                     ('x_is_vendor', '=', True),
-                    ]</attribute>
+                ]</attribute>
             </field>
             <field name="partner_ref" position="after">
                 <field name="x_bis_categ_id" required="1" options="{'no_create': True}"/>
@@ -138,14 +141,18 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//form/sheet/group[1]/group[2]/field[@name='date_order']" position="before">
-                <field name="create_date" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}" string="作成日" widget="date"/>
-                <field name="x_rfq_issue_date" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}" widget="date"/>
+                <field name="create_date" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}" string="作成日"
+                       widget="date"/>
+                <field name="x_rfq_issue_date" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"
+                       widget="date"/>
             </xpath>
 
             <xpath expr="//form/sheet/group[1]/group[2]/div[@name='date_planned_div']" position="after">
                 <field name="date_planned" string="要求納期" widget="date"/>
                 <field name="x_desired_delivery" required="1"/>
-                <field name="user_id" domain="[('share', '=', False),('partner_id.organization_id', '=', x_organization_id)]" widget="many2one_avatar_user" position="move"/>
+                <field name="user_id"
+                       domain="[('share', '=', False),('partner_id.organization_id', '=', x_organization_id)]"
+                       widget="many2one_avatar_user" position="move"/>
             </xpath>
             <xpath expr="//form/sheet/group[1]/group[2]/div[@name='date_approve']" position="after">
                 <field name="x_po_issue_date" attrs="{'invisible': [('state','!=','purchase')]}"/>
@@ -166,10 +173,11 @@
                 <attribute name="string">直送</attribute>
             </field>
             <field name="incoterm_id" position="after">
-                <field name="x_dest_address_info" attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')]}"/>
+                <field name="x_dest_address_info"
+                       attrs="{'invisible': [('default_location_dest_id_usage', '!=', 'customer')]}"/>
                 <field name="x_truck_number"/>
             </field>
-            
+
             <field name="fiscal_position_id" position="attributes">
                 <attribute name="string">会計ポジション</attribute>
             </field>
@@ -177,12 +185,13 @@
                 <field name="x_organization_id" options="{'no_create': True}" required="1" readonly="0"/>
                 <field name="x_responsible_dept_id" options="{'no_create': True}" required="1" readonly="0"/>
                 <field name="x_mkt_user_id" options="{'no_create': True}" required="1" readonly="0"/>
-                <field name="x_is_construction" invisible="1"/>     
-                <field name="is_dropshipping" invisible="1"/>     
+                <field name="x_is_construction" invisible="1"/>
+                <field name="is_dropshipping" invisible="1"/>
             </field>
-            
+
             <page name="purchase_delivery_invoice" position="after">
-                <page string="工事情報" name="construction_information" attrs="{'invisible': [('x_is_construction', '=', False)]}">
+                <page string="工事情報" name="construction_information"
+                      attrs="{'invisible': [('x_is_construction', '=', False)]}">
                     <group>
                         <group name="construction_info">
                             <field name="x_construction_name"/>
@@ -193,17 +202,17 @@
                                 <h2> ~ </h2>
                                 <field name="x_construction_period_end"/>
                             </div>
-                            <field name="x_supplies_check" widget="radio" options="{'horizontal': true}"/> 
+                            <field name="x_supplies_check" widget="radio" options="{'horizontal': true}"/>
                             <field name="x_supplies_info" attrs="{'invisible': [('x_supplies_check', '=', 'no')]}"/>
-                            
-                            
+
+
                         </group>
                         <group>
                             <field name="x_explanation_check" widget="radio" options="{'horizontal': true}"/>
-                            <field name="x_explanation_date" />
-                            <field name="x_explanation_spot" />
-                            <field name="x_construction_other" />
-                            
+                            <field name="x_explanation_date"/>
+                            <field name="x_explanation_spot"/>
+                            <field name="x_construction_other"/>
+
                         </group>
                     </group>
                     <group>
@@ -213,15 +222,15 @@
                         <group>
                             <label for="x_construction_payment_cash"/>
                             <div>
-                              <field name="x_construction_payment_cash" class="oe_inline" />
-                              <span class="o_form_label oe_inline">%</span>
+                                <field name="x_construction_payment_cash" class="oe_inline"/>
+                                <span class="o_form_label oe_inline">%</span>
                             </div>
                         </group>
                         <group>
                             <label for="x_construction_payment_bill"/>
                             <div>
-                              <field name="x_construction_payment_bill" class="oe_inline" />
-                              <span class="o_form_label oe_inline">%</span>
+                                <field name="x_construction_payment_bill" class="oe_inline"/>
+                                <span class="o_form_label oe_inline">%</span>
                             </div>
                         </group>
                     </group>
@@ -234,7 +243,7 @@
                         </group>
                     </group>
                 </page>
-            </page> 
+            </page>
         </field>
     </record>
 
