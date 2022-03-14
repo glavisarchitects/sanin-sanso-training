@@ -260,7 +260,7 @@
                         'required': [('has_x_sale_order_ids', '=', 'required')],
                         'readonly':[('request_status','!=','new')]
                     }"
-                        domain="[('state', '=', 'draft')]"
+                        domain="[('state', '=', 'draft'),('approval_status','=','out_of_process')]"
                     >
                         <tree>
                             <field name="name" string="伝票No."/>

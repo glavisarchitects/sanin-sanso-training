@@ -46,3 +46,26 @@ class HrEmployee(models.Model):
                     r.department_jurisdiction_second.filtered(lambda m: m.id in r.department_jurisdiction_third.ids) or \
                     r.department_jurisdiction_third.filtered(lambda m: m.id in r.department_jurisdiction_first.ids):
                 raise ValidationError(_('同一の管轄部門が選択されています'))
+
+
+    @api.model
+    def create(self, vals):
+        employee = super(HrEmployee, self).create(vals)
+        employee._update_user_organizations()
+        return employee
+
+    def _update_user_organizations(self):
+        self.ensure_one()
+        organizations = self.organization_first | self.organization_second | self.organization_third
+        organization_ids = organizations.ids
+        if not organization_ids or not self.user_id:
+            return
+        return self.user_id.write({
+            "organization_ids": [(6, 0, organization_ids)]
+        })
+
+    def write(self, vals):
+        res = super(HrEmployee, self).write(vals)
+        for r in self:
+            r._update_user_organizations()
+        return res

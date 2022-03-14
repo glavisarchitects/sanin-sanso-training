@@ -196,7 +196,7 @@
                     {'readonly':['|','|',('state','in',('done','cancel','sale')),('qty_invoiced','>',0),('x_approval_status', 'in', ['in_process', 'approved'])]}
                 </attribute>
             </xpath>
-            
+
         </field>
     </record>
 

@@ -29,7 +29,7 @@
                             </group>
                             <group>
                                 <field name="partner_id" options="{'no_create': True}" required="1" domain="[('x_is_vendor','=',True)]"/>
-                                <field name="create_uid" options="{'no_create': True}" string="作成者" readonly="0" required="1"/>
+                                <field name="register_id" options="{'no_create': True}" readonly="0" required="1"/>
                                 
                                 <field name="currency_id" groups="base.group_multi_currency"/>
                             </group>

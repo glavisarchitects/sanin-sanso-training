@@ -63,11 +63,12 @@ class PartnerRebate(models.Model):
         copy=False, index=True, default=lambda self: self._get_default_x_organization_id()
     )
     responsible_id = fields.Many2one(
-        'ss_erp.responsible.department', "管轄部門", index=True, default=lambda self: self._get_default_x_responsible_dept_id())
+        'ss_erp.responsible.department', "管轄部門", index=True,
+        default=lambda self: self._get_default_x_responsible_dept_id())
     partner_id = fields.Many2one(
         'res.partner', string='仕入先',
         change_default=True, tracking=True, index=True,
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",)
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", )
     partner_ref = fields.Char(
         related='partner_id.ref',
         string="仕入先コード")
@@ -92,6 +93,8 @@ class PartnerRebate(models.Model):
     attachment_number = fields.Integer(
         '添付数', compute='_compute_attachment_number')
 
+    register_id = fields.Many2one('res.users', "登録者", )
+
     def _compute_attachment_number(self):
         attachment_data = self.env['ir.attachment'].read_group([
             ('res_model', '=', 'ss_erp.partner.rebate'),
@@ -100,6 +103,12 @@ class PartnerRebate(models.Model):
             (data['res_id'], data['res_id_count']) for data in attachment_data)
         for record in self:
             record.attachment_number = attachment.get(record.id, 0)
+
+    @api.constrains("register_id", "organization_id")
+    def _check_register_id(self):
+        for record in self:
+            if record.organization_id not in record.register_id.organization_ids:
+                raise ValidationError(_("登録者の所属組織と担当組織が異なるため保存できません。"))
 
     @api.constrains("date_start", "date_end")
     def _check_dates(self):
