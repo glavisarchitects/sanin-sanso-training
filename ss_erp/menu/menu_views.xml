@@ -20,7 +20,7 @@
 
     <!--    連絡先フォーム-->
     <menuitem id="ss_erp_res_partner_form_menu" name="連絡先フォーム" action="action_ss_erp_res_partner_form"
-              parent="contacts.res_partner_menu_config" sequence="8"/>
+              parent="contacts.menu_contacts" sequence="1"/>
 
     <!--    連絡先カテゴリ-->
     <menuitem id="ss_erp_contact_category_action_menu" name="連絡先カテゴリ" parent="contacts.res_partner_menu_config"
