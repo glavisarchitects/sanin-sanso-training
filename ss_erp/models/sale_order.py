@@ -115,6 +115,28 @@ class SaleOrder(models.Model):
                     res['arch'] = etree.tostring(doc)
         return res
 
+    # cancel sale order if apply for approval
+    def action_cancel(self):
+        res = super(SaleOrder, self).action_cancel()
+        approval_sale = self.env['approval.request'].search([('x_sale_order_ids', 'in', self.id),
+                                                             ('request_status', 'not in',['cancel', 'refuse'])])
+        if approval_sale:
+            for approval in approval_sale:
+                if len(approval.x_sale_order_ids) > 1:
+                    message = '見積番号%sは取り下げられたことにより、承認から削除されます。' % self.name
+                    approval.sudo().write({'x_sale_order_ids': [(3, self.id)]})
+                    approval.message_post(body=message)
+                else:
+                    approval.sudo().update({
+                        'request_status': 'cancel',
+                    })
+                    approval.message_post(body=_('ユーザは見積を取り下げることによって、承認にも取り下げます。'))
+        return res
+
+
+
+
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
