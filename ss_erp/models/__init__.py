@@ -59,3 +59,4 @@ from . import hr_expense_sheet
 from . import ss_erp_hr_internal_note
 # from . import sale_report
 from . import res_users
+from . import account_move

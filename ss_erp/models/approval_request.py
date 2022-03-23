@@ -153,7 +153,7 @@ class ApprovalRequest(models.Model):
         for request in self:
             # ('user_status','!=','pending')
             index_user = request._get_index_user_multi_approvers()
-            if request.user_status == 'pending' and (not index_user or (index_user > 0 and
+            if request.request_status not in ['cancel', 'refuse'] and request.user_status == 'pending' and (not index_user or (index_user > 0 and
                                                                         request.multi_approvers_ids[
                                                                             index_user - 1].x_user_status == 'approved')):
                 request.show_btn_approve = True

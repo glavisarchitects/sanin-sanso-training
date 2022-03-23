@@ -62,7 +62,7 @@ class ApprovalCategory(models.Model):
 
     @api.onchange('multi_approvers_ids')
     def _on_change_multi_approvers_ids(self):
-        """ Password lower bounds must be naturals
+        """ Auto generate sequence
         """
         for approver in self.multi_approvers_ids:
             if approver != self.multi_approvers_ids[-1] or approver.x_approval_seq != 0:

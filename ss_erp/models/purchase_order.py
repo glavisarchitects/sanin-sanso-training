@@ -127,4 +127,23 @@ class PurchaseOrder(models.Model):
         })
         return res
 
+    #
+    def button_cancel(self):
+        """ also cancel approval related"""
+        res = super(PurchaseOrder, self).button_cancel()
+        approval_purchase = self.env['approval.request'].search([('x_purchase_order_ids', 'in', self.id),
+                                                             ('request_status', 'not in', ['cancel', 'refuse'])])
+        if approval_purchase:
+            for approval in approval_purchase:
+                if len(approval.x_purchase_order_ids) > 1:
+                    message = '見積依頼伝票%sが見積操作で取消されたため、承認申請から削除されました。' % self.name
+                    approval.sudo().write({'x_purchase_order_ids': [(3, self.id)]})
+                    approval.message_post(body=message)
+                else:
+                    approval.sudo().update({
+                        'request_status': 'cancel',
+                    })
+                    approval.message_post(body=_('承認申請の見積依頼伝票が見積依頼操作で取消されたため、承認申請を取消しました。'))
+        return res
+
 
