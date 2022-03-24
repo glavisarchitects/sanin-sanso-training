@@ -91,7 +91,7 @@ class Import(models.TransientModel):
 
     def transform_autogas_file(self, options, parent_context={}):
         autogas_header = self._get_ifdb_file_header(parent_context)
-        data = self.file.decode("utf-8").split("\r\n")
+        data = self.file.decode("Shift-JIS").split("\r\n")
         # remove the first and last line
         data = data[1:-2]
         new_data = [
@@ -154,7 +154,7 @@ class Import(models.TransientModel):
                 autogas_header.name,
             )
             new_data.append(new_line_data)
-        self.file = "\n".join(new_data).encode("utf-8")
+        self.file = "\n".join(new_data).encode("Shift-JIS")
 
     def transform_powernet_file(self, options, parent_context={}):
         powernet_header = self._get_ifdb_file_header(parent_context)
@@ -177,7 +177,7 @@ class Import(models.TransientModel):
         for line in data:
             if line == b"":
                 continue
-            new_line = b'"%s",' % (powernet_header.name.encode("utf-8")) + line
+            new_line = b'"%s",' % (powernet_header.name.encode("Shift-JIS")) + line
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
@@ -201,7 +201,7 @@ class Import(models.TransientModel):
         for line in data:
             if line == b"":
                 continue
-            new_line = b'"%s",' % (youki_kanri.name.encode("utf-8")) + line
+            new_line = b'"%s",' % (youki_kanri.name.encode("Shift-JIS")) + line
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
@@ -218,7 +218,7 @@ class Import(models.TransientModel):
         for line in data:
             if line == b"":
                 continue
-            new_line = b'"%s",' % (youki_kensa.name.encode("utf-8")) + line
+            new_line = b'"%s",' % (youki_kensa.name.encode("Shift-JIS")) + line
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
@@ -242,7 +242,7 @@ class Import(models.TransientModel):
         for line in data:
             if line == b"":
                 continue
-            new_line = b'"%s",' % (propane_sales_header.name.encode("utf-8")) + line
+            new_line = b'"%s",' % (propane_sales_header.name.encode("Shift-JIS")) + line
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
