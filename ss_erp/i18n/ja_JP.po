@@ -3465,11 +3465,6 @@ msgid "Please re check inventory order again."
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.actions.act_window,name:ss_erp.ss_erp_ifdb_powernet_sales_detail_action
-msgid "PowerNet Import data"
-msgstr "PowerNetファイル読み込み"
-
-#. module: ss_erp
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_powernet_sales_header__powernet_sale_record_ids
 msgid "PowerNet Sale Record details"
 msgstr ""

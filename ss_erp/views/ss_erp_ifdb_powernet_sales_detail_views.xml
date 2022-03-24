@@ -15,44 +15,44 @@
                        decoration-info="status=='success'"
                        decoration-warning="status=='wait'"
                        decoration-danger="status=='error'" />
-                 <field name="slip_type" optional="show"/>
-                <field name="slip_no" optional="show"/>
-                <field name="data_types" optional="show"/>
-                <field name="cash_classification" optional="show"/>
-                <field name="product_code" optional="show"/>
-                <field name="product_code_2" optional="show"/>
-                <field name="product_name" optional="show"/>
-                <field name="product_remarks" optional="show"/>
-                <field name="sales_category" optional="show"/>
-                <field name="quantity" optional="show"/>
-                <field name="unit_code" optional="show"/>
-                <field name="unit_price" optional="show"/>
-                <field name="amount_of_money" optional="show"/>
-                <field name="consumption_tax" optional="show"/>
-                <field name="sales_amount" optional="show"/>
-                <field name="quantity_after_conversion" optional="show"/>
-                <field name="search_remarks_1" optional="show"/>
-                <field name="search_remarks_2" optional="show"/>
-                <field name="search_remarks_3" optional="show"/>
-                <field name="search_remarks_4" optional="show"/>
-                <field name="search_remarks_5" optional="show"/>
-                <field name="search_remarks_6" optional="show"/>
-                <field name="search_remarks_7" optional="show"/>
-                <field name="search_remarks_8" optional="show"/>
-                <field name="search_remarks_9" optional="show"/>
-                <field name="search_remarks_10" optional="show"/>
-                <field name="sales_classification_code_1" optional="show"/>
-                <field name="sales_classification_code_2" optional="show"/>
-                <field name="sales_classification_code_3" optional="show"/>
-                <field name="consumer_sales_classification_code_1" optional="show"/>
-                <field name="consumer_sales_classification_code_2" optional="show"/>
-                <field name="consumer_sales_classification_code_3" optional="show"/>
-                <field name="consumer_sales_classification_code_4" optional="show"/>
-                <field name="consumer_sales_classification_code_5" optional="show"/>
-                <field name="product_classification_code_1" optional="show"/>
-                <field name="product_classification_code_2" optional="show"/>
-                <field name="product_classification_code_3" optional="show"/>
-                <field name="error_message" optional="show"/>
+                 <field name="slip_type"/>
+                <field name="slip_no"/>
+                <field name="data_types"/>
+                <field name="cash_classification"/>
+                <field name="product_code"/>
+                <field name="product_code_2"/>
+                <field name="product_name"/>
+                <field name="product_remarks"/>
+                <field name="sales_category"/>
+                <field name="quantity"/>
+                <field name="unit_code"/>
+                <field name="unit_price"/>
+                <field name="amount_of_money"/>
+                <field name="consumption_tax"/>
+                <field name="sales_amount"/>
+                <field name="quantity_after_conversion"/>
+                <field name="search_remarks_1"/>
+                <field name="search_remarks_2"/>
+                <field name="search_remarks_3"/>
+                <field name="search_remarks_4"/>
+                <field name="search_remarks_5"/>
+                <field name="search_remarks_6"/>
+                <field name="search_remarks_7"/>
+                <field name="search_remarks_8"/>
+                <field name="search_remarks_9"/>
+                <field name="search_remarks_10"/>
+                <field name="sales_classification_code_1"/>
+                <field name="sales_classification_code_2"/>
+                <field name="sales_classification_code_3"/>
+                <field name="consumer_sales_classification_code_1"/>
+                <field name="consumer_sales_classification_code_2"/>
+                <field name="consumer_sales_classification_code_3"/>
+                <field name="consumer_sales_classification_code_4"/>
+                <field name="consumer_sales_classification_code_5"/>
+                <field name="product_classification_code_1"/>
+                <field name="product_classification_code_2"/>
+                <field name="product_classification_code_3"/>
+                <field name="error_message"/>
                 <field name="sale_id"/>
             </tree>
         </field>
