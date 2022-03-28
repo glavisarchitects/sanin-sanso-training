@@ -34,7 +34,7 @@ class ConvertCodeType(models.Model):
         for rec in self:
             convert_code_types = self.env['ss_erp.convert.code.type'].search([('name', '=', rec.name),
                                                                               ('code', '=', rec.code),
-                                                                              ('model', '=', rec.model),
-                                                                              ('fields', '=', rec.fields)])
+                                                                              ('model', '=', rec.model.id),
+                                                                              ('fields', '=', rec.fields.id)])
             if len(convert_code_types) > 1:
                 raise UserError(_('入力された変換コード種別定義は既に登録済みです。'))

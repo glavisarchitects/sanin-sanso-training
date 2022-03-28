@@ -123,20 +123,15 @@ class SaleOrder(models.Model):
         if approval_sale:
             for approval in approval_sale:
                 if len(approval.x_sale_order_ids) > 1:
-                    message = '見積番号%sは取り下げられたことにより、承認から削除されます。' % self.name
+                    message = '見積番号%sが見積操作で取消されたため、承認申請から削除されました。' % self.name
                     approval.sudo().write({'x_sale_order_ids': [(3, self.id)]})
-                    approval.message_post(body=message)
+                    approval.message_post(body=_(message))
                 else:
                     approval.sudo().update({
                         'request_status': 'cancel',
                     })
-                    approval.message_post(body=_('ユーザは見積を取り下げることによって、承認にも取り下げます。'))
+                    approval.message_post(body=_('承認申請の見積が見積操作で取消されたため、承認申請を取消しました。'))
         return res
-
-
-
-
-
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'

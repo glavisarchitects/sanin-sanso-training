@@ -58,3 +58,13 @@ class ApprovalCategory(models.Model):
         ('inventory_request', '棚卸'),
         ('inventory_request_manager', '棚卸マネージャー'),
     ])
+
+
+    @api.onchange('multi_approvers_ids')
+    def _on_change_multi_approvers_ids(self):
+        """ Auto generate sequence
+        """
+        for approver in self.multi_approvers_ids:
+            if approver != self.multi_approvers_ids[-1] or approver.x_approval_seq != 0:
+                continue
+            approver.x_approval_seq = len(self.multi_approvers_ids)

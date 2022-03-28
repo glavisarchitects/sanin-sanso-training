@@ -10,10 +10,10 @@ class StockInventory(models.Model):
     instruction_order_id = fields.Many2one('ss_erp.instruction.order', string='棚卸指示伝票')
     state = fields.Selection(string='Status', selection=[
         ('draft', 'ドラフト'),
-        ('cancel', '取消済'),
         ('confirm', '進行中'),
         ('approval', '承認依頼中'),
-        ('done', '承認完了')],
+        ('done', '承認完了'),
+        ('cancel', '取消済')],
         copy=False, index=True, readonly=True, tracking=True,
         default='draft')
     name = fields.Char()
@@ -50,3 +50,24 @@ class StockInventory(models.Model):
                     'state': 'draft'
                 })
         return res
+
+    # change state to cancel
+    def action_cancel(self):
+        self.action_cancel_draft()
+        self.write({
+            'state': 'cancel'
+        })
+        # also cancel at approval
+        approval_inventory_order_rec = self.env['approval.request'].search([('x_inventory_order_ids', 'in', self.id),
+                                                             ('request_status', 'not in', ['cancel', 'refuse'])])
+        if approval_inventory_order_rec:
+            for approval in approval_inventory_order_rec:
+                if len(approval.x_inventory_order_ids) > 1:
+                    message = '棚卸伝票%sが棚卸操作で取消されたため、承認申請から削除されました。' % self.name
+                    approval.sudo().write({'x_inventory_order_ids': [(3, self.id)]})
+                    approval.message_post(body=message)
+                else:
+                    approval.sudo().update({
+                        'request_status': 'cancel',
+                    })
+                    approval.message_post(body=_('承認申請の棚卸伝票が棚卸操作で取消されたため、承認申請を取消しました。'))

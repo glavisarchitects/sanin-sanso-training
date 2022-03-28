@@ -27,7 +27,7 @@ class CodeConvert(models.Model):
             record = list(self.env[self.convert_code_type.model.model].search([], limit=1))
             value = record[0] if record else 0
             if value:
-                self.internal_code = '%s,%s' % (self.convert_code_type.model.model, value)
+                self.internal_code = '%s,%s' % (self.convert_code_type.model.model, value.id)
             else:
                 self.internal_code = False
 

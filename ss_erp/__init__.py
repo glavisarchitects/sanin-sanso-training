@@ -2,6 +2,7 @@
 
 from . import models
 from . import wizards
+from . import controllers
 from odoo import api, SUPERUSER_ID
 
 EDIT_CREATE_PARTNER_ACCESS_RIGHTS = [
