@@ -19,7 +19,7 @@ class ResPartner(models.Model):
     ref = fields.Char(string='取引先コード', index=True)
 
     # 20211129
-    x_is_customer = fields.Boolean( string='得意先', index=True, default=True, required=False, tracking=True)
+    x_is_customer = fields.Boolean(string='得意先', index=True, default=True, required=False, tracking=True)
     x_is_vendor = fields.Boolean(string='仕入先', index=True, default=True, required=False, tracking=True)
     type = fields.Selection(selection_add=[
         ('for_rfq', '見積依頼送付先'),
@@ -28,7 +28,8 @@ class ResPartner(models.Model):
     x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_rel',
                                            'categ_id', 'partner_id', string="取引区分", index=True, tracking=True)
     x_transaction_department = fields.Many2many(
-        'ss_erp.bis.category', 'department_partner_rel', 'department_id', 'partner_id', string="部門", index=True, tracking=True)
+        'ss_erp.bis.category', 'department_partner_rel', 'department_id', 'partner_id', string="部門", index=True,
+        tracking=True)
     x_is_branch = fields.Boolean(string="Organization in charge", default=True, help=_(
         "担当拠点、支店、営業所、出張所がある場合はチェック"), tracking=True)
 
@@ -199,3 +200,31 @@ class ResPartner(models.Model):
     def _onchange_x_contact_categ(self):
         if self.x_contact_categ and self.x_contact_categ.type:
             self.type = self.x_contact_categ.type
+
+    def write(self, vals):
+        update_partner_form = True
+        if vals.get('source'):
+            vals.pop('source', None)
+            update_partner_form = False
+        res = super(ResPartner, self).write(vals)
+        if update_partner_form:
+            values = {}
+            form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', self.id)], limit=1)
+            values.update({'source': 'res_partner'})
+            # form_id.write(vals)
+            for name, field in self._fields.items():
+                value = False
+                if vals.get(name, None):
+                    if self._fields[name].type in ['many2many', 'one2many']:
+                        value = getattr(self, name, ())
+                        value = [(6, 0, value.ids)] if value else False
+                    elif self._fields[name].type == 'many2one':
+                        value = getattr(self, name)
+                        value = value.id if value else False
+                    else:
+                        value = vals[name]
+                if value:
+                    values.update({name: value})
+            if len(values) > 1:
+                form_id.write(values)
+        return res

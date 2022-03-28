@@ -12,7 +12,7 @@ class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
 
     x_department_id = fields.Many2one(
-        'ss_erp.responsible.department', string='申請部署',)
+        'ss_erp.responsible.department', string='申請部署', )
     x_organization_id = fields.Many2one(
         'ss_erp.organization', string='申請組織')
     x_contact_form_id = fields.Many2one(
@@ -98,18 +98,6 @@ class ApprovalRequest(models.Model):
     show_btn_draft = fields.Boolean(compute='_compute_show_btn_draft')
     show_btn_refuse = fields.Boolean(compute='_compute_show_btn_refuse')
 
-    # def _get_default_department(self):
-    #     employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
-    #     if employee and employee.department_jurisdiction_first:
-    #         return employee.department_jurisdiction_first[0]
-    #     return False
-    #
-    # def _get_default_organization(self):
-    #     employee = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)], limit=1)
-    #     if employee:
-    #         return employee[0].organization_first
-    #     return False
-
     def _compute_show_btn_draft(self):
         for request in self:
             request.show_btn_draft = True if request.request_owner_id == self.env.user and request.request_status in [
@@ -137,7 +125,6 @@ class ApprovalRequest(models.Model):
                     while index < len(self.multi_approvers_ids):
                         if self.multi_approvers_ids[index].x_user_status in ['new', 'pending']:
                             if self.env.user in self.multi_approvers_ids[index].x_approver_group_ids:
-                                # if user == self.env.user and self.multi_approvers_ids[index].x_approver_group_ids.x_status == 'new':
                                 current_user_status = self.env['approval.approver'].search(
                                     [('request_id', '=', request.id), ('user_id', '=', self.env.user.id)], limit=1)
                                 if current_user_status and current_user_status.status in ['new', 'pending']:
@@ -153,9 +140,10 @@ class ApprovalRequest(models.Model):
         for request in self:
             # ('user_status','!=','pending')
             index_user = request._get_index_user_multi_approvers()
-            if request.request_status not in ['cancel', 'refuse'] and request.user_status == 'pending' and (not index_user or (index_user > 0 and
-                                                                        request.multi_approvers_ids[
-                                                                            index_user - 1].x_user_status == 'approved')):
+            if request.request_status not in ['cancel', 'refuse'] and request.user_status == 'pending' and (
+                    not index_user or (index_user > 0 and
+                                       request.multi_approvers_ids[
+                                           index_user - 1].x_user_status == 'approved')):
                 request.show_btn_approve = True
             else:
                 request.show_btn_approve = False
@@ -167,12 +155,19 @@ class ApprovalRequest(models.Model):
             multi_approvers_ids = self.env['ss_erp.multi.approvers']
 
             for multi_approvers_id in cate_approvers_ids:
+                x_approver_ids = multi_approvers_id.x_approver_group_ids.ids if multi_approvers_id.x_approver_group_ids else False
+                if multi_approvers_id.x_is_manager_approver:
+                    employee = self.env['hr.employee'].search(
+                        [('user_id', '=', self.env.user.id)], limit=1)
+                    if employee.parent_id.user_id:
+                        x_approver_ids.append(employee.parent_id.user_id.id)
+
+                x_approver_group_ids = [(6, 0, x_approver_ids)]
                 new_vals = {
                     'x_request_id': self.id,
                     'x_approval_seq': multi_approvers_id.x_approval_seq,
                     'x_user_status': 'new',
-                    'x_approver_group_ids': [(6, 0,
-                                              multi_approvers_id.x_approver_group_ids.ids)] if multi_approvers_id.x_approver_group_ids else False,
+                    'x_approver_group_ids': x_approver_group_ids,
                     'x_related_user_ids': [(6, 0,
                                             multi_approvers_id.x_related_user_ids.ids)] if multi_approvers_id.x_related_user_ids else False,
                     'x_is_manager_approver': multi_approvers_id.x_is_manager_approver,
@@ -184,13 +179,7 @@ class ApprovalRequest(models.Model):
             super(ApprovalRequest, self)._onchange_category_id()
 
     def _genera_approver_ids(self):
-        new_users = self.multi_approvers_ids.mapped('x_approver_group_ids')
-
-        if any(multi_approvers.x_is_manager_approver for multi_approvers in self.multi_approvers_ids):
-            employee = self.env['hr.employee'].search(
-                [('user_id', '=', self.request_owner_id.id)], limit=1)
-            if employee.parent_id.user_id:
-                new_users |= employee.parent_id.user_id
+        new_users = list(set(self.multi_approvers_ids.mapped('x_approver_group_ids')))
 
         self.write({
             'approver_ids': [(5, 0, 0)] + [(0, 0, {
@@ -258,6 +247,25 @@ class ApprovalRequest(models.Model):
         if self.requirer_document == 'required' and not self.attachment_number:
             raise UserError(_("You have to attach at lease one document."))
         self.write({'date_confirmed': fields.Datetime.now()})
+
+        if self.x_is_multiple_approval:
+            self._genera_approver_ids()
+            self.multi_approvers_ids.write({'x_user_status': 'pending'})
+
+        approvers = self.mapped('approver_ids').filtered(lambda approver: approver.status == 'new')
+        approvers.write({'status': 'pending'})
+
+        if self.request_owner_id.id in self.mapped('approver_ids.user_id').ids:
+            self.action_approve(approver=self.request_owner_id.id)
+
+        if self.x_is_multiple_approval:
+            if self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'pending'):
+                first_group_user_ids = self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'pending')[0].x_approver_group_ids.ids
+                create_activity_approvers = approvers.filtered(lambda x: x.user_id.id in first_group_user_ids)
+                create_activity_approvers._create_activity()
+        else:
+            approvers.filtered(lambda x:x.status == 'pending')._create_activity()
+
         if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
             if self.x_inventory_order_ids:
                 self.x_inventory_order_ids.write({
@@ -267,30 +275,13 @@ class ApprovalRequest(models.Model):
                 self.x_inventory_instruction_ids.write({
                     'state': 'approval'
                 })
-        if self.x_is_multiple_approval:
-            self._genera_approver_ids()
-
-        approvers = self.mapped('approver_ids').filtered(lambda approver: approver.status == 'new')
-        approvers._create_activity()
-        approvers.write({'status': 'pending'})
 
         if self.x_contact_form_id:
             self.x_contact_form_id.write(
                 {'approval_id': self.id, 'approval_state': self.request_status})
+
         user = self.multi_approvers_ids.mapped('x_related_user_ids')
         self.notify_approval(users=user)
-
-    def _check_user_access_request(self):
-        if self.x_is_multiple_approval:
-            access_user_ids = self.multi_approvers_ids.mapped('x_approver_group_ids')
-            if any(multi_approvers.x_is_manager_approver for multi_approvers in self.multi_approvers_ids):
-                employee = self.env['hr.employee'].search(
-                    [('user_id', '=', self.request_owner_id.id)], limit=1)
-                if employee.parent_id.user_id:
-                    access_user_ids |= employee.parent_id.user_id
-            if self.env.user not in access_user_ids:
-                return False
-        return True
 
     def _approve_multi_approvers(self, user):
         curren_multi_approvers = self.multi_approvers_ids.filtered(
@@ -307,9 +298,6 @@ class ApprovalRequest(models.Model):
                     self.notify_approval(users=users, approver=self.env.user)
 
     def action_approve(self, approver=None):
-        if self.x_is_multiple_approval:
-            if not self._check_user_access_request():
-                raise UserError(_("We cannot approve this request."))
         super(ApprovalRequest, self).action_approve(approver=approver)
         if self.x_is_multiple_approval:
             self._approve_multi_approvers(self.env.user)
@@ -322,9 +310,6 @@ class ApprovalRequest(models.Model):
             curren_multi_approvers.write({'x_user_status': 'refused'})
 
     def action_refuse(self, approver=None, lost_reason=None):
-        if self.x_is_multiple_approval:
-            if not self._check_user_access_request():
-                raise UserError(_("We cannot refuse this request."))
         super(ApprovalRequest, self).action_refuse(approver=approver)
         if self.x_is_multiple_approval:
             self._refuse_multi_approvers()
@@ -332,6 +317,8 @@ class ApprovalRequest(models.Model):
         users = self.request_owner_id
         users |= self.multi_approvers_ids.mapped('x_related_user_ids')
         self.notify_approval(users=users, approver=self.env.user)
+        self.sudo().write({'last_approver': self.env.user.id})
+        self.activity_ids.sudo().unlink()
 
     def action_draft(self):
         if self.request_owner_id != self.env.user:
@@ -339,17 +326,15 @@ class ApprovalRequest(models.Model):
         super(ApprovalRequest, self).action_draft()
         if self.x_is_multiple_approval:
             self.multi_approvers_ids.write({'x_user_status': 'new'})
+        self.activity_ids.sudo().unlink()
 
     def _cancel_multi_approvers(self):
-        if self.request_owner_id != self.env.user:
-            raise UserError(_("申請者以外は取消することができません。"))
         self.multi_approvers_ids.write(
             {'x_existing_request_user_ids': [(5, 0, 0)], 'x_user_status': 'cancel'})
+        self.activity_ids.sudo().unlink()
 
     def action_cancel(self):
-        # self.sudo()._get_user_approval_activities(user=self.env.user).unlink()
-        if self.request_owner_id != self.env.user:
-            raise UserError(_("申請者以外は取消することができません。"))
+        self.sudo()._get_user_approval_activities(user=self.env.user).unlink()
         super(ApprovalRequest, self).action_cancel()
         if self.x_is_multiple_approval:
             self._cancel_multi_approvers()
@@ -363,8 +348,8 @@ class ApprovalRequest(models.Model):
 
     def action_temporary_approve(self):
         if self.x_is_multiple_approval:
-            if not self._check_user_access_request():
-                raise UserError(_("We cannot approve this request."))
+            # if not self._check_user_access_request():
+            #     raise UserError(_("We cannot approve this request."))
             self.action_approve()
             index_current = self._get_index_user_multi_approvers()
             if index_current and index_current > 0:

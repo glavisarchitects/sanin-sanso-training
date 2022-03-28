@@ -1482,7 +1482,6 @@ msgid "Customer Transaction Terms"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_powernet_sales_detail__customer_code
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_yg_detail__customer_cd
 #: model_terms:ir.ui.view,arch_db:ss_erp.res_partner_inherit_form
 msgid "Customer code"

@@ -67,16 +67,16 @@
               sequence="10"/>
     <menuitem id="menu_ss_erp_ifdb_yg_detail_action" name="ヤマサンガスサプライ取込データ（検針明細表）"
               parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_detail_action"
-              sequence="20"/>
+              sequence="21"/>
 
 
     <menuitem id="menu_ss_erp_ifdb_yg_summary_action" name="ヤマサンガスサプライ取込データ（検針集計表）"
               parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_summary_action"
               sequence="20"/>
-    <menuitem id="menu_ss_erp_ifdb_powernet_saleshead" name="Powernetファイル取込"
+    <menuitem id="menu_ss_erp_ifdb_powernet_saleshead" name="PowerNetファイル取込"
               parent="ss_erp.external_system_cooperation_importing_performance"
-              action="ss_erp_ifdb_powernet_sales_header_action" sequence="20"/>
-    <menuitem id="menu_ss_erp_ifdb_powernet_salesdetail" name="Powernet取込データ"
+              action="ss_erp_ifdb_powernet_sales_header_action" sequence="25"/>
+    <menuitem id="menu_ss_erp_ifdb_powernet_salesdetail" name="PowerNet取込データ"
               parent="ss_erp.external_system_cooperation_imported_data" sequence="30"
               action="ss_erp_ifdb_powernet_sales_detail_action"/>
     <menuitem id="ss_erp_ifdb_autogas_file_data_rec_menu" name="オートガスPOS（松江）取込データ"
