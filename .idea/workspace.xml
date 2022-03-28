@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="dfba10f4-20f1-4765-b08f-30b86813d392" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/ss_erp/controllers/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ss_erp/controllers/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ss_erp/models/account_move.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/i18n/ja_JP.po" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/i18n/ja_JP.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/approval_category.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/approval_category.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/approval_request.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/approval_request.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/base_import.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/base_import.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/purchase_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/purchase_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/sale_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/sale_order.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_code_convert.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_code_convert.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_convert_code_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_convert_code_type.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/stock_inventory.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/stock_inventory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/views/approval_request_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/views/approval_request_views.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/views/ss_erp_ifdb_powernet_sales_detail_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/views/ss_erp_ifdb_powernet_sales_detail_views.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/views/stock_inventory_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/views/stock_inventory_views.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="26ziefxOVn3MBtSXCX987CXWrqr" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dfba10f4-20f1-4765-b08f-30b86813d392" name="Default Changelist" comment="" />
+      <created>1648432915497</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1648432915497</updated>
+    </task>
+    <servers />
+  </component>
+</project>

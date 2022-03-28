@@ -15,8 +15,7 @@ class MultiApprovers(models.Model):
     x_company_id = fields.Many2one(
         'res.company', related='x_request_id.company_id', readonly=True, copy=False, store=True, index=True,string='会社')
     x_display_name = fields.Char(string='表示名', readonly=True)
-    x_existing_request_user_ids = fields.Many2many(
-        'res.users', 'existing_request_users_approvers_rel', 'user_id', 'approver_id', string='Existing Request User', readonly=True)
+    x_existing_request_user_ids = fields.Many2many('res.users')
     x_request_id = fields.Many2one('approval.request', string='リクエスト', copy=True, store=True)
     x_approval_seq = fields.Integer('Seq.', default=0)
     x_approver_group_ids = fields.Many2many(
@@ -42,15 +41,3 @@ class MultiApprovers(models.Model):
                 raise UserError(
                     _("最小限承認数より承認者を追加してください。"))
 
-    def write(self, values):
-        res = super(MultiApprovers, self).write(values)
-
-        if 'x_existing_request_user_ids' in values and values.get('x_existing_request_user_ids')[0][0] in [4, 6]:
-            for record in self:
-                num_approved = len(record.x_existing_request_user_ids)
-                minimal_approver = record.x_minimum_approvers
-                if num_approved == 1:
-                    record.write({'x_user_status': 'pending'})
-                if num_approved >= minimal_approver:
-                    record.write({'x_user_status': 'approved'})
-        return res

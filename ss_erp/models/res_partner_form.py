@@ -131,8 +131,12 @@ class ResPartnerForm(models.Model):
 
     # New
     def write(self, values):
+        update_res_partner = True
+        if values.get('source'):
+            values.pop('source', None)
+            update_res_partner = False
         res = super(ResPartnerForm, self).write(values)
-        if 'approval_state' in values and values.get('approval_state') == 'approved':
+        if 'approval_state' in values and values.get('approval_state') == 'approved' and update_res_partner:
             self._action_process()
         return res
 
@@ -164,6 +168,7 @@ class ResPartnerForm(models.Model):
             else:
                 # Update partner with contact form
                 partner_id = self.env['res.partner'].browse(int(res_partner_id))
+                vals.update({'source': 'res_partner_form'})
                 partner_id.sudo().write(vals)
 
     @api.model

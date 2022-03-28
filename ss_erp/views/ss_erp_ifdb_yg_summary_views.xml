@@ -4,7 +4,7 @@
         <field name="name">ss_erp.ifdb.yg.summary.tree</field>
         <field name="model">ss_erp.ifdb.yg.summary</field>
         <field name="arch" type="xml">
-            <tree string="">
+            <tree string="" create="0">
                 <field name="processing_date"/>
                 <field name="sale_id"/>
                 <field name="amount_use"/>

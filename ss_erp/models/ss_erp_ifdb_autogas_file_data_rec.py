@@ -121,7 +121,7 @@ class IfdbAutogasFileDataRec(models.Model):
     @api.constrains("card_number")
     def _check_card_number(self):
         for record in self:
-            if len(record.card_number) >= 12:
+            if len(record.card_number) <= 12:
                 raise ValidationError(_("カード番号の長さは12より大きくする必要があります"))
 
     @api.depends("card_number")
