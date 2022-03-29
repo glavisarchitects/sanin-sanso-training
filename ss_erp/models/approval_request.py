@@ -155,7 +155,7 @@ class ApprovalRequest(models.Model):
             multi_approvers_ids = self.env['ss_erp.multi.approvers']
             seq = 0
             for multi_approvers_id in cate_approvers_ids:
-                seq +=1
+                seq += 1
                 x_approver_ids = multi_approvers_id.x_approver_group_ids.ids if multi_approvers_id.x_approver_group_ids else []
                 if multi_approvers_id.x_is_manager_approver:
                     employee = self.env['hr.employee'].search(
@@ -262,11 +262,12 @@ class ApprovalRequest(models.Model):
 
         if self.x_is_multiple_approval:
             if self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'pending'):
-                first_group_user_ids = self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'pending')[0].x_approver_group_ids.ids
+                first_group_user_ids = self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'pending')[
+                    0].x_approver_group_ids.ids
                 create_activity_approvers = approvers.filtered(lambda x: x.user_id.id in first_group_user_ids)
                 create_activity_approvers._create_activity()
         else:
-            approvers.filtered(lambda x:x.status == 'pending')._create_activity()
+            approvers.filtered(lambda x: x.status == 'pending')._create_activity()
 
         if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
             if self.x_inventory_order_ids:
@@ -292,6 +293,11 @@ class ApprovalRequest(models.Model):
             curren_multi_approvers.write({'x_existing_request_user_ids': [(4, user.id)]})
             users = curren_multi_approvers.mapped('x_approver_group_ids') - self.env.user
             self.notify_approval(users=users, approver=self.env.user)
+            current_approved_number = self.approver_ids.filtered(
+                lambda x: x.status == 'approved' and x.user_id in curren_multi_approvers.mapped('x_approver_group_ids'))
+            if len(current_approved_number) >= curren_multi_approvers.x_minimum_approvers:
+                curren_multi_approvers.write({'x_user_status': 'approved'})
+
             if curren_multi_approvers.x_user_status == 'approved':
                 next_multi_approvers = self.multi_approvers_ids.filtered(
                     lambda p: p.x_approval_seq == curren_multi_approvers.x_approval_seq + 1)

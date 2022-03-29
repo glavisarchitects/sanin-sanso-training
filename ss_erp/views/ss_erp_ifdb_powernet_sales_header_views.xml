@@ -17,7 +17,7 @@
         <field name="name">ss_erp.ifdb.powernet.sales.head.view.tree</field>
         <field name="model">ss_erp.ifdb.powernet.sales.header</field>
         <field name="arch" type="xml">
-            <tree string="PowerNet取込データ">
+            <tree string="PowerNetファイル取込">
                 <field name="upload_date"/>
                 <field name="name"/>
                 <field name="branch_id"/>
