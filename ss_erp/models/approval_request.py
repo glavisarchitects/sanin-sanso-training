@@ -153,9 +153,10 @@ class ApprovalRequest(models.Model):
         if self.x_is_multiple_approval:
             cate_approvers_ids = self.category_id.multi_approvers_ids
             multi_approvers_ids = self.env['ss_erp.multi.approvers']
-
+            seq = 0
             for multi_approvers_id in cate_approvers_ids:
-                x_approver_ids = multi_approvers_id.x_approver_group_ids.ids if multi_approvers_id.x_approver_group_ids else False
+                seq +=1
+                x_approver_ids = multi_approvers_id.x_approver_group_ids.ids if multi_approvers_id.x_approver_group_ids else []
                 if multi_approvers_id.x_is_manager_approver:
                     employee = self.env['hr.employee'].search(
                         [('user_id', '=', self.env.user.id)], limit=1)
@@ -165,7 +166,7 @@ class ApprovalRequest(models.Model):
                 x_approver_group_ids = [(6, 0, x_approver_ids)]
                 new_vals = {
                     'x_request_id': self.id,
-                    'x_approval_seq': multi_approvers_id.x_approval_seq,
+                    'x_approval_seq': seq,
                     'x_user_status': 'new',
                     'x_approver_group_ids': x_approver_group_ids,
                     'x_related_user_ids': [(6, 0,
@@ -173,7 +174,8 @@ class ApprovalRequest(models.Model):
                     'x_is_manager_approver': multi_approvers_id.x_is_manager_approver,
                     'x_minimum_approvers': multi_approvers_id.x_minimum_approvers,
                 }
-                multi_approvers_ids += self.env['ss_erp.multi.approvers'].new(new_vals)
+                if len(x_approver_ids) > 0:
+                    multi_approvers_ids += self.env['ss_erp.multi.approvers'].new(new_vals)
             self.multi_approvers_ids = multi_approvers_ids
         else:
             super(ApprovalRequest, self)._onchange_category_id()

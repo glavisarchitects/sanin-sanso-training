@@ -135,10 +135,15 @@ class ResPartnerForm(models.Model):
         if values.get('source'):
             values.pop('source', None)
             update_res_partner = False
-        res = super(ResPartnerForm, self).write(values)
-        if 'approval_state' in values and values.get('approval_state') == 'approved' and update_res_partner:
-            self._action_process()
-        return res
+        if len(values) == 0:
+            return True
+        if self._name == 'ss_erp.res.partner.form':
+            res = super(ResPartnerForm, self).write(values)
+            if 'approval_state' in values and values.get('approval_state') == 'approved' and update_res_partner:
+                self._action_process()
+            return res
+        else:
+            return True
 
     def _action_process(self):
         DEFAULT_FIELDS = ['id', 'create_uid', 'create_date', 'write_uid', 'write_date',
@@ -147,17 +152,15 @@ class ResPartnerForm(models.Model):
             vals = {}
 
             for name, field in form_id._fields.items():
-                if name not in DEFAULT_FIELDS and \
-                        form_id._fields[name].type not in ['one2many'] and \
-                        type(form_id._fields[name].compute) != str:
-                    if form_id._fields[name].type == 'many2many':
+                if name not in DEFAULT_FIELDS:
+                    if form_id._fields[name].type in ['many2many', 'one2many']:
                         value = getattr(form_id, name, ())
                         value = [(6, 0, value.ids)] if value else False
+                    elif form_id._fields[name].type == 'many2one':
+                        value = getattr(form_id, name)
+                        value = value.id if value else False
                     else:
                         value = getattr(form_id, name)
-                        if form_id._fields[name].type == 'many2one':
-                            value = value.id if value else False
-
                     vals.update({name: value})
 
             res_partner_id = vals.pop('res_partner_id')
