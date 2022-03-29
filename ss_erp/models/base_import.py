@@ -322,8 +322,8 @@ class Import(models.TransientModel):
         return df_sorted[FIELDS_AFTER]
 
     def _read_file(self, options):
-        res = super(Import, self)._read_file(options)
         options['encoding'] = 'shift_jis'
+        res = super(Import, self)._read_file(options)
         if options.get('custom_transform'):
             # header
             FIELDS_AFTER = FIELDS_MODEL[self.res_model]['FIELDS_AFTER']
