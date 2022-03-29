@@ -207,7 +207,7 @@ class ResPartner(models.Model):
             vals.pop('source', None)
             update_partner_form = False
         res = super(ResPartner, self).write(vals)
-        if update_partner_form:
+        if update_partner_form and len(vals) > 0 and self._name != 'ss_erp.res.partner.form':
             values = {}
             form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', self.id)], limit=1)
             values.update({'source': 'res_partner'})
