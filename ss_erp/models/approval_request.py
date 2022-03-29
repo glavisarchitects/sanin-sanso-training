@@ -295,7 +295,8 @@ class ApprovalRequest(models.Model):
             self.notify_approval(users=users, approver=self.env.user)
             current_approved_number = self.approver_ids.filtered(
                 lambda x: x.status == 'approved' and x.user_id in curren_multi_approvers.mapped('x_approver_group_ids'))
-            if len(current_approved_number) >= curren_multi_approvers.x_minimum_approvers:
+            if len(current_approved_number) >= curren_multi_approvers.x_minimum_approvers \
+                    and len(current_approved_number) > 0:
                 curren_multi_approvers.write({'x_user_status': 'approved'})
 
             if curren_multi_approvers.x_user_status == 'approved':
