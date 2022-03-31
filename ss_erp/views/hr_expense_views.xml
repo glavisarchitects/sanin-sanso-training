@@ -16,7 +16,8 @@
             </xpath>
             <xpath expr="//field[@name='account_id']" position="after">
                 <field name="x_sub_account_related_ids" invisible="1"/>
-                <field name="x_sub_account_id" attrs="{'required': [('x_sub_account_related_ids','!=',False),('x_sub_account_related_ids','&gt;=',1)]}"/>
+                <field name="x_sub_account_id" attrs="{'required': [('x_sub_account_related_ids','!=',[])]}"
+                    domain="[('id', 'in', x_sub_account_related_ids)]"/>
             </xpath>
             <xpath expr="//field[@name='employee_id']" position="attributes">
                 <attribute name="string">申請者</attribute>

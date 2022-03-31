@@ -2,13 +2,16 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
+
 class HrExpenseSheet(models.Model):
     _inherit = "hr.expense.sheet"
 
     x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', string='補助科目')
     x_request_date = fields.Date(string='申請日')
-    x_organization_id = fields.Many2one('ss_erp.organization', string='申請組織',default=lambda self: self._get_default_x_organization_id())
-    x_responsible_id = fields.Many2one('ss_erp.responsible.department', string='申請部署',default=lambda self: self._get_default_x_responsible_dept_id())
+    x_organization_id = fields.Many2one('ss_erp.organization', string='申請組織',
+                                        default=lambda self: self._get_default_x_organization_id())
+    x_responsible_id = fields.Many2one('ss_erp.responsible.department', string='申請部署',
+                                       default=lambda self: self._get_default_x_responsible_dept_id())
 
     @api.onchange('account_id')
     def onchange_sub_account_id(self):
@@ -31,9 +34,11 @@ class HrExpenseSheet(models.Model):
         else:
             return False
 
-    @api.onchange('user_id')
+    @api.constrains('user_id')
     def check_user_id(self):
-        if self.user_id:
-            expense_manager = self.env['hr.employee'].sudo().search([('expense_manager_id','=',self.user_id.id)],limit=1)
-            if not expense_manager:
-                raise ValidationError(_('承認者に設定した従業員を選択してください。'))
+        for rec in self:
+            if rec.user_id:
+                expense_manager = self.env['hr.employee'].sudo().search([('expense_manager_id', '=', rec.user_id.id)],
+                                                                        limit=1)
+                if not expense_manager:
+                    raise ValidationError(_('承認者に設定した従業員を選択してください。'))
