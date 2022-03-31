@@ -34,11 +34,11 @@ class HrExpenseSheet(models.Model):
         else:
             return False
 
-    @api.constrains('user_id')
-    def check_user_id(self):
-        for rec in self:
-            if rec.user_id:
-                expense_manager = self.env['hr.employee'].sudo().search([('expense_manager_id', '=', rec.user_id.id)],
-                                                                        limit=1)
-                if not expense_manager:
-                    raise ValidationError(_('承認者に設定した従業員を選択してください。'))
+    # @api.constrains('user_id')
+    # def check_user_id(self):
+    #     for rec in self:
+    #         if rec.user_id:
+    #             expense_manager = self.env['hr.employee'].sudo().search([('expense_manager_id', '=', rec.user_id.id)],
+    #                                                                     limit=1)
+    #             if not expense_manager:
+    #                 raise ValidationError(_('承認者に設定した従業員を選択してください。'))
