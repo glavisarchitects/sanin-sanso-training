@@ -43,11 +43,20 @@ class HrExpense(models.Model):
         else:
             return False
 
-    def write(self, vals):
-        res = super(HrExpense, self).write(vals)
-        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
-        if self.x_organization_id not in employee_id.organization_first:
-            raise UserError('申請者の所属組織を選択してください')
-        if self.x_responsible_id not in employee_id.department_jurisdiction_first :
-            raise UserError(_('申請者の所属部署を選択してください'))
-        return res
+    @api.constrains('employee_id','x_organization_id')
+    def _validate_organization(self):
+        for rec in self:
+            if rec.employee_id and rec.x_organization_id:
+                org_ids = [rec.employee_id.organization_first, rec.employee_id.organization_second, rec.employee_id.organization_third]
+                if rec.x_organization_id not in org_ids:
+                    raise UserError('申請者の所属組織を選択してください')
+
+    @api.constrains('employee_id','x_responsible_id')
+    def _validate_organization(self):
+        for rec in self:
+            if rec.employee_id and rec.x_responsible_id:
+                derp_ids = [rec.employee_id.department_jurisdiction_first, rec.employee_id.department_jurisdiction_second, rec.employee_id.department_jurisdiction_third]
+                if rec.x_responsible_id not in derp_ids:
+                    raise UserError('申請者の所属部署を選択してください')
+
+

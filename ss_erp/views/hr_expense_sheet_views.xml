@@ -46,7 +46,7 @@
                 <attribute name="string">経費仕訳帳</attribute>
             </xpath>
             <xpath expr="//page[@name='other_info']/group/group/field[@name='accounting_date']" position="attributes">
-                <attribute name="invisible">0</attribute>
+                <attribute name="attrs">{'invisible':[('state', 'not in', ['draft','submit','approve', 'post', 'done'])]}</attribute>
                 <attribute name="string">会計日</attribute>
             </xpath>
             <xpath expr="//page[@name='expenses']/field[@name='expense_line_ids']/tree/field[@name='sale_order_id']" position="attributes">
