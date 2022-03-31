@@ -202,29 +202,20 @@ class ResPartner(models.Model):
             self.type = self.x_contact_categ.type
 
     def write(self, vals):
-        update_partner_form = True
-        if vals.get('source'):
-            vals.pop('source', None)
-            update_partner_form = False
+        update_partner_form = self._context.get('params', False) and self._context['params'].get('model', False) == 'res.partner' or False
         res = super(ResPartner, self).write(vals)
         if update_partner_form and len(vals) > 0 and self._name != 'ss_erp.res.partner.form':
             values = {}
             form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', self.id)], limit=1)
             values.update({'source': 'res_partner'})
-            # form_id.write(vals)
-            for name, field in self._fields.items():
-                value = False
-                if vals.get(name, None):
-                    if self._fields[name].type in ['many2many', 'one2many']:
-                        value = getattr(self, name, ())
-                        value = [(6, 0, value.ids)] if value else False
-                    elif self._fields[name].type == 'many2one':
-                        value = getattr(self, name)
+            for field_name, field_value in vals.items():
+                if self._fields[field_name].type in ['one2many', 'many2many']:
+                    value = getattr(self, field_name, ())
+                    value = [(6, 0, value.ids)] if value else False
+                else:
+                    value = getattr(self, field_name)
+                    if self._fields[field_name].type == 'many2one':
                         value = value.id if value else False
-                    else:
-                        value = vals[name]
-                if value:
-                    values.update({name: value})
-            if len(values) > 1:
-                form_id.write(values)
+                values.update({field_name: value})
+            form_id.write(values)
         return res

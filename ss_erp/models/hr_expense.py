@@ -10,6 +10,7 @@ class HrExpense(models.Model):
     x_request_date = fields.Date(string='申請日')
     x_organization_id = fields.Many2one('ss_erp.organization', string='申請組織',default=lambda self: self._get_default_x_organization_id())
     x_responsible_id = fields.Many2one('ss_erp.responsible.department', string='申請部署',default=lambda self: self._get_default_x_responsible_dept_id())
+    x_sub_account_related_ids = fields.Many2many(related='account_id.x_sub_account_ids')
 
     @api.onchange('account_id')
     def onchange_sub_account_id(self):
@@ -17,6 +18,7 @@ class HrExpense(models.Model):
             sub_accounts = self.account_id.x_sub_account_ids.ids
             return {'domain': {'x_sub_account_id': [('id', 'in', sub_accounts)]
                                }}
+
 
     def _create_sheet_from_expenses(self):
         res = super(HrExpense, self)._create_sheet_from_expenses()
@@ -40,3 +42,12 @@ class HrExpense(models.Model):
             return employee_id.department_jurisdiction_first[0]
         else:
             return False
+
+    def write(self, vals):
+        res = super(HrExpense, self).write(vals)
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if self.x_organization_id not in employee_id.organization_first:
+            raise UserError('申請者の所属組織を選択してください')
+        if self.x_responsible_id not in employee_id.department_jurisdiction_first :
+            raise UserError(_('申請者の所属部署を選択してください'))
+        return res
