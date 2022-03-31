@@ -257,8 +257,8 @@ class ApprovalRequest(models.Model):
         approvers = self.mapped('approver_ids').filtered(lambda approver: approver.status == 'new')
         approvers.write({'status': 'pending'})
 
-        if self.request_owner_id.id in self.mapped('approver_ids.user_id').ids:
-            self.action_approve(approver=self.request_owner_id.id)
+        # if self.request_owner_id.id in self.mapped('approver_ids.user_id').ids:
+        #     self.action_approve(approver=self.request_owner_id.id)
 
         if self.x_is_multiple_approval:
             if self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'pending'):
@@ -444,7 +444,7 @@ class ApprovalRequest(models.Model):
                         request.x_inventory_instruction_ids.write({
                             'state': 'approved'
                         })
-
-                users = request.multi_approvers_ids.mapped('x_related_user_ids')
-                users |= request.request_owner_id
-                self.notify_approval(users=users, approver=request.last_approver)
+                #
+                # users = request.multi_approvers_ids.mapped('x_related_user_ids')
+                # users |= request.request_owner_id
+                # self.notify_approval(users=users, approver=request.last_approver)

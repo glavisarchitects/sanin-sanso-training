@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-
+from odoo.exceptions import UserError, ValidationError
 
 class HrExpenseSheet(models.Model):
     _inherit = "hr.expense.sheet"
@@ -30,3 +30,10 @@ class HrExpenseSheet(models.Model):
             return employee_id.department_jurisdiction_first[0]
         else:
             return False
+
+    @api.onchange('user_id')
+    def check_user_id(self):
+        if self.user_id:
+            expense_manager = self.env['hr.employee'].sudo().search([('expense_manager_id','=',self.user_id.id)],limit=1)
+            if not expense_manager:
+                raise ValidationError(_('承認者に設定した従業員を選択してください。'))

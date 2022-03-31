@@ -132,11 +132,9 @@ class ResPartnerForm(models.Model):
     # New
     def write(self, values):
         update_res_partner = True
-        if values.get('source'):
+        if values.get('source', False) and values.get('source') == 'res_partner':
             values.pop('source', None)
             update_res_partner = False
-        if len(values) == 0:
-            return True
         if self._name == 'ss_erp.res.partner.form':
             res = super(ResPartnerForm, self).write(values)
             if 'approval_state' in values and values.get('approval_state') == 'approved' and update_res_partner:
@@ -152,15 +150,17 @@ class ResPartnerForm(models.Model):
             vals = {}
 
             for name, field in form_id._fields.items():
-                if name not in DEFAULT_FIELDS:
-                    if form_id._fields[name].type in ['many2many', 'one2many']:
+                if name not in DEFAULT_FIELDS and \
+                        form_id._fields[name].type not in ['one2many'] and \
+                        type(form_id._fields[name].compute) != str:
+                    if form_id._fields[name].type == 'many2many':
                         value = getattr(form_id, name, ())
                         value = [(6, 0, value.ids)] if value else False
-                    elif form_id._fields[name].type == 'many2one':
-                        value = getattr(form_id, name)
-                        value = value.id if value else False
                     else:
                         value = getattr(form_id, name)
+                        if form_id._fields[name].type == 'many2one':
+                            value = value.id if value else False
+
                     vals.update({name: value})
 
             res_partner_id = vals.pop('res_partner_id')
@@ -171,7 +171,7 @@ class ResPartnerForm(models.Model):
             else:
                 # Update partner with contact form
                 partner_id = self.env['res.partner'].browse(int(res_partner_id))
-                vals.update({'source': 'res_partner_form'})
+                partner_id.message_follower_ids.sudo().unlink()
                 partner_id.sudo().write(vals)
 
     @api.model
