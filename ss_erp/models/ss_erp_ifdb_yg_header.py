@@ -19,7 +19,7 @@ class IFDBYGHeader(models.Model):
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり'),
-    ], string='ステータス', default='wait', index=True, compute='_compute_status')
+    ], string='ステータス', default='wait', index=True,store=True, compute='_compute_status')
     meter_reading_date = fields.Date(string='検針年月', index=True)
     summary_ids = fields.One2many(
         'ss_erp.ifdb.yg.summary', 'header_id', '検針集計表')

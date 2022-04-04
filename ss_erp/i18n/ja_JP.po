@@ -2219,11 +2219,6 @@ msgid "Industry"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_code_convert__internal_code
-msgid "Internal Code"
-msgstr ""
-
-#. module: ss_erp
 #: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_contact_category_view_form
 msgid "Internal note"
 msgstr "内部注記"

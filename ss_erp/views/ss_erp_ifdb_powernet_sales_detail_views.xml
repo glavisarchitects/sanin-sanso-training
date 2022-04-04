@@ -5,7 +5,7 @@
         <field name="name">ss_erp.ifdb.powernet.sales.detail.view.tree</field>
         <field name="model">ss_erp.ifdb.powernet.sales.detail</field>
         <field name="arch" type="xml">
-            <tree create="0" string="PowerNet取込データ">
+            <tree js_class="import_detail_tree" string="PowerNet取込データ">
                 <field name="processing_date"/>
                 <field name="customer_code" readonly="1" />
                 <field name="billing_summary_code" readonly="1" />

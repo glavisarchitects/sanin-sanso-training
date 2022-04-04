@@ -17,7 +17,7 @@ class IFDBPowerNetSalesHeader(models.Model):
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり')
-    ], string='ステータス', default="wait", compute='_compute_status')
+    ], string='ステータス', default="wait", store=True,compute='_compute_status')
 
     powernet_sale_record_ids = fields.One2many(
         comodel_name="ss_erp.ifdb.powernet.sales.detail",

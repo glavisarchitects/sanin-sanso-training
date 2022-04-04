@@ -4,7 +4,7 @@
         <field name="name">ss_erp.ifdb.propane.sales.detail.tree</field>
         <field name="model">ss_erp.ifdb.propane.sales.detail</field>
         <field name="arch" type="xml">
-            <tree string="プロパン売上（米子）取込データ" create="0">
+            <tree string="プロパン売上（米子）取込データ" js_class="import_detail_tree">
                 <field name="processing_date"/>
                 <field name="external_data_type"/>
                 <field name="customer_branch_code"/>
