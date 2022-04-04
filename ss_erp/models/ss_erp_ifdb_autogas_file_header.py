@@ -38,6 +38,7 @@ class IFDBAutogasFileHeader(models.Model):
         string="ステータス",
         index=True,
         default="wait",
+        store=True,
         compute='_compute_status'
     )
     autogas_data_record_ids = fields.One2many(

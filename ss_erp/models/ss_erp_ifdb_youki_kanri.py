@@ -33,10 +33,10 @@ class YoukiKanri(models.Model):
             ("error", "エラーあり"),
         ],
         string="ステータス",
-        required=True,
         default="wait",
         index=True,
         readonly=True,
+        store=True,
         compute='_compute_status',
     )
     youki_kanri_detail_ids = fields.One2many(comodel_name="ss_erp.ifdb.youki.kanri.detail",

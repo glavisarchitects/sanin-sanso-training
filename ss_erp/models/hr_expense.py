@@ -19,7 +19,6 @@ class HrExpense(models.Model):
             return {'domain': {'x_sub_account_id': [('id', 'in', sub_accounts)]
                                }}
 
-
     def _create_sheet_from_expenses(self):
         res = super(HrExpense, self)._create_sheet_from_expenses()
         res.update({
@@ -43,20 +42,19 @@ class HrExpense(models.Model):
         else:
             return False
 
-    @api.constrains('employee_id','x_organization_id')
-    def _validate_organization(self):
-        for rec in self:
-            if rec.employee_id and rec.x_organization_id:
-                org_ids = [rec.employee_id.organization_first, rec.employee_id.organization_second, rec.employee_id.organization_third]
-                if rec.x_organization_id not in org_ids:
-                    raise UserError('申請者の所属組織を選択してください')
-
-    @api.constrains('employee_id','x_responsible_id')
-    def _validate_organization(self):
+    # @api.constrains('employee_id','x_organization_id')
+    # def _validate_organization(self):
+    #     for rec in self:
+    @api.constrains('employee_id','x_responsible_id','x_organization_id')
+    def _validate_responsible_department(self):
         for rec in self:
             if rec.employee_id and rec.x_responsible_id:
                 derp_ids = [rec.employee_id.department_jurisdiction_first, rec.employee_id.department_jurisdiction_second, rec.employee_id.department_jurisdiction_third]
                 if rec.x_responsible_id not in derp_ids:
                     raise UserError('申請者の所属部署を選択してください')
 
+            if rec.employee_id and rec.x_organization_id:
+                org_ids = [rec.employee_id.organization_first, rec.employee_id.organization_second, rec.employee_id.organization_third]
+                if rec.x_organization_id not in org_ids:
+                    raise UserError('申請者の所属組織を選択してください')
 

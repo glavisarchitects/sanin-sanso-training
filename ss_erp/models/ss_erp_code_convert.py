@@ -17,7 +17,7 @@ class CodeConvert(models.Model):
     convert_code_type = fields.Many2one('ss_erp.convert.code.type', string='変換コード種別', required=True)
     external_code = fields.Char(string='外部コード')
     priority_conversion = fields.Boolean(string='優先変換先', required=True, default=False)
-    internal_code = fields.Reference(selection='_selection_target_model', store=True)
+    internal_code = fields.Reference(selection='_selection_target_model', store=True,string="Odooコード")
     value = fields.Text(required=False)
     active = fields.Boolean(default=True, )
 
