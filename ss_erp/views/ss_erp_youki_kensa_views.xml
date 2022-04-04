@@ -134,7 +134,7 @@
         <field name="name">ss_erp.ifdb.youki.kensa.detail.view.tree</field>
         <field name="model">ss_erp.ifdb.youkikensa.billing.file.detail</field>
         <field name="arch" type="xml">
-            <tree string="容器管理システムデータ" create="0">
+            <tree string="容器管理システムデータ" js_class="import_detail_tree">
                 <field name="status"
                        widget="badge"
                        decoration-info="status=='success'"
@@ -164,7 +164,7 @@
     </record>
 
     <record id="ss_erp_ifdb_youki_kensa_detail_action" model="ir.actions.act_window">
-        <field name="name">容器検査所ファイル取込 ディテール</field>
+        <field name="name">容器検査所ファイル取込データ</field>
         <field name="res_model">ss_erp.ifdb.youkikensa.billing.file.detail</field>
         <field name="view_mode">tree</field>
     </record>
