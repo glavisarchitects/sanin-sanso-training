@@ -75,8 +75,8 @@ class Import(models.TransientModel):
     def _get_ifdb_file_header(self, parent_context):
         self.ensure_one()
         if (
-            parent_context and 
-            not any([self.import_file_header_id, self.import_file_header_model])
+                parent_context and
+                not any([self.import_file_header_id, self.import_file_header_model])
         ):
             self.import_file_header_model = parent_context["default_import_file_header_model"]
             self.import_file_header_id = parent_context["default_import_file_header_id"]
@@ -95,12 +95,12 @@ class Import(models.TransientModel):
         # remove the first and last line
         data = data[1:-2]
         new_data = [
-            '"card_classification","processing_division","unused","group_division",' +\
-            '"actual_car_number","card_number","product_code","data_no","quantity_1",' +\
-            '"unit_price","amount_of_money","staff_code","processing_time","calendar_date",' +\
-            '"consumption_tax_output_classification","consumption_tax",' +\
-            '"credit_terminal_processing_serial_number","credit_classification",' +\
-            '"credit_data_no","tax_classification_code","filer1","quantity_2",' +\
+            '"card_classification","processing_division","unused","group_division",' + \
+            '"actual_car_number","card_number","product_code","data_no","quantity_1",' + \
+            '"unit_price","amount_of_money","staff_code","processing_time","calendar_date",' + \
+            '"consumption_tax_output_classification","consumption_tax",' + \
+            '"credit_terminal_processing_serial_number","credit_classification",' + \
+            '"credit_data_no","tax_classification_code","filer1","quantity_2",' + \
             '"filer2","autogas_file_header_id"'
         ]
         for line in data:
@@ -160,18 +160,18 @@ class Import(models.TransientModel):
         powernet_header = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")
         new_data = [
-            b'"powernet_sales_header_id","customer_code","billing_summary_code",' +\
-            b'"sales_date","slip_type","slip_no","data_types","cash_classification",' +\
-            b'"product_code","product_code_2","product_name","product_remarks",' +\
-            b'"sales_category","quantity","unit_code","unit_price","amount_of_money",' +\
-            b'"consumption_tax","sales_amount","quantity_after_conversion",' +\
-            b'"search_remarks_1","search_remarks_2","search_remarks_3","search_remarks_4",' +\
-            b'"search_remarks_5","search_remarks_6","search_remarks_7","search_remarks_8",' +\
-            b'"search_remarks_9","search_remarks_10","sales_classification_code_1",' +\
-            b'"sales_classification_code_2","sales_classification_code_3",' +\
-            b'"consumer_sales_classification_code_1","consumer_sales_classification_code_2",' +\
-            b'"consumer_sales_classification_code_3","consumer_sales_classification_code_4",' +\
-            b'"consumer_sales_classification_code_5","product_classification_code_1",' +\
+            b'"powernet_sales_header_id","customer_code","billing_summary_code",' + \
+            b'"sales_date","slip_type","slip_no","data_types","cash_classification",' + \
+            b'"product_code","product_code_2","product_name","product_remarks",' + \
+            b'"sales_category","quantity","unit_code","unit_price","amount_of_money",' + \
+            b'"consumption_tax","sales_amount","quantity_after_conversion",' + \
+            b'"search_remarks_1","search_remarks_2","search_remarks_3","search_remarks_4",' + \
+            b'"search_remarks_5","search_remarks_6","search_remarks_7","search_remarks_8",' + \
+            b'"search_remarks_9","search_remarks_10","sales_classification_code_1",' + \
+            b'"sales_classification_code_2","sales_classification_code_3",' + \
+            b'"consumer_sales_classification_code_1","consumer_sales_classification_code_2",' + \
+            b'"consumer_sales_classification_code_3","consumer_sales_classification_code_4",' + \
+            b'"consumer_sales_classification_code_5","product_classification_code_1",' + \
             b'"product_classification_code_2","product_classification_code_3"'
         ]
         for line in data:
@@ -185,17 +185,17 @@ class Import(models.TransientModel):
         youki_kanri = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")
         new_data = [
-            b'"ifdb_youki_kanri_id","external_data_type","customer_branch_code",' +\
-            b'"customer_branch_sub_code","customer_business_partner_code",' +\
-            b'"customer_business_partner_branch_code","customer_delivery_code",' +\
-            b'"direct_branch_code","direct_branch_sub_code","direct_business_partner_code",' +\
-            b'"direct_business_partner_sub_code","direct_delivery_code","customer_name",' +\
-            b'"codeommercial_branch_code","codeommercial_branch_sub_code",' +\
-            b'"codeommercial_product_code","product_name","standard_name","standard",' +\
-            b'"number","slip_date","codelassification_code","line_break","quantity",' +\
-            b'"unit_code","unit_price","amount_of_money","unit_price_2","amount_2",' +\
-            b'"unified_quantity","order_number","comment","codeommercial_branch_code2",' +\
-            b'"codeommercial_branch_sub_code2","codeommercial_product_code2",' +\
+            b'"ifdb_youki_kanri_id","external_data_type","customer_branch_code",' + \
+            b'"customer_branch_sub_code","customer_business_partner_code",' + \
+            b'"customer_business_partner_branch_code","customer_delivery_code",' + \
+            b'"direct_branch_code","direct_branch_sub_code","direct_business_partner_code",' + \
+            b'"direct_business_partner_sub_code","direct_delivery_code","customer_name",' + \
+            b'"codeommercial_branch_code","codeommercial_branch_sub_code",' + \
+            b'"codeommercial_product_code","product_name","standard_name","standard",' + \
+            b'"number","slip_date","codelassification_code","line_break","quantity",' + \
+            b'"unit_code","unit_price","amount_of_money","unit_price_2","amount_2",' + \
+            b'"unified_quantity","order_number","comment","codeommercial_branch_code2",' + \
+            b'"codeommercial_branch_sub_code2","codeommercial_product_code2",' + \
             b'"amount_calculation_classification","slip_processing_classification"'
         ]
         for line in data:
@@ -209,10 +209,10 @@ class Import(models.TransientModel):
         youki_kensa = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")[1:]
         new_data = [
-            b'"youkikensa_billing_file_header_id","sales_date","slip_no","field_3",' +\
-            b'"billing_code","billing_abbreviation","customer_code",' +\
-            b'"customer_abbreviation","product_code","product_name","unit_price",' +\
-            b'"return_quantity_for_sale","net_sales_excluding_tax","consumption_tax",' +\
+            b'"youkikensa_billing_file_header_id","sales_date","slip_no","field_3",' + \
+            b'"billing_code","billing_abbreviation","customer_code",' + \
+            b'"customer_abbreviation","product_code","product_name","unit_price",' + \
+            b'"return_quantity_for_sale","net_sales_excluding_tax","consumption_tax",' + \
             b'"remarks","unit_cost","description"'
         ]
         for line in data:
@@ -226,17 +226,17 @@ class Import(models.TransientModel):
         propane_sales_header = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")
         new_data = [
-            b'"propane_sales_header_id","external_data_type","customer_branch_code",' +\
-            b'"customer_branch_sub_code","customer_business_partner_code",' +\
-            b'"customer_business_partner_branch_code","customer_delivery_code",' +\
-            b'"direct_branch_code","direct_branch_sub_code","direct_business_partner_code",' +\
-            b'"direct_business_partner_sub_code","direct_delivery_code","customer_name",' +\
-            b'"codeommercial_branch_code","codeommercial_branch_sub_code",' +\
-            b'"codeommercial_product_code","product_name","standard_name","standard",' +\
-            b'"number","slip_date","codelassification_code","line_break","quantity",' +\
-            b'"unit_code","unit_price","amount_of_money","unit_price_2","amount_2",' +\
-            b'"unified_quantity","order_number","comment","codeommercial_branch_code2",' +\
-            b'"codeommercial_branch_sub_code2","codeommercial_product_code2",' +\
+            b'"propane_sales_header_id","external_data_type","customer_branch_code",' + \
+            b'"customer_branch_sub_code","customer_business_partner_code",' + \
+            b'"customer_business_partner_branch_code","customer_delivery_code",' + \
+            b'"direct_branch_code","direct_branch_sub_code","direct_business_partner_code",' + \
+            b'"direct_business_partner_sub_code","direct_delivery_code","customer_name",' + \
+            b'"codeommercial_branch_code","codeommercial_branch_sub_code",' + \
+            b'"codeommercial_product_code","product_name","standard_name","standard",' + \
+            b'"number","slip_date","codelassification_code","line_break","quantity",' + \
+            b'"unit_code","unit_price","amount_of_money","unit_price_2","amount_2",' + \
+            b'"unified_quantity","order_number","comment","codeommercial_branch_code2",' + \
+            b'"codeommercial_branch_sub_code2","codeommercial_product_code2",' + \
             b'"amount_calculation_classification","slip_processing_classification"'
         ]
         for line in data:
@@ -322,7 +322,11 @@ class Import(models.TransientModel):
         return df_sorted[FIELDS_AFTER]
 
     def _read_file(self, options):
-        options['encoding'] = 'shift_jis'
+        MODEL_NAMES = ['ss_erp.ifdb.yg.summary', 'ss_erp.ifdb.yg.detail', 'ss_erp.ifdb.powernet.sales.detail',
+                       'ss_erp.ifdb.youki.kanri.detail', 'ss_erp.ifdb.autogas.file.data.rec',
+                       'ss_erp.ifdb.propane.sales.detail']
+        if self.res_model not in MODEL_NAMES:
+            options['encoding'] = 'shift_jis'
         res = super(Import, self)._read_file(options)
         if options.get('custom_transform'):
             # header
