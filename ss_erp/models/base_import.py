@@ -322,11 +322,11 @@ class Import(models.TransientModel):
         return df_sorted[FIELDS_AFTER]
 
     def _read_file(self, options):
-        MODEL_NAMES = ['ss_erp.ifdb.yg.summary', 'ss_erp.ifdb.yg.detail', 'ss_erp.ifdb.powernet.sales.detail',
-                       'ss_erp.ifdb.youki.kanri.detail', 'ss_erp.ifdb.autogas.file.data.rec',
-                       'ss_erp.ifdb.propane.sales.detail']
-        if self.res_model not in MODEL_NAMES:
-            options['encoding'] = 'shift_jis'
+        # MODEL_NAMES = ['ss_erp.ifdb.yg.summary', 'ss_erp.ifdb.yg.detail', 'ss_erp.ifdb.powernet.sales.detail',
+        #                'ss_erp.ifdb.youki.kanri.detail', 'ss_erp.ifdb.autogas.file.data.rec',
+        #                'ss_erp.ifdb.propane.sales.detail']
+        # if self.res_model not in MODEL_NAMES:
+        #     options['encoding'] = 'shift_jis'
         res = super(Import, self)._read_file(options)
         if options.get('custom_transform'):
             # header
