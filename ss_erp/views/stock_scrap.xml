@@ -18,8 +18,13 @@
 <!--                    TODO Change scrap location according to scrap type-->
                     <field name="scrap_type" required="1"/>
                 </xpath>
-                <field name="date_done" invibisle="1"/>
-                <field name="company_id" invibisle="1"/>
+<!--                2022/04/06 Fix bug 103-->
+                <xpath expr="//field[@name='package_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='company_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
             </field>
         </record>
         <!-- Inherit Form View to Modify it -->
@@ -52,8 +57,14 @@
                     <field name="x_responsible_dept_id"/>
                     <field name="scrap_type"/>
                 </xpath>
-                <field name="date_done" invibisle="1"/>
-                <field name="company_id" invibisle="1"/>
+
+<!--                2022/04/06 Fix bug 102-->
+                <xpath expr="//field[@name='date_done']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='company_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
             </field>
         </record>
     </data>
