@@ -212,13 +212,14 @@ class ResPartner(models.Model):
             form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', self.id)], limit=1)
             values.update({'source': 'res_partner'})
             for field_name, field_value in vals.items():
-                if self._fields[field_name].type in ['one2many', 'many2many']:
-                    value = getattr(self, field_name, ())
-                    value = [(6, 0, value.ids)] if value else False
-                else:
-                    value = getattr(self, field_name)
-                    if self._fields[field_name].type == 'many2one':
-                        value = value.id if value else False
+                if type(self._fields[field_name].compute) != str:
+                    if self._fields[field_name].type in ['one2many', 'many2many']:
+                        value = getattr(self, field_name, ())
+                        value = [(6, 0, value.ids)] if value else False
+                    else:
+                        value = getattr(self, field_name)
+                        if self._fields[field_name].type == 'many2one':
+                            value = value.id if value else False
                 values.update({field_name: value})
             form_id.write(values)
         return res

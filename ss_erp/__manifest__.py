@@ -7,7 +7,7 @@
     "version": "14.0.1.10",
     "category": "",
     "depends": [
-        "base", "delivery", "mail", "contacts", "purchase", "uom",
+        "base", "delivery", "mail", "contacts", "purchase", "uom", "account_accountant",
         "purchase_stock", "web", "account", "stock_dropshipping", "approvals", "hr",
         "approvals_purchase_stock", "base_import","hr_expense", "sale_expense"
     ],
