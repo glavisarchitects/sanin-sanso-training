@@ -36,7 +36,7 @@ class ResPartnerBank(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('partner_id'):
-            partner_form_id = self.env['res.partner.form'].search([('res_partner_id', '=', vals.get('partner_id'))])
+            partner_form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', vals.get('partner_id'))])
             if partner_form_id:
                 vals['partner_form_id'] = partner_form_id.id
-        return super(ResPartnerBank, self).create(vals)		
+        return super(ResPartnerBank, self).create(vals)
