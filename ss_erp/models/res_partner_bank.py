@@ -40,3 +40,11 @@ class ResPartnerBank(models.Model):
             if partner_form_id:
                 vals['partner_form_id'] = partner_form_id.id
         return super(ResPartnerBank, self).create(vals)
+        # res = super(ResPartnerBank, self).create(vals)
+        # if res.partner_id and not res.partner_form_id:
+        #     partner_form_id = self.env['ss_erp.res.partner.form'].search(
+        #         [('res_partner_id', '=', vals.get('partner_id'))],limit=1)
+        #     partner_form_id.update('')
+        # return res
+
+
