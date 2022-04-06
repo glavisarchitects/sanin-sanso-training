@@ -35,16 +35,8 @@ class ResPartnerBank(models.Model):
 
     @api.model
     def create(self, vals):
-        form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', self.partner_id.id)], limit=1)
-        if form_id:
-            values = {}
-            for field_name, field_value in vals.items():
-                if self._fields[field_name].type in ['one2many', 'many2many']:
-                    value = getattr(self, field_name, ())
-                    value = [(6, 0, value.ids)] if value else False
-                else:
-                    value = getattr(self, field_name)
-                    if self._fields[field_name].type == 'many2one':
-                        value = value.id if value else False
-                values.update({field_name: value})
-        return super(ResPartnerBank, self).create(vals)
+        if vals.get('partner_id'):
+            partner_form_id = self.env['res.partner.form'].search([('res_partner_id', '=', vals.get('partner_id'))])
+            if partner_form_id:
+                vals['partner_form_id'] = partner_form_id.id
+        return super(ResPartnerBank, self).create(vals)		
