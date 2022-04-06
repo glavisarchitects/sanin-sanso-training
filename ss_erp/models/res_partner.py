@@ -202,7 +202,10 @@ class ResPartner(models.Model):
             self.type = self.x_contact_categ.type
 
     def write(self, vals):
-        update_partner_form = self._context.get('params', False) and self._context['params'].get('model', False) == 'res.partner' or False
+        update_partner_form = True
+        if vals.get('source'):
+            vals.pop('source')
+            update_partner_form = False
         res = super(ResPartner, self).write(vals)
         if update_partner_form and len(vals) > 0 and self._name != 'ss_erp.res.partner.form':
             values = {}

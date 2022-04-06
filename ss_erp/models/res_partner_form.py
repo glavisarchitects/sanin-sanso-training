@@ -170,6 +170,7 @@ class ResPartnerForm(models.Model):
                 form_id.write({'res_partner_id': partner_id.id})
             else:
                 # Update partner with contact form
+                vals['source'] = 'partner_form'
                 partner_id = self.env['res.partner'].browse(int(res_partner_id))
                 partner_id.message_follower_ids.sudo().unlink()
                 partner_id.sudo().write(vals)
