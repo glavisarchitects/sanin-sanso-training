@@ -6,9 +6,11 @@
         <field name="arch" type="xml">
             <tree string="" js_class="import_detail_tree">
                 <field name="processing_date"/>
-                <field name="sale_id"/>
+<!--                <field name="sale_id"/>-->
+                <field name="partner_id"/>
                 <field name="amount_use"/>
                 <field name="item"/>
+                <field name="error_message"/>
                 <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'" decoration-info="status == 'wait'" widget="badge" optional="show"/>
             </tree>
         </field>

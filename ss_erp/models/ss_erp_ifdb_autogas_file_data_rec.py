@@ -107,7 +107,7 @@ class IfdbAutogasFileDataRec(models.Model):
         readonly=True
     )
     customer_code = fields.Char(
-        string="得意先コード",
+        string="顧客コード",
         compute="_compute_customer_code",
         store=True,
         size=4
