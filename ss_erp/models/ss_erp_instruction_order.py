@@ -17,20 +17,10 @@ class InstructionOrder(models.Model):
                                  default=lambda self: self.env.company)
     date = fields.Datetime(string='在庫調整日')
     exhausted = fields.Boolean(string='在庫のないプロダクトを含める')
-    # line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Inventory')
-    location_ids = fields.Many2many(
-        'stock.location', 'location_instruction_rel', 'location_id', 'restruction_id',
-        string='ロケーション'
-    )
-    # move_ids = fields.One2many('stock.move', 'inventory_id', string='Generated inventory movement')
     prefill_counted_quantity = fields.Selection([
         ('counted', '手持在庫をデフォルト提案'),
         ('zero', 'ゼロをデフォルト提案'),
     ], string='棚卸数量')
-    product_ids = fields.Many2many(
-        'product.product', 'product_instruction_rel', 'product_id', 'instruction_id',
-        string='プロダクト'
-    )
     start_empty = fields.Boolean(string='空の在庫')
     state = fields.Selection([
         ('draft', 'ドラフト'),

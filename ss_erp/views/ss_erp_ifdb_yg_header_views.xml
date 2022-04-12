@@ -56,7 +56,8 @@
                                     <field name="partner_id"/>
                                     <field name="amount_use"/>
                                     <field name="item"/>
-                                    <field name="sale_id"/>
+                                    <field name="error_message"/>
+                                    <field name="sale_id" invisible="1"/>
                                 </tree>
                             </field>
                         </page>

@@ -256,18 +256,7 @@ class ApprovalRequest(models.Model):
 
         approvers = self.mapped('approver_ids').filtered(lambda approver: approver.status == 'new')
         approvers.write({'status': 'pending'})
-
-        # if self.request_owner_id.id in self.mapped('approver_ids.user_id').ids:
-        #     self.action_approve(approver=self.request_owner_id.id)
-
-        if self.x_is_multiple_approval:
-            if self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'pending'):
-                first_group_user_ids = self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'pending')[
-                    0].x_approver_group_ids.ids
-                create_activity_approvers = approvers.filtered(lambda x: x.user_id.id in first_group_user_ids)
-                create_activity_approvers._create_activity()
-        else:
-            approvers.filtered(lambda x: x.status == 'pending')._create_activity()
+        approvers.filtered(lambda x: x.status == 'pending')._create_activity()
 
         if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
             if self.x_inventory_order_ids:
