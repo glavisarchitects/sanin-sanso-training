@@ -411,6 +411,7 @@ class ApprovalRequest(models.Model):
 
             # 見積・受注更新
             if request.x_sale_order_ids:
+
                 if status == 'approved':
                     request.x_sale_order_ids.sudo().write({'approval_status': 'approved'})
                 elif status == 'pending':
