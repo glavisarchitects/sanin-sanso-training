@@ -411,11 +411,10 @@ class ApprovalRequest(models.Model):
 
             # 見積・受注更新
             if request.x_sale_order_ids:
-                for so in request.x_sale_order_ids:
-                    if status == 'approved':
-                        so.sudo().write({'approval_status': 'approved'})
-                    elif status == 'pending':
-                        so.sudo().write({'approval_status': 'in_process'})
+                if status == 'approved':
+                    request.x_sale_order_ids.sudo().write({'approval_status': 'approved'})
+                elif status == 'pending':
+                    request.x_sale_order_ids.sudo().write({'approval_status': 'in_process'})
 
             # 棚卸更新
             if request.request_status == 'approved':
