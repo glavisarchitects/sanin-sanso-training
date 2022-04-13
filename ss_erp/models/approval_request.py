@@ -432,6 +432,6 @@ class ApprovalRequest(models.Model):
                             'state': 'approved'
                         })
 
-                users = request.multi_approvers_ids.mapped('x_related_user_ids')
-                users |= request.request_owner_id
-                self.notify_approval(users=users, approver=request.last_approver)
+            users = request.multi_approvers_ids.mapped('x_related_user_ids')
+            users |= request.request_owner_id
+            self.notify_approval(users=users, approver=request.last_approver)
