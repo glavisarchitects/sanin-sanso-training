@@ -91,8 +91,10 @@ class Import(models.TransientModel):
 
     def transform_autogas_file(self, options, parent_context={}):
         autogas_header = self._get_ifdb_file_header(parent_context)
-        # data = self.file.decode("Shift-JIS").split("\r\n")
-        data = self.file.split("\r\n")
+        encode = "Shift-JIS"
+        if options.get('encoding'):
+            encode = options.get('encoding')
+        data = self.file.decode(encode).split("\r\n")
         # remove the first and last line
         data = data[1:-2]
         new_data = [
@@ -155,9 +157,7 @@ class Import(models.TransientModel):
                 autogas_header.name,
             )
             new_data.append(new_line_data)
-        encode = "Shift-JIS"
-        if options.get('encoding'):
-            encode = options.get('encoding')
+
         self.file = "\n".join(new_data).encode(encode)
 
     def transform_powernet_file(self, options, parent_context={}):
