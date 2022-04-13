@@ -329,13 +329,13 @@ class ApprovalRequest(models.Model):
     def _cancel_multi_approvers(self):
         self.multi_approvers_ids.write(
             {'x_existing_request_user_ids': [(5, 0, 0)], 'x_user_status': 'cancel'})
-        self.activity_ids.sudo().unlink()
 
     def action_cancel(self):
         self.sudo()._get_user_approval_activities(user=self.env.user).unlink()
         super(ApprovalRequest, self).action_cancel()
         if self.x_is_multiple_approval:
             self._cancel_multi_approvers()
+        self.activity_ids.sudo().unlink()
 
     def _get_index_user_multi_approvers(self):
         index_current = None
