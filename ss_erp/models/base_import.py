@@ -91,7 +91,8 @@ class Import(models.TransientModel):
 
     def transform_autogas_file(self, options, parent_context={}):
         autogas_header = self._get_ifdb_file_header(parent_context)
-        data = self.file.decode("Shift-JIS").split("\r\n")
+        # data = self.file.decode("Shift-JIS").split("\r\n")
+        data = self.file.split("\r\n")
         # remove the first and last line
         data = data[1:-2]
         new_data = [
@@ -154,7 +155,10 @@ class Import(models.TransientModel):
                 autogas_header.name,
             )
             new_data.append(new_line_data)
-        self.file = "\n".join(new_data).encode("Shift-JIS")
+        encode = "Shift-JIS"
+        if options.get('encoding'):
+            encode = options.get('encoding')
+        self.file = "\n".join(new_data).encode(encode)
 
     def transform_powernet_file(self, options, parent_context={}):
         powernet_header = self._get_ifdb_file_header(parent_context)
@@ -174,10 +178,13 @@ class Import(models.TransientModel):
             b'"consumer_sales_classification_code_5","product_classification_code_1",' + \
             b'"product_classification_code_2","product_classification_code_3"'
         ]
+        encode = "Shift-JIS"
+        if options.get('encoding'):
+            encode = options.get('encoding')
         for line in data:
             if line == b"":
                 continue
-            new_line = b'"%s",' % (powernet_header.name.encode("Shift-JIS")) + line
+            new_line = b'"%s",' % (powernet_header.name.encode(encode)) + line
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
@@ -198,10 +205,13 @@ class Import(models.TransientModel):
             b'"codeommercial_branch_sub_code2","codeommercial_product_code2",' + \
             b'"amount_calculation_classification","slip_processing_classification"'
         ]
+        encode = "Shift-JIS"
+        if options.get('encoding'):
+            encode = options.get('encoding')
         for line in data:
             if line == b"":
                 continue
-            new_line = b'"%s",' % (youki_kanri.name.encode("Shift-JIS")) + line
+            new_line = b'"%s",' % (youki_kanri.name.encode(encode)) + line
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
@@ -215,10 +225,13 @@ class Import(models.TransientModel):
             b'"return_quantity_for_sale","net_sales_excluding_tax","consumption_tax",' + \
             b'"remarks","unit_cost","description"'
         ]
+        encode = "Shift-JIS"
+        if options.get('encoding'):
+            encode = options.get('encoding')
         for line in data:
             if line == b"":
                 continue
-            new_line = b'"%s",' % (youki_kensa.name.encode("Shift-JIS")) + line
+            new_line = b'"%s",' % (youki_kensa.name.encode(encode)) + line
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
@@ -239,10 +252,13 @@ class Import(models.TransientModel):
             b'"codeommercial_branch_sub_code2","codeommercial_product_code2",' + \
             b'"amount_calculation_classification","slip_processing_classification"'
         ]
+        encode = "Shift-JIS"
+        if options.get('encoding'):
+            encode = options.get('encoding')
         for line in data:
             if line == b"":
                 continue
-            new_line = b'"%s",' % (propane_sales_header.name.encode("Shift-JIS")) + line
+            new_line = b'"%s",' % (propane_sales_header.name.encode(encode)) + line
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
