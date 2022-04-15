@@ -38,13 +38,13 @@ class StockScrap(models.Model):
             else:
                 self.x_require_responsible_dept = True
 
-            if self.x_organization_id.warehouse_id:
-                return {'domain': {'location_id': [('usage', '=', 'internal'), ('company_id', '=', company_id), ('id', 'child_of', self.x_organization_id.warehouse_id.view_location_id.id)],
-                                   'scrap_location_id': [('scrap_location', '=', True),
-                                                         ('company_id', 'in', [company_id, False]), ('id', 'child_of',
-                                                                                                     self.x_organization_id.warehouse_id.view_location_id.id)]
-                                   }}
-        return False
+        #     if self.x_organization_id.warehouse_id:
+        #         return {'domain': {'location_id': [('usage', '=', 'internal'), ('company_id', '=', company_id), ('id', 'child_of', self.x_organization_id.warehouse_id.view_location_id.id)],
+        #                            'scrap_location_id': [('scrap_location', '=', True),
+        #                                                  ('company_id', 'in', [company_id, False]), ('id', 'child_of',
+        #                                                                                              self.x_organization_id.warehouse_id.view_location_id.id)]
+        #                            }}
+        # return False
 
     scrap_type = fields.Selection(
         string='廃棄種別',
