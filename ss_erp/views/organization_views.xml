@@ -56,6 +56,11 @@
                             <field name="organization_fax"/>
                         </group>
                     </group>
+                    <group>
+                        <group>
+                            <field name="warehouse_id"/>
+                        </group>
+                    </group>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>

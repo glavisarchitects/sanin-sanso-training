@@ -99,6 +99,10 @@ class SaleOrder(models.Model):
                     line.price_unit = product_pricelist.price_unit
                     line.x_pricelist = product_pricelist
 
+    @api.onchange('x_organization_id')
+    def _onchange_x_organization_id(self):
+        if self.x_organization_id:
+            self.warehouse_id = self.x_organization_id.warehouse_id.id
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
