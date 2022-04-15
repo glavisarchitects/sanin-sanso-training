@@ -12,6 +12,8 @@ class StockScrap(models.Model):
     user_id = fields.Many2one('res.users', string='担当者', default=lambda self: self.env.user)
     x_require_responsible_dept = fields.Boolean(default=True)
 
+    x_warehouse_location_id = fields.Many2one('stock.location',related='x_organization_id.warehouse_id.view_location_id',store=True)
+
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:

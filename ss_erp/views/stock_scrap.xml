@@ -11,6 +11,7 @@
 <!--                TODO Add filter for x_organization_id and x_responsible_dept_id-->
                 <xpath expr="//field[@name='product_id']" position="before">
                     <field name="x_require_responsible_dept" invisible="1"/>
+                    <field name="x_warehouse_location_id" invisible="1"/>
                     <field name="x_organization_id" options="{'no_create': True, 'no_create_edit': True}" required="1"/>
                     <field name="x_responsible_dept_id" options="{'no_create': True, 'no_create_edit': True, }"
                            attrs="{'readonly':[('x_require_responsible_dept','!=',True)], 'required':[('x_require_responsible_dept','=',True)]}"/>
@@ -30,10 +31,10 @@
                 </xpath>
 <!--                2022/04/15 AnhLD Change domain due to assign warehouse in org-->
                 <xpath expr="//field[@name='location_id']" position="attributes">
-                    <attribute name="domain">[('usage', '=', 'internal'), ('company_id', '=', company_id), ('id', 'child_of', x_organization_id.warehouse_id.view_location_id.id)]</attribute>
+                    <attribute name="domain">[('usage', '=', 'internal'), ('company_id', '=', company_id), ('id', 'child_of', x_warehouse_location_id)]</attribute>
                 </xpath>
                 <xpath expr="//field[@name='scrap_location_id']" position="attributes">
-                    <attribute name="domain">[('scrap_location', '=', True),('company_id', 'in', [company_id, False]), ('id', 'child_of',self.x_organization_id.warehouse_id.view_location_id.id)]
+                    <attribute name="domain">[('scrap_location', '=', True),('company_id', 'in', [company_id, False]), ('id', 'child_of',x_warehouse_location_id)]
                     </attribute>
                 </xpath>
             </field>
@@ -57,10 +58,10 @@
                 </xpath>
 <!--                2022/04/15 AnhLD Change domain due to assign warehouse in org-->
                 <xpath expr="//field[@name='location_id']" position="attributes">
-                    <attribute name="domain">[('usage', '=', 'internal'), ('company_id', '=', company_id), ('id', 'child_of', x_organization_id.warehouse_id.view_location_id.id)]</attribute>
+                    <attribute name="domain">[('usage', '=', 'internal'), ('company_id', '=', company_id), ('id', 'child_of', x_warehouse_location_id)]</attribute>
                 </xpath>
                 <xpath expr="//field[@name='scrap_location_id']" position="attributes">
-                    <attribute name="domain">[('scrap_location', '=', True),('company_id', 'in', [company_id, False]), ('id', 'child_of',self.x_organization_id.warehouse_id.view_location_id.id)]
+                    <attribute name="domain">[('scrap_location', '=', True),('company_id', 'in', [company_id, False]), ('id', 'child_of',x_warehouse_location_id)]
                     </attribute>
                 </xpath>
             </field>
