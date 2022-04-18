@@ -329,6 +329,7 @@ class ApprovalRequest(models.Model):
     def _cancel_multi_approvers(self):
         self.multi_approvers_ids.write(
             {'x_existing_request_user_ids': [(5, 0, 0)], 'x_user_status': 'cancel'})
+        self.activity_ids.sudo().unlink()
 
     def action_cancel(self):
         self.sudo()._get_user_approval_activities(user=self.env.user).unlink()
@@ -431,7 +432,7 @@ class ApprovalRequest(models.Model):
                         request.x_inventory_instruction_ids.write({
                             'state': 'approved'
                         })
-
             users = request.multi_approvers_ids.mapped('x_related_user_ids')
             users |= request.request_owner_id
             self.notify_approval(users=users, approver=request.last_approver)
+

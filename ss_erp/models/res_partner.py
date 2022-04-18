@@ -238,4 +238,3 @@ class ResPartner(models.Model):
         if address_partner_fields:
             return True
         return False
-
