@@ -62,7 +62,6 @@ class SaleOrder(models.Model):
         super(SaleOrder, orders).action_draft()
 
     def write(self, vals):
-        self.ensure_one()
         return super(SaleOrder, self).write(vals)
 
     def action_quotation_sent(self):
