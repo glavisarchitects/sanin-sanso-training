@@ -5,6 +5,9 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <form position="attributes">
+                <attribute name="confirm_partner_custom">申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。保存してよろしいですか</attribute>
+            </form>
             <xpath expr="//field[@name='name']" position="after">
                 <field name="has_parent_id" invisible="1"/>
                 <field name="has_ref" invisible="1"/>
@@ -124,36 +127,42 @@
             </xpath>
 
             <xpath expr="//field[@name='street']" position="attributes">
+                <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
                 }</attribute>
             </xpath>
             <xpath expr="//field[@name='street2']" position="attributes">
+                <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
                 }</attribute>
             </xpath>
             <xpath expr="//field[@name='city']" position="attributes">
+                <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
                 }</attribute>
             </xpath>
             <xpath expr="//field[@name='state_id']" position="attributes">
+                <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
                 }</attribute>
             </xpath>
             <xpath expr="//field[@name='zip']" position="attributes">
+                <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
                 }</attribute>
             </xpath>
             <xpath expr="//field[@name='country_id']" position="attributes">
+                <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
@@ -233,6 +242,7 @@
                     'invisible': [('has_x_fax', '=', 'no')],
                     'required': [('has_x_fax', '=', 'required')]
                 }"/>
+
                 <field name="x_fax_payment" attrs="{
                     'invisible': [('has_x_fax_payment', '=', 'no')],
                     'required': [('has_x_fax_payment', '=', 'required')]

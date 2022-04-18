@@ -1,7 +1,7 @@
 # Copyright 2016 Camptocamp SA
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import exceptions, models
+from odoo import exceptions, models, api
 
 import logging
 
@@ -43,3 +43,4 @@ class Base(models.AbstractModel):
             #     else:
             #         result[operation] = False
         return result
+

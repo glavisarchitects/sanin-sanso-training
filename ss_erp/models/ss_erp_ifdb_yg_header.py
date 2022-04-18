@@ -32,10 +32,10 @@ class IFDBYGHeader(models.Model):
     @api.depends('detail_ids')
     def _compute_has_data_import(self):
         for record in self:
-            if record.detail_ids:
-                record.has_data_import = True
-            else:
+            if record.detail_ids and record.summary_ids:
                 record.has_data_import = False
+            else:
+                record.has_data_import = True
 
     @api.depends('summary_ids.status')
     def _compute_status(self):

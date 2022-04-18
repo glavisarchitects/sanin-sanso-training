@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.models import NewId
 
 
 class ResPartner(models.Model):
@@ -173,6 +174,7 @@ class ResPartner(models.Model):
                 if len(partner) > 1:
                     raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
+
     @api.constrains('x_transaction_categ')
     def _check_transaction_categ(self):
         for record in self:
@@ -209,7 +211,7 @@ class ResPartner(models.Model):
         res = super(ResPartner, self).write(vals)
         if update_partner_form and len(vals) > 0 and self._name != 'ss_erp.res.partner.form':
             values = {}
-            form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', self.id)], limit=1)
+            form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', self.id)])
             values.update({'source': 'res_partner'})
             for field_name, field_value in vals.items():
                 if type(self._fields[field_name].compute) != str:
@@ -223,3 +225,16 @@ class ResPartner(models.Model):
                 values.update({field_name: value})
             form_id.write(values)
         return res
+
+    def check_condition_show_dialog(self, vals=False, data_changed=False):
+        if not any([vals.get('zip'),vals.get('state_id'),vals.get('city'),vals.get('street'),vals.get('street2')]):
+            return False
+        dup_add = [('zip', '=', vals.get('zip')), ('state_id', '=', vals.get('state_id')),
+             ('city', '=', vals.get('city')), ('street', '=', vals.get('street')),
+             ('street2', '=', vals.get('street2'))]
+        if not isinstance(self.id, NewId):
+            dup_add.append(('id', '!=', self.id))
+        address_partner_fields = self.search(dup_add)
+        if address_partner_fields:
+            return True
+        return False

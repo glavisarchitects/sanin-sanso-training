@@ -16,6 +16,7 @@
         </xpath>
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/ss_erp/static/src/js/list_editable_renderer.js"></script>
+            <script type="text/javascript" src="/ss_erp/static/src/js/confirm_on_save.js"></script>
         </xpath>
     </template>
 </odoo>

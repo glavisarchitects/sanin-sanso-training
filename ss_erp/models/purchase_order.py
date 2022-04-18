@@ -74,6 +74,11 @@ class PurchaseOrder(models.Model):
     is_dropshipping = fields.Boolean(
         '直送であるか', compute='_compute_is_dropshipping',)
 
+    @api.onchange('x_organization_id')
+    def _onchange_x_organization_id(self):
+        if self.x_organization_id:
+            self.picking_type_id = self.x_organization_id.warehouse_id.in_type_id.id
+
     @api.depends('x_bis_categ_id')
     def _compute_show_construction(self):
         rec_construction_id = self.env.ref(

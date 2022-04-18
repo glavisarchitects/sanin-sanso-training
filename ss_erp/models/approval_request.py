@@ -336,6 +336,7 @@ class ApprovalRequest(models.Model):
         super(ApprovalRequest, self).action_cancel()
         if self.x_is_multiple_approval:
             self._cancel_multi_approvers()
+        self.activity_ids.sudo().unlink()
 
     def _get_index_user_multi_approvers(self):
         index_current = None
@@ -346,8 +347,6 @@ class ApprovalRequest(models.Model):
 
     def action_temporary_approve(self):
         if self.x_is_multiple_approval:
-            # if not self._check_user_access_request():
-            #     raise UserError(_("We cannot approve this request."))
             self.action_approve()
             index_current = self._get_index_user_multi_approvers()
             if index_current and index_current > 0:
@@ -413,11 +412,11 @@ class ApprovalRequest(models.Model):
 
             # 見積・受注更新
             if request.x_sale_order_ids:
-                for so in request.x_sale_order_ids:
-                    if status == 'approved':
-                        so.sudo().write({'approval_status': 'approved'})
-                    elif status == 'pending':
-                        so.sudo().write({'approval_status': 'in_process'})
+
+                if status == 'approved':
+                    request.x_sale_order_ids.sudo().write({'approval_status': 'approved'})
+                elif status == 'pending':
+                    request.x_sale_order_ids.sudo().write({'approval_status': 'in_process'})
 
             # 棚卸更新
             if request.request_status == 'approved':
@@ -433,7 +432,7 @@ class ApprovalRequest(models.Model):
                         request.x_inventory_instruction_ids.write({
                             'state': 'approved'
                         })
-                #
-                # users = request.multi_approvers_ids.mapped('x_related_user_ids')
-                # users |= request.request_owner_id
-                # self.notify_approval(users=users, approver=request.last_approver)
+            users = request.multi_approvers_ids.mapped('x_related_user_ids')
+            users |= request.request_owner_id
+            self.notify_approval(users=users, approver=request.last_approver)
+
