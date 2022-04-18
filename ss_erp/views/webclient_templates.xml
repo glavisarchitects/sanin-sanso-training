@@ -5,6 +5,7 @@
             <script type="text/javascript" src="/ss_erp/static/src/js/import_action.js"></script>
             <script type="text/javascript" src="/ss_erp/static/src/js/hide_edit_buttons.js"></script>
             <script type="text/javascript" src="/ss_erp/static/src/js/hide_create_buttons.js"></script>
+
             <script type="text/javascript"
                     src="/ss_erp/static/src/js/instruction_create_inventory_button_controller.js"></script>
             <script type="text/javascript"
@@ -16,6 +17,7 @@
         </xpath>
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/ss_erp/static/src/js/list_editable_renderer.js"></script>
+            <script type="text/javascript" src="/ss_erp/static/src/js/confirm_on_save.js"></script>
         </xpath>
     </template>
 </odoo>
