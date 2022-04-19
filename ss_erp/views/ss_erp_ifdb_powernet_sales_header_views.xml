@@ -60,7 +60,7 @@
                     </group>
                     <notebook>
                         <page name="data_records" string="データレコード">
-                            <field name="powernet_sale_record_ids">
+                            <field name="powernet_sale_record_ids" readonly="1">
                                 <tree>
                                     <field name="status" readonly="1"
                                            widget="badge"

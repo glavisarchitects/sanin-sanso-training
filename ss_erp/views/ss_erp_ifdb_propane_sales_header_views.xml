@@ -41,7 +41,7 @@
                             <field name="branch_id"/>
                         </group>
                     </group>
-                    <field name="sales_detail_ids" string="レコード">
+                    <field name="sales_detail_ids" string="レコード" readonly="1">
                         <tree>
                             <field name="status" decoration-danger="status == 'error'"
                                    decoration-success="status == 'success'" decoration-info="status == 'wait'"

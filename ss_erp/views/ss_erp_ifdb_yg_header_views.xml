@@ -47,7 +47,7 @@
                     </group>
                     <notebook>
                         <page string="検針集計表">
-                            <field name="summary_ids">
+                            <field name="summary_ids" readonly="1">
                                 <tree>
                                     <field name="status" decoration-danger="status == 'error'"
                                            decoration-success="status == 'success'" decoration-info="status == 'wait'"
@@ -62,7 +62,7 @@
                             </field>
                         </page>
                         <page string="検針明細表">
-                            <field name="detail_ids">
+                            <field name="detail_ids" readonly="1">
                                 <tree>
                                     <field name="item"/>
                                     <field name="customer_cd"/>

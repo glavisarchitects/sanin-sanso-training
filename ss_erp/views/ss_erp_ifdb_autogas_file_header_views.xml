@@ -67,7 +67,7 @@
                     </group>
                     <notebook>
                         <page name="data_records" string="データレコード">
-                            <field name="autogas_data_record_ids">
+                            <field name="autogas_data_record_ids" readonly="1">
                                 <tree>
                                     <field name="status"
                                            widget="badge"
