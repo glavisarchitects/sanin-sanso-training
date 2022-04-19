@@ -34,7 +34,6 @@
         <field name="model">ss_erp.ifdb.autogas.file.data.rec</field>
         <field name="arch" type="xml">
             <tree string="オートガスPOS（松江）取込データ" js_class="import_detail_tree">
-                <field name="id" />
                 <field name="processing_date" readonly="True"/>
                 <field name="card_classification" readonly="True" optional="show" />
                 <field name="processing_division" readonly="True" optional="show" />
