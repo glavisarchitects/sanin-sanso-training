@@ -73,7 +73,6 @@
                                            decoration-info="status=='success'"
                                            decoration-warning="status=='wait'"
                                            decoration-danger="status=='error'"/>
-                                    <field name="id"/>
                                     <field name="processing_date" readonly="True"/>
                                     <field name="external_data_type" readonly="True"/>
                                     <field name="customer_branch_code" readonly="True"/>
