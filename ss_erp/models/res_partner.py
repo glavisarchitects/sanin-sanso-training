@@ -174,7 +174,6 @@ class ResPartner(models.Model):
                 if len(partner) > 1:
                     raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
-
     @api.constrains('x_transaction_categ')
     def _check_transaction_categ(self):
         for record in self:
@@ -227,11 +226,14 @@ class ResPartner(models.Model):
         return res
 
     def check_condition_show_dialog(self, vals=False, data_changed=False):
-        if not any([vals.get('zip'),vals.get('state_id'),vals.get('city'),vals.get('street'),vals.get('street2')]):
-            return False
+        corporation_id = self.env.ref('ss_erp.ss_erp_contact_category_data_1').id
+        if not any([vals.get('zip'), vals.get('state_id'), vals.get('city'), vals.get('street'), vals.get('street2'),
+                    vals.get('x_contact_categ')]):
+            if vals.get('x_contact_categ') != corporation_id:
+                return False
         dup_add = [('zip', '=', vals.get('zip')), ('state_id', '=', vals.get('state_id')),
-             ('city', '=', vals.get('city')), ('street', '=', vals.get('street')),
-             ('street2', '=', vals.get('street2'))]
+                   ('city', '=', vals.get('city')), ('street', '=', vals.get('street')),
+                   ('street2', '=', vals.get('street2'))]
         if not isinstance(self.id, NewId):
             dup_add.append(('id', '!=', self.id))
         address_partner_fields = self.search(dup_add)
