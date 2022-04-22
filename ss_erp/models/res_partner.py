@@ -229,11 +229,12 @@ class ResPartner(models.Model):
         corporation_id = self.env.ref('ss_erp.ss_erp_contact_category_data_1').id
         if not all([vals.get('zip'), vals.get('state_id'), vals.get('city'), vals.get('street'), vals.get('street2'),
                     vals.get('x_contact_categ')]):
-            if vals.get('x_contact_categ') != corporation_id:
-                return False
+            return False
+        if vals.get('x_contact_categ') != corporation_id:
+            return False
         dup_add = [('zip', '=', vals.get('zip')), ('state_id', '=', vals.get('state_id')),
                    ('city', '=', vals.get('city')), ('street', '=', vals.get('street')),
-                   ('street2', '=', vals.get('street2')), ('x_contact_categ', '=', corporation_id)]
+                   ('street2', '=', vals.get('street2')), ('x_contact_categ', '=', vals.get('x_contact_categ'))]
         if not isinstance(self.id, NewId):
             dup_add.append(('id', '!=', self.id))
         address_partner_fields = self.search(dup_add)
