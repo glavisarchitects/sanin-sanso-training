@@ -33,7 +33,7 @@
                     </group>
                     <notebook>
                         <page string="検針明細表">
-                            <field name="detail_ids">
+                            <field name="detail_ids" readonly="1">
                                 <tree>
                                     <field name="customer_cd"/>
                                     <field name="amount_use"/>

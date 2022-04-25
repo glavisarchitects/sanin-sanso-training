@@ -188,7 +188,7 @@ class Import(models.TransientModel):
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
-    def transform_youki_kanri_file(self, option, parent_context={}):
+    def transform_youki_kanri_file(self, options, parent_context={}):
         youki_kanri = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")
         new_data = [
@@ -215,7 +215,7 @@ class Import(models.TransientModel):
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
-    def transform_youki_kensa_file(self, option, parent_context={}):
+    def transform_youki_kensa_file(self, options, parent_context={}):
         youki_kensa = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")[1:]
         new_data = [
@@ -235,7 +235,7 @@ class Import(models.TransientModel):
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
-    def transform_propane_file(self, option, parent_context={}):
+    def transform_propane_file(self, options, parent_context={}):
         propane_sales_header = self._get_ifdb_file_header(parent_context)
         data = self.file.split(b"\n")
         new_data = [

@@ -60,14 +60,13 @@
                     </group>
                     <notebook>
                         <page name="data_records" string="データレコード">
-                            <field name="powernet_sale_record_ids">
+                            <field name="powernet_sale_record_ids" readonly="1">
                                 <tree>
                                     <field name="status" readonly="1"
                                            widget="badge"
                                            decoration-info="status=='success'"
                                            decoration-warning="status=='wait'"
                                            decoration-danger="status=='error'"/>
-                                    <field name="id" readonly="1"/>
                                     <field name="processing_date" readonly="1"/>
                                     <field name="customer_code" readonly="1"/>
                                     <field name="billing_summary_code" readonly="1"/>
