@@ -166,13 +166,13 @@ class ResPartner(models.Model):
             if record.has_bank_accounts == 'required' and not record.bank_ids:
                 raise ValidationError(_("銀行口座は入力してください。"))
 
-    @api.constrains('phone')
-    def _check_default_phone(self):
-        for record in self:
-            if record.phone:
-                partner = self.env['ss_erp.res.partner.form'].search([('phone', '=', self.phone)])
-                if len(partner) > 1:
-                    raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
+    # @api.constrains('phone')
+    # def _check_default_phone(self):
+    #     for record in self:
+    #         if record.phone:
+    #             partner = self.env['ss_erp.res.partner.form'].search([('phone', '=', self.phone)])
+    #             if len(partner) > 1:
+    #                 raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
     @api.constrains('x_transaction_categ')
     def _check_transaction_categ(self):
@@ -181,13 +181,13 @@ class ResPartner(models.Model):
                 if len(record.x_transaction_categ) == 0:
                     raise ValidationError(_("取引区分は入力してください。"))
 
-    @api.constrains('name')
-    def _check_default_company_name(self):
-        for record in self:
-            if record.name:
-                partner = self.search([('name', '=', self.name)])
-                if len(partner) > 1:
-                    raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
+    # @api.constrains('name')
+    # def _check_default_company_name(self):
+    #     for record in self:
+    #         if record.name:
+    #             partner = self.search([('name', '=', self.name)])
+    #             if len(partner) > 1:
+    #                 raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
     @api.depends('is_company', 'x_contact_categ')
     def compute_company_type(self):
@@ -232,6 +232,8 @@ class ResPartner(models.Model):
             return False
         if vals.get('x_contact_categ') != corporation_id:
             return False
+
+        # Check Duplicate Address
         dup_add = [('zip', '=', vals.get('zip')), ('state_id', '=', vals.get('state_id')),
                    ('city', '=', vals.get('city')), ('street', '=', vals.get('street')),
                    ('street2', '=', vals.get('street2')), ('x_contact_categ', '=', vals.get('x_contact_categ'))]
@@ -240,4 +242,21 @@ class ResPartner(models.Model):
         address_partner_fields = self.search(dup_add)
         if address_partner_fields:
             return True
+
+        # Check Duplicate Name
+        dup_name = [('name', '=', vals.get('name')), ('x_contact_categ', '=', vals.get('x_contact_categ'))]
+        if not isinstance(self.id, NewId):
+            dup_name.append(('id', '!=', self.id))
+        dup_name_ids = self.search(dup_name)
+        if dup_name_ids:
+            return True
+
+        # Check Duplicate Phone
+        dup_phone = [('phone', '=', vals.get('phone')), ('x_contact_categ', '=', vals.get('x_contact_categ'))]
+        if not isinstance(self.id, NewId):
+            dup_phone.append(('id', '!=', self.id))
+        dup_phone_ids = self.search(dup_phone)
+        if dup_phone_ids:
+            return True
+
         return False
