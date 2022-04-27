@@ -167,6 +167,7 @@ class IFDBAutogasFileHeader(models.Model):
                     if not success_dict.get(key):
                         so = {
                             'x_organization_id': self.branch_id.id,
+                            'warehouse_id':self.branch_id.warehouse_id.id,
                             'partner_id': customer_dict.get(line.customer_code),
                             'partner_invoice_id': customer_dict.get(line.customer_code),
                             'partner_shipping_id': customer_dict.get(line.customer_code),

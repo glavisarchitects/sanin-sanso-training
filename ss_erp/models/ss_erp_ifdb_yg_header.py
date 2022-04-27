@@ -94,10 +94,11 @@ class IFDBYGHeader(models.Model):
                 else:
                     order_data = {
                         'x_organization_id': self.branch_id.id,
+                        'warehouse_id': self.branch_id.warehouse_id.id,
                         'partner_id': customer_dict[line.partner_id],
                         'partner_invoice_id': customer_dict[line.partner_id],
                         'partner_shipping_id': customer_dict[line.partner_id],
-                        'date_order': self.upload_date,
+                        'date_order': self.meter_reading_date,
                         'state': 'draft',
                         'x_no_approval_required_flag': True,
                         'order_line': []

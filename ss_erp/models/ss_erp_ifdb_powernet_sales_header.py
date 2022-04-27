@@ -142,10 +142,11 @@ class IFDBPowerNetSalesHeader(models.Model):
                     if not success_dict.get(key):
                         so = {
                             'x_organization_id': self.branch_id.id,
+                            'warehouse_id': self.branch_id.warehouse_id.id,
                             'partner_id': customer_id.id,
                             'partner_invoice_id': customer_id.id,
                             'partner_shipping_id': customer_id.id,
-                            'date_order': self.upload_date,
+                            'date_order': line.sales_date,
                             'state': 'draft',
                             'x_no_approval_required_flag': True,
                             'order_line': [(0, 0, order_line)]
