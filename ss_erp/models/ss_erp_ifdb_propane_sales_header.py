@@ -149,6 +149,7 @@ class IFDBPropaneSalesHeader(models.Model):
                             slip_date = datetime.strptime(line.slip_date, '%Y/%m/%d')
                             so = {
                                 'partner_id': int(line.customer_business_partner_code),
+                                'warehouse_id': self.branch_id.warehouse_id.id,
                                 'partner_invoice_id': int(line.customer_business_partner_code),
                                 'partner_shipping_id': int(line.customer_business_partner_code),
                                 'date_order': slip_date,
