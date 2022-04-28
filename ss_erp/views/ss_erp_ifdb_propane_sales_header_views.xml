@@ -32,13 +32,13 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="name" required="1"/>
                             <field name="upload_date"/>
                             <field name="status"/>
                         </group>
                         <group>
-                            <field name="user_id"/>
-                            <field name="branch_id"/>
+                            <field name="user_id" required="1"/>
+                            <field name="branch_id" required="1"/>
                         </group>
                     </group>
                     <field name="sales_detail_ids" string="レコード" readonly="1">
