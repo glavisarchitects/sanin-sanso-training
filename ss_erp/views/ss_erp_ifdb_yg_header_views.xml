@@ -24,11 +24,9 @@
                     <button name="btn_processing_execution" type="object" string="処理実行"
                             class="btn btn-primary"/>
                     <button name="import_summary" type="object"
-                            attrs="{'invisible' : [('has_data_import', '=', True)]}"
                             context="{'default_header_id': active_id}"
                             string="検針集計表インポート" class="btn btn-primary"/>
                     <button name="import_detail" type="object"
-                            attrs="{'invisible' : [('has_data_import', '=', True)]}"
                             context="{'default_header_id': active_id}"
                             string="検針明細表インポート" class="btn btn-primary"/>
                 </header>
