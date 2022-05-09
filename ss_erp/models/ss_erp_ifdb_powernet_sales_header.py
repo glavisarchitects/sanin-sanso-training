@@ -139,6 +139,10 @@ class IFDBPowerNetSalesHeader(models.Model):
                         'product_uom_qty': line.quantity,
                         'product_uom': uom_dict[line.unit_code],
                     }
+
+                    # 2022/05/09 Add new client_order_ref
+                    client_order_ref = '%s：%s' % (line.customer_code,line.search_remarks_6)
+
                     if not success_dict.get(key):
                         so = {
                             'x_organization_id': self.branch_id.id,
@@ -149,7 +153,8 @@ class IFDBPowerNetSalesHeader(models.Model):
                             'date_order': line.sales_date,
                             'state': 'draft',
                             'x_no_approval_required_flag': True,
-                            'order_line': [(0, 0, order_line)]
+                            'order_line': [(0, 0, order_line)],
+                            'client_order_ref': client_order_ref,
                         }
                         success_dict[key] = so
                     else:
