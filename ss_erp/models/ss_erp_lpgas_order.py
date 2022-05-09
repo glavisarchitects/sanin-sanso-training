@@ -12,6 +12,7 @@ class LPGasOrder(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _name = 'ss_erp.lpgas.order'
     _description = 'LPガス棚卸伝票'
+    _rec_name = 'organization_id'
 
     organization_id = fields.Many2one('ss_erp.organization', string="組織名")
     inventory_type = fields.Selection([('cylinder_containers', 'シリンダー容器'), ('mini_bulk', 'ミニバルク')], string='棚卸タイプ')
@@ -19,7 +20,8 @@ class LPGasOrder(models.Model):
     inventory_period = fields.Date(string='棚卸対象期間')
     state = fields.Selection(
         [('draft', 'ドラフト'), ('confirm', '集計完了'), ('waiting', '承認待ち'), ('approval', '承認依頼中'), ('approved', '承認済み'),
-         ('done', '検証済'), ('cancel', '取消済')], string='ステータス')
+         ('done', '検証済'), ('cancel', '取消済')], default='draft', string='ステータス')
+
     # lpgas_order_line_ids = fields.One2many('ss_erp.lpgas.order.line', 'lpgas_order_id', string='集計結果')
 
     #
@@ -29,13 +31,14 @@ class LPGasOrder(models.Model):
     #         self.inventory_period = fields.Date(self.accounting_date)
 
     #
-    # @api.onchange('inventory_period')
-    # def _onchange_inventory_period(self):
-    #     if self.inventory_period:
-    #         day = calendar.monthrange(self.inventory_period.year, self.inventory_period.month)[1]
-    #         print("################", calendar.monthrange(self.inventory_period.year, self.inventory_period.month))
-    #         print("################", day)
-    #         self.inventory_period.replace(day=25)
+    def aggregate_lpgas(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'ss_erp.lpgas.order.line',
+            'views': [[self.env.ref('ss_erp.ss_erp_lpgas_order_line_view_tree').id, 'tree']],
+            # 'res_id': self.mrp_production_ids.id,
+            'target': 'main',
+        }
 
     @api.model
     def create(self, vals):
@@ -45,13 +48,13 @@ class LPGasOrder(models.Model):
         result = super(LPGasOrder, self).create(vals)
         return result
 
-    #
-    @api.model
+    # #
     def write(self, vals):
         if vals.get('inventory_period'):
             day = calendar.monthrange(int(vals['inventory_period'][0:3]), int(vals['inventory_period'][5:7]))[1]
             vals['inventory_period'] = vals['inventory_period'][:-2] + str(day)
-        return super(LPGasOrder, self).write(vals)
+        result = super(LPGasOrder, self).write(vals)
+        return result
 
 
 class LPGasOrderLine(models.Model):

@@ -19,7 +19,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
+                    <button string="集計" name="aggregate_lpgas" type="object" class="oe_highlight"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
                 </header>
                 <sheet>
                     <group>
@@ -33,30 +35,6 @@
                                    required="1"/>
                         </group>
                     </group>
-                    <!--                    <notebook>-->
-                    <!--                        <page string="集計結果">-->
-                    <!--                            <field name="lpgas_order_line_ids">-->
-                    <!--                                <tree editable="1">-->
-                    <!--                                    <field name="organization_id"/>-->
-                    <!--                                    <field name="location_id"/>-->
-                    <!--                                    <field name="tank_capacity"/>-->
-                    <!--                                    <field name="product_id"/>-->
-                    <!--                                    <field name="meter_reading_date"/>-->
-                    <!--                                    <field name="monthly_usage"/>-->
-                    <!--                                    <field name="stock_at_the_time_measure"/>-->
-                    <!--                                    <field name="charge_after_meter_reading"/>-->
-                    <!--                                    <field name="inventory_at_the_eolm"/>-->
-                    <!--                                    <field name="filling_amount_this_month"/>-->
-                    <!--                                    <field name="month_end_inventory"/>-->
-                    <!--                                    <field name="uom_id"/>-->
-                    <!--                                    <field name="unified_quantity_unit"/>-->
-                    <!--                                    <field name="theoretical_eom_inventory"/>-->
-                    <!--                                    <field name="inventory__theory_difference"/>-->
-                    <!--                                </tree>-->
-                    <!--                            </field>-->
-                    <!--                        </page>-->
-                    <!--                    </notebook>-->
-
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
@@ -71,7 +49,7 @@
         <field name="name">ss_erp.lpgas.order.line.view.tree</field>
         <field name="model">ss_erp.lpgas.order.line</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="0" edit="0">
                 <field name="organization_id" required="1"/>
                 <field name="location_id" required="1"/>
                 <field name="tank_capacity"/>

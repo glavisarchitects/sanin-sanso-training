@@ -6287,7 +6287,6 @@ msgid "Cancel"
 msgstr "取消"
 
 #. module: ss_erp
-#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order__state__confirm
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_instruction_order_line__state__confirm
 msgid "Confirm"
 msgstr "確認"
