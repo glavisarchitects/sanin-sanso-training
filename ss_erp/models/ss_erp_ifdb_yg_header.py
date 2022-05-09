@@ -11,7 +11,7 @@ class IFDBYGHeader(models.Model):
     name = fields.Char(string='名称')
     upload_date = fields.Datetime(
         string='アップロード日時', index=True, required=True,
-        default=fields.Datetime.now())
+        default=fields.Datetime.now)
     user_id = fields.Many2one('res.users', string='担当者', tracking=True)
     branch_id = fields.Many2one(
         'ss_erp.organization', string='支店', tracking=True)

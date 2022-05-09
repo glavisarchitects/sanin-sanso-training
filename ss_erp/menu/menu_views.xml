@@ -48,6 +48,9 @@
     <menuitem id="menu_ss_erp_instruction_order_action" name="棚卸計画" parent="stock.menu_stock_warehouse_mgmt"
               action="ss_erp_instruction_order_action" sequence="99"/>
 
+    <menuitem id="menu_ss_erp_lpgas_order" name="LPガス棚卸伝票" parent="stock.menu_stock_warehouse_mgmt"
+              action="ss_erp_lpgas_order_action" sequence="200"/>
+
     <!--  インポートデータの親メニュー  -->
     <menuitem id="external_system_cooperation_importing_performance" name="実績情報取込"
               parent="ss_erp.external_system_cooperation_menu" sequence="50"/>
@@ -97,12 +100,29 @@
             parent="ss_erp.external_system_cooperation_imported_data"
             sequence="35"/>
 
+
+
+    <!-- HuuPhong Menu Import Purchase 060522   -->
+
+    <!--    外部システム連携-->
+    <menuitem id="external_system_cooperation_purchase_menu" name="外部システム連携" parent="purchase.menu_purchase_root"
+              sequence="5"/>
+
+        <!--  インポートデータの親メニュー  -->
+    <menuitem id="external_system_cooperation_importing_performance_purchase" name="実績情報取込"
+              parent="ss_erp.external_system_cooperation_purchase_menu" sequence="1"/>
+
+    <menuitem id="external_system_cooperation_imported_data_purchase" name="取込データ"
+              parent="ss_erp.external_system_cooperation_purchase_menu" sequence="2"/>
+
+
     <menuitem id="ss_erp_youki_kensa_menu"
-              action="ss_erp_ifdb_youki_kensa_action" sequence="36"
-              parent="ss_erp.external_system_cooperation_importing_performance"/>
+              action="ss_erp_ifdb_youki_kensa_action" sequence="1"
+              parent="ss_erp.external_system_cooperation_importing_performance_purchase"/>
 
     <menuitem id="ss_erp_youki_kensa_detail_menu"
               action="ss_erp_ifdb_youki_kensa_detail_action"
-              parent="ss_erp.external_system_cooperation_imported_data"
-              sequence="36"/>
+              parent="ss_erp.external_system_cooperation_imported_data_purchase"
+              sequence="1"/>
+
 </odoo>

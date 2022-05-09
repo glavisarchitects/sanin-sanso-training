@@ -9,7 +9,7 @@ class IFDBPowerNetSalesHeader(models.Model):
     _description = 'PowerNetヘッダ'
 
     upload_date = fields.Datetime('アップロード日時', index=True,
-                                  default=fields.Datetime.now())
+                                  default=fields.Datetime.now)
     name = fields.Char('名称')
     user_id = fields.Many2one('res.users', '担当者', index=True)
     branch_id = fields.Many2one('ss_erp.organization', '支店', index=True)
