@@ -180,6 +180,10 @@ class InstructionOrder(models.Model):
             domain_loc = [('id', 'child_of', self.location_ids.ids)]
         else:
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
+
+        if self.organization_id.warehouse_id and self.organization_id.warehouse_id.view_location_id:
+            domain_loc.append(('id', 'child_of', self.organization_id.warehouse_id.view_location_id))
+
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
         domain = [('company_id', '=', self.company_id.id),
