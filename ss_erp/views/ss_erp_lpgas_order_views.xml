@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ss_erp_lpgas_order_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.lpgas.order.view.tree</field>
+        <field name="model">ss_erp.lpgas.order</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="organization_id"/>
+                <field name="inventory_type"/>
+                <field name="accounting_date"/>
+                <field name="inventory_period"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_lpgas_order_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.lpgas.order.view.form</field>
+        <field name="model">ss_erp.lpgas.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="organization_id" required="1"/>
+                            <field name="inventory_type" required="1"/>
+                        </group>
+                        <group>
+                            <field name="accounting_date" required="1"/>
+                            <field name="inventory_period" options="{'datepicker': {'showMonthsPeriod': true}}"
+                                   required="1"/>
+                        </group>
+                    </group>
+                    <!--                    <notebook>-->
+                    <!--                        <page string="集計結果">-->
+                    <!--                            <field name="lpgas_order_line_ids">-->
+                    <!--                                <tree editable="1">-->
+                    <!--                                    <field name="organization_id"/>-->
+                    <!--                                    <field name="location_id"/>-->
+                    <!--                                    <field name="tank_capacity"/>-->
+                    <!--                                    <field name="product_id"/>-->
+                    <!--                                    <field name="meter_reading_date"/>-->
+                    <!--                                    <field name="monthly_usage"/>-->
+                    <!--                                    <field name="stock_at_the_time_measure"/>-->
+                    <!--                                    <field name="charge_after_meter_reading"/>-->
+                    <!--                                    <field name="inventory_at_the_eolm"/>-->
+                    <!--                                    <field name="filling_amount_this_month"/>-->
+                    <!--                                    <field name="month_end_inventory"/>-->
+                    <!--                                    <field name="uom_id"/>-->
+                    <!--                                    <field name="unified_quantity_unit"/>-->
+                    <!--                                    <field name="theoretical_eom_inventory"/>-->
+                    <!--                                    <field name="inventory__theory_difference"/>-->
+                    <!--                                </tree>-->
+                    <!--                            </field>-->
+                    <!--                        </page>-->
+                    <!--                    </notebook>-->
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="ss_erp_lpgas_order_line_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.lpgas.order.line.view.tree</field>
+        <field name="model">ss_erp.lpgas.order.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="organization_id" required="1"/>
+                <field name="location_id" required="1"/>
+                <field name="tank_capacity"/>
+                <field name="product_id"/>
+                <field name="meter_reading_date"/>
+                <field name="monthly_usage"/>
+                <field name="stock_at_the_time_measure"/>
+                <field name="charge_after_meter_reading"/>
+                <field name="inventory_at_the_eolm"/>
+                <field name="filling_amount_this_month"/>
+                <field name="month_end_inventory"/>
+                <field name="uom_id"/>
+                <field name="unified_quantity_unit"/>
+                <field name="theoretical_eom_inventory"/>
+                <field name="inventory__theory_difference"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_lpgas_order_action" model="ir.actions.act_window">
+        <field name="name">LPガス棚卸伝票</field>
+        <field name="res_model">ss_erp.lpgas.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                LPガス棚卸伝票
+            </p>
+        </field>
+    </record>
+</odoo>

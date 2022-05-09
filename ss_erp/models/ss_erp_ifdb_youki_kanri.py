@@ -14,7 +14,7 @@ class YoukiKanri(models.Model):
     upload_date = fields.Datetime(
         string="アップロード日時",
         index=True,
-        default=fields.Datetime.now()
+        default=fields.Datetime.now
     )
     user_id = fields.Many2one(
         comodel_name="res.users",

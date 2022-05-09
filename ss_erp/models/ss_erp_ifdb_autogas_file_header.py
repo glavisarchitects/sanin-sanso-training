@@ -12,7 +12,7 @@ class IFDBAutogasFileHeader(models.Model):
         string="アップロード日時",
         index=True,
         readonly=True,
-        default=fields.Datetime.now()
+        default=fields.Datetime.now
     )
     name = fields.Char(
         string="名称",
