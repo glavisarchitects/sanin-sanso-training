@@ -4,20 +4,20 @@ odoo.define('ss_erp.datepicker', function (require) {
     var DatePicker = require('web.datepicker');
     var time = require('web.time');
     var fields = require('web.basic_fields');
+    var field_utils = require('web.field_utils');
+    var translation = require('web.translation');
+
+    var _t = translation._t;
 
     var DatePickerOptions = DatePicker.DateWidget.include({
 
         init: function (parent, options) {
             this._super(parent, options);
-            if (this.options.showMonthsPeriod) {
-                this.options.format = 'YYYY年MM月 度';
-//                console.log('xxx', time.getLangDateFormat())
+            var lang = _t.database.parameters.name
+            if (this.options.showMonthsPeriod === true && lang == 'Japanese / 日本語') {
+                this.options.format = (time.getLangDateFormat(), "YYYY年MM月度");
             }
-
         },
     });
-
-//    field_registry.add('datepicker_widget', DatePickerOptions);
-//    return DatePickerOptions;
-
+    return DatePickerOptions;
 });
