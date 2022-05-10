@@ -187,7 +187,7 @@ class InventoryOrderLine(models.Model):
     order_id = fields.Many2one('ss_erp.inventory.order', 'オーダ参照',)
     move_ids = fields.One2many('stock.move', 'x_inventory_order_line_id')
     organization_id = fields.Many2one('ss_erp.organization', '移動先組織')
-    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動元管轄部門')
+    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動先管轄部門')
     location_dest_id = fields.Many2one('stock.location', '移動先ロケーション')
     product_id = fields.Many2one('product.product', 'プロダクト')
     # lot_ids = fields.Many2many('stock.production.lot', string='シリアルナンバー')
