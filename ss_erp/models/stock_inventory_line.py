@@ -19,7 +19,7 @@ class StockInventoryLine(models.Model):
         res = super(StockInventoryLine, self).write(vals)
         for record in self:
             if record.inventory_order_line_id:
-                record.inventory_order_line_id({
+                record.inventory_order_line_id.write({
                     'product_cost': vals.get('product_cost', False),
                     'product_qty': vals.get('product_qty', False),
                 })
