@@ -109,7 +109,7 @@
                                     <field name="product_classification_code_1" readonly="1"/>
                                     <field name="product_classification_code_2" readonly="1"/>
                                     <field name="product_classification_code_3" readonly="1"/>
-                                    <field name="error_message" optional="hide"/>
+                                    <field name="error_message" optional="show"/>
                                 </tree>
                             </field>
                         </page>
