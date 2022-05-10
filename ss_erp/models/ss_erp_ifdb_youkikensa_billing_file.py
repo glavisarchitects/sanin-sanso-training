@@ -190,7 +190,7 @@ class YoukiKensaDetail(models.Model):
     field_3 = fields.Char('フィールド3')
     billing_code = fields.Char('請求先コード')
     billing_abbreviation = fields.Char('請求先略称')
-    customer_code = fields.Char('顧客コード')
+    customer_code = fields.Char('得意先コード')
     customer_abbreviation = fields.Char('得意先略称')
     product_code = fields.Char('商品コード')
     product_name = fields.Char('商品名')
