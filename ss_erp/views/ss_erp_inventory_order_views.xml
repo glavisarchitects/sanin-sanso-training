@@ -54,11 +54,11 @@
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="location_id" domain="[('usage','!=', 'view')]" required="1"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="user_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="user_id" attrs="{'readonly': [('state', '!=', 'draft')]}" required="1"/>
                         </group>
                         <group>
 <!--                            <field name="reserved_availability"/>-->
-                            <field name="scheduled_date" attrs="{'readonly': [('state', 'not in', ['draft','waiting'])]}"/>
+                            <field name="scheduled_date" attrs="{'readonly': [('state', 'not in', ['draft','waiting'])]}" required="1"/>
                             <field name="shipping_method" widget="radio"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>

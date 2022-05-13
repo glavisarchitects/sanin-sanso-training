@@ -54,6 +54,22 @@ class InventoryOrder(models.Model):
         for stock_picking in stock_picking_order:
             stock_picking.action_cancel()
 
+    @api.constrains('scheduled_date')
+    def _check_scheduled_date(self):
+        for rec in self:
+            current_date = fields.Date.today()
+            if rec.scheduled_date < current_date:
+                raise ValidationError(_("予定日は現在より過去の日付は設定できません。"))
+
+    @api.constrains('inventory_order_line_ids')
+    def _check_inventory_order_line_ids(self):
+        for rec in self:
+            for line in rec.inventory_order_line_ids:
+                if not line.organization_id:
+                    raise ValidationError(_("移動先組織をご選択ください。"))
+                if not line.responsible_dept_id:
+                    raise ValidationError(_("移動先管轄部門をご選択ください。"))
+
     #
     @api.depends('has_confirm', 'inventory_order_line_ids.move_ids.state')
     def _compute_state(self):
