@@ -28,7 +28,12 @@ class IFDBYGHeader(models.Model):
 
     has_data_import = fields.Boolean(compute='_compute_has_data_import')
 
-    #
+    @api.constrains("branch_id")
+    def _check_name(self):
+        for record in self:
+            if not record.warehouse_id:
+                raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
+
     @api.depends('detail_ids')
     def _compute_has_data_import(self):
         for record in self:

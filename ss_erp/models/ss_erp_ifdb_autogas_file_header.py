@@ -73,6 +73,12 @@ class IFDBAutogasFileHeader(models.Model):
             if name_unique > 1:
                 raise ValidationError(_("ファイルヘッダー名は検索に使用されます。一意にしてください。"))
 
+    @api.constrains("branch_id")
+    def _check_name(self):
+        for record in self:
+            if not record.warehouse_id:
+                raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
+
     @api.depends('autogas_data_record_ids.status')
     def _compute_status(self):
         for record in self:

@@ -43,7 +43,6 @@ class YoukiKanri(models.Model):
                                              inverse_name="ifdb_youki_kanri_id")
     has_data_import = fields.Boolean(compute='_compute_has_data_import')
 
-    #
     @api.depends('youki_kanri_detail_ids')
     def _compute_has_data_import(self):
         for record in self:
@@ -52,13 +51,11 @@ class YoukiKanri(models.Model):
             else:
                 record.has_data_import = False
 
-    # _sql_constraints = [
-    #     (
-    #         "name_uniq",
-    #         "UNIQUE(name)",
-    #         "Name is used for searching, please make it unique!"
-    #     )
-    # ]
+    @api.constrains("branch_id")
+    def _check_name(self):
+        for record in self:
+            if not record.warehouse_id:
+                raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
 
     @api.constrains("name")
     def _check_name(self):

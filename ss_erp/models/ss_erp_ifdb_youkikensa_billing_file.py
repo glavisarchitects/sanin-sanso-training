@@ -26,7 +26,12 @@ class YoukiKensaBilling(models.Model):
                                              'youkikensa_billing_file_header_id')
     has_data_import = fields.Boolean(compute='_compute_has_data_import')
 
-    #
+    @api.constrains("branch_id")
+    def _check_name(self):
+        for record in self:
+            if not record.warehouse_id:
+                raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
+
     @api.depends('youki_kensa_detail_ids')
     def _compute_has_data_import(self):
         for record in self:
@@ -42,8 +47,6 @@ class YoukiKensaBilling(models.Model):
                 [('name', '=', record.name)])
             if name_unique > 1:
                 raise ValidationError(_("ファイルヘッダー名は検索に使用されます。一意にしてください。"))
-
-
 
     @api.depends('youki_kensa_detail_ids.status')
     def _compute_status(self):
