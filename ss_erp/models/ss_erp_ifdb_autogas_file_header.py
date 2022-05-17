@@ -74,7 +74,7 @@ class IFDBAutogasFileHeader(models.Model):
                 raise ValidationError(_("ファイルヘッダー名は検索に使用されます。一意にしてください。"))
 
     @api.constrains("branch_id")
-    def _check_name(self):
+    def _check_default_warehouse(self):
         for record in self:
             if not record.branch_id.warehouse_id:
                 raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))

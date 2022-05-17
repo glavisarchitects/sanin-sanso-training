@@ -27,7 +27,7 @@ class YoukiKensaBilling(models.Model):
     has_data_import = fields.Boolean(compute='_compute_has_data_import')
 
     @api.constrains("branch_id")
-    def _check_name(self):
+    def _check_default_warehouse(self):
         for record in self:
             if not record.branch_id.warehouse_id:
                 raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
