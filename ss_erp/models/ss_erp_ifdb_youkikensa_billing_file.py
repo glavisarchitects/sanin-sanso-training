@@ -29,7 +29,7 @@ class YoukiKensaBilling(models.Model):
     @api.constrains("branch_id")
     def _check_name(self):
         for record in self:
-            if not record.warehouse_id:
+            if not record.branch_id.warehouse_id:
                 raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
 
     @api.depends('youki_kensa_detail_ids')

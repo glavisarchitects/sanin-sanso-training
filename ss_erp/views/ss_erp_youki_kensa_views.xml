@@ -78,20 +78,20 @@
                                     <field name="slip_no" readonly="True"/>
                                     <field name="field_3" readonly="True"/>
                                     <field name="billing_abbreviation" readonly="True"/>
-                                    <field name="billing_code" readonly="True" optional="show" />
-                                    <field name="customer_code" readonly="True" optional="show" />
-                                    <field name="customer_abbreviation" readonly="True" optional="show" />
-                                    <field name="product_code" readonly="True" optional="show" />
-                                    <field name="product_name" readonly="True" optional="show" />
-                                    <field name="unit_price" readonly="True" optional="show" />
-                                    <field name="return_quantity_for_sale" readonly="True" optional="show" />
-                                    <field name="net_sales_excluding_tax" readonly="True" optional="show" />
-                                    <field name="consumption_tax" readonly="True" optional="show" />
-                                    <field name="remarks" readonly="True" optional="show" />
-                                    <field name="unit_cost" readonly="True" optional="show" />
-                                    <field name="description" readonly="True" optional="show" />
-                                    <field name="error_message" readonly="True" optional="show" />
-                                    <field name="purchase_id" readonly="True" optional="show" />
+                                    <field name="billing_code" readonly="True"/>
+                                    <field name="customer_code" readonly="True"/>
+                                    <field name="customer_abbreviation" readonly="True"/>
+                                    <field name="product_code" readonly="True"/>
+                                    <field name="product_name" readonly="True"/>
+                                    <field name="unit_price" readonly="True"/>
+                                    <field name="return_quantity_for_sale" readonly="True"/>
+                                    <field name="net_sales_excluding_tax" readonly="True"/>
+                                    <field name="consumption_tax" readonly="True"/>
+                                    <field name="remarks" readonly="True"/>
+                                    <field name="unit_cost" readonly="True"/>
+                                    <field name="description" readonly="True"/>
+                                    <field name="error_message" readonly="True"/>
+                                    <field name="purchase_id" readonly="True"/>
                                 </tree>
                             </field>
                         </page>
@@ -145,20 +145,20 @@
                 <field name="slip_no" readonly="True"/>
                 <field name="field_3" readonly="True"/>
                 <field name="billing_abbreviation" readonly="True"/>
-                <field name="billing_code" readonly="True" optional="show" />
-                <field name="customer_code" readonly="True" optional="show" />
-                <field name="customer_abbreviation" readonly="True" optional="show" />
-                <field name="product_code" readonly="True" optional="show" />
-                <field name="product_name" readonly="True" optional="show" />
-                <field name="unit_price" readonly="True" optional="show" />
-                <field name="return_quantity_for_sale" readonly="True" optional="show" />
-                <field name="net_sales_excluding_tax" readonly="True" optional="show" />
-                <field name="consumption_tax" readonly="True" optional="show" />
-                <field name="remarks" readonly="True" optional="show" />
-                <field name="unit_cost" readonly="True" optional="show" />
-                <field name="description" readonly="True" optional="show" />
-                <field name="error_message" readonly="True" optional="show" />
-                <field name="purchase_id" readonly="True" optional="show" />
+                <field name="billing_code" readonly="True"/>
+                <field name="customer_code" readonly="True"/>
+                <field name="customer_abbreviation" readonly="True"/>
+                <field name="product_code" readonly="True"/>
+                <field name="product_name" readonly="True"/>
+                <field name="unit_price" readonly="True"/>
+                <field name="return_quantity_for_sale" readonly="True"/>
+                <field name="net_sales_excluding_tax" readonly="True"/>
+                <field name="consumption_tax" readonly="True"/>
+                <field name="remarks" readonly="True"/>
+                <field name="unit_cost" readonly="True"/>
+                <field name="description" readonly="True"/>
+                <field name="error_message" readonly="True"/>
+                <field name="purchase_id" readonly="True"/>
             </tree>
         </field>
     </record>
