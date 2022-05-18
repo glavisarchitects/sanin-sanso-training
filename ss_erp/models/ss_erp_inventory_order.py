@@ -20,7 +20,7 @@ class InventoryOrder(models.Model):
     responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動元管轄部門')
     location_id = fields.Many2one('stock.location', '移動元ロケーション')
     user_id = fields.Many2one('res.users', '担当者')
-    scheduled_date = fields.Datetime('予定日', copy=False)
+    scheduled_date = fields.Date('予定日', copy=False)
     shipping_method = fields.Selection([('transport', '配車（移動元）'), ('pick_up', '配車（移動先）'), ('outsourcing', '宅配')],
                                        default='transport', string='配送方法')
     state = fields.Selection([('draft', 'ドラフト'), ('waiting', '出荷待ち'), ('shipping', '積送中'),
@@ -194,7 +194,7 @@ class InventoryOrder(models.Model):
                 self.env['stock.picking'].create(value)
 
             for key,value in source_out.items():
-                out_transfer = self.env['stock.picking'].create(value)
+                self.env['stock.picking'].create(value)
 
             self.has_confirm = True
         else:
