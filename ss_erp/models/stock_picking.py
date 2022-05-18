@@ -46,6 +46,12 @@ class StockPicking(models.Model):
             else:
                 r.has_lot_ids = False
 
+    @api.onchange('x_organization_id')
+    def onchange_organization_id(self):
+        if self.x_organization_id:
+            return {'domain': {'picking_type_id': ['|', ('warehouse_id', '=', False), ('warehouse_id', '=', self.x_organization_id.warehouse_id.id)],
+                               }}
+
 
 class StockMove(models.Model):
     _inherit = 'stock.move'

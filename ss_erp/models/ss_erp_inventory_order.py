@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class InventoryOrder(models.Model):
@@ -35,6 +35,7 @@ class InventoryOrder(models.Model):
 
     @api.onchange('organization_id')
     def onchange_organization_id(self):
+        self.location_id = False
         if self.organization_id:
             warehouse_location_id = self.organization_id.warehouse_id.view_location_id.id
             return {'domain': {'location_id': [('id', 'child_of', warehouse_location_id)]
@@ -221,9 +222,10 @@ class InventoryOrderLine(models.Model):
 
     @api.onchange('organization_id')
     def onchange_organization_id(self):
+        self.location_dest_id = False
         if self.organization_id:
             warehouse_location_id = self.organization_id.warehouse_id.view_location_id.id
-            return {'domain': {'location_dest_id': [('id', 'child_ofr', warehouse_location_id)]
+            return {'domain': {'location_dest_id': [('id', 'child_of', warehouse_location_id)]
                                }}
 
     #
