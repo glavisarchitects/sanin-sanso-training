@@ -33,6 +33,13 @@ class InventoryOrder(models.Model):
     has_cancel = fields.Boolean(default=False, copy=False)
     picking_count = fields.Integer(compute='_compute_picking_count')
 
+    @api.onchange('organization_id')
+    def onchange_organization_id(self):
+        if self.organization_id:
+            warehouse_location_id = self.organization_id.warehouse_id.view_location_id.id
+            return {'domain': {'location_id': [('id', 'child_of', warehouse_location_id)]
+                               }}
+
     #
     @api.depends('state')
     def _compute_picking_count(self):
@@ -211,6 +218,13 @@ class InventoryOrderLine(models.Model):
     product_uom = fields.Many2one('uom.uom', string='単位', required=True)
     reserved_availability = fields.Float('引当済数量', compute='compute_reserved_availability')
     product_packaging = fields.Many2one('product.packaging', '荷姿')
+
+    @api.onchange('organization_id')
+    def onchange_organization_id(self):
+        if self.organization_id:
+            warehouse_location_id = self.organization_id.warehouse_id.view_location_id.id
+            return {'domain': {'location_dest_id': [('id', 'child_ofr', warehouse_location_id)]
+                               }}
 
     #
     @api.depends('move_ids.forecast_availability')
