@@ -72,6 +72,8 @@ class InventoryOrder(models.Model):
     @api.constrains('inventory_order_line_ids')
     def _check_inventory_order_line_ids(self):
         for rec in self:
+            if not rec.inventory_order_line_ids:
+                raise ValidationError(_("移動先情報をご入力してください。"))
             for line in rec.inventory_order_line_ids:
                 if not line.organization_id:
                     raise ValidationError(_("移動先組織をご選択ください。"))
