@@ -16,17 +16,17 @@ class InventoryOrder(models.Model):
 
     company_id = fields.Many2one('res.company', string='会社', copy=False)
     name = fields.Char('番号', copy=False)
-    organization_id = fields.Many2one('ss_erp.organization', '移動元組織')
-    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動元管轄部門')
-    location_id = fields.Many2one('stock.location', '移動元ロケーション')
-    user_id = fields.Many2one('res.users', '担当者')
-    scheduled_date = fields.Date('予定日', copy=False)
+    organization_id = fields.Many2one('ss_erp.organization', '移動元組織', tracking=True)
+    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動元管轄部門', tracking=True)
+    location_id = fields.Many2one('stock.location', '移動元ロケーション', tracking=True)
+    user_id = fields.Many2one('res.users', '担当者', tracking=True)
+    scheduled_date = fields.Date('予定日', copy=False, tracking=True)
     shipping_method = fields.Selection([('transport', '配車（移動元）'), ('pick_up', '配車（移動先）'), ('outsourcing', '宅配')],
-                                       default='transport', string='配送方法')
+                                       default='transport', string='配送方法', tracking=True)
     state = fields.Selection([('draft', 'ドラフト'), ('waiting', '出荷待ち'), ('shipping', '積送中'),
-                              ('done', '移動完了'), ('cancel', '取消済')], 'ステータス', default='draft', compute='_compute_state',
+                              ('done', '移動完了'), ('cancel', '取消済')], 'ステータス', default='draft', compute='_compute_state', tracking=True,
                              copy=False)
-    inventory_order_line_ids = fields.One2many('ss_erp.inventory.order.line', 'order_id', string="オーダ明細", copy=True, required=True)
+    inventory_order_line_ids = fields.One2many('ss_erp.inventory.order.line', 'order_id', string="オーダ明細", copy=True, required=True, tracking=True)
     note = fields.Text('ノート')
 
     has_confirm = fields.Boolean(default=False, copy=False)
@@ -220,15 +220,15 @@ class InventoryOrderLine(models.Model):
     company_id = fields.Many2one('res.company', string='会社', )
     order_id = fields.Many2one('ss_erp.inventory.order', 'オーダ参照',)
     move_ids = fields.One2many('stock.move', 'x_inventory_order_line_id')
-    organization_id = fields.Many2one('ss_erp.organization', '移動先組織', required=True)
-    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動先管轄部門', required=True)
-    location_dest_id = fields.Many2one('stock.location', '移動先ロケーション', required=True)
-    product_id = fields.Many2one('product.product', 'プロダクト', required=True)
+    organization_id = fields.Many2one('ss_erp.organization', '移動先組織', required=True, tracking=True)
+    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動先管轄部門', required=True, tracking=True)
+    location_dest_id = fields.Many2one('stock.location', '移動先ロケーション', required=True, tracking=True)
+    product_id = fields.Many2one('product.product', 'プロダクト', required=True, tracking=True)
     # lot_ids = fields.Many2many('stock.production.lot', string='シリアルナンバー')
-    product_uom_qty = fields.Float('要求', required=True)
-    product_uom = fields.Many2one('uom.uom', string='単位', required=True)
+    product_uom_qty = fields.Float('要求', required=True, tracking=True)
+    product_uom = fields.Many2one('uom.uom', string='単位', required=True, tracking=True)
     reserved_availability = fields.Float('引当済数量', compute='compute_reserved_availability')
-    product_packaging = fields.Many2one('product.packaging', '荷姿')
+    product_packaging = fields.Many2one('product.packaging', '荷姿', tracking=True)
 
     @api.onchange('organization_id')
     def onchange_organization_id(self):
