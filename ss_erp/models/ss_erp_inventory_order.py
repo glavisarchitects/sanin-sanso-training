@@ -79,6 +79,14 @@ class InventoryOrder(models.Model):
                     raise ValidationError(_("移動先組織をご選択ください。"))
                 if not line.responsible_dept_id:
                     raise ValidationError(_("移動先管轄部門をご選択ください。"))
+                if not line.location_dest_id:
+                    raise ValidationError(_("移動先ロケーションをご選択ください。"))
+                if not line.product_id:
+                    raise ValidationError(_("プロダクトをご選択ください。"))
+                if not line.product_uom_qty:
+                    raise ValidationError(_("要求をご入力ください。"))
+                if not line.product_uom:
+                    raise ValidationError(_("単位をご選択ください。"))
 
     #
     @api.depends('has_confirm', 'inventory_order_line_ids.move_ids.state')
