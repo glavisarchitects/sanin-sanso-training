@@ -13,7 +13,7 @@ class StockPicking(models.Model):
         "在庫仕訳訂正", index=True)
     x_dest_address_info = fields.Html("直送先住所")
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string="移動元組織")
+        'ss_erp.organization', string="移動元組織", domain="[('warehouse_id','!=',False)]")
     x_responsible_dept_id = fields.Many2one(
         'ss_erp.responsible.department', string="移動元管轄部門")
     x_responsible_dept_dest_id = fields.Many2one('ss_erp.responsible.department', string='移動先管轄部門')
