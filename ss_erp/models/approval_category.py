@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.addons.approvals.models.approval_category import CATEGORY_SELECTION
+
+CATEGORY_SELECTION = [
+    ('required', '必須'),
+    ('optional', 'オプション'),
+    ('no', 'なし')]
 
 
 class ApprovalCategory(models.Model):
