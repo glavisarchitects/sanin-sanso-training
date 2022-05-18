@@ -10,9 +10,9 @@
                 <field name="name"
                        filter_domain="[('name', 'ilike', self)]"/>
                 <group string="Group By">
-                    <filter name="flt_status" string="Status" context="{'group_by': 'status'}"/>
-                    <filter name="flt_branch" string="Branch" context="{'group_by': 'branch_id'}"/>
-                    <filter name="flt_user" string="User" context="{'group_by': 'user_id'}"/>
+                    <filter name="flt_status" string="ステータス" context="{'group_by': 'status'}"/>
+                    <filter name="flt_branch" string="組織" context="{'group_by': 'branch_id'}"/>
+                    <filter name="flt_user" string="担当者" context="{'group_by': 'user_id'}"/>
                 </group>
             </search>
         </field>
@@ -120,7 +120,7 @@
         <field name="arch" type="xml">
             <search string="容器検査所ファイル取込">
                 <field name="processing_date"/>
-                <filter name="flr_error_status" string="ラーあ" domain="[('status', '=', 'error')]"/>
+                <filter name="flr_error_status" string="エラーあり" domain="[('status', '=', 'error')]"/>
                 <filter name="flr_wait_status" string="処理待ち" domain="[('status', '=', 'wait')]"/>
                 <filter name="flr_success_status" string="成功" domain="[('status', '=', 'success')]"/>
                 <group string="Group By" expand="0">

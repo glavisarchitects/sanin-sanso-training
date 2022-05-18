@@ -2869,6 +2869,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ss_erp.selection__approval_category__has_x_sale_order_ids__no
 #: model:ir.model.fields.selection,name:ss_erp.selection__approval_category__has_x_transfer_date__no
 #: model:ir.model.fields.selection,name:ss_erp.selection__approval_category__has_x_transfer_preferred_date__no
+#: model:ir.model.fields.selection,name:ss_erp.selection__approval_category__has_x_inventory_instruction_ids__no
 msgid "None"
 msgstr "なし"
 
@@ -3059,6 +3060,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__has_x_minimum_cost__optional
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__has_x_purchase_user_id__optional
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__has_x_vendor_payment_term__optional
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__has_x_inventory_instruction_ids__optional
 msgid "Optional"
 msgstr "オプション"
 
@@ -3952,6 +3954,7 @@ msgstr "要求納期"
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__has_x_minimum_cost__required
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__has_x_purchase_user_id__required
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__has_x_vendor_payment_term__required
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_contact_category__has_x_inventory_instruction_ids__required
 msgid "Required"
 msgstr "必須"
 
