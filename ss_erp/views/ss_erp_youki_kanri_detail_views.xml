@@ -5,7 +5,7 @@
         <field name="name">ss_erp.ifdb.youki.kanri.detail.view.search</field>
         <field name="model">ss_erp.ifdb.youki.kanri.detail</field>
         <field name="arch" type="xml">
-            <search string="容器管理システムデータ">
+            <search string="容器管理ファイル取込データ">
                 <field name="order_number" />
                 <filter name="flr_error_status" string="ラーあ" domain="[('status', '=', 'error')]" />
                 <filter name="flr_wait_status" string="処理待ち" domain="[('status', '=', 'wait')]" />
@@ -24,7 +24,7 @@
         <field name="name">ss_erp.ifdb.youki.kanri.detail.view.tree</field>
         <field name="model">ss_erp.ifdb.youki.kanri.detail</field>
         <field name="arch" type="xml">
-            <tree string="容器管理システムデータ" js_class="import_detail_tree">
+            <tree string="容器管理ファイル取込データ" js_class="import_detail_tree">
                 <field name="status"
                         widget="badge"
                         decoration-info="status=='success'"
@@ -77,7 +77,7 @@
     </record>
 
     <record id="ss_erp_ifdb_youki_kanri_detail_action" model="ir.actions.act_window">
-        <field name="name">容器管理システムデータ</field>
+        <field name="name">容器管理ファイル取込データ</field>
         <field name="res_model">ss_erp.ifdb.youki.kanri.detail</field>
         <field name="view_mode">tree</field>
     </record>

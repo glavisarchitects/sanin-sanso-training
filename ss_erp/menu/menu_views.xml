@@ -95,7 +95,7 @@
               parent="ss_erp.external_system_cooperation_importing_performance"/>
     <menuitem
             id="ss_erp_youki_kanri_detail_menu"
-            name="容器管理システムデータ"
+            name="容器管理ファイル取込データ"
             action="ss_erp_ifdb_youki_kanri_detail_action"
             parent="ss_erp.external_system_cooperation_imported_data"
             sequence="35"/>
