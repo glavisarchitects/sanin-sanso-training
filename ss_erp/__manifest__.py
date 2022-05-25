@@ -83,6 +83,7 @@
         "views/hr_expense_sheet_views.xml",
         "views/ss_erp_hr_internal_note_views.xml",
         "views/ss_erp_lpgas_order_views.xml",
+        "views/stock_location_views.xml",
 
         "views/webclient_templates.xml",
         "menu/menu_views.xml",

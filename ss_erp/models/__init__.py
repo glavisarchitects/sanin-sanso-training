@@ -61,3 +61,4 @@ from . import ss_erp_hr_internal_note
 from . import res_users
 from . import account_move
 from . import ss_erp_lpgas_order
+from . import stock_location

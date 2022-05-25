@@ -4775,7 +4775,7 @@ msgid "先方"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order_line__inventory_at_the_eolm
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order_line__previous_last_inventory
 msgid "先月末在庫"
 msgstr ""
 
@@ -5651,12 +5651,12 @@ msgid "当方"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order_line__monthly_usage
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order_line__month_amount_of_use
 msgid "当月使用量"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order_line__filling_amount_this_month
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order_line__filling_after_meter_reading
 msgid "当月充填量"
 msgstr ""
 
@@ -6319,7 +6319,7 @@ msgid "棚卸取消"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order__inventory_period
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order__aggregation_period
 msgid "棚卸対象期間"
 msgstr ""
 
@@ -6465,7 +6465,7 @@ msgid "検針明細表インポート"
 msgstr ""
 
 #. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order_line__stock_at_the_time_measure
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_lpgas_order_line__meter_reading_inventory
 msgid "検針時在庫"
 msgstr ""
 
