@@ -20,6 +20,7 @@
 
             <script type="text/javascript" src="/ss_erp/static/src/js/list_editable_renderer.js"></script>
             <script type="text/javascript" src="/ss_erp/static/src/js/confirm_on_save.js"></script>
+            <script type="text/javascript" src="/ss_erp/static/src/js/web_required_field_inventory_order.js"></script>
 
         </xpath>
     </template>
