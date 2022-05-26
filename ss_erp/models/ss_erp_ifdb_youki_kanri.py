@@ -1,4 +1,4 @@
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 from datetime import datetime
 from odoo.exceptions import ValidationError
 
@@ -106,8 +106,9 @@ class YoukiKanri(models.Model):
             'id')
         convert_branch_type_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'branch')]).mapped('id')
         branch_code_convert = self.env['ss_erp.code.convert'].search(
-            [('external_system', 'in', youki_kanri_type_ids), ('convert_code_type', 'in', convert_branch_type_ids)]).sorted(
-                key=lambda k: (k['external_code'], k['priority_conversion']))
+            [('external_system', 'in', youki_kanri_type_ids),
+             ('convert_code_type', 'in', convert_branch_type_ids)]).sorted(
+            key=lambda k: (k['external_code'], k['priority_conversion']))
 
         branch_dict = {}
         for branch in branch_code_convert:
@@ -140,11 +141,11 @@ class YoukiKanri(models.Model):
 
             if int(line.customer_branch_code) not in organization_list:
                 if error_message:
-                    error_message += '顧取引先Ｃが連絡先マスタに存在しません。'
+                    error_message += '顧支店Ｃが連絡先マスタに存在しません。'
                 else:
-                    error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
+                    error_message = '顧支店Ｃが連絡先マスタに存在しません。'
 
-            if int(line.codeommercial_branch_code) not in organization_list:
+            if not branch_dict.get(line.codeommercial_branch_code):
                 if error_message:
                     error_message += '商支店Ｃが組織マスタに存在しません。'
                 else:
@@ -188,12 +189,12 @@ class YoukiKanri(models.Model):
                         }
                         if not so_dict.get(key, 0):
                             so = {
-                                'x_organization_id':int(line.codeommercial_branch_code),
+                                'x_organization_id': branch_dict.get(line.codeommercial_branch_code),
                                 'partner_id': int(line.customer_business_partner_code),
                                 'partner_invoice_id': int(line.customer_business_partner_code),
                                 'partner_shipping_id': int(line.customer_business_partner_code),
                                 'date_order': datetime.strptime(line.slip_date, '%Y/%m/%d'),
-                                'state':'draft',
+                                'state': 'draft',
                                 'x_no_approval_required_flag': True,
                                 'order_line': [(0, 0, order_line)],
                             }
@@ -267,7 +268,7 @@ class YoukiKanri(models.Model):
             if so_dict.get(key):
                 line.write({
                     'status': 'success',
-                    'processing_date':datetime.now(),
+                    'processing_date': datetime.now(),
                     'sale_id': so_dict[key]['sale_id']
                 })
             if po_dict.get(key):
