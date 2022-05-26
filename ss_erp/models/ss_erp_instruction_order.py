@@ -46,6 +46,12 @@ class InstructionOrder(models.Model):
     type_id = fields.Many2one('product.template', string='棚卸種別')
     stock_inventory_id = fields.Many2one('stock.inventory', string='棚卸伝票番号')
 
+    @api.constrains("organization_id")
+    def _check_default_warehouse(self):
+        for record in self:
+            if not record.organization_id.warehouse_id:
+                raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
+
     @api.model
     def create(self, vals):
         if vals.get('name', _('New')) == _('New'):
@@ -182,7 +188,7 @@ class InstructionOrder(models.Model):
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
 
         if self.organization_id.warehouse_id and self.organization_id.warehouse_id.view_location_id:
-            domain_loc.append(('id', 'child_of', self.organization_id.warehouse_id.view_location_id))
+            domain_loc.append(('id', 'child_of', self.organization_id.warehouse_id.view_location_id.id))
 
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 

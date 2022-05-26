@@ -59,7 +59,17 @@ FormController.include({
 	        		}
 	        	}
 	        });
-		}else{
+		}
+        //	HuuPhong 180522 raise warn when field in line_ids is empty
+//		if( modelName ==='ss_erp.inventory.order'){
+//		    const record = this.model.get(this.handle, { raw: true });
+//		    console.log('Heyo', record);
+//
+//		    console.log('res ids', record.res_ids);
+//		    saveAndExecuteAction();
+//		}
+
+		else{
 			saveAndExecuteAction();
 		}
 	},

@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
-from odoo.addons.approvals.models.approval_category import CATEGORY_SELECTION
+
+CATEGORY_SELECTION = [
+    ('required', '必須'),
+    ('optional', 'オプション'),
+    ('no', 'なし')]
 
 
 class ApprovalCategory(models.Model):
@@ -53,7 +57,7 @@ class ApprovalCategory(models.Model):
     has_x_transfer_date = fields.Selection(
         CATEGORY_SELECTION, string="送金日", default="no", )
     has_x_inventory_instruction_ids = fields.Selection(
-        CATEGORY_SELECTION, string="指示伝票", default="no", )
+        CATEGORY_SELECTION, string="棚卸指示伝票", default="no", )
     approval_type = fields.Selection(selection_add=[
         ('inventory_request', '棚卸'),
         ('inventory_request_manager', '棚卸マネージャー'),

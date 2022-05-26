@@ -20,13 +20,18 @@ class YoukiKensaBilling(models.Model):
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり'),
-    ], string='ステータス', default='wait', index=True,store=True,compute='_compute_status')
+    ], string='ステータス', default='wait', index=True, store=True, compute='_compute_status')
 
     youki_kensa_detail_ids = fields.One2many('ss_erp.ifdb.youkikensa.billing.file.detail',
                                              'youkikensa_billing_file_header_id')
     has_data_import = fields.Boolean(compute='_compute_has_data_import')
 
-    #
+    @api.constrains("branch_id")
+    def _check_default_warehouse(self):
+        for record in self:
+            if not record.branch_id.warehouse_id:
+                raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
+
     @api.depends('youki_kensa_detail_ids')
     def _compute_has_data_import(self):
         for record in self:
@@ -42,8 +47,6 @@ class YoukiKensaBilling(models.Model):
                 [('name', '=', record.name)])
             if name_unique > 1:
                 raise ValidationError(_("ファイルヘッダー名は検索に使用されます。一意にしてください。"))
-
-
 
     @api.depends('youki_kensa_detail_ids.status')
     def _compute_status(self):
@@ -119,7 +122,7 @@ class YoukiKensaBilling(models.Model):
                             'order_line': [(0, 0, {
                                 'product_id': product_dict[line.product_code],
                                 'product_qty': line.return_quantity_for_sale,
-                                'date_planned':line.sales_date
+                                'date_planned': line.sales_date
                             })],
                         }
                         success_dict[key] = {
@@ -149,7 +152,7 @@ class YoukiKensaBilling(models.Model):
                 line.write({
                     'status': 'success',
                     'purchase_id': success_dict[key]['po'],
-                    'processing_date':datetime.now(),
+                    'processing_date': datetime.now(),
                     'error_message': False
                 })
 
@@ -167,7 +170,6 @@ class YoukiKensaBilling(models.Model):
                 },
             }
         }
-
 
 
 class YoukiKensaDetail(models.Model):

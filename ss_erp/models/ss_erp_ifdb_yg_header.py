@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from datetime import datetime
-
+from odoo.exceptions import ValidationError
 
 class IFDBYGHeader(models.Model):
     _name = 'ss_erp.ifdb.yg.header'
@@ -28,7 +28,12 @@ class IFDBYGHeader(models.Model):
 
     has_data_import = fields.Boolean(compute='_compute_has_data_import')
 
-    #
+    @api.constrains("branch_id")
+    def _check_default_warehouse(self):
+        for record in self:
+            if not record.branch_id.warehouse_id:
+                raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
+
     @api.depends('detail_ids')
     def _compute_has_data_import(self):
         for record in self:

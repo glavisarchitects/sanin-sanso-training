@@ -26,7 +26,12 @@ class IFDBPowerNetSalesHeader(models.Model):
     )
     has_data_import = fields.Boolean(compute='_compute_has_data_import')
 
-    #
+    @api.constrains("branch_id")
+    def _check_default_warehouse(self):
+        for record in self:
+            if not record.branch_id.warehouse_id:
+                raise ValidationError(_("対象の支店にデフォルト倉庫が設定されていません。組織マスタの設定を確認してください。"))
+
     @api.depends('powernet_sale_record_ids')
     def _compute_has_data_import(self):
         for record in self:
@@ -34,14 +39,6 @@ class IFDBPowerNetSalesHeader(models.Model):
                 record.has_data_import = True
             else:
                 record.has_data_import = False
-
-    # _sql_constraints = [
-    #     (
-    #         "name_uniq",
-    #         "UNIQUE(name)",
-    #         "File Header Name is used for searching, please make it unique!"
-    #     )
-    # ]
 
     @api.constrains("name")
     def _check_name(self):
