@@ -117,8 +117,7 @@ class YoukiKanri(models.Model):
                     branch_dict[branch['external_code']] = branch['internal_code'].id
 
         # convert unit code
-        convert_product_unit_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'product_unit')]).mapped(
-            'id')
+        convert_product_unit_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'product_unit')]).mapped('id')
         unit_code_convert = self.env['ss_erp.code.convert'].search(
             [('external_system', 'in', youki_kanri_type_ids), ('convert_code_type', 'in', convert_product_unit_ids)])
         uom_dict = {}
@@ -207,7 +206,7 @@ class YoukiKanri(models.Model):
                         order_line = {
                             'product_id': int(line.codeommercial_product_code),
                             'product_qty': line.quantity,
-                            'product_uom': line.unit_code,
+                            'product_uom': uom_dict.get(line.unit_code),
                             'date_planned': datetime.strptime(line.slip_date, '%Y/%m/%d')
                         }
                         if not po_dict.get(key, 0):
