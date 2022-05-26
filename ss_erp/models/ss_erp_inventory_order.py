@@ -224,6 +224,7 @@ class InventoryOrderLine(models.Model):
     responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動先管轄部門', required=True, tracking=True)
     location_dest_id = fields.Many2one('stock.location', '移動先ロケーション', required=True, tracking=True)
     product_id = fields.Many2one('product.product', 'プロダクト', required=True, tracking=True)
+
     # lot_ids = fields.Many2many('stock.production.lot', string='シリアルナンバー')
     product_uom_qty = fields.Float('要求', required=True, tracking=True)
     product_uom = fields.Many2one('uom.uom', string='単位', required=True, tracking=True)

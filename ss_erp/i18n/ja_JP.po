@@ -7745,11 +7745,6 @@ msgid "階層番号は入力してください。"
 msgstr ""
 
 #. module: ss_erp
-#: model_terms:ir.ui.view,arch_db:ss_erp.ss_erp_lpgas_order_view_form
-msgid "集計"
-msgstr ""
-
-#. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_lpgas_order__state__confirm
 msgid "集計完了"
 msgstr ""

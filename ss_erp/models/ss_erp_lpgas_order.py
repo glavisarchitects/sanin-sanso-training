@@ -28,6 +28,7 @@ class LPGasOrder(models.Model):
 
     lpgas_order_line_ids = fields.One2many('ss_erp.lpgas.order.line', 'lpgas_order_id', string='集計結果')
 
+
     #
     # @api.onchange('accounting_date')
     # def _onchange_partner_id(self):
@@ -121,7 +122,6 @@ class LPGasOrder(models.Model):
             if r.accounting_date < r.aggregation_period:
                 raise ValidationError(_("会計日は棚卸対象期間より過去の日付は設定できません。"))
 
-
 class LPGasOrderLine(models.Model):
     _name = 'ss_erp.lpgas.order.line'
     _description = '集計結果'
@@ -147,3 +147,4 @@ class LPGasOrderLine(models.Model):
     # unified_quantity_unit = fields.Many2one('uom.uom', string='統一数量単位')
     theoretical_inventory = fields.Float(string='理論的な月末在庫')
     difference_qty = fields.Float(string='棚卸差異')
+
