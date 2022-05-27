@@ -118,7 +118,7 @@ class YoukiKensaBilling(models.Model):
                         po = {
                             'partner_id': supplier_id.id,
                             'date_order': line.sales_date,
-                            'picking_type_id': self.env.ref('stock.picking_type_in').id,
+                            'picking_type_id': self.branch_id.warehouse_id.in_type_id.id,
                             'order_line': [(0, 0, {
                                 'product_id': product_dict[line.product_code],
                                 'product_qty': line.return_quantity_for_sale,

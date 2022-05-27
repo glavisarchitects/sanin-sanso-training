@@ -193,6 +193,7 @@ class YoukiKanri(models.Model):
                                 'partner_invoice_id': int(line.customer_business_partner_code),
                                 'partner_shipping_id': int(line.customer_business_partner_code),
                                 'date_order': datetime.strptime(line.slip_date, '%Y/%m/%d'),
+                                'warehouse_id': self.branch_id.warehouse_id.id,
                                 'state': 'draft',
                                 'x_no_approval_required_flag': True,
                                 'order_line': [(0, 0, order_line)],
@@ -213,7 +214,7 @@ class YoukiKanri(models.Model):
                             po = {
                                 'partner_id': int(line.customer_business_partner_code),
                                 'date_order': datetime.strptime(line.slip_date, '%Y/%m/%d'),
-                                'picking_type_id': self.env.ref('stock.picking_type_in').id,
+                                'picking_type_id': self.branch_id.warehouse_id.in_type_id.id,
                                 'order_line': [(0, 0, order_line)],
                             }
                             po_dict[key] = {
