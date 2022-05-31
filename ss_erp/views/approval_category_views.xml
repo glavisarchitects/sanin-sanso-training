@@ -13,6 +13,7 @@
                 <field name="has_x_inventory_order_ids" widget="radio" options="{'horizontal': true}"/>
                 <field name="has_x_inventory_instruction_ids" widget="radio" options="{'horizontal': true}"
                        attrs="{'invisible': [('approval_type', '!=', 'inventory_request_manager')]}"/>
+                <field name="has_lp_gas_inventory_ids" widget="radio" options="{'horizontal': true}"/>
                 <field name="has_x_sale_order_ids" widget="radio" options="{'horizontal': true}"/>
                 <field name="has_x_account_move_ids" widget="radio" options="{'horizontal': true}"/>
             </xpath>

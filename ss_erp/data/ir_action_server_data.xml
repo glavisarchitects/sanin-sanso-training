@@ -73,4 +73,13 @@ act.update({
 action = act
         </field>
     </record>
+
+    <!--  Request approval - change to 承認待ち  -->
+    <record id="model_lpgas_request_approval" model="ir.actions.server">
+        <field name="name">確認依頼</field>
+        <field name="model_id" ref="model_ss_erp_lpgas_order"/>
+        <field name="binding_model_id" ref="model_ss_erp_lpgas_order"/>
+        <field name="state">code</field>
+        <field name="code">records.approval_request()</field>
+    </record>
 </odoo>

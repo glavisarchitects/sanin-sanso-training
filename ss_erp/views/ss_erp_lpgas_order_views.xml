@@ -10,6 +10,7 @@
                 <field name="inventory_type"/>
                 <field name="accounting_date"/>
                 <field name="aggregation_period"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -20,16 +21,16 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="集計" name="calculate_aggregate_lpgas" type="object" class="oe_highlight"/>
+                    <button string="集計" confirm="既存のデータは削除されてしまいます。実行をしますか。" name="calculate_aggregate_lpgas" type="object" class="oe_highlight"/>
                     <button string="表示" name="show_lpgas_report" type="object" class="oe_highlight"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
                 </header>
                 <sheet>
                     <div>
-                        <h5>
+                        <h3>
                             <field name="name" readonly="1"/>
-                        </h5>
+                        </h3>
                     </div>
                     <group>
                         <group>
@@ -56,19 +57,19 @@
         <field name="name">ss_erp.lpgas.order.line.view.tree</field>
         <field name="model">ss_erp.lpgas.order.line</field>
         <field name="arch" type="xml">
-            <tree create="0" edit="0">
-                <field name="organization_id" required="1"/>
-                <field name="location_id" required="1"/>
-                <field name="tank_capacity"/>
-                <field name="meter_reading_date"/>
-                <field name="month_amount_of_use"/>
-                <field name="meter_reading_inventory"/>
-                <field name="filling_after_meter_reading"/>
-                <field name="previous_last_inventory"/>
-                <field name="this_month_filling"/>
+            <tree create="0" delete="0">
+                <field name="organization_id" readonly="1"/>
+                <field name="location_id" readonly="1"/>
+                <field name="tank_capacity" readonly="1"/>
+                <field name="meter_reading_date" readonly="1"/>
+                <field name="month_amount_of_use" readonly="1"/>
+                <field name="meter_reading_inventory" readonly="1"/>
+                <field name="filling_after_meter_reading" readonly="1"/>
+                <field name="previous_last_inventory" readonly="1"/>
+                <field name="this_month_filling" readonly="1"/>
                 <field name="this_month_inventory"/>
-                <field name="theoretical_inventory"/>
-                <field name="difference_qty"/>
+                <field name="theoretical_inventory" readonly="1"/>
+                <field name="difference_qty" readonly="1"/>
             </tree>
         </field>
     </record>

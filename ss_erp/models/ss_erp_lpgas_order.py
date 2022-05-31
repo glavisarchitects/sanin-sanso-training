@@ -26,7 +26,7 @@ class LPGasOrder(models.Model):
         [('draft', 'ドラフト'), ('confirm', '集計完了'), ('waiting', '承認待ち'), ('approval', '承認依頼中'), ('approved', '承認済み'),
          ('done', '検証済'), ('cancel', '取消済')], default='draft', string='ステータス')
 
-    lpgas_order_line_ids = fields.One2many('ss_erp.lpgas.order.line', 'lpgas_order_id', string='集計結果')
+    lpgas_order_line_ids = fields.One2many('ss_erp.lpgas.order.line', 'lpgas_order_id', ondelete="cascade", string='集計結果')
 
     @api.depends('aggregation_period')
     def compute_month_aggregation_period(self):
@@ -248,6 +248,7 @@ class LPGasOrder(models.Model):
 
         self.env["ss_erp.lpgas.order.line"].search([('lpgas_order_id', '=', self.id)]).sudo().unlink()
         self.lpgas_order_line_ids = create_data
+        self.state = 'confirm'
         return self.show_lpgas_report()
 
     #
@@ -268,6 +269,10 @@ class LPGasOrder(models.Model):
             'domain': [('lpgas_order_id', '=', self.id)],
             # 'target': 'new',
         }
+
+    def approval_request(self):
+        self.sudo().write({'state': 'waiting'})
+
     #   when create and write make aggregation_period date default is end of this month
     @api.model
     def create(self, vals):

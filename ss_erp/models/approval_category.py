@@ -58,6 +58,8 @@ class ApprovalCategory(models.Model):
         CATEGORY_SELECTION, string="送金日", default="no", )
     has_x_inventory_instruction_ids = fields.Selection(
         CATEGORY_SELECTION, string="棚卸指示伝票", default="no", )
+    has_lp_gas_inventory_ids = fields.Selection(
+        CATEGORY_SELECTION, string="LPガス棚卸伝票", default="no", )
     approval_type = fields.Selection(selection_add=[
         ('inventory_request', '棚卸'),
         ('inventory_request_manager', '棚卸マネージャー'),

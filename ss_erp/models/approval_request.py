@@ -21,6 +21,7 @@ class ApprovalRequest(models.Model):
         'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票')
     x_sale_order_ids = fields.Many2many(
         'sale.order', 'sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票')
+    x_lpgas_inventory_ids = fields.Many2many('ss_erp.lpgas.order', string='LPガス棚卸伝票')
     x_account_move_ids = fields.Many2many(
         'account.move', 'account_move_request_rel', 'move_id', 'request_id', string='仕入請求伝票')
     x_purchase_order_ids = fields.Many2many(
@@ -91,6 +92,8 @@ class ApprovalRequest(models.Model):
         related='category_id.has_x_transfer_date', store=True)
     has_x_inventory_instruction_ids = fields.Selection(
         related='category_id.has_x_inventory_instruction_ids', store=True)
+    has_lp_gas_inventory_ids = fields.Selection(
+        related='category_id.has_lp_gas_inventory_ids', store=True)
 
     hide_btn_cancel = fields.Boolean(compute='_compute_hide_btn_cancel')
     show_btn_temporary_approve = fields.Boolean(compute='_compute_show_btn_temporary_approve')
@@ -435,4 +438,13 @@ class ApprovalRequest(models.Model):
             users = request.multi_approvers_ids.mapped('x_related_user_ids')
             users |= request.request_owner_id
             self.notify_approval(users=users, approver=request.last_approver)
+
+            # LPガス棚卸伝票
+            if request.x_lpgas_inventory_ids:
+                if status == 'pending':
+                    request.x_lpgas_inventory_ids.sudo().write({'approval_status': 'approval'})
+                elif status == 'approved':
+                    request.x_lpgas_inventory_ids.sudo().write({'approval_status': 'approved'})
+                elif status == 'cancel':
+                    request.x_lpgas_inventory_ids.sudo().write({'approval_status': 'cencel'})
 
