@@ -39,11 +39,6 @@ class LPGasOrder(models.Model):
 
     #
     def calculate_aggregate_lpgas(self):
-        # check is this period is exist
-        if self.aggregation_period and self.inventory_type:
-            exist_lpgas_on_period = self.search([('month_aggregation_period', '=', self.aggregation_period.month), ('inventory_type', '=', self.inventory_type)])
-            if exist_lpgas_on_period and exist_lpgas_on_period != self:
-                raise UserError(_("lpgas exists for this period, please recheck again"))
 
         # calculate cylinder
         lpgas_product_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id')
@@ -55,7 +50,7 @@ class LPGasOrder(models.Model):
         period_last_date = self.aggregation_period + dateutil.relativedelta.relativedelta(months=-1)
         period_last_month = period_last_date.month
         customer_location = self.env['stock.location'].search(
-            [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'), ('x_inventory_type', '=', self.inventory_type)]).ids
+            [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'), ('x_inventory_type', '=', self.inventory_type), ('id', '=', 99)]).ids
 
         customer_location = f"({','.join(map(str, customer_location))})"
         start_period_measure = datetime.combine(period_last_date.replace(day=19), datetime.min.time())
@@ -70,12 +65,12 @@ class LPGasOrder(models.Model):
         numbers_day_inventory_in_month = current_month_measure_date - period_last_date.replace(day=18)
 
         if self.inventory_type == 'cylinder':
-            if not customer_location:
+            if customer_location == '()':
                 raise UserError(_("棚卸対象の組織にシリンダーの顧客ロケーションが適切に設定されていません。"))
             _select_data = f""" 
                 SELECT 
                     '{self.organization_id.id}' organization_id, 
-                    cmu.location_id, 
+                    tiq.id location_id, 
                     tiq.install_quantity tank_capacity, 
                     '{current_month_measure_date}' meter_reading_date, 
                     cmu.cm_use month_amount_of_use,
@@ -88,6 +83,11 @@ class LPGasOrder(models.Model):
                     (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use)) difference_qty -- 2-5-2
                 FROM 
                 -- 
+                
+                (SELECT id, x_total_installation_quantity install_quantity from stock_location where id IN {customer_location}) tiq  -- 2-3-1 Total set in location
+                
+                LEFT JOIN
+                
                 (SELECT sml.location_id,(Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) cm_use from stock_move_line sml  -- 2-3-2 Current Month Use
                 LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                 LEFT JOIN sale_order so ON so.id = sp.sale_id
@@ -95,7 +95,7 @@ class LPGasOrder(models.Model):
                 And sml.product_id = '{lpgas_product_id}'
                 And sml.location_id IN {customer_location}
                 and sml.date BETWEEN '{start_period_measure}' and '{end_period_measure}'
-                GROUP BY sml.location_id) cmu
+                GROUP BY sml.location_id) cmu ON tiq.id =  cmu.location_id
                 
                 LEFT JOIN
                 
@@ -104,11 +104,8 @@ class LPGasOrder(models.Model):
                 WHERE sml.date BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
                 AND sml.location_dest_id IN {customer_location}
                 AND sml.product_id = '{lpgas_product_id}'
-                AND sml.state = 'done' GROUP BY sml.location_dest_id) ndm ON ndm.location_id = cmu.location_id
-                
-                LEFT JOIN
-                
-                (SELECT id, x_total_installation_quantity install_quantity from stock_location where id IN {customer_location}) tiq ON tiq.id =  cmu.location_id -- 2-3-1 Tổng lượng thiết lập trong location
+                AND sml.state = 'done' GROUP BY sml.location_dest_id) ndm ON ndm.location_id = tiq.id
+
                 
                 LEFT JOIN
                 
@@ -119,7 +116,7 @@ class LPGasOrder(models.Model):
                 And sml.product_id = '{lpgas_product_id}'
                 And sml.location_dest_id IN {customer_location}
                 GROUP BY sml.location_dest_id
-                ) fam ON fam.location_id = cmu.location_id
+                ) fam ON fam.location_id = tiq.id
                 
                 LEFT JOIN
                 
@@ -129,7 +126,7 @@ class LPGasOrder(models.Model):
                 AND sml.date BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
                 And sml.product_id = '{lpgas_product_id}'
                 And sml.location_dest_id IN {customer_location}
-                GROUP BY sml.location_dest_id) ftm ON ftm.location_id = cmu.location_id
+                GROUP BY sml.location_dest_id) ftm ON ftm.location_id = tiq.id
                 
                 LEFT JOIN
                 
@@ -141,11 +138,11 @@ class LPGasOrder(models.Model):
                 --There is currently no approval 
                 --lp.state = 'done' AND
                 lp.organization_id = '{self.organization_id.id}' 
-                AND sl.id IN {customer_location})lmi ON lmi.location_id = cmu.location_id				
+                AND sl.id IN {customer_location})lmi ON lmi.location_id = tiq.id				
                 ;
             """
         else:
-            if not customer_location:
+            if customer_location == '()':
                 raise UserError(_("棚卸対象の組織にミニバルクの顧客ロケーションが適切に設定されていません。"))
             _select_data = f"""				
                     SELECT 
@@ -245,7 +242,6 @@ class LPGasOrder(models.Model):
 
         self._cr.execute(_select_data)
         data_lqgas_result = self._cr.dictfetchall()
-
         create_data = []
         for da in data_lqgas_result:
             create_data.append((0, 0, da))
@@ -255,69 +251,13 @@ class LPGasOrder(models.Model):
         return self.show_lpgas_report()
 
     #
-    def aggregate_lpgas(self):
-        # calculate cylinder
-        branch_warehouse = self.organization_id.warehouse_id
-        if not branch_warehouse:
-            raise UserError(_("Your branch have not warehouse please re config again!"))
-        warehouse_view_location = branch_warehouse.lot_stock_id
-        warehouse_gas_customer_location = self.env['stock.location'].search(
-            [('id', 'child_of', warehouse_view_location.id), ('usage', '=', 'customer'), ('x_inventory_type', '=', 'cylinder')])
-
-        period_last_month = self.aggregation_period + dateutil.relativedelta.relativedelta(months=-1)
-        lp_gas_order_line = []
-        for loc in warehouse_gas_customer_location:
-            if loc.x_inventory_type not in ['cylinder', 'minibulk']:
-                continue
-            lpgas_product_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id')
-            if not lpgas_product_id:
-                raise UserError(_("プロダクトコードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。"))
-
-            start_period_measure = datetime.combine(period_last_month.replace(day=19), datetime.min.time())
-            end_period_measure = datetime.combine(self.aggregation_period.replace(day=18), datetime.max.time())
-            domain_customer_used = [('location_id', '=', loc.id), ('picking_id.date_done', '>=', start_period_measure),
-                                    ('picking_id.date_done', '<=', end_period_measure), ('product_id', '=', int(lpgas_product_id)),
-                                    ('picking_id.state', '=', 'done'), ('picking_id.sale_id.state', '=', 'sale')]
-            sml_customer_used = self.env['stock.move.line'].search(domain_customer_used)
-            used_amount = sum(sml.qty_done for sml in sml_customer_used)
-
-            # Get the number of days in the inventory month
-            num_days_inventory = self.aggregation_period.replace(day=18) - period_last_month.replace(day=18)
-
-            return
-            remaining_amount = loc.x_total_installation_quantity - used_amount
-
-
-            sml_provided_to_customer = self.env['stock.move.line'].search([('location_dest_id', '=', loc.id), ])
-            provided_amount = sum(sml.qty_done for sml in sml_provided_to_customer)
-            actual_end_this_month = provided_amount + remaining_amount
-
-            # Get amount end of last month
-            amount_end_last_month = 0
-
-            last_month_lpgas = self.search([('month_aggregation_period', '=', period_last_month.month)], limit=1)
-            if last_month_lpgas:
-                last_month_lpgas_result = last_month_lpgas.lpgas_order_line_ids.filtered(
-                    lambda i: i.location_id == loc.id)
-                if last_month_lpgas_result:
-                    amount_end_last_month = last_month_lpgas_result.this_month_inventory
-
-            theory_end_this_month = amount_end_last_month + provided_amount - remaining_amount
-            difference_qty = actual_end_this_month - theory_end_this_month
-            vals = {
-                'organization_id': self.organization_id.id,
-                'location_id': loc.id,
-                'meter_reading_date': self.aggregation_period.replace(day=18),
-                'tank_capacity': loc.x_total_installation_quantity,
-                'month_amount_of_use': used_amount,
-                'this_month_filling': provided_amount,
-                'meter_reading_inventory': remaining_amount,
-                'this_month_inventory': actual_end_this_month,
-                'theoretical_inventory': theory_end_this_month,
-                'difference_qty': difference_qty,
-            }
-            lp_gas_order_line.append((0, 0, vals))
-        self.lpgas_order_line_ids = lp_gas_order_line
+    @api.constrains('aggregation_period', 'inventory_type', 'organization_id')
+    def _check_constrain_period(self):
+        # check is this period is exist
+        if self.aggregation_period and self.inventory_type and self.organization_id:
+            exist_lpgas_on_period = self.search([('month_aggregation_period', '=', self.aggregation_period.month), ('inventory_type', '=', self.inventory_type), ('organization_id', '=', self.organization_id.id)])
+            if exist_lpgas_on_period and exist_lpgas_on_period != self:
+                raise UserError(_("lpgas exists for this period, please recheck again"))
 
     def show_lpgas_report(self):
         return {
