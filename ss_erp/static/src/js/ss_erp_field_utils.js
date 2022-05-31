@@ -16,9 +16,11 @@ function MyCustomformatDate(value, field, options) {
             }
         }
         var date_format = time.getLangDateFormat();
-        if(options.hasOwnProperty('datepicker')){
+        if(options != null){
+        if(options.datepicker !== undefined){
             if (options.datepicker['showMonthsPeriod'] === true) {
             date_format = (time.getLangDateFormat(), "YYYY年MM月度");
+        }
         }
         }
         return value.format(date_format);
