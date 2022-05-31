@@ -50,7 +50,7 @@ class LPGasOrder(models.Model):
         period_last_date = self.aggregation_period + dateutil.relativedelta.relativedelta(months=-1)
         period_last_month = period_last_date.month
         customer_location = self.env['stock.location'].search(
-            [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'), ('x_inventory_type', '=', self.inventory_type), ('id', '=', 99)]).ids
+            [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'), ('x_inventory_type', '=', self.inventory_type)]).ids
 
         customer_location = f"({','.join(map(str, customer_location))})"
         start_period_measure = datetime.combine(period_last_date.replace(day=19), datetime.min.time())
