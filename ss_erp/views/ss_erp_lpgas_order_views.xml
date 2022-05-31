@@ -20,7 +20,6 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-<!--                    <button string="集計" name="aggregate_lpgas" type="object" class="oe_highlight"/>-->
                     <button string="集計" name="calculate_aggregate_lpgas" type="object" class="oe_highlight"/>
                     <button string="表示" name="show_lpgas_report" type="object" class="oe_highlight"/>
                     <field name="state" widget="statusbar"
@@ -28,7 +27,9 @@
                 </header>
                 <sheet>
                     <div>
-                        <field name="name"/>
+                        <h5>
+                            <field name="name" readonly="1"/>
+                        </h5>
                     </div>
                     <group>
                         <group>

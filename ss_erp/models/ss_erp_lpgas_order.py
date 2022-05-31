@@ -261,11 +261,12 @@ class LPGasOrder(models.Model):
 
     def show_lpgas_report(self):
         return {
+            'name': _('集計結果'),
             'type': 'ir.actions.act_window',
             'res_model': 'ss_erp.lpgas.order.line',
             'views': [[self.env.ref('ss_erp.ss_erp_lpgas_order_line_view_tree').id, 'tree']],
             'domain': [('lpgas_order_id', '=', self.id)],
-            'target': 'main',
+            # 'target': 'new',
         }
     #   when create and write make aggregation_period date default is end of this month
     @api.model
@@ -273,8 +274,7 @@ class LPGasOrder(models.Model):
         if vals.get('aggregation_period'):
             day = calendar.monthrange(int(vals['aggregation_period'][0:3]), int(vals['aggregation_period'][5:7]))[1]
             vals['aggregation_period'] = vals['aggregation_period'][:-2] + str(day)
-        if 'name' not in vals or vals['name'] == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('lpgas.order.name') or _('New')
+        vals['name'] = self.env['ir.sequence'].next_by_code('lpgas.order.name') or _('New')
         result = super(LPGasOrder, self).create(vals)
         return result
 
@@ -296,9 +296,9 @@ class LPGasOrder(models.Model):
 class LPGasOrderLine(models.Model):
     _name = 'ss_erp.lpgas.order.line'
     _description = '集計結果'
-    _rec_name = 'name'
+    # _rec_name = 'name'
 
-    name = fields.Char(default='集計結果')
+    # name = fields.Char(default='集計結果')
     lpgas_order_id = fields.Many2one('ss_erp.lpgas.order')
     organization_id = fields.Many2one('ss_erp.organization', default=lambda self: self.lpgas_order_id.organization_id,
                                       string="組織名")
