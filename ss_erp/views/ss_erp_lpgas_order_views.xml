@@ -20,11 +20,16 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="集計" name="aggregate_lpgas" type="object" class="oe_highlight"/>
+<!--                    <button string="集計" name="aggregate_lpgas" type="object" class="oe_highlight"/>-->
+                    <button string="集計" name="calculate_aggregate_lpgas" type="object" class="oe_highlight"/>
+                    <button string="Show Report" name="show_lpgas_report" type="object" class="oe_highlight"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
                 </header>
                 <sheet>
+                    <div>
+                        <field name="name"/>
+                    </div>
                     <group>
                         <group>
                             <field name="organization_id" required="1"/>
