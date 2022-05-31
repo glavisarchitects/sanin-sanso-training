@@ -22,7 +22,7 @@
                 <header>
 <!--                    <button string="集計" name="aggregate_lpgas" type="object" class="oe_highlight"/>-->
                     <button string="集計" name="calculate_aggregate_lpgas" type="object" class="oe_highlight"/>
-                    <button string="Show Report" name="show_lpgas_report" type="object" class="oe_highlight"/>
+                    <button string="表示" name="show_lpgas_report" type="object" class="oe_highlight"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
                 </header>
