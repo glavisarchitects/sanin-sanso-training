@@ -18,6 +18,7 @@
         "security/approval_security.xml",
 
         # DATA
+        "data/param_data.xml",
         "data/bis_category_data.xml",
         "data/ir_sequence_data.xml",
         "data/product_pricelist_class_data.xml",
