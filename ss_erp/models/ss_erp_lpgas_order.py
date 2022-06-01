@@ -140,8 +140,7 @@ class LPGasOrder(models.Model):
                 LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
                 WHERE lp.month_aggregation_period = '{period_last_month}' AND
                 sl.x_inventory_type = 'cylinder' AND
-                --There is currently no approval 
-                --lp.state = 'done' AND
+                lp.state = 'done' AND
                 lp.organization_id = '{self.organization_id.id}' 
                 AND sl.id IN {customer_location})lmi ON lmi.location_id = tiq.id				
                 ;
@@ -215,8 +214,7 @@ class LPGasOrder(models.Model):
                     LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
                     WHERE lp.month_aggregation_period = '{period_last_month}' AND
                     sl.x_inventory_type = 'minibulk' AND
-                    --There is currently no approval 
-                    --lp.state = 'done' AND
+                    lp.state = 'done' AND
                     lp.organization_id = '{self.organization_id.id}' 
                     AND sl.id IN {customer_location}
                     )lmi ON lmi.location_id = cmu.location_id
@@ -277,6 +275,9 @@ class LPGasOrder(models.Model):
 
     def approval_request(self):
         self.write({'state': 'waiting'})
+
+    def verify_lpgas_slip(self):
+        self.write({'state': 'done'})
 
     def cancel_lpgas_slip(self):
         self.write({'state': 'cancel'})
