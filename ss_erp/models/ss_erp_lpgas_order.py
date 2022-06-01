@@ -16,7 +16,7 @@ class LPGasOrder(models.Model):
     _rec_name = 'name'
 
     name = fields.Char('LPガス棚卸参照')
-    organization_id = fields.Many2one('ss_erp.organization', string="組織名")
+    organization_id = fields.Many2one('ss_erp.organization', string="組織名",domain="[('id','in',self.env.user.organization_ids.ids)]")
     inventory_type = fields.Selection([('cylinder', 'シリンダー'), ('minibulk', 'ミニバルク')], string='棚卸種別')
     accounting_date = fields.Date(string='会計日')
     aggregation_period = fields.Date(string='棚卸対象期間')
