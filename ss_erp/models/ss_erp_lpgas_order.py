@@ -16,7 +16,8 @@ class LPGasOrder(models.Model):
     _rec_name = 'name'
 
     name = fields.Char('LPガス棚卸参照')
-    organization_id = fields.Many2one('ss_erp.organization', string="組織名",domain="[('id','in',self.env.user.organization_ids.ids)]")
+    user_organization_ids = fields.Many2many('ss_erp.organization', default=lambda self: self.env.user.organization_ids.ids)
+    organization_id = fields.Many2one('ss_erp.organization', string="組織名", domain="[('id','in', user_organization_ids)]")
     inventory_type = fields.Selection([('cylinder', 'シリンダー'), ('minibulk', 'ミニバルク')], string='棚卸種別')
     accounting_date = fields.Date(string='会計日')
     aggregation_period = fields.Date(string='棚卸対象期間')
@@ -36,6 +37,10 @@ class LPGasOrder(models.Model):
                 rec.month_aggregation_period = int(rec.aggregation_period.month)
             else:
                 rec.month_aggregation_period = False
+
+    def _compute_user_organization_ids(self):
+        for rec in self:
+            rec.user_organization_ids = rec.env.user.organization_ids
 
     #
     def calculate_aggregate_lpgas(self):
@@ -248,7 +253,7 @@ class LPGasOrder(models.Model):
 
         self.env["ss_erp.lpgas.order.line"].search([('lpgas_order_id', '=', self.id)]).sudo().unlink()
         self.lpgas_order_line_ids = create_data
-        self.state = 'confirm'
+        # self.state = 'confirm'
         return self.show_lpgas_report()
 
     #
@@ -271,7 +276,10 @@ class LPGasOrder(models.Model):
         }
 
     def approval_request(self):
-        self.sudo().write({'state': 'waiting'})
+        self.write({'state': 'waiting'})
+
+    def cancel_lpgas_slip(self):
+        self.write({'state': 'cancel'})
 
     #   when create and write make aggregation_period date default is end of this month
     @api.model
@@ -305,6 +313,7 @@ class LPGasOrderLine(models.Model):
 
     # name = fields.Char(default='集計結果')
     lpgas_order_id = fields.Many2one('ss_erp.lpgas.order')
+    state = fields.Selection(related='lpgas_order_id.state')
     organization_id = fields.Many2one('ss_erp.organization', default=lambda self: self.lpgas_order_id.organization_id,
                                       string="組織名")
     location_id = fields.Many2one('stock.location', 'ロケーション')
@@ -323,3 +332,8 @@ class LPGasOrderLine(models.Model):
     # unified_quantity_unit = fields.Many2one('uom.uom', string='統一数量単位')
     theoretical_inventory = fields.Float(string='理論的な月末在庫')
     difference_qty = fields.Float(string='棚卸差異')
+
+    def write(self, vals):
+        self.lpgas_order_id.state = 'confirm'
+        res = super(LPGasOrderLine, self).write(vals)
+        return res
