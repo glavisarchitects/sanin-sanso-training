@@ -82,6 +82,7 @@ class LPGasOrder(models.Model):
                     (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END)) meter_reading_inventory, -- 2-3-5
                     fam.fill_after_measure filling_after_meter_reading,
                     lmi.lm_inventory previous_last_inventory,
+                    ftm.fill_this_month this_month_filling,
                     (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure) this_month_inventory, -- 2-4-2
                     (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use) theoretical_inventory, -- 2-5-2
                     ((tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure)- 
@@ -124,8 +125,8 @@ class LPGasOrder(models.Model):
                 ) fam ON fam.location_id = tiq.id
                 
                 LEFT JOIN
-                
-                (SELECT sml.location_dest_id location_id, (Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) fill_this_month FROM stock_move_line sml -- 2-5-1 Lượng bơm trong tháng
+
+                (SELECT sml.location_dest_id location_id, sum(sml.qty_done) fill_this_month FROM stock_move_line sml -- 2-5-1 this_month_filling
                 Left join stock_picking sp ON sp.id = sml.picking_id
                 where sml.state = 'done'
                 AND sml.date BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
@@ -159,6 +160,7 @@ class LPGasOrder(models.Model):
                             (CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - (cmu.cm_use/{numbers_day_inventory_in_month.days}*(extract(day from AGE(do_mea.date_order, dd_tran.date_done))::int))) END) meter_reading_inventory, -- 3-3-5
                             fam.fill_after_measure filling_after_meter_reading, -- 3-4-1
                             lmi.lm_inventory previous_last_inventory,
+                            ftm.fill_this_month this_month_filling,
                             ((CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - (cmu.cm_use/{numbers_day_inventory_in_month.days}*(extract(day from AGE(do_mea.date_order, dd_tran.date_done))::int))) END) + fam.fill_after_measure) this_month_inventory, -- 3-4-2
                             (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use) theoretical_inventory, -- 3-5-2
                             (((CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - (cmu.cm_use/{numbers_day_inventory_in_month.days}*(extract(day from AGE(do_mea.date_order, dd_tran.date_done))::int))) END) + fam.fill_after_measure) - (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use)) difference_qty -- 2-5-2
@@ -232,7 +234,7 @@ class LPGasOrder(models.Model):
                     
                     LEFT JOIN
                     (
-                    SELECT sml.location_dest_id location_id, (Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) fill_this_month FROM stock_move_line sml -- 3-5-1 fill amount in this month
+                    SELECT sml.location_dest_id location_id, sum(sml.qty_done) fill_this_month FROM stock_move_line sml -- 3-5-1 fill amount in this month
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     WHERE sml.state = 'done'
                     AND sml.date BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
