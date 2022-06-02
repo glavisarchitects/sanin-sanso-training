@@ -38,6 +38,7 @@ class InventoryOrder(models.Model):
         self.location_id = False
         if self.organization_id:
             warehouse_location_id = self.organization_id.warehouse_id.view_location_id.id
+            self.location_id = self.organization_id.warehouse_id.lot_stock_id.id
             return {'domain': {'location_id': [('id', 'child_of', warehouse_location_id), ('usage', '!=', 'view')]
                                }}
 
@@ -235,6 +236,7 @@ class InventoryOrderLine(models.Model):
     def onchange_organization_id(self):
         self.location_dest_id = False
         if self.organization_id:
+            self.location_dest_id = self.organization_id.warehouse_id.lot_stock_id.id
             warehouse_location_id = self.organization_id.warehouse_id.view_location_id.id
             return {'domain': {'location_dest_id': [('id', 'child_of', warehouse_location_id), ('usage', '!=', 'view')]
                                }}
