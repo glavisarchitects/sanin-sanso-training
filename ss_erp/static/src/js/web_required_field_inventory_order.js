@@ -8,13 +8,16 @@ var _t = core._t;
     ListRenderer.include({
         _notifyInvalidFields: function (invalidFields) {
             var fields = this.state.fields;
+
             var warnings = invalidFields.map(function (fieldName) {
                 var fieldStr = fields[fieldName].string;
                 return _.str.sprintf('<li>%s</li>', _.escape(fieldStr));
             });
             warnings.unshift('<ul>');
             warnings.push('</ul>');
-            this.do_warn(_t("Invalid fields:"), warnings.join(''));
+            if(invalidFields.length !== 0){
+                this.do_warn(_t("Invalid fields:"), warnings.join(''));
+            }
         },
         canBeSaved: function (recordID) {
             var self = this;
