@@ -442,9 +442,9 @@ class ApprovalRequest(models.Model):
             # LPガス棚卸伝票
             if request.x_lpgas_inventory_ids:
                 if status == 'pending':
-                    request.x_lpgas_inventory_ids.sudo().write({'approval_status': 'approval'})
+                    request.x_lpgas_inventory_ids.sudo().write({'state': 'approval'})
                 elif status == 'approved':
-                    request.x_lpgas_inventory_ids.sudo().write({'approval_status': 'approved'})
+                    request.x_lpgas_inventory_ids.sudo().write({'state': 'approved'})
                 elif status == 'cancel':
-                    request.x_lpgas_inventory_ids.sudo().write({'approval_status': 'cencel'})
+                    request.x_lpgas_inventory_ids.sudo().write({'state': 'cancel'})
 

@@ -40,17 +40,6 @@ class StockScrap(models.Model):
             else:
                 self.x_require_responsible_dept = True
 
-    scrap_type = fields.Selection(
-        string='廃棄種別',
-        selection=[('retained', '長期滞留品の廃棄'),
-                   ('expired', '消費期限切れ品の廃棄'),
-                   ('damaged', '破損品の廃棄'),
-                   ('ingredient_defect', '成分不良品の廃棄'),
-                   ('damage_compensation', '配送中の事故による破損補償'),
-                   ('products_scrap', '仕掛品・製造品の廃棄'),
-                   ],
-        required=False, )
-
     @api.constrains('user_id', 'x_responsible_id', 'x_organization_id')
     def _validate_responsible_department(self):
         for rec in self:
@@ -69,3 +58,23 @@ class StockScrap(models.Model):
                         raise UserError('担当者の所属部署を選択してください')
             else:
                 raise UserError('選択した担当者は従業員に紐づけしていません。')
+
+    # scrap_type = fields.Selection(
+    #     string='廃棄種別',
+    #     selection=[('retained', '長期滞留品の廃棄'),
+    #                ('expired', '消費期限切れ品の廃棄'),
+    #                ('damaged', '破損品の廃棄'),
+    #                ('ingredient_defect', '成分不良品の廃棄'),
+    #                ('damage_compensation', '配送中の事故による破損補償'),
+    #                ('products_scrap', '仕掛品・製造品の廃棄'),
+    #                ],
+    #     required=False, )
+
+    # scrap_type = fields.Many2one('ss_erp.stock.scrap.category', string='廃棄種別', required=False, )
+
+
+class ScrapCategory(models.Model):
+    _name = 'ss_erp.stock.scrap.category'
+    _description = '廃棄種別'
+
+    name = fields.Char('廃棄種別名称')

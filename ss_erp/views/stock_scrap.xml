@@ -20,7 +20,7 @@
                 <xpath expr="//field[@name='origin']" position="after">
 <!--                    TODO Filter Source Location according to x_organization_id-->
 <!--                    TODO Change scrap location according to scrap type-->
-                    <field name="scrap_type" required="1"/>
+<!--                    <field name="scrap_type" required="1"/>-->
                 </xpath>
 <!--                2022/04/06 Fix bug 103-->
                 <xpath expr="//field[@name='package_id']" position="attributes">
@@ -55,7 +55,7 @@
                 <xpath expr="//field[@name='scrap_location_id']" position="after">
 <!--                    TODO Filter Source Location according to x_organization_id-->
 <!--                    TODO Change scrap location according to scrap type-->
-                    <field name="scrap_type" required="1"/>
+<!--                    <field name="scrap_type" required="1"/>-->
                 </xpath>
 <!--                2022/04/15 AnhLD Change domain due to assign warehouse in org-->
                 <xpath expr="//field[@name='location_id']" position="attributes">
@@ -76,7 +76,7 @@
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="x_organization_id"/>
                     <field name="x_responsible_dept_id"/>
-                    <field name="scrap_type"/>
+<!--                    <field name="scrap_type"/>-->
                 </xpath>
 
 <!--                2022/04/06 Fix bug 102-->

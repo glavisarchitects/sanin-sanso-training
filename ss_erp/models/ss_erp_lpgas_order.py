@@ -79,12 +79,12 @@ class LPGasOrder(models.Model):
                     tiq.install_quantity tank_capacity, 
                     '{current_month_measure_date}' meter_reading_date, 
                     cmu.cm_use month_amount_of_use,
-                    (tiq.install_quantity - (cmu.cm_use/'{numbers_day_inventory_in_month.days}'*ndm.num_day_measure)) meter_reading_inventory, -- 2-3-5
+                    (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END)) meter_reading_inventory, -- 2-3-5
                     fam.fill_after_measure filling_after_meter_reading,
                     lmi.lm_inventory previous_last_inventory,
-                    (tiq.install_quantity - (cmu.cm_use/'{numbers_day_inventory_in_month.days}'*ndm.num_day_measure) + fam.fill_after_measure) this_month_inventory, -- 2-4-2
+                    (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure) this_month_inventory, -- 2-4-2
                     (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use) theoretical_inventory, -- 2-5-2
-                    ((tiq.install_quantity - (cmu.cm_use/'{numbers_day_inventory_in_month.days}'*ndm.num_day_measure) + fam.fill_after_measure)- 
+                    ((tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure)- 
                     (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use)) difference_qty -- 2-5-2
                 FROM 
                 -- 
@@ -93,7 +93,7 @@ class LPGasOrder(models.Model):
                 
                 LEFT JOIN
                 
-                (SELECT sml.location_id,(Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) cm_use from stock_move_line sml  -- 2-3-2 Current Month Use
+                (SELECT sml.location_id, sum(sml.qty_done) cm_use from stock_move_line sml  -- 2-3-2 Current Month Use
                 LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                 LEFT JOIN sale_order so ON so.id = sp.sale_id
                 WHERE sml.state = 'done'
@@ -245,6 +245,7 @@ class LPGasOrder(models.Model):
 
         self._cr.execute(_select_data)
         data_lqgas_result = self._cr.dictfetchall()
+        print('##############data_lqgas_result', data_lqgas_result)
         create_data = []
         for da in data_lqgas_result:
             create_data.append((0, 0, da))
