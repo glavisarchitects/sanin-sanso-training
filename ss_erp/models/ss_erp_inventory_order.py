@@ -135,8 +135,6 @@ class InventoryOrder(models.Model):
             if not virtual_location:
                 raise UserError(
                     _("Can't find virtual location. Please check stock.location again."))
-            out_going = self.env['stock.picking.type'].search([('code', '=', 'outgoing')], limit=1)
-            in_coming = self.env['stock.picking.type'].search([('code', '=', 'incoming')], limit=1)
 
             source_in = {}
             source_out = {}
@@ -164,14 +162,10 @@ class InventoryOrder(models.Model):
                     source_in[key]['move_ids_without_package'].append((0, 0, move_in))
                 else:
                     move_to_dest_location = {
-                        # 'state': 'waiting',
                         'location_id': virtual_location.id,
                         'location_dest_id': line.location_dest_id.id,
                         'picking_type_id': line.organization_id.warehouse_id.in_type_id.id,
-                        # 'x_organization_id': line.organization_id.id,
-                        # 'x_responsible_dept_id': line.responsible_dept_id.id,
-                        # 'x_organization_dest_id':self.organization_id.id,
-                        # 'x_responsible_dept_dest_id':self.responsible_dept_id.id,
+                        'user_id': None,
                         'x_organization_id': self.organization_id.id,
                         'x_responsible_dept_id':self.responsible_dept_id.id,
                         'x_organization_dest_id':line.organization_id.id,

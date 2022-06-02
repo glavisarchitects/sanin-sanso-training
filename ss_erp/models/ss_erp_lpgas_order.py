@@ -82,9 +82,9 @@ class LPGasOrder(models.Model):
                     (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END)) meter_reading_inventory, -- 2-3-5
                     fam.fill_after_measure filling_after_meter_reading,
                     lmi.lm_inventory previous_last_inventory,
-                    (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure) this_month_inventory, -- 2-4-2
+                    (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure) this_month_inventory, -- 2-4-2
                     (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use) theoretical_inventory, -- 2-5-2
-                    ((tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure)- 
+                    ((tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure)- 
                     (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use)) difference_qty -- 2-5-2
                 FROM 
                 -- 
