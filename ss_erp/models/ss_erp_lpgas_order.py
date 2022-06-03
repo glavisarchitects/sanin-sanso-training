@@ -84,9 +84,9 @@ class LPGasOrder(models.Model):
                     lmi.lm_inventory previous_last_inventory,
                     ftm.fill_this_month this_month_filling,
                     (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure) this_month_inventory, -- 2-4-2
-                    (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use) theoretical_inventory, -- 2-5-2
+                    ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - (Case When cmu.cm_use is NULL then 0 ELSE cmu.cm_use END)) theoretical_inventory, -- 2-5-2
                     ((tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure)- 
-                    (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use)) difference_qty -- 2-5-2
+                    ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - (Case When cmu.cm_use is NULL then 0 ELSE cmu.cm_use END))) difference_qty -- 2-5-2
                 FROM 
                 -- 
                 
@@ -136,7 +136,7 @@ class LPGasOrder(models.Model):
                 
                 LEFT JOIN
                 
-                (SELECT lp.organization_id, sl.id location_id,(Case When lpl.this_month_inventory is NULL then 0 ELSE lpl.this_month_inventory END) lm_inventory from stock_location sl -- 2-2
+                (SELECT lp.organization_id, sl.id location_id, lpl.this_month_inventory lm_inventory from stock_location sl -- 2-2
                 LEFT JOIN ss_erp_lpgas_order_line lpl ON lpl.location_id = sl.id
                 LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
                 WHERE lp.month_aggregation_period = '{period_last_month}' AND
@@ -162,8 +162,8 @@ class LPGasOrder(models.Model):
                             lmi.lm_inventory previous_last_inventory,
                             ftm.fill_this_month this_month_filling,
                             ((CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - (cmu.cm_use/{numbers_day_inventory_in_month.days}*(extract(day from AGE(do_mea.date_order, dd_tran.date_done))::int))) END) + fam.fill_after_measure) this_month_inventory, -- 3-4-2
-                            (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use) theoretical_inventory, -- 3-5-2
-                            (((CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - (cmu.cm_use/{numbers_day_inventory_in_month.days}*(extract(day from AGE(do_mea.date_order, dd_tran.date_done))::int))) END) + fam.fill_after_measure) - (lmi.lm_inventory + ftm.fill_this_month - cmu.cm_use)) difference_qty -- 2-5-2
+                            ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - cmu.cm_use) theoretical_inventory, -- 3-5-2
+                            (((CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - (cmu.cm_use/{numbers_day_inventory_in_month.days}*(extract(day from AGE(do_mea.date_order, dd_tran.date_done))::int))) END) + fam.fill_after_measure) - ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - (Case When cmu.cm_use is NULL then 0 ELSE cmu.cm_use END))) difference_qty -- 2-5-2
                     FROM 
                     
                                 
@@ -247,7 +247,6 @@ class LPGasOrder(models.Model):
 
         self._cr.execute(_select_data)
         data_lqgas_result = self._cr.dictfetchall()
-        print('##############data_lqgas_result', data_lqgas_result)
         create_data = []
         for da in data_lqgas_result:
             create_data.append((0, 0, da))
