@@ -62,4 +62,9 @@ from . import res_users
 from . import account_move
 from . import ss_erp_lpgas_order
 from . import stock_location
-
+from . import ss_erp_product_units_measures
+from . import ss_erp_product_major_classification
+from . import ss_erp_product_detail_classification
+from . import ss_erp_product_medium_classification
+from . import ss_erp_product_minor_classification
+from . import product_product

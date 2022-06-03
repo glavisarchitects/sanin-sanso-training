@@ -85,6 +85,11 @@
         "views/ss_erp_hr_internal_note_views.xml",
         "views/ss_erp_lpgas_order_views.xml",
         "views/stock_location_views.xml",
+        "views/ss_erp_product_major_classification_views.xml",
+        "views/ss_erp_product_medium_classification_views.xml",
+        "views/ss_erp_product_detail_classification_views.xml",
+        "views/ss_erp_product_minor_classification_views.xml",
+        "views/product_product_views.xml",
         "views/webclient_templates.xml",
         "menu/menu_views.xml",
 

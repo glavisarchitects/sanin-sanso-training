@@ -33,7 +33,7 @@ class StockScrap(models.Model):
         if self.x_organization_id:
             self.location_id = False
             self.x_responsible_dept_id = False
-            self.scrap_type = False
+            # self.scrap_type = False
             self.scrap_location_id = False
             if self.x_organization_id.name == '安来ガスセンター':
                 self.x_require_responsible_dept = False
