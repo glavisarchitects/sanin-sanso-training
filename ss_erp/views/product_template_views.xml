@@ -15,7 +15,44 @@
                 </group>
 
             </group>
+
         </field>
     </record>
 
+    <record id="product_normal_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.template.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="before">
+                <field name="x_supply_fixed_cost" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+            </xpath>
+            <xpath expr="//notebook/page[@name='general_information']/group" position="after">
+                <group string="代替数量">
+                    <field name="product_unit_measure_ids" nolabel="1" widget="one2many_list">
+                        <tree editable="bottom">
+                            <field name="alternative_uom_id"/>
+                            <field name="converted_value"/>
+                            <field name="remarks"/>
+                        </tree>
+                    </field>
+                </group>
+                <group>
+                    <group>
+                        <field name="major_classification_id" required="1" readonly="0"/>
+                        <field name="medium_classification_id" required="1" readonly="0"/>
+                        <field name="minor_classification_id" required="1" readonly="0"/>
+                        <field name="detail_classification_id" required="1" readonly="0"/>
+                    </group>
+                    <group>
+                        <field name="major_classification_code" required="1" readonly="0"/>
+                        <field name="medium_classification_code" required="1" readonly="0"/>
+                        <field name="minor_classification_code" required="1" readonly="0"/>
+                        <field name="detail_classification_code" required="1" readonly="0"/>
+                    </group>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
 </odoo>
