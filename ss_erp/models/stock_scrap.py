@@ -12,7 +12,8 @@ class StockScrap(models.Model):
     user_id = fields.Many2one('res.users', string='担当者', default=lambda self: self.env.user)
     x_require_responsible_dept = fields.Boolean(default=True)
 
-    x_warehouse_location_id = fields.Many2one('stock.location',related='x_organization_id.warehouse_id.view_location_id',store=True)
+    x_warehouse_location_id = fields.Many2one('stock.location',
+                                              related='x_organization_id.warehouse_id.view_location_id', store=True)
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
@@ -59,18 +60,18 @@ class StockScrap(models.Model):
             else:
                 raise UserError('選択した担当者は従業員に紐づけしていません。')
 
-    # scrap_type = fields.Selection(
-    #     string='廃棄種別',
-    #     selection=[('retained', '長期滞留品の廃棄'),
-    #                ('expired', '消費期限切れ品の廃棄'),
-    #                ('damaged', '破損品の廃棄'),
-    #                ('ingredient_defect', '成分不良品の廃棄'),
-    #                ('damage_compensation', '配送中の事故による破損補償'),
-    #                ('products_scrap', '仕掛品・製造品の廃棄'),
-    #                ],
-    #     required=False, )
+        # scrap_type = fields.Selection(
+        #     string='廃棄種別',
+        #     selection=[('retained', '長期滞留品の廃棄'),
+        #                ('expired', '消費期限切れ品の廃棄'),
+        #                ('damaged', '破損品の廃棄'),
+        #                ('ingredient_defect', '成分不良品の廃棄'),
+        #                ('damage_compensation', '配送中の事故による破損補償'),
+        #                ('products_scrap', '仕掛品・製造品の廃棄'),
+        #                ],
+        #     required=False, )
 
-#     scrap_type = fields.Many2one('ss_erp.stock.scrap.category', string='廃棄種別', required=False, )
+    scrap_type = fields.Many2one('ss_erp.stock.scrap.category', string='廃棄種別', required=False, )
 
 
 class ScrapCategory(models.Model):
