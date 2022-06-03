@@ -69,8 +69,7 @@ class StockScrap(models.Model):
     #                ('products_scrap', '仕掛品・製造品の廃棄'),
     #                ],
     #     required=False, )
-
-#     scrap_type = fields.Many2one('ss_erp.stock.scrap.category', string='廃棄種別', required=False, )
+     scrap_type = fields.Many2one('ss_erp.stock.scrap.category', string='廃棄種別', required=False, )
 
 
 class ScrapCategory(models.Model):
