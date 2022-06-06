@@ -19,7 +19,7 @@ class ProductMediumClassification(models.Model):
 
 
 
-    @api.depends('name', 'display_name')
+    @api.depends('name', 'display_name','medium_classification_code')
     def _compute_display_name(self):
-        for rec in self:
-            rec.display_name = rec.name
+        self.display_name = ('[' + self.medium_classification_code + '] ' + self.name)
+

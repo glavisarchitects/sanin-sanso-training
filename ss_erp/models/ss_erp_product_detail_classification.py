@@ -18,8 +18,8 @@ class ProductDetailClassification(models.Model):
     remarks = fields.Char('備考')
     display_name = fields.Char(compute='_compute_display_name', store=True)
 
-    @api.depends('detail_classification_code', 'display_name')
+    @api.depends('detail_classification_code', 'display_name','name')
     def _compute_display_name(self):
-        self.display_name = self.detail_classification_code
+        self.display_name = ('[' + self.detail_classification_code + '] ' + self.name)
 
 

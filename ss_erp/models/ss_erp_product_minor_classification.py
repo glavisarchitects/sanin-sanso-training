@@ -17,6 +17,6 @@ class ProductMinorClassification(models.Model):
     remarks = fields.Char('備考')
     display_name = fields.Char(compute='_compute_display_name', store=True)
 
-    @api.depends('minor_classification_code', 'display_name')
+    @api.depends('minor_classification_code', 'display_name','name')
     def _compute_display_name(self):
-        self.display_name = self.minor_classification_code
+        self.display_name = ('[' + self.minor_classification_code + '] ' + self.name)

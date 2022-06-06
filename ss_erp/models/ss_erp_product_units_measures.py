@@ -18,7 +18,4 @@ class ProductUnitMeasures(models.Model):
     name = fields.Char('製品単位の測定名前')
     display_name = fields.Char(compute='_compute_display_name', store=True)
 
-    @api.depends('name', 'display_name')
-    def _compute_display_name(self):
-        for rec in self:
-            rec.display_name = rec.name
+
