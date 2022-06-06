@@ -5,17 +5,18 @@ var ListRenderer = require('web.ListRenderer');
 var BasicController = require("web.BasicController");
 var _t = core._t;
 
-    ListRenderer.include({
+
+    var InventoryOrderListRenderer = ListRenderer.include({
         _notifyInvalidFields: function (invalidFields) {
             var fields = this.state.fields;
-
+//            console.log('_notifyInvalidFields',this.state.model);
             var warnings = invalidFields.map(function (fieldName) {
                 var fieldStr = fields[fieldName].string;
                 return _.str.sprintf('<li>%s</li>', _.escape(fieldStr));
             });
             warnings.unshift('<ul>');
             warnings.push('</ul>');
-            if(invalidFields.length !== 0){
+            if(invalidFields.length !== 0 && this.state.model === 'ss_erp.inventory.order.line'){
                 this.do_warn(_t("Invalid fields:"), warnings.join(''));
             }
         },
@@ -27,10 +28,13 @@ var _t = core._t;
                 if (recordID === null) {
                     return [];
                 }
-            var fieldNames = this._super(recordID);
-            this._notifyInvalidFields(fieldNames);
-            return fieldNames;
+
+
             }
+             var fieldNames = this._super(recordID);
+             this._notifyInvalidFields(fieldNames);
+             return fieldNames;
+
             return Promise.resolve(true);
         },
     });
@@ -54,6 +58,7 @@ var _t = core._t;
         },
 
     });
+
 
 });
 

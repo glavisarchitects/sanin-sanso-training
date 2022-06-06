@@ -5,11 +5,11 @@
         <field name="name">ss_erp.product.medium.classification.view.tree</field>
         <field name="model">ss_erp.product.medium.classification</field>
         <field name="arch" type="xml">
-            <tree editable="top" string="プロダクト大分類">
+            <tree editable="top" string="プロダクト中分類">
                 <field name="major_classification_code" required="1"/>
-                <field name="name" required="1"/>
+                <field name="name_major_classification" />
                 <field name="medium_classification_code" required="1"/>
-                <field name="name_middle_classification"/>
+                <field name="name" required="1"/>
                 <field name="remarks"/>
             </tree>
         </field>

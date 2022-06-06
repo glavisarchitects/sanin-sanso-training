@@ -10,6 +10,5 @@ _logger = logging.getLogger(__name__)
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
-    product_unit_measure_ids = fields.One2many('ss_erp.product.units.measure',
-                                               "product_id",
-                                                string='Productsss')
+
+    x_product_unit_measure_ids = fields.One2many('ss_erp.product.units.measure',"product_id",string='代替単位')
