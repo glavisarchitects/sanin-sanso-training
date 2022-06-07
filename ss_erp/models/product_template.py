@@ -28,9 +28,9 @@ class ProductTemplate(models.Model):
     x_minor_classification_code = fields.Char(related='x_minor_classification_id.minor_classification_code',string='プロダクト小分類')
     x_detail_classification_code = fields.Char(related='x_detail_classification_id.detail_classification_code',string='プロダクト詳細分類')
 
-    @api.onchange('x_detail_classification_id')
-    def _onchange_x_detail_classification_id(self):
-        if self.x_detail_classification_code:
-            self.x_minor_classification_id = self.x_detail_classification_id.minor_classification_code.id
-            self.x_medium_classification_id = self.x_minor_classification_id.medium_classification_code.id
-            self.x_major_classification_id = self.x_medium_classification_id.major_classification_code.id
+    # @api.onchange('x_detail_classification_id')
+    # def _onchange_x_detail_classification_id(self):
+    #     if self.x_detail_classification_code:
+    #         self.x_minor_classification_id = self.x_detail_classification_id.minor_classification_code.id
+    #         self.x_medium_classification_id = self.x_minor_classification_id.medium_classification_code.id
+    #         self.x_major_classification_id = self.x_medium_classification_id.major_classification_code.id

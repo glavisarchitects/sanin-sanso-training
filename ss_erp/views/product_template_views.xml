@@ -39,9 +39,9 @@
                 </group>
                 <group>
                     <group>
-                        <field name="x_major_classification_id" required="1" readonly="1"/>
-                        <field name="x_medium_classification_id" required="1" readonly="1" domain="[('major_classification_code','=',x_major_classification_id)]"/>
-                        <field name="x_minor_classification_id" required="1" readonly="1" domain="[('medium_classification_code','=',x_medium_classification_id)]"/>
+                        <field name="x_major_classification_id" required="1" readonly="0"/>
+                        <field name="x_medium_classification_id" required="1" readonly="0" domain="[('major_classification_code','=',x_major_classification_id)]"/>
+                        <field name="x_minor_classification_id" required="1" readonly="0" domain="[('medium_classification_code','=',x_medium_classification_id)]"/>
                         <field name="x_detail_classification_id" required="1" readonly="0" domain="[('minor_classification_code','=',x_minor_classification_id)]"/>
                     </group>
                     <group>
