@@ -67,7 +67,7 @@
                         <page string="オペレーション">
                             <field name="inventory_order_line_ids"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}">
-                                <tree editable="bottom">
+                                <tree editable="bottom" >
                                     <field name="organization_id" required="1" domain="[('warehouse_id','!=', False)]"/>
                                     <field name="responsible_dept_id" required="1"/>
                                     <field name="location_dest_id" required="1" domain="[('usage','!=', 'view')]"/>

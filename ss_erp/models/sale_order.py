@@ -147,11 +147,25 @@ class SaleOrderLine(models.Model):
 
     x_is_required_x_pricelist = fields.Boolean(default=True)
 
+    # DUNK-F-001_開発設計書_C001_ガス換算
+    x_conversion_quantity = fields.Float('換算数量')
+    x_product_alternative_unit_ids = fields.One2many('uom.uom', compute='get_x_product_alternative_unit_ids')
+    x_alternative_unit = fields.Many2one('uom.uom', '代替単位')
+
     # date_order = fields.Many2one(related='order_id.date_order', string='Date Order', store=True, readonly=True)
     # organization_id = fields.Many2one(related='order_id.organization_id', string='Organization', store=True, readonly=True)
     #
-    # @api.onchange('date_order', 'order_partner_id', 'company_id', 'organization_id')
-    # def _onchange_get_line_product_price_list_from_date_order(self):
+    @api.depends('product_id')
+    def get_x_product_alternative_unit_ids(self):
+        for rec in self:
+            rec.x_product_alternative_unit_ids = rec.product_id.x_product_unit_measure_ids.mapped('alternative_uom_id')
+
+    # onchange auto caculate x_conversion_quantity
+    @api.onchange('x_alternative_unit', 'product_uom_qty')
+    def _onchange_get_x_conversion_quantity(self):
+        if self.x_alternative_unit:
+            product_uom_alternative = self.product_id.x_product_unit_measure_ids.filtered(lambda pum: pum.alternative_uom_id == self.x_alternative_unit)
+            self.x_conversion_quantity = product_uom_alternative.converted_value * self.product_uom_qty
 
     # onchange auto caculate price unit from pricelist
     @api.onchange('product_id', 'product_uom_qty', 'product_uom')

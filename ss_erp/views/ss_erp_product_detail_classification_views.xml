@@ -7,9 +7,9 @@
         <field name="arch" type="xml">
             <tree editable="top" string="プロダクト大分類">
                 <field name="minor_classification_code" required="1"/>
-                <field name="name"/>
+                <field name="name" required="1"/>
                 <field name="detail_classification_code" required="1"/>
-                <field name="name_middle_classification" required="1"/>
+                <field name="name_middle_classification"/>
                 <field name="remarks"/>
             </tree>
         </field>
