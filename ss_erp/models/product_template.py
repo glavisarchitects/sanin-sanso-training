@@ -18,9 +18,9 @@ class ProductTemplate(models.Model):
     x_converted_value = fields.Float(related='x_product_unit_measure_id.converted_value', string='換算値')
     x_remarks = fields.Char(related='x_product_unit_measure_id.remarks', string='換算値')
 
-    x_major_classification_id = fields.Many2one('ss_erp.product.major.classification', string='プロダクト大分類名称')
-    x_medium_classification_id = fields.Many2one('ss_erp.product.medium.classification', string='プロダクト中分類名称')
-    x_minor_classification_id = fields.Many2one('ss_erp.product.minor.classification', string='プロダクト小分類名称')
+    x_major_classification_id = fields.Many2one('ss_erp.product.major.classification', string='プロダクト大分類名称',store=True)
+    x_medium_classification_id = fields.Many2one('ss_erp.product.medium.classification', string='プロダクト中分類名称',store=True)
+    x_minor_classification_id = fields.Many2one('ss_erp.product.minor.classification', string='プロダクト小分類名称',store=True)
     x_detail_classification_id = fields.Many2one('ss_erp.product.detail.classification',string='プロダクト詳細分類名称')
 
     x_major_classification_code = fields.Char(related='x_major_classification_id.major_classification_code',string='プロダクト大分類')
@@ -28,4 +28,9 @@ class ProductTemplate(models.Model):
     x_minor_classification_code = fields.Char(related='x_minor_classification_id.minor_classification_code',string='プロダクト小分類')
     x_detail_classification_code = fields.Char(related='x_detail_classification_id.detail_classification_code',string='プロダクト詳細分類')
 
-
+    @api.onchange('x_detail_classification_id')
+    def _onchange_x_detail_classification_id(self):
+        if self.x_detail_classification_code:
+            self.x_minor_classification_id = self.x_detail_classification_id.minor_classification_code.id
+            self.x_medium_classification_id = self.x_minor_classification_id.medium_classification_code.id
+            self.x_major_classification_id = self.x_medium_classification_id.major_classification_code.id
