@@ -29,7 +29,7 @@
             </xpath>
             <xpath expr="//notebook/page[@name='general_information']/group" position="after">
                 <group string="代替数量">
-                    <field name="x_product_unit_measure_ids" nolabel="1" widget="one2many_list">
+                    <field name="x_product_unit_measure_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="alternative_uom_id" required="1"/>
                             <field name="converted_value" />

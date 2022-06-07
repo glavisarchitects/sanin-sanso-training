@@ -11,7 +11,7 @@ class ProductUnitMeasures(models.Model):
     _rec_name = 'display_name'
 
     product_template_id = fields.Many2one('product.template','プロダクトテンプレートID')
-    product_id = fields.Many2one('product.product','プロダクトID')
+    # product_id = fields.Many2one('product.product','プロダクトID')
     alternative_uom_id = fields.Many2one('uom.uom','代替単位')
     converted_value = fields.Float('換算値')
     remarks = fields.Char('備考')
