@@ -19,4 +19,4 @@ class ProductMediumClassification(models.Model):
     @api.depends('name', 'major_classification_code.display_name', 'medium_classification_code')
     def _compute_display_name(self):
         self.display_name = "%s/[%s]%s" % (
-                            self.major_classification_code.display_name, self.major_classification_code, self.name)
+                            self.major_classification_code.display_name, self.medium_classification_code, self.name)
