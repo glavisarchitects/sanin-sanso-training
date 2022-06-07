@@ -6,8 +6,7 @@
         <field name="model">ss_erp.product.minor.classification</field>
         <field name="arch" type="xml">
             <tree editable="top" string="プロダクト大分類">
-                <field name="major_classification_code" required="1"/>
-                <field name="name_middle_classification" />
+                <field name="medium_classification_code" required="1"/>
                 <field name="minor_classification_code" required="1"/>
                 <field name="name" required="1"/>
                 <field name="remarks"/>

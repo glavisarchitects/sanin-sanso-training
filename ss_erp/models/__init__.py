@@ -7,7 +7,6 @@ from . import organization
 from . import organization_category
 from . import partner_rebate
 from . import product_template
-from . import purchase_order_line
 from . import res_company
 from . import ss_erp_contact_category
 from . import ss_erp_partner_construction

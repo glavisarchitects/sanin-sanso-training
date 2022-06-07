@@ -10,16 +10,13 @@ class ProductMediumClassification(models.Model):
     _description = 'プロダクト中位分類'
     _rec_name = 'display_name'
 
-    major_classification_code = fields.Many2one('ss_erp.product.major.classification','大分類コード')
-    name_major_classification = fields.Char('大分類名称')
-    medium_classification_code = fields.Char('中分類コード')
+    major_classification_code = fields.Many2one('ss_erp.product.major.classification', '大分類コード')
     name = fields.Char('中分類名称')
+    medium_classification_code = fields.Char('中分類コード')
     remarks = fields.Char('備考')
     display_name = fields.Char(compute='_compute_display_name', store=True)
 
-
-
-    @api.depends('name', 'display_name','medium_classification_code')
+    @api.depends('name', 'major_classification_code.display_name', 'medium_classification_code')
     def _compute_display_name(self):
-        self.display_name = ('[' + self.medium_classification_code + '] ' + self.name)
-
+        self.display_name = "%s/[%s]%s" % (
+                            self.major_classification_code.display_name, self.major_classification_code, self.name)
