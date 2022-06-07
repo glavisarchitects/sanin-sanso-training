@@ -39,10 +39,10 @@
                 </group>
                 <group>
                     <group>
-                        <field name="x_major_classification_id" required="1" readonly="0"/>
-                        <field name="x_medium_classification_id" required="1" readonly="0" domain="[('major_classification_code','=',x_major_classification_id)]"/>
-                        <field name="x_minor_classification_id" required="1" readonly="0" domain="[('medium_classification_code','=',x_medium_classification_id)]"/>
-                        <field name="x_detail_classification_id" required="1" readonly="0" domain="[('minor_classification_code','=',x_minor_classification_id)]"/>
+                        <field name="x_major_classification_id" required="1" readonly="0" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                        <field name="x_medium_classification_id" required="1" readonly="0" domain="[('major_classification_code','=',x_major_classification_id)]" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                        <field name="x_minor_classification_id" required="1" readonly="0" domain="[('medium_classification_code','=',x_medium_classification_id)]" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                        <field name="x_detail_classification_id" required="1" readonly="0" domain="[('minor_classification_code','=',x_minor_classification_id)]" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
                     </group>
                     <group>
                         <field name="x_major_classification_code" invisible="1"/>
