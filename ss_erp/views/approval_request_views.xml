@@ -80,6 +80,7 @@
                 <field name="has_x_department" invisible="1"/>
                 <field name="has_x_reject" invisible="1"/>
                 <field name="has_x_contact_form_id" invisible="1"/>
+                <field name="has_x_product_template_form_id" invisible="1"/>
                 <field name="has_x_inventory_order_ids" invisible="1"/>
                 <field name="has_x_inventory_instruction_ids" invisible="1"/>
                 <field name="has_lp_gas_inventory_ids" invisible="1"/>
@@ -174,6 +175,13 @@
                 <field name="x_contact_form_id" attrs="{
                     'invisible': [('has_x_contact_form_id', '=', 'no')],
                     'required': [('has_x_contact_form_id', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }" options="{'no_quick_create': True}"
+                    context="{'request_id': active_id}"
+                />
+                <field name="x_product_template_form_id" attrs="{
+                    'invisible': [('has_x_product_template_form_id', '=', 'no')],
+                    'required': [('has_x_product_template_form_id', '=', 'required')],
                     'readonly':[('request_status','!=','new')]
                 }" options="{'no_quick_create': True}"
                     context="{'request_id': active_id}"

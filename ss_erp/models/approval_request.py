@@ -17,6 +17,8 @@ class ApprovalRequest(models.Model):
         'ss_erp.organization', string='申請組織')
     x_contact_form_id = fields.Many2one(
         'ss_erp.res.partner.form', string='連絡先申請フォーム')
+    x_product_template_form_id = fields.Many2one(
+        'ss_erp.product.template.form', string='プロダクト申請フォーム')
     x_inventory_order_ids = fields.Many2many(
         'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票')
     x_sale_order_ids = fields.Many2many(
@@ -58,6 +60,8 @@ class ApprovalRequest(models.Model):
         related='category_id.has_x_reject', store=True)
     has_x_contact_form_id = fields.Selection(
         related='category_id.has_x_contact_form_id', store=True)
+    has_x_product_template_form_id = fields.Selection(
+        related='category_id.has_x_product_template_form_id', store=True)
     has_x_inventory_order_ids = fields.Selection(
         related='category_id.has_x_inventory_order_ids', store=True)
     has_x_sale_order_ids = fields.Selection(
@@ -275,6 +279,10 @@ class ApprovalRequest(models.Model):
             self.x_contact_form_id.write(
                 {'approval_id': self.id, 'approval_state': self.request_status})
 
+        if self.x_product_template_form_id:
+            self.x_product_template_form_id.write(
+                {'approval_id': self.id, 'approval_state': self.request_status})
+
         user = self.multi_approvers_ids.mapped('x_related_user_ids')
         self.notify_approval(users=user)
 
@@ -412,6 +420,10 @@ class ApprovalRequest(models.Model):
             # 仕入先フォーム更新
             if request.x_contact_form_id:
                 request.x_contact_form_id.sudo().write({'approval_state': request.request_status})
+
+            # プロダクト申請フォーム
+            if request.x_product_template_form_id:
+                request.x_product_template_form_id.sudo().write({'approval_state': request.request_status})
 
             # 見積・受注更新
             if request.x_sale_order_ids:

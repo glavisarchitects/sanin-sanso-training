@@ -7,9 +7,8 @@
         <field name="arch" type="xml">
             <tree editable="top" string="プロダクト大分類">
                 <field name="minor_classification_code" required="1"/>
-                <field name="name" required="1"/>
                 <field name="detail_classification_code" required="1"/>
-                <field name="name_middle_classification"/>
+                <field name="name" required="1"/>
                 <field name="remarks"/>
             </tree>
         </field>
@@ -24,10 +23,6 @@
         <field name="target">current</field>
     </record>
 
-    <menuitem
-            id="ss_erp_product_detail_classification_menu"
-            action="ss_erp_product_detail_classification_action"
-            parent="sale.product_menu_catalog"
-            sequence="12"/>
+
 
 </odoo>

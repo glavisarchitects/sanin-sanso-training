@@ -22,10 +22,6 @@
         <field name="target">current</field>
     </record>
 
-    <menuitem
-            id="ss_erp_product_major_classification_menu"
-            action="ss_erp_product_major_classification_action"
-            parent="sale.product_menu_catalog"
-            sequence="9"/>
+    
 
 </odoo>

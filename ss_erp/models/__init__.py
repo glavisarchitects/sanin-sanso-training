@@ -7,7 +7,6 @@ from . import organization
 from . import organization_category
 from . import partner_rebate
 from . import product_template
-from . import purchase_order_line
 from . import res_company
 from . import ss_erp_contact_category
 from . import ss_erp_partner_construction
@@ -67,4 +66,4 @@ from . import ss_erp_product_major_classification
 from . import ss_erp_product_detail_classification
 from . import ss_erp_product_medium_classification
 from . import ss_erp_product_minor_classification
-# from . import product_product
+from . import product_template_form

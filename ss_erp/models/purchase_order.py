@@ -152,3 +152,29 @@ class PurchaseOrder(models.Model):
         return res
 
 
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order.line'
+
+    x_fixed_cost = fields.Float("仕入定価")
+
+    # DUNK-F-001_開発設計書_C001_ガス換算
+    x_conversion_quantity = fields.Float('換算数量')
+    x_product_alternative_unit_ids = fields.One2many('uom.uom', compute='get_x_product_alternative_unit_ids')
+    x_alternative_unit_id = fields.Many2one('uom.uom', '代替単位')
+
+    #
+    @api.depends('product_id')
+    def get_x_product_alternative_unit_ids(self):
+        for rec in self:
+            rec.x_product_alternative_unit_ids = rec.product_id.x_product_unit_measure_ids.mapped('alternative_uom_id')
+
+    # onchange auto caculate x_conversion_quantity
+    @api.onchange('x_alternative_unit_id', 'product_qty')
+    def _onchange_get_x_conversion_quantity(self):
+        if self.x_alternative_unit_id and self.product_qty:
+            product_uom_alternative = self.product_id.x_product_unit_measure_ids.filtered(lambda pum: pum.alternative_uom_id == self.x_alternative_unit_id)
+            self.x_conversion_quantity = product_uom_alternative.converted_value * self.product_uom_qty
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        self.x_fixed_cost = self.product_id and self.product_id.x_fixed_cost

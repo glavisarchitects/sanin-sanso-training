@@ -136,6 +136,7 @@ class SaleOrder(models.Model):
                     approval.message_post(body=_('承認申請の見積が見積操作で取消されたため、承認申請を取消しました。'))
         return res
 
+
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
@@ -150,7 +151,7 @@ class SaleOrderLine(models.Model):
     # DUNK-F-001_開発設計書_C001_ガス換算
     x_conversion_quantity = fields.Float('換算数量')
     x_product_alternative_unit_ids = fields.One2many('uom.uom', compute='get_x_product_alternative_unit_ids')
-    x_alternative_unit = fields.Many2one('uom.uom', '代替単位')
+    x_alternative_unit_id = fields.Many2one('uom.uom', '代替単位')
 
     # date_order = fields.Many2one(related='order_id.date_order', string='Date Order', store=True, readonly=True)
     # organization_id = fields.Many2one(related='order_id.organization_id', string='Organization', store=True, readonly=True)
@@ -161,10 +162,10 @@ class SaleOrderLine(models.Model):
             rec.x_product_alternative_unit_ids = rec.product_id.x_product_unit_measure_ids.mapped('alternative_uom_id')
 
     # onchange auto caculate x_conversion_quantity
-    @api.onchange('x_alternative_unit', 'product_uom_qty')
+    @api.onchange('x_alternative_unit_id', 'product_uom_qty')
     def _onchange_get_x_conversion_quantity(self):
-        if self.x_alternative_unit:
-            product_uom_alternative = self.product_id.x_product_unit_measure_ids.filtered(lambda pum: pum.alternative_uom_id == self.x_alternative_unit)
+        if self.x_alternative_unit_id and self.product_uom_qty:
+            product_uom_alternative = self.product_id.x_product_unit_measure_ids.filtered(lambda pum: pum.alternative_uom_id == self.x_alternative_unit_id)
             self.x_conversion_quantity = product_uom_alternative.converted_value * self.product_uom_qty
 
     # onchange auto caculate price unit from pricelist
