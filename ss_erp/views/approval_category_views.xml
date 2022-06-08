@@ -10,6 +10,7 @@
                 <field name="has_x_department" widget="radio" options="{'horizontal': true}"/>
                 <field name="has_x_reject" widget="radio" options="{'horizontal': true}"/>
                 <field name="has_x_contact_form_id" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_product_template_form_id" widget="radio" options="{'horizontal': true}"/>
                 <field name="has_x_inventory_order_ids" widget="radio" options="{'horizontal': true}"/>
                 <field name="has_x_inventory_instruction_ids" widget="radio" options="{'horizontal': true}"
                        attrs="{'invisible': [('approval_type', '!=', 'inventory_request_manager')]}"/>

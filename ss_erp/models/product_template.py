@@ -34,3 +34,33 @@ class ProductTemplate(models.Model):
     #         self.x_minor_classification_id = self.x_detail_classification_id.minor_classification_code.id
     #         self.x_medium_classification_id = self.x_minor_classification_id.medium_classification_code.id
     #         self.x_major_classification_id = self.x_medium_classification_id.major_classification_code.id
+
+    def write(self, vals):
+        update_product_template = True
+        if vals.get('source'):
+            vals.pop('source')
+            update_product_template = False
+        res = super(ProductTemplate, self).write(vals)
+        if update_product_template and len(vals) > 0 and self._name != 'ss_erp.product.template.form':
+            values = {}
+            form_id = self.env['ss_erp.product.template.form'].search([('product_template_id', '=', self.id)])
+            values.update({'source': 'product_template'})
+            for field_name, field_value in vals.items():
+                if type(self._fields[field_name].compute) != str:
+                    if self._fields[field_name].type in ['one2many', 'many2many']:
+                        value = getattr(self, field_name, ())
+                        value = [(6, 0, value.ids)] if value else False
+                    else:
+                        value = getattr(self, field_name)
+                        if self._fields[field_name].type == 'many2one':
+                            value = value.id if value else False
+                values.update({field_name: value})
+            form_id.write(values)
+        return res
+
+
+
+    def _create_variant_ids(self):
+        if self._name == 'ss_erp.product.template.form':
+            return True
+        return super(ProductTemplate, self)._create_variant_ids()

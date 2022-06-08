@@ -19,6 +19,8 @@ class ApprovalCategory(models.Model):
         CATEGORY_SELECTION, string="却下理由", default="no", )
     has_x_contact_form_id = fields.Selection(
         CATEGORY_SELECTION, string="連絡先申請フォーム", default="no", )
+    has_x_product_template_form_id = fields.Selection(
+        CATEGORY_SELECTION, string="プロダクト申請フォーム", default="no", )
     has_x_inventory_order_ids = fields.Selection(
         CATEGORY_SELECTION, string="棚卸伝票", default="no", )
     has_x_sale_order_ids = fields.Selection(

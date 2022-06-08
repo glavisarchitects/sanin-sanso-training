@@ -90,6 +90,7 @@
         "views/ss_erp_product_detail_classification_views.xml",
         "views/ss_erp_product_minor_classification_views.xml",
         "views/product_product_views.xml",
+        "views/product_template_form_views.xml",
         "views/webclient_templates.xml",
         "menu/menu_views.xml",
 
