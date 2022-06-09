@@ -198,8 +198,19 @@
             sequence="44"/>
 
     <menuitem
-            id="product_template_form_menu"
+            id="product_template_form_sale_menu"
             action="product_template_form_action"
             parent="sale.product_menu_catalog"
+            sequence="0"/>
+    <menuitem
+            id="product_template_form_purchase_menu"
+            action="product_template_form_action"
+            parent="purchase.menu_purchase_products"
+            sequence="0"/>
+
+    <menuitem
+            id="product_template_form_stock_menu"
+            action="product_template_form_action"
+            parent="stock.menu_stock_inventory_control"
             sequence="0"/>
 </odoo>

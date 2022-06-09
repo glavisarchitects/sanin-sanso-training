@@ -3,6 +3,8 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import logging
 from lxml import etree
+from odoo.osv import expression
+import re
 
 _logger = logging.getLogger(__name__)
 
@@ -28,23 +30,23 @@ class ProductTemplateForm(models.Model):
         domain=[('product_selectable', '=', True)],
         help="Depending on the modules installed, this will allow you to define the route of the product: whether it will be bought, manufactured, replenished on order, etc.")
 
+
+    optional_product_ids = fields.Many2many(
+        'product.template', 'product_template_form_optional_rel', 'src_id', 'dest_id',
+        string='Optional Products', help="Optional Products are suggested "
+        "whenever the customer hits *Add to Cart* (cross-sell strategy, "
+        "e.g. for computers: warranty, software, etc.).", check_company=True)
+    # change o2m to m2m
+    x_product_unit_measure_ids = fields.Many2many('ss_erp.product.units.measure',string='代替単位', tracking=True)
+
     # rewrite some compute function
-    # def _compute_quantities(self):
-    #     products = self.filtered(lambda p: p.type != 'service' and p._name != 'ss_erp.product.template.form')
-    #     res = products._compute_quantities_dict(self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'), self._context.get('from_date'), self._context.get('to_date'))
-    #     for product in products:
-    #         product.qty_available = res[product.id]['qty_available']
-    #         product.incoming_qty = res[product.id]['incoming_qty']
-    #         product.outgoing_qty = res[product.id]['outgoing_qty']
-    #         product.virtual_available = res[product.id]['virtual_available']
-    #         product.free_qty = res[product.id]['free_qty']
-    #     # Services need to be set with 0.0 for all quantities
-    #     services = self - products
-    #     services.qty_available = 0.0
-    #     services.incoming_qty = 0.0
-    #     services.outgoing_qty = 0.0
-    #     services.virtual_available = 0.0
-    #     services.free_qty = 0.0
+    @api.depends_context('company', 'location', 'warehouse')
+    def _compute_quantities(self):
+        for template in self:
+            template.qty_available = 0
+            template.virtual_available = 0
+            template.incoming_qty = 0
+            template.outgoing_qty = 0
 
     def write(self, values):
         update_product_template = True
@@ -62,6 +64,8 @@ class ProductTemplateForm(models.Model):
         for form_id in self:
             vals = {}
             for name, field in form_id._fields.items():
+                if name not in self.env['product.template']._fields:
+                    continue
                 if name not in DEFAULT_FIELDS and \
                         form_id._fields[name].type not in ['one2many'] and \
                         type(form_id._fields[name].compute) != str:
@@ -75,14 +79,62 @@ class ProductTemplateForm(models.Model):
 
                     vals.update({name: value})
 
-            product_template_id = vals.pop('product_template_id')
-            if not product_template_id:
+            if 'product_template_id' not in vals:
                 # Create product template form
-                product_template_id = self.env['product.template'].sudo().create(vals)
-                form_id.write({'product_template_id': product_template_id.id})
+                new_product_template = self.env['product.template'].sudo().create(vals)
+                form_id.write({'product_template_id': new_product_template.id})
             else:
                 # Update product template form
+                product_template_id = vals.pop('product_template_id')
                 vals['source'] = 'product_template_form'
                 product_template = self.env['product.template'].browse(int(product_template_id))
                 product_template.message_follower_ids.sudo().unlink()
                 product_template.sudo().write(vals)
+
+
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+        if not args:
+            args = []
+        if name:
+            positive_operators = ['=', 'ilike', '=ilike', 'like', '=like']
+            product_ids = []
+            if operator in positive_operators:
+                product_ids = list(self._search([('default_code', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
+                if not product_ids:
+                    product_ids = list(self._search([('barcode', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid))
+            if not product_ids and operator not in expression.NEGATIVE_TERM_OPERATORS:
+                # Do not merge the 2 next lines into one single search, SQL search performance would be abysmal
+                # on a database with thousands of matching products, due to the huge merge+unique needed for the
+                # OR operator (and given the fact that the 'name' lookup results come from the ir.translation table
+                # Performing a quick memory merge of ids in Python will give much better performance
+                product_ids = list(self._search(args + [('default_code', operator, name)], limit=limit))
+                if not limit or len(product_ids) < limit:
+                    # we may underrun the limit because of dupes in the results, that's fine
+                    limit2 = (limit - len(product_ids)) if limit else False
+                    product2_ids = self._search(args + [('name', operator, name), ('id', 'not in', product_ids)], limit=limit2, access_rights_uid=name_get_uid)
+                    product_ids.extend(product2_ids)
+            elif not product_ids and operator in expression.NEGATIVE_TERM_OPERATORS:
+                domain = expression.OR([
+                    ['&', ('default_code', operator, name), ('name', operator, name)],
+                    ['&', ('default_code', '=', False), ('name', operator, name)],
+                ])
+                domain = expression.AND([args, domain])
+                product_ids = list(self._search(domain, limit=limit, access_rights_uid=name_get_uid))
+            if not product_ids and operator in positive_operators:
+                ptrn = re.compile('(\[(.*?)\])')
+                res = ptrn.search(name)
+                if res:
+                    product_ids = list(self._search([('default_code', '=', res.group(2))] + args, limit=limit, access_rights_uid=name_get_uid))
+            # still no results, partner in context: search on supplier info as last hope to find something
+            if not product_ids and self._context.get('partner_id'):
+                suppliers_ids = self.env['product.supplierinfo']._search([
+                    ('name', '=', self._context.get('partner_id')),
+                    '|',
+                    ('product_code', operator, name),
+                    ('product_name', operator, name)], access_rights_uid=name_get_uid)
+                if suppliers_ids:
+                    product_ids = self._search([('product_tmpl_id.seller_ids', 'in', suppliers_ids)], limit=limit, access_rights_uid=name_get_uid)
+        else:
+            product_ids = self._search(args, limit=limit, access_rights_uid=name_get_uid)
+        return product_ids
