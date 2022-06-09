@@ -15,7 +15,7 @@ class ProductTemplateForm(models.Model):
 
     approval_id = fields.Char(string="Approval ID")
     approval_state = fields.Char(string='Approval status')
-    product_template_id = fields.Char(string='Contact ID')
+    product_template_id = fields.Char(string='Template ID')
 
     # rewrite relation table
     taxes_id = fields.Many2many('account.tax', 'product_template_form_taxes_rel', 'prod_id', 'tax_id', help="Default taxes used when selling the product.", string='Customer Taxes',
@@ -63,7 +63,7 @@ class ProductTemplateForm(models.Model):
         for form_id in self:
             vals = {}
             for name, field in form_id._fields.items():
-                if name not in self.env['product.template']._fields:
+                if name not in self.env['product.template']._fields and name != 'product_template_id':
                     continue
                 if name not in DEFAULT_FIELDS and \
                         form_id._fields[name].type not in ['one2many'] and \
@@ -78,13 +78,13 @@ class ProductTemplateForm(models.Model):
 
                     vals.update({name: value})
 
-            if 'product_template_id' not in vals:
+            product_template_id = vals.pop('product_template_id')
+            if not product_template_id:
                 # Create product template form
                 new_product_template = self.env['product.template'].sudo().create(vals)
                 form_id.write({'product_template_id': new_product_template.id})
             else:
                 # Update product template form
-                product_template_id = vals.pop('product_template_id')
                 vals['source'] = 'product_template_form'
                 product_template = self.env['product.template'].browse(int(product_template_id))
                 product_template.message_follower_ids.sudo().unlink()
