@@ -188,3 +188,7 @@ class ResPartnerForm(models.Model):
                         node_form.set("edit", "false")
                     res['arch'] = etree.tostring(doc)
         return res
+
+    def _compute_sale_order_count(self):
+        for rec in self:
+            rec.sale_order_count = 0

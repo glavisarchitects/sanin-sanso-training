@@ -3,6 +3,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import logging
 from lxml import etree
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -14,7 +15,7 @@ class ProductTemplateForm(models.Model):
 
     approval_id = fields.Char(string="Approval ID")
     approval_state = fields.Char(string='Approval status')
-    product_template_id = fields.Char(string='Contact ID')
+    product_template_id = fields.Char(string='Template ID')
 
     # rewrite relation table
     taxes_id = fields.Many2many('account.tax', 'product_template_form_taxes_rel', 'prod_id', 'tax_id', help="Default taxes used when selling the product.", string='Customer Taxes',
@@ -28,23 +29,23 @@ class ProductTemplateForm(models.Model):
         domain=[('product_selectable', '=', True)],
         help="Depending on the modules installed, this will allow you to define the route of the product: whether it will be bought, manufactured, replenished on order, etc.")
 
+
+    optional_product_ids = fields.Many2many(
+        'product.template', 'product_template_form_optional_rel', 'src_id', 'dest_id',
+        string='Optional Products', help="Optional Products are suggested "
+        "whenever the customer hits *Add to Cart* (cross-sell strategy, "
+        "e.g. for computers: warranty, software, etc.).", check_company=True)
+    # change o2m to m2m
+    x_product_unit_measure_ids = fields.Many2many('ss_erp.product.units.measure',string='代替単位', tracking=True)
+
     # rewrite some compute function
-    # def _compute_quantities(self):
-    #     products = self.filtered(lambda p: p.type != 'service' and p._name != 'ss_erp.product.template.form')
-    #     res = products._compute_quantities_dict(self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'), self._context.get('from_date'), self._context.get('to_date'))
-    #     for product in products:
-    #         product.qty_available = res[product.id]['qty_available']
-    #         product.incoming_qty = res[product.id]['incoming_qty']
-    #         product.outgoing_qty = res[product.id]['outgoing_qty']
-    #         product.virtual_available = res[product.id]['virtual_available']
-    #         product.free_qty = res[product.id]['free_qty']
-    #     # Services need to be set with 0.0 for all quantities
-    #     services = self - products
-    #     services.qty_available = 0.0
-    #     services.incoming_qty = 0.0
-    #     services.outgoing_qty = 0.0
-    #     services.virtual_available = 0.0
-    #     services.free_qty = 0.0
+    @api.depends_context('company', 'location', 'warehouse')
+    def _compute_quantities(self):
+        for template in self:
+            template.qty_available = 0
+            template.virtual_available = 0
+            template.incoming_qty = 0
+            template.outgoing_qty = 0
 
     def write(self, values):
         update_product_template = True
@@ -62,6 +63,8 @@ class ProductTemplateForm(models.Model):
         for form_id in self:
             vals = {}
             for name, field in form_id._fields.items():
+                if name not in self.env['product.template']._fields and name != 'product_template_id':
+                    continue
                 if name not in DEFAULT_FIELDS and \
                         form_id._fields[name].type not in ['one2many'] and \
                         type(form_id._fields[name].compute) != str:
@@ -78,11 +81,17 @@ class ProductTemplateForm(models.Model):
             product_template_id = vals.pop('product_template_id')
             if not product_template_id:
                 # Create product template form
-                product_template_id = self.env['product.template'].sudo().create(vals)
-                form_id.write({'product_template_id': product_template_id.id})
+                new_product_template = self.env['product.template'].sudo().create(vals)
+                form_id.write({'product_template_id': new_product_template.id})
             else:
                 # Update product template form
                 vals['source'] = 'product_template_form'
                 product_template = self.env['product.template'].browse(int(product_template_id))
                 product_template.message_follower_ids.sudo().unlink()
                 product_template.sudo().write(vals)
+
+
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+        domain = [('name', operator, name)]
+        return self._search(expression.AND([domain, args]), limit=limit, access_rights_uid=name_get_uid)
