@@ -264,7 +264,7 @@ class LPGasOrder(models.Model):
         if self.aggregation_period and self.inventory_type and self.organization_id:
             exist_lpgas_on_period = self.search([('month_aggregation_period', '=', self.aggregation_period.month), ('inventory_type', '=', self.inventory_type), ('organization_id', '=', self.organization_id.id)])
             if exist_lpgas_on_period and exist_lpgas_on_period != self:
-                raise UserError(_("lpgas exists for this period, please recheck again"))
+                raise UserError(_("指定した棚卸期間のLPガス棚卸しは既に行われています。"))
 
     def show_lpgas_report(self):
         return {
