@@ -16,7 +16,8 @@ class LPGasOrder(models.Model):
     _rec_name = 'name'
 
     name = fields.Char('LPガス棚卸参照')
-    user_organization_ids = fields.Many2many('ss_erp.organization', default=lambda self: self.env.user.organization_ids.ids)
+    user_organization_ids = fields.Many2many('ss_erp.organization',
+                                             default=lambda self: self.env.user.organization_ids.ids)
     organization_id = fields.Many2one('ss_erp.organization', string="組織名", domain="[('warehouse_id', '!=', False)]")
     inventory_type = fields.Selection([('cylinder', 'シリンダー'), ('minibulk', 'ミニバルク')], string='棚卸種別')
     accounting_date = fields.Date(string='会計日')
@@ -27,7 +28,8 @@ class LPGasOrder(models.Model):
         [('draft', 'ドラフト'), ('confirm', '集計完了'), ('waiting', '承認待ち'), ('approval', '承認依頼中'), ('approved', '承認済み'),
          ('done', '検証済'), ('cancel', '取消済')], default='draft', string='ステータス')
 
-    lpgas_order_line_ids = fields.One2many('ss_erp.lpgas.order.line', 'lpgas_order_id', ondelete="cascade", string='集計結果')
+    lpgas_order_line_ids = fields.One2many('ss_erp.lpgas.order.line', 'lpgas_order_id', ondelete="cascade",
+                                           string='集計結果')
 
     @api.depends('aggregation_period')
     def compute_month_aggregation_period(self):
@@ -46,16 +48,23 @@ class LPGasOrder(models.Model):
     def calculate_aggregate_lpgas(self):
 
         # calculate cylinder
-        lpgas_product_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id')
-        if not lpgas_product_id:
+        lpgas_product_tmp_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id')
+        if not lpgas_product_tmp_id:
             raise UserError(_("プロダクトコードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。"))
+
+        if not self.env['product.template'].browse(lpgas_product_tmp_id):
+            raise UserError(_("設定しているプロダクトIDは存在しません。"))
+
+        lpgas_product_id = self.env['product.product'].search([('product_tmpl_id', '=', lpgas_product_tmp_id)],
+                                                              limit=1).id
 
         branch_warehouse = self.organization_id.warehouse_id
         warehouse_location = branch_warehouse.lot_stock_id
         period_last_date = self.aggregation_period + dateutil.relativedelta.relativedelta(months=-1)
         period_last_month = period_last_date.month
         customer_location = self.env['stock.location'].search(
-            [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'), ('x_inventory_type', '=', self.inventory_type)]).ids
+            [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'),
+             ('x_inventory_type', '=', self.inventory_type)]).ids
 
         customer_location = f"({','.join(map(str, customer_location))})"
         start_period_measure = datetime.combine(period_last_date.replace(day=19), datetime.min.time())
@@ -262,7 +271,9 @@ class LPGasOrder(models.Model):
     def _check_constrain_period(self):
         # check is this period is exist
         if self.aggregation_period and self.inventory_type and self.organization_id:
-            exist_lpgas_on_period = self.search([('month_aggregation_period', '=', self.aggregation_period.month), ('inventory_type', '=', self.inventory_type), ('organization_id', '=', self.organization_id.id)])
+            exist_lpgas_on_period = self.search([('month_aggregation_period', '=', self.aggregation_period.month),
+                                                 ('inventory_type', '=', self.inventory_type),
+                                                 ('organization_id', '=', self.organization_id.id)])
             if exist_lpgas_on_period and exist_lpgas_on_period != self:
                 raise UserError(_("指定した棚卸期間のLPガス棚卸しは既に行われています。"))
 
