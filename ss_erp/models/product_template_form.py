@@ -13,6 +13,25 @@ class ProductTemplateForm(models.Model):
     _inherit = 'product.template'
     _description = 'Product Template Form'
 
+    type = fields.Selection([
+        ('product', 'Storable Product'),
+        ('consu', 'Consumable'),
+        ('service', 'Service')], string='Product Type', default='consu', required=True,
+        help='A storable product is a product for which you manage stock. The Inventory app has to be installed.\n'
+             'A consumable product is a product for which stock is not managed.\n'
+             'A service is a non-material product you provide.')
+    invoice_policy = fields.Selection([
+        ('order', 'Ordered quantities'),
+        ('delivery', 'Delivered quantities')], string='Invoicing Policy',
+        help='Ordered Quantity: Invoice quantities ordered by the customer.\n'
+             'Delivered Quantity: Invoice quantities delivered to the customer.',
+        default='order')
+    purchase_method = fields.Selection([
+        ('purchase', 'On ordered quantities'),
+        ('receive', 'On received quantities'),
+    ], string="Control Policy", help="On ordered quantities: Control bills based on ordered quantities.\n"
+        "On received quantities: Control bills based on received quantities.", default="receive")
+
     approval_id = fields.Char(string="Approval ID")
     approval_state = fields.Char(string='Approval status')
     product_template_id = fields.Char(string='Template ID')
