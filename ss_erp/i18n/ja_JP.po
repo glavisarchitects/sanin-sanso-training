@@ -7859,3 +7859,149 @@ msgstr ""
 #: model:ir.model.fields,field_description:ss_erp.field_ss_erp_ifdb_youki_kanri_detail__customer_business_partner_branch_code
 msgid "顧枝Ｃ"
 msgstr ""
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__sale_ok
+msgid "Can be Sold"
+msgstr "販売可"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__purchase_ok
+msgid "Can be Purchased"
+msgstr "購買可"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__can_be_expensed
+msgid "Can be Expensed"
+msgstr "経費入力可"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__type
+msgid "Product Type"
+msgstr "プロダクトタイプ"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__default_code
+msgid "Internal Reference"
+msgstr "内部参照"
+
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__list_price
+msgid "Sale Price"
+msgstr "販売価格"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__taxes_id
+msgid "Customer Taxes"
+msgstr "顧客税"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__standard_price
+msgid "Cost"
+msgstr "原価"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__uom_id
+msgid "Unit of Measure"
+msgstr "単位"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__uom_po_id
+msgid "Purchase Unit of Measure"
+msgstr "購買単位"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__invoice_policy
+msgid "Invoicing Policy"
+msgstr "請求方針"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__supplier_taxes_id
+msgid "Vendor Taxes"
+msgstr "仕入先税"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__purchase_method
+msgid "Control Policy"
+msgstr "購買請求管理方針"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__route_ids
+msgid "Routes"
+msgstr "ルート"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__responsible_id
+msgid "Responsible"
+msgstr "担当者"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__weight
+msgid "Weight"
+msgstr "重量"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__volume
+msgid "Volume"
+msgstr "容積"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__sale_delay
+msgid "Customer Lead Time"
+msgstr "顧客リードタイム"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__hs_code
+msgid "HS Code"
+msgstr "HS コード"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__property_stock_production
+msgid "Production Location"
+msgstr "製造ロケーション"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__property_stock_inventory
+msgid "Inventory Locations"
+msgstr "在庫ロケーション"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__property_account_income_id
+msgid "Gain Account"
+msgstr "収益勘定"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__property_account_expense_id
+msgid "Expense Account"
+msgstr "費用勘定"
+
+#. module: ss_erp
+#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__property_account_creditor_price_difference
+msgid "Price Difference Account"
+msgstr "価格差異勘定"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_product_template_form__invoice_policy__delivery
+msgid "Delivered quantities"
+msgstr "配送済数量"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_product_template_form__invoice_policy__order
+msgid "Ordered quantities"
+msgstr "オーダ数量"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_product_template_form__type__product
+msgid "Storable Product"
+msgstr "在庫可能品"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_product_template_form__type__consu
+msgid "consumable"
+msgstr "消耗品"
+
+#. module: ss_erp
+#: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_product_template_form__type__service
+msgid "service"
+msgstr "サービス"
