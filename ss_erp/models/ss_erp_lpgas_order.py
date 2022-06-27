@@ -49,13 +49,13 @@ class LPGasOrder(models.Model):
 
         # calculate cylinder
         lpgas_product_tmp_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id')
-        if not lpgas_product_tmp_id:
+        if lpgas_product_tmp_id == '':
             raise UserError(_("プロダクトコードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。"))
 
-        if not self.env['product.template'].browse(lpgas_product_tmp_id):
+        if not self.env['product.template'].browse(int(lpgas_product_tmp_id)):
             raise UserError(_("設定しているプロダクトIDは存在しません。"))
 
-        lpgas_product_id = self.env['product.product'].search([('product_tmpl_id', '=', lpgas_product_tmp_id)],
+        lpgas_product_id = self.env['product.product'].search([('product_tmpl_id', '=', int(lpgas_product_tmp_id))],
                                                               limit=1).id
 
         branch_warehouse = self.organization_id.warehouse_id
@@ -166,23 +166,40 @@ class LPGasOrder(models.Model):
                             tiq.id location_id, 
                             tiq.install_quantity tank_capacity, 
                             do_mea.measure_date meter_reading_date, 
-                            cmu.cm_use month_amount_of_use,
-                            (CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - (cmu.cm_use/{numbers_day_inventory_in_month.days}*(extract(day from AGE(do_mea.measure_date, dd_tran.date_done))::int))) END) meter_reading_inventory, -- 3-3-5
+                            cmu.cm_use month_amount_of_use, -- 3-3-3
+                            
+                            (CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - 
+                            (cmu.cm_use/(extract(day from AGE(do_mea.measure_date, lmi.lm_meter_reading_date))::int)*
+                            (extract(day from AGE(do_mea.measure_date, dd_tran.date_done))::int))) END) meter_reading_inventory, -- 3-3-6
+                            
                             fam.fill_after_measure filling_after_meter_reading, -- 3-4-1
                             lmi.lm_inventory previous_last_inventory,
                             ftm.fill_this_month this_month_filling,
-                            ((CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - (cmu.cm_use/{numbers_day_inventory_in_month.days}*(extract(day from AGE(do_mea.measure_date, dd_tran.date_done))::int))) END) + (Case When fam.fill_after_measure is NULL then 0 ELSE fam.fill_after_measure END)) this_month_inventory, -- 3-4-2
-                            ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - (Case When cmu.cm_use is NULL then 0 ELSE cmu.cm_use END)) theoretical_inventory, -- 3-5-2
-                            (((CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - (cmu.cm_use/{numbers_day_inventory_in_month.days}*(extract(day from AGE(do_mea.measure_date, dd_tran.date_done))::int))) END) + 
-                            (Case When fam.fill_after_measure is NULL then 0 ELSE fam.fill_after_measure END)) - 
-                            ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - (Case When cmu.cm_use is NULL then 0 ELSE cmu.cm_use END))) difference_qty -- 2-5-2
+                            
+                            ((CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - 
+                            (cmu.cm_use/(extract(day from AGE(do_mea.measure_date, lmi.lm_meter_reading_date))::int)*
+                            (extract(day from AGE(do_mea.measure_date, dd_tran.date_done))::int))) END) + 
+                            (Case When fam.fill_after_measure is NULL then 0 ELSE fam.fill_after_measure END)) this_month_inventory, -- 3-4-2 = 3-3-6 + 3-4-1
+                            
+                            ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + 
+                            (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - 
+                            (Case When cmu.cm_use is NULL then 0 ELSE cmu.cm_use END)) theoretical_inventory, -- 3-5-2 = 3-2 + 3-5-1 + 3-3-3 
+                            
+                            (((CASE WHEN dd_tran.date_done is NUll THEN mri_not_tran.quantity ELSE (tiq.install_quantity - 
+                            (cmu.cm_use/(extract(day from AGE(do_mea.measure_date, lmi.lm_meter_reading_date))::int)*
+                            (extract(day from AGE(do_mea.measure_date, dd_tran.date_done))::int))) END) + 
+                            (Case When fam.fill_after_measure is NULL then 0 ELSE fam.fill_after_measure END)) -
+                             ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + 
+                             (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - 
+                             (Case When cmu.cm_use is NULL then 0 ELSE cmu.cm_use END)) ) difference_qty -- 3-6-1 = 3-4-2 - 3-5-2
                     FROM                     
                                 
-                    (SELECT id, x_total_installation_quantity install_quantity FROM stock_location WHERE id IN {customer_location}) tiq  -- 3-3-1 Total amount set in location 
+                    (SELECT id, x_total_installation_quantity install_quantity FROM 
+                    stock_location WHERE id IN {customer_location}) tiq  -- 3-3-2 Total amount set in location 
                                         
                     LEFT JOIN
                     -- 
-                    (SELECT sml.location_id, so.date_order measure_date FROM stock_move_line sml  -- 3-3-4 a nearest date_order - measurement date
+                    (SELECT sml.location_id, so.date_order measure_date FROM stock_move_line sml  -- 3-3-1 get meassua date from SO date order
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     LEFT JOIN sale_order so ON so.id = sp.sale_id
                     WHERE sml.state = 'done'
@@ -193,18 +210,31 @@ class LPGasOrder(models.Model):
                     ) do_mea ON do_mea.location_id = tiq.id 
                     
                     LEFT JOIN
+                    --
+                    (
+                    SELECT sl.id location_id,lpl.this_month_inventory lm_inventory, lpl.meter_reading_date lm_meter_reading_date from stock_location sl -- 3-2 At the warehouse last month
+                    LEFT JOIN ss_erp_lpgas_order_line lpl ON lpl.location_id = sl.id
+                    LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
+                    WHERE lp.month_aggregation_period = '{period_last_month}' AND
+                    sl.x_inventory_type = 'minibulk' AND
+                    lp.state = 'done' AND
+                    lp.organization_id = '{self.organization_id.id}' 
+                    AND sl.id IN {customer_location}
+                    )lmi ON lmi.location_id = tiq.id
+
+                    LEFT JOIN
+
                     -- 
-                    (SELECT sml.location_id ,sml.date , (Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) cm_use FROM stock_move_line sml  -- 3-3-2 Usage amount this month
+                    (SELECT sml.location_id ,sml.date , (Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) cm_use FROM stock_move_line sml  -- 3-3-3  Usage amount this month
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     WHERE sml.state = 'done'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_id IN {customer_location}
-                    GROUP BY sml.location_id, sml.date) cmu ON cmu.location_id = tiq.id and cmu.date BETWEEN do_mea.measure_date and '{end_period_datetime}'
+                    GROUP BY sml.location_id, sml.date) cmu ON cmu.location_id = tiq.id and cmu.date BETWEEN lmi.lm_meter_reading_date and do_mea.measure_date
 
-                    
                     LEFT JOIN
                     -- 
-                    (SELECT sml.location_id, sp.date_done FROM stock_move_line sml  -- 3-3-4 b date_done transfer 
+                    (SELECT sml.location_id, sp.date_done FROM stock_move_line sml  -- 3-3-5 a date_done transfer 
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     WHERE sml.state = 'done'
                     AND sml.product_id = '{lpgas_product_id}'
@@ -214,33 +244,21 @@ class LPGasOrder(models.Model):
                     
                     LEFT JOIN
                     -- 
-                    (SELECT location_id, quantity FROM stock_quant  -- 3-3-5 b case 3-3-4-b is NULL
+                    (SELECT location_id, quantity FROM stock_quant  -- 3-3-6 case 3-3-5-a is NULL
                     WHERE product_id = '{lpgas_product_id}'
                     AND location_id IN {customer_location}
                     ) mri_not_tran ON mri_not_tran.location_id = tiq.id
                     
-                    LEFT JOIN
-                    
-                    (
-                    SELECT sl.id location_id,lpl.this_month_inventory lm_inventory from stock_location sl -- 3-2 Tại kho tháng trước
-                    LEFT JOIN ss_erp_lpgas_order_line lpl ON lpl.location_id = sl.id
-                    LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
-                    WHERE lp.month_aggregation_period = '{period_last_month}' AND
-                    sl.x_inventory_type = 'minibulk' AND
-                    lp.state = 'done' AND
-                    lp.organization_id = '{self.organization_id.id}' 
-                    AND sl.id IN {customer_location}
-                    )lmi ON lmi.location_id = cmu.location_id
                     
                     LEFT JOIN
-                    
+                    --
                     (SELECT sml.location_dest_id location_id,sml.date , sum(sml.qty_done) fill_after_measure FROM stock_move_line sml  --3-4-1 Extra filling amount after measuring
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     WHERE sml.state = 'done'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_dest_id IN {customer_location}
                     GROUP BY sml.location_dest_id, sml.date
-                    ) fam ON fam.location_id = cmu.location_id and fam.date BETWEEN do_mea.measure_date and '{end_period_datetime}'
+                    ) fam ON fam.location_id = tiq.id and fam.date BETWEEN do_mea.measure_date and '{end_period_datetime}'
                     
                     LEFT JOIN
                     (
@@ -251,7 +269,7 @@ class LPGasOrder(models.Model):
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_dest_id IN {customer_location}
                     GROUP BY sml.location_dest_id
-                    ) ftm ON ftm.location_id = cmu.location_id
+                    ) ftm ON ftm.location_id = tiq.id
                     ;
                     """
 
