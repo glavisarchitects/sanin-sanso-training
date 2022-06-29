@@ -42,6 +42,17 @@ class ResPartnerForm(models.Model):
     same_vat_partner_id = fields.Many2one(
         'res.partner', string='Partner with same Tax ID', store=False)
 
+    property_stock_customer = fields.Many2one(
+        'stock.location', string="Customer Location", company_dependent=True, check_company=True,
+        domain="['|', ('company_id', '=', False), ('company_id', '=', allowed_company_ids[0])]",
+        help="The stock location used as destination when sending goods to this contact.",
+        default=lambda self: self.env.ref('stock.stock_location_customers', raise_if_not_found=False))
+    property_stock_supplier = fields.Many2one(
+        'stock.location', string="Vendor Location", company_dependent=True, check_company=True,
+        domain="['|', ('company_id', '=', False), ('company_id', '=', allowed_company_ids[0])]",
+        help="The stock location used as source when receiving goods from this contact.",
+        default=lambda self: self.env.ref('stock.stock_location_suppliers', raise_if_not_found=False))
+
     @api.model
     def _default_property_account_payable_id(self):
         return self.env['ir.property']._get('property_account_payable_id', 'res.partner')

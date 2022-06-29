@@ -143,6 +143,12 @@ class ApprovalRequest(models.Model):
                     if self.env.user in request.category_id.user_ids:
                         request.show_btn_refuse = True
 
+    @api.constrains('x_approval_date')
+    def _check_x_approval_date(self):
+        for request in self:
+            if request.x_approval_date < datetime.date.today():
+                raise UserError('申請対象のプロダクトは、既に登録済みの可能性があります。')
+
     def _compute_show_btn_approve(self):
         for request in self:
             # ('user_status','!=','pending')
