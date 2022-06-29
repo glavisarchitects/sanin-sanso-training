@@ -7998,7 +7998,6 @@ msgstr "在庫可能品"
 
 #. module: ss_erp
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_product_template_form__type__consu
-msgid "Consumable"
 msgstr "消耗品"
 
 #. module: ss_erp
