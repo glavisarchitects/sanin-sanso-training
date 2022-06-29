@@ -311,7 +311,7 @@
                     }" domain="[('state', 'not in', ['cancel', 'done'])]"/>
                 </page>
                 <page string="指示伝票" name="inventory_instruction" attrs="{'invisible': [('has_x_inventory_instruction_ids', '=', 'no')]}">
-                    <field name="x_inventory_instruction_ids" widget="many2many_tags" attrs="{
+                    <field name="x_inventory_instruction_ids" attrs="{
                         'invisible': [('has_x_inventory_instruction_ids', '=', 'no')],
                         'required': [('has_x_inventory_instruction_ids', '=', 'required')],
                         'readonly':[('request_status','!=','new')]

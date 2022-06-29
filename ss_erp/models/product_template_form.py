@@ -30,15 +30,18 @@ class ProductTemplateForm(models.Model):
         ('purchase', 'On ordered quantities'),
         ('receive', 'On received quantities'),
     ], string="Control Policy", help="On ordered quantities: Control bills based on ordered quantities.\n"
-        "On received quantities: Control bills based on received quantities.", default="receive")
+                                     "On received quantities: Control bills based on received quantities.",
+        default="receive")
 
     approval_id = fields.Char(string="Approval ID")
     approval_state = fields.Char(string='Approval status')
     product_template_id = fields.Char(string='Template ID')
 
     # rewrite relation table
-    taxes_id = fields.Many2many('account.tax', 'product_template_form_taxes_rel', 'prod_id', 'tax_id', help="Default taxes used when selling the product.", string='Customer Taxes',
-        domain=[('type_tax_use', '=', 'sale')], default=lambda self: self.env.company.account_sale_tax_id)
+    taxes_id = fields.Many2many('account.tax', 'product_template_form_taxes_rel', 'prod_id', 'tax_id',
+                                help="Default taxes used when selling the product.", string='Customer Taxes',
+                                domain=[('type_tax_use', '=', 'sale')],
+                                default=lambda self: self.env.company.account_sale_tax_id)
     supplier_taxes_id = fields.Many2many('account.tax', 'product_template_form_supplier_taxes_rel', 'prod_id', 'tax_id',
                                          string='Vendor Taxes', help='Default taxes used when buying the product.',
                                          domain=[('type_tax_use', '=', 'purchase')],
@@ -48,14 +51,13 @@ class ProductTemplateForm(models.Model):
         domain=[('product_selectable', '=', True)],
         help="Depending on the modules installed, this will allow you to define the route of the product: whether it will be bought, manufactured, replenished on order, etc.")
 
-
     optional_product_ids = fields.Many2many(
         'product.template', 'product_template_form_optional_rel', 'src_id', 'dest_id',
         string='Optional Products', help="Optional Products are suggested "
-        "whenever the customer hits *Add to Cart* (cross-sell strategy, "
-        "e.g. for computers: warranty, software, etc.).", check_company=True)
+                                         "whenever the customer hits *Add to Cart* (cross-sell strategy, "
+                                         "e.g. for computers: warranty, software, etc.).", check_company=True)
     # change o2m to m2m
-    x_product_unit_measure_ids = fields.Many2many('ss_erp.product.units.measure',string='代替単位', tracking=True)
+    x_product_unit_measure_ids = fields.Many2many('ss_erp.product.units.measure', string='代替単位', tracking=True)
 
     # rewrite some compute function
     @api.depends_context('company', 'location', 'warehouse')
@@ -75,6 +77,12 @@ class ProductTemplateForm(models.Model):
         if 'approval_state' in values and values.get('approval_state') == 'approved' and update_product_template:
             self._action_process()
         return res
+
+    @api.constrains('name')
+    def _check_product_name(self):
+        for product in self:
+            if self.search_count([('name', '=', product.name)]) > 1:
+                raise UserError('申請対象のプロダクトは、既に登録済みの可能性があります。')
 
     def _action_process(self):
         DEFAULT_FIELDS = ['id', 'create_uid', 'create_date', 'write_uid', 'write_date',
@@ -108,7 +116,6 @@ class ProductTemplateForm(models.Model):
                 product_template = self.env['product.template'].browse(int(product_template_id))
                 product_template.message_follower_ids.sudo().unlink()
                 product_template.sudo().write(vals)
-
 
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
