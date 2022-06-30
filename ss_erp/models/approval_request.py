@@ -146,7 +146,7 @@ class ApprovalRequest(models.Model):
     @api.constrains('x_approval_date')
     def _check_x_approval_date(self):
         for request in self:
-            if request.x_approval_date < datetime.date.today():
+            if request.x_approval_date < datetime.today().date():
                 raise UserError('申請対象のプロダクトは、既に登録済みの可能性があります。')
 
     def _compute_show_btn_approve(self):
