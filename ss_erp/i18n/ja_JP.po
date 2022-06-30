@@ -8014,13 +8014,3 @@ msgstr "オーダ数量に基づく"
 #: model:ir.model.fields.selection,name:ss_erp.selection__ss_erp_product_template_form__purchase_method__receive
 msgid "On received quantities"
 msgstr "入荷数量に基づく"
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__route_from_categ_ids
-msgid "Category Routes"
-msgstr "カテゴリルート"
-
-#. module: ss_erp
-#: model:ir.model.fields,field_description:ss_erp.field_ss_erp_product_template_form__produce_delay
-msgid "Manufacturing Lead Time"
-msgstr "製造リードタイム"
