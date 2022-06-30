@@ -93,6 +93,17 @@ class IFDBPowerNetSalesHeader(models.Model):
             raise UserError(
                 _('設定している取引先コードは存在しません。'))
 
+        # 2022/06/30 設計書の変更によりの追加
+        gas_product_id = self.env['ir.config_parameter'].sudo().get_param('powernet.gas.basic.charge.product_id')
+        if not gas_product_id:
+            raise UserError(
+                _('ガス基本料金のプロダクトIDの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（powernet.gas.basic.charge.product_id）'))
+
+        gas_product = self.env['product.template'].browse(gas_product_id)
+        if not gas_product:
+            raise UserError(
+                _('設定しているプロダクトIDは、プロダクトマスタに存在しません。プロダクトマスタを確認してください。'))
+
         exe_data = self.powernet_sale_record_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
             key=lambda k: (k['sales_date'], k['customer_code'], k['data_types']))
 
@@ -131,9 +142,11 @@ class IFDBPowerNetSalesHeader(models.Model):
                 if key in failed_so:
                     continue
                 else:
+                    # 2022/06/30 販売伝票を作成する際に、プロダクトIDが上記で取得したガス基本料金のプロダクトIDと一致する場合、数量を「1」で更新する。
+                    quantity = 1 if (int(line.product_code) == gas_product_id) else line.quantity
                     order_line = {
                         'product_id': int(line.product_code),
-                        'product_uom_qty': line.quantity,
+                        'product_uom_qty': quantity,
                         'product_uom': uom_dict[line.unit_code],
                     }
 

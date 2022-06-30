@@ -10,7 +10,7 @@
                       js_class="instruction_create_inventory_button" string="Inventory Details">
                     <field name="company_id" invisible="1"/>
                     <field name="organization_id"/>
-                    <field name="type_id"/>
+<!--                    <field name="type_id"/>-->
                     <field name="location_id" options="{'no_create': True}"/>
                     <field name="product_id"/>
                     <field name="prod_lot_id"/>
@@ -34,7 +34,7 @@
                       js_class="instruction_create_inventory_button" string="Inventory Details">
                     <field name="company_id" invisible="1"/>
                     <field name="organization_id"/>
-                    <field name="type_id"/>
+<!--                    <field name="type_id"/>-->
                     <field name="location_id" options="{'no_create': True}"/>
                     <field name="product_id"/>
                     <field name="prod_lot_id"/>

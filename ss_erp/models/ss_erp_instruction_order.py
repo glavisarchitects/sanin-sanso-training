@@ -43,7 +43,7 @@ class InstructionOrder(models.Model):
         readonly=True,
         states={'draft': [('readonly', False)]}, )
     organization_id = fields.Many2one('ss_erp.organization', string='組織名')
-    type_id = fields.Many2one('product.template', string='棚卸種別')
+    # type_id = fields.Many2one('product.template', string='棚卸種別')
     stock_inventory_id = fields.Many2one('stock.inventory', string='棚卸伝票番号')
 
     @api.constrains("organization_id")
@@ -84,12 +84,12 @@ class InstructionOrder(models.Model):
                     _("組織名を選択してください。")
                 )
 
-    @api.constrains('type_id')
-    def _check_type_id(self):
-        for record in self:
-            if not record.type_id:
-                raise ValidationError(
-                    _("棚卸種別を選択してください。"))
+    # @api.constrains('type_id')
+    # def _check_type_id(self):
+    #     for record in self:
+    #         if not record.type_id:
+    #             raise ValidationError(
+    #                 _("棚卸種別を選択してください。"))
 
     @api.constrains('date')
     def _check_date(self):
@@ -271,7 +271,7 @@ class InstructionOrder(models.Model):
                 'name': self.env['ir.sequence'].next_by_code('stock.inventory.name'),
                 'company_id': self.company_id.id,
                 'organization_id': self.organization_id.id,
-                'type_id': self.type_id.id,
+                # 'type_id': self.type_id.id,
                 'accounting_date': self.accounting_date,
                 'prefill_counted_quantity': self.prefill_counted_quantity,
                 'instruction_order_id': self.id
