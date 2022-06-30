@@ -147,7 +147,7 @@ class ApprovalRequest(models.Model):
     def _check_x_approval_date(self):
         for request in self:
             if request.x_approval_date < datetime.today().date():
-                raise UserError('申請対象のプロダクトは、既に登録済みの可能性があります。')
+                raise UserError('申請期日が現在日付より過去日になっています。')
 
     def _compute_show_btn_approve(self):
         for request in self:
