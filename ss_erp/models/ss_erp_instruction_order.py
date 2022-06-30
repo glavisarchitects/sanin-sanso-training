@@ -192,9 +192,21 @@ class InstructionOrder(models.Model):
 
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
+        # 2022/06/30 LPガスのプロダクトを棚卸集計しないように
+        propane_gas_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id')
+        if not propane_gas_id:
+            raise UserError(
+                _('プロダクトコードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（lpgus.order.propane_gas_id）'))
+
+        if not self.env['product.template'].browse(int(propane_gas_id)):
+            raise UserError(
+                _('設定しているプロダクトIDは存在しません。'))
+
         domain = [('company_id', '=', self.company_id.id),
                   ('quantity', '!=', '0'),
-                  ('location_id', 'in', locations_ids)]
+                  ('location_id', 'in', locations_ids),
+                  ('product_id', '!=', int(propane_gas_id))]
+
         if self.prefill_counted_quantity == 'zero':
             domain.append(('product_id.active', '=', True))
 
