@@ -59,7 +59,6 @@ class StockScrap(models.Model):
                         raise UserError('担当者の所属部署を選択してください')
             else:
                 raise UserError('選択した担当者は従業員に紐づけしていません。')
-
     scrap_type = fields.Many2one('ss_erp.stock.scrap.category', string='廃棄種別', required=False, )
 
 
