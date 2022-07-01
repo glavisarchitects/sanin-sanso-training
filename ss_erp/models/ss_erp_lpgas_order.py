@@ -52,7 +52,7 @@ class LPGasOrder(models.Model):
         if lpgas_product_tmp_id == '':
             raise UserError(_("プロダクトコードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。"))
 
-        if not self.env['product.template'].browse(int(lpgas_product_tmp_id)):
+        if int(lpgas_product_tmp_id) not in self.env['product.template'].search([]).ids:
             raise UserError(_("設定しているプロダクトIDは存在しません。"))
 
         lpgas_product_id = self.env['product.product'].search([('product_tmpl_id', '=', int(lpgas_product_tmp_id))],
