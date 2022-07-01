@@ -99,8 +99,7 @@ class IFDBPowerNetSalesHeader(models.Model):
             raise UserError(
                 _('ガス基本料金のプロダクトIDの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（powernet.gas.basic.charge.product_id）'))
 
-        gas_product = self.env['product.template'].browse(gas_product_id)
-        if not gas_product:
+        if int(gas_product_id) not in self.env['product.template'].search([]).ids:
             raise UserError(
                 _('設定しているプロダクトIDは、プロダクトマスタに存在しません。プロダクトマスタを確認してください。'))
 
