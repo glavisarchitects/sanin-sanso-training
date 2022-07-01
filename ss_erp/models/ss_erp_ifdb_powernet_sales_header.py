@@ -143,7 +143,7 @@ class IFDBPowerNetSalesHeader(models.Model):
                     continue
                 else:
                     # 2022/06/30 販売伝票を作成する際に、プロダクトIDが上記で取得したガス基本料金のプロダクトIDと一致する場合、数量を「1」で更新する。
-                    quantity = 1 if (int(line.product_code) == gas_product_id) else line.quantity
+                    quantity = 1 if (int(line.product_code) == int(gas_product_id)) else line.quantity
                     order_line = {
                         'product_id': int(line.product_code),
                         'product_uom_qty': quantity,
