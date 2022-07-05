@@ -89,7 +89,9 @@
             <xpath expr="//field[@name='type']" position="before">
                 <field name="x_is_customer"/>
                 <field name="x_transaction_categ" widget="many2many_checkboxes"
-                       attrs="{'required': ['|',('x_is_customer', '=', True),('x_is_vendor', '=', True)]}"/>
+                       attrs="{'required': [('x_is_vendor', '=', True)], 'invisible': [('x_is_vendor', '!=', True)]}"
+
+                />
                 <field name="x_transaction_department" string="部門" widget="many2many_tags"
                        options="{'no_create': True, 'no_open': True, 'no_edit': True}"
                        attrs="{'required': [('x_transaction_categ', '=', True)]}"/>
