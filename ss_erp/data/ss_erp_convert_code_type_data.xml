@@ -5,25 +5,25 @@
             <field name="name">単位コード</field>
             <field name="code">product_unit</field>
             <field name="model">uom.uom</field>
-            <field name="fields">id</field>
+            <field name="fields">ID (uom.uom)</field>
         </record>
         <record id="ss_erp_convert_code_type_data_1" model="ss_erp.convert.code.type">
             <field name="name">請求先コード</field>
             <field name="code">customer</field>
             <field name="model">res.partner</field>
-            <field name="fields">id</field>
+            <field name="fields">ID (res.partner)</field>
         </record>
         <record id="ss_erp_convert_code_type_data_2" model="ss_erp.convert.code.type">
             <field name="name">商品コード</field>
             <field name="code">product</field>
             <field name="model">product.product</field>
-            <field name="fields">id</field>
+            <field name="fields">ID (product.product)</field>
         </record>
         <record id="ss_erp_convert_code_type_data_3" model="ss_erp.convert.code.type">
             <field name="name">販売店コード</field>
             <field name="code">customer</field>
             <field name="model">res.partner</field>
-            <field name="fields">id</field>
+            <field name="fields">ID (res.partner)</field>
         </record>
     </data>
 </odoo>
