@@ -199,7 +199,7 @@ class LPGasOrder(models.Model):
                                         
                     LEFT JOIN
                     -- 
-                    (SELECT sml.location_id, so.date_order measure_date FROM stock_move_line sml  -- 3-3-1 get meassua date from SO date order
+                    (SELECT sml.location_id, so.date_order measure_date FROM stock_move_line sml  -- 3-3-1 get measure date from SO date order
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     LEFT JOIN sale_order so ON so.id = sp.sale_id
                     WHERE sml.state = 'done'
@@ -217,6 +217,7 @@ class LPGasOrder(models.Model):
                     LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
                     WHERE lp.month_aggregation_period = '{period_last_month}' AND
                     sl.x_inventory_type = 'minibulk' AND
+                    lp.inventory_type = '{self.inventory_type}' AND
                     lp.state = 'done' AND
                     lp.organization_id = '{self.organization_id.id}' 
                     AND sl.id IN {customer_location}
@@ -225,12 +226,31 @@ class LPGasOrder(models.Model):
                     LEFT JOIN
 
                     -- 
-                    (SELECT sml.location_id ,sml.date , (Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) cm_use FROM stock_move_line sml  -- 3-3-3  Usage amount this month
+                    (SELECT sml.location_id, sum(sml.qty_done) cm_use FROM stock_move_line sml  -- 3-3-3  Usage amount this month
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     WHERE sml.state = 'done'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_id IN {customer_location}
-                    GROUP BY sml.location_id, sml.date) cmu ON cmu.location_id = tiq.id and cmu.date BETWEEN lmi.lm_meter_reading_date and do_mea.measure_date
+                    AND sml.date BETWEEN (
+                                    SELECT (lpl.meter_reading_date + interval '1 hour' * 23 + interval '1 minute' * 59 +
+                                        interval '1 second' * 59) lm_meter_reading_date from stock_location sl -- 3-2 At the warehouse last month
+                                        LEFT JOIN ss_erp_lpgas_order_line lpl ON lpl.location_id = sl.id
+                                        LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
+                                        WHERE lp.month_aggregation_period = '{period_last_month}' AND
+                                        sl.x_inventory_type = 'minibulk' AND
+                                        lp.inventory_type = '{self.inventory_type}' AND
+                                        lp.state = 'done' AND
+                                        lp.organization_id = '{self.organization_id.id}' 
+                                        AND sl.id = sml.location_id
+                                    )
+                                    AND (
+                                    SELECT so.date_order FROM sale_order so  -- 3-3-1 get measure date from SO date order
+                                            WHERE so.state = 'sale'
+                                            AND so.id = sp.sale_id
+                                            AND so.date_order BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                                        ORDER BY so.date_order desc LIMIT 1
+                                    )
+                    GROUP BY sml.location_id) cmu ON cmu.location_id = tiq.id
 
                     LEFT JOIN
                     -- 
@@ -239,8 +259,15 @@ class LPGasOrder(models.Model):
                     WHERE sml.state = 'done'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_id IN {customer_location}
+                    AND sp.date_done <= (
+                                        SELECT so.date_order FROM sale_order so  -- 3-3-1 get measure date from SO date order
+                                            WHERE so.state = 'sale'
+                                            AND so.id = sp.sale_id
+                                            AND so.date_order BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                                        ORDER BY so.date_order desc LIMIT 1
+                                        )
                     LIMIT 1
-                    ) dd_tran ON dd_tran.location_id = tiq.id and dd_tran.date_done <= do_mea.measure_date
+                    ) dd_tran ON dd_tran.location_id = tiq.id
                     
                     LEFT JOIN
                     -- 
@@ -252,13 +279,21 @@ class LPGasOrder(models.Model):
                     
                     LEFT JOIN
                     --
-                    (SELECT sml.location_dest_id location_id,sml.date , sum(sml.qty_done) fill_after_measure FROM stock_move_line sml  --3-4-1 Extra filling amount after measuring
+                    (SELECT sml.location_dest_id location_id,sum(sml.qty_done) fill_after_measure FROM stock_move_line sml  --3-4-1 Extra filling amount after measuring
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     WHERE sml.state = 'done'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_dest_id IN {customer_location}
-                    GROUP BY sml.location_dest_id, sml.date
-                    ) fam ON fam.location_id = tiq.id and fam.date BETWEEN do_mea.measure_date and '{end_period_datetime}'
+                    AND sml.date BETWEEN (
+                                        SELECT so.date_order FROM sale_order so  -- 3-3-1 get measure date from SO date order
+                                            WHERE so.state = 'sale'
+                                            AND so.id = sp.sale_id
+                                            AND so.date_order BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                                        ORDER BY so.date_order desc LIMIT 1
+                                        )
+                                    AND '{end_period_datetime}'
+                    GROUP BY sml.location_dest_id
+                    ) fam ON fam.location_id = tiq.id
                     
                     LEFT JOIN
                     (

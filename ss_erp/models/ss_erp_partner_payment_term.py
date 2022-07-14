@@ -1,11 +1,10 @@
 from odoo import models, fields, api
 
 PAYMENT_METHOD = [
-    ('cash', '現金'),
-    ('check', '小切手'),
-    ('transfer', '振込'),
-    ('bills', '手形'),
-    ('offset', '相殺'),
+    ('hq_transfer', '本社支払(振込)'),
+    ('hq_bills', '本社支払(手形)'),
+    ('branch_transfer', '支店支払(振込)'),
+    ('branch_cash', '支店支払(現金)'),
 ]
 
 
