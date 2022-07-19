@@ -21,6 +21,11 @@ class ResPartnerBank(models.Model):
     # HuuPhong 2011/01/11
     partner_id = fields.Many2one('res.partner', 'Account Holder', ondelete='cascade',required=False)
     partner_form_id = fields.Many2one('ss_erp.res.partner.form', 'Account Holder', ondelete='cascade')
+    # TuyenTN 2022/07/15
+    acc_number = fields.Char(string='口座番号')
+    acc_holder_name = fields.Char(string='口座名義')
+    bank_id = fields.Many2one('res.bank', string='銀行')
+    organization_id = fields.Many2one('ss_erp.organization',string='Organization')
 
     @api.constrains('bank_id', 'x_bank_branch', 'acc_type', 'acc_number')
     def check_bank_account(self):
