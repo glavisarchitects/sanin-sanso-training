@@ -26,8 +26,8 @@
         "data/ir_action_server_data.xml",
         "data/yamasan_product_data.xml",
         # "data/ss_erp_convert_code_type_data.xml",
-        "data/ss_erp_external_system_type_data.xml",
-        "data/uom_data.xml",
+        # "data/ss_erp_external_system_type_data.xml",
+        # "data/uom_data.xml",
 
         # REPORTS
         "reports/paperformat.xml",

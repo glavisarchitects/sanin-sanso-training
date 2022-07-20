@@ -220,6 +220,7 @@ class LPGasOrder(models.Model):
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     LEFT JOIN sale_order so ON so.id = sp.sale_id
                     WHERE sml.state = 'done'
+                    AND so.state = 'sale'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_id IN {customer_location}
                     AND (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
