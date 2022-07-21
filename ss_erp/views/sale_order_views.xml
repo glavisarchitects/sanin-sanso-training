@@ -15,6 +15,12 @@
                     <field name="authorized_transaction_ids" invisible="1"/>
                     <field name="x_no_approval_required_flag" invisible="1"/>
                     <field name="approval_status" invisible="1"/>
+
+                    <!--         SVF Region           -->
+                    <button name="send_data_svf_cloud" type="object"
+                            string="Send SVF Cloud" class="oe_highlight"/>
+                    <!--           End region         -->
+
                     <button name="payment_action_capture" type="object"
                             invisible="context.get('active_model')=='approval.request'"
                             string="トランザクションをキャプチャする" class="oe_highlight"
