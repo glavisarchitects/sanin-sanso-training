@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="product_major_classification_propane" model="ss_erp.product.major.classification">
+            <field name="name">LPガス</field>
+            <field name="major_classification_code">3</field>
+        </record>
+
+        <record id="product_medium_classification_propane" model="ss_erp.product.medium.classification">
+            <field name="major_classification_code" ref="product_major_classification_propane"/>
+            <field name="name">プロパン</field>
+            <field name="display_name">プロパン</field>
+            <field name="medium_classification_code">300</field>
+        </record>
+
+        <record id="product_medium_classification_butan1" model="ss_erp.product.medium.classification">
+            <field name="major_classification_code" ref="product_major_classification_propane"/>
+            <field name="name">ブタン</field>
+            <field name="display_name">ブタン</field>
+            <field name="medium_classification_code">310</field>
+        </record>
+
+        <record id="product_medium_classification_butan2" model="ss_erp.product.medium.classification">
+            <field name="major_classification_code" ref="product_major_classification_propane"/>
+            <field name="name">ブタン</field>
+            <field name="display_name">ブタン</field>
+            <field name="medium_classification_code">320</field>
+        </record>
+
+        <record id="product_medium_classification_industry_propane" model="ss_erp.product.medium.classification">
+            <field name="major_classification_code" ref="product_major_classification_propane"/>
+            <field name="name">工業用プロパン</field>
+            <field name="display_name">工業用プロパン</field>
+            <field name="medium_classification_code">120</field>
+        </record>
+
+        <record id="product_medium_classification_industry_butan" model="ss_erp.product.medium.classification">
+            <field name="major_classification_code" ref="product_major_classification_propane"/>
+            <field name="name">工業用プロパン</field>
+            <field name="display_name">工業用プロパン</field>
+            <field name="medium_classification_code">121</field>
+        </record>
+
+    </data>
+</odoo>

@@ -4,6 +4,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from datetime import datetime, date
 from lxml import etree
+from odoo.tools.float_utils import float_round
 
 
 class SaleOrder(models.Model):
@@ -137,6 +138,13 @@ class SaleOrder(models.Model):
         return res
 
 
+    # svf region
+    def send_data_svf_cloud(self):
+        self.env['svf.cloud.config'].sudo().get_access_token()
+
+    #
+
+
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
@@ -164,6 +172,20 @@ class SaleOrderLine(models.Model):
     # onchange auto caculate x_conversion_quantity
     @api.onchange('x_alternative_unit_id', 'product_uom_qty')
     def _onchange_get_x_conversion_quantity(self):
+        # C001_ガス換算
+        if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.id in [
+                    self.env.ref('ss_erp.product_medium_classification_propane').id,
+                    self.env.ref('ss_erp.product_medium_classification_butan1').id,
+                    self.env.ref('ss_erp.product_medium_classification_butan2').id,
+                    self.env.ref('ss_erp.product_medium_classification_industry_propane').id,
+                    self.env.ref('ss_erp.product_medium_classification_industry_butan').id,]:
+
+            if self.x_alternative_unit_id.id == self.env.ref('uom.product_uom_kgm').id:
+                self.product_uom_qty = int(self.product_uom_qty)
+                # self.product_uom_qty = float_round(self.product_uom_qty, precision_digits=0)
+            else:
+                self.product_uom_qty = float_round(self.product_uom_qty, precision_digits=2)
+
         if self.x_alternative_unit_id and self.product_uom_qty:
             product_uom_alternative = self.product_id.x_product_unit_measure_ids.filtered(lambda pum: pum.alternative_uom_id == self.x_alternative_unit_id)
             self.x_conversion_quantity = product_uom_alternative.converted_value * self.product_uom_qty
