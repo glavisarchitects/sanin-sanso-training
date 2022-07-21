@@ -471,6 +471,29 @@
                     </group>
                 </group>
             </xpath>
+            <xpath expr="//page/field[@name='child_ids']/form/sheet/group" position="after">
+                <group string="ローリー業務" col="12">
+                    <group  colspan="6">
+                        <field name="product_id" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                        <field name="x_responsible_dept_id" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                    </group>
+                    <group colspan="6">
+                        <field name="x_lorry_type" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                        <field name="x_name" widget="many2many_tags" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                    </group>
+                </group>
+                <group string="ミニバルクローリー業務" col="12">
+                    <group  colspan="6">
+                        <field name="x_creation_target"/>
+                        <field name="manager_id" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                        <field name="location_id" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                    </group>
+                    <group colspan="6">
+                        <field name="x_delivery_pattern" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                        <field name="x_delivery_reference_date" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                    </group>
+                </group>
+            </xpath>
         </field>
     </record>
 
@@ -504,7 +527,13 @@
                     'required': [('has_property_product_pricelist', '=', 'required')]
                 }</attribute>
             </field>
+            <xpath expr="//field[@name='property_product_pricelist']" position="after">
+                <field name="x_received_method"/>
+                <field name="x_responsible_person_printing"/>
+            </xpath>
+
         </field>
+
     </record>
 
     <record model="ir.ui.view" id="view_partner_property_form_inherit_account">

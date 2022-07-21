@@ -2,9 +2,10 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
-import dateutil.relativedelta
+from dateutil.relativedelta import relativedelta
 import calendar
 import logging
+import pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -60,7 +61,7 @@ class LPGasOrder(models.Model):
 
         branch_warehouse = self.organization_id.warehouse_id
         warehouse_location = branch_warehouse.lot_stock_id
-        period_last_date = self.aggregation_period + dateutil.relativedelta.relativedelta(months=-1)
+        period_last_date = self.aggregation_period + relativedelta(months=-1)
         period_last_month = period_last_date.month
         customer_location = self.env['stock.location'].search(
             [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'),
@@ -77,6 +78,16 @@ class LPGasOrder(models.Model):
         current_month_measure_date = self.aggregation_period.replace(day=18)
         # Number of inventory days in a month
         numbers_day_inventory_in_month = current_month_measure_date - period_last_date.replace(day=18)
+
+
+        # get the number of hours difference between local time and utc time
+        tz = self.env.user.tz
+        utcnow = pytz.timezone('utc').localize(datetime.utcnow())  # generic time
+        local_user_time_now = utcnow.astimezone(pytz.timezone(tz)).replace(tzinfo=None)
+        offset = relativedelta(local_user_time_now, datetime.utcnow())
+        hours_diff = int(offset.hours)
+        minutes_diff = int(offset.minutes)
+        seconds_diff = int(offset.seconds)
 
         if self.inventory_type == 'cylinder':
             if customer_location == '()':
@@ -109,17 +120,20 @@ class LPGasOrder(models.Model):
                 WHERE sml.state = 'done'
                 And sml.product_id = '{lpgas_product_id}'
                 And sml.location_id IN {customer_location}
-                and sml.date BETWEEN '{start_period_measure}' and '{end_period_measure}'
+                and (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_measure}' and '{end_period_measure}'
                 GROUP BY sml.location_id) cmu ON tiq.id =  cmu.location_id
                 
                 LEFT JOIN
                 
                 (SELECT sml.location_dest_id location_id, ROUND(AVG(extract(day from AGE('{current_month_measure_date}', sml.date))::int)) num_day_measure FROM stock_move_line sml -- 2-3-4 Số ngày đo
                 --LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
-                WHERE sml.date BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                WHERE (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
                 AND sml.location_dest_id IN {customer_location}
                 AND sml.product_id = '{lpgas_product_id}'
-                AND sml.date <=  '{current_month_measure_date}'
+                AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') <=  '{current_month_measure_date}'
                 AND sml.state = 'done' GROUP BY sml.location_dest_id) ndm ON ndm.location_id = tiq.id
 
                 
@@ -128,7 +142,8 @@ class LPGasOrder(models.Model):
                 (SELECT sml.location_dest_id location_id, (Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) fill_after_measure FROM stock_move_line sml  --2-4-1 Lượng bơm thêm sau khi đo
                 Left join stock_picking sp ON sp.id = sml.picking_id
                 where sml.state = 'done'
-                AND sml.date BETWEEN '{start_period_measure}' and '{end_period_datetime}'
+                AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_measure}' and '{end_period_datetime}'
                 And sml.product_id = '{lpgas_product_id}'
                 And sml.location_dest_id IN {customer_location}
                 GROUP BY sml.location_dest_id
@@ -139,7 +154,8 @@ class LPGasOrder(models.Model):
                 (SELECT sml.location_dest_id location_id, sum(sml.qty_done) fill_this_month FROM stock_move_line sml -- 2-5-1 this_month_filling
                 Left join stock_picking sp ON sp.id = sml.picking_id
                 where sml.state = 'done'
-                AND sml.date BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
                 And sml.product_id = '{lpgas_product_id}'
                 And sml.location_dest_id IN {customer_location}
                 GROUP BY sml.location_dest_id) ftm ON ftm.location_id = tiq.id
@@ -199,13 +215,16 @@ class LPGasOrder(models.Model):
                                         
                     LEFT JOIN
                     -- 
-                    (SELECT sml.location_id, so.date_order measure_date FROM stock_move_line sml  -- 3-3-1 get measure date from SO date order
+                    (SELECT sml.location_id, (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') measure_date FROM stock_move_line sml  -- 3-3-1 get measure date from SO date order
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     LEFT JOIN sale_order so ON so.id = sp.sale_id
                     WHERE sml.state = 'done'
+                    AND so.state = 'sale'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_id IN {customer_location}
-                    AND so.date_order BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                    AND (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
                     ORDER BY so.date_order desc LIMIT 1
                     ) do_mea ON do_mea.location_id = tiq.id 
                     
@@ -231,9 +250,9 @@ class LPGasOrder(models.Model):
                     WHERE sml.state = 'done'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_id IN {customer_location}
-                    AND sml.date BETWEEN (
-                                    SELECT (lpl.meter_reading_date + interval '1 hour' * 23 + interval '1 minute' * 59 +
-                                        interval '1 second' * 59) lm_meter_reading_date from stock_location sl -- 3-2 At the warehouse last month
+                    AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN (
+                                    SELECT lpl.meter_reading_date lm_meter_reading_date from stock_location sl -- 3-2 At the warehouse last month
                                         LEFT JOIN ss_erp_lpgas_order_line lpl ON lpl.location_id = sl.id
                                         LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
                                         WHERE lp.month_aggregation_period = '{period_last_month}' AND
@@ -244,26 +263,33 @@ class LPGasOrder(models.Model):
                                         AND sl.id = sml.location_id
                                     )
                                     AND (
-                                    SELECT so.date_order FROM sale_order so  -- 3-3-1 get measure date from SO date order
+                                    SELECT (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') so_local_time FROM sale_order so  -- 3-3-1 get measure date from SO date order
                                             WHERE so.state = 'sale'
-                                            AND so.id = sp.sale_id
-                                            AND so.date_order BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                                            -- AND so.id = sp.sale_id don't care about cmu table picking_id
+                                            AND (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
                                         ORDER BY so.date_order desc LIMIT 1
                                     )
                     GROUP BY sml.location_id) cmu ON cmu.location_id = tiq.id
 
                     LEFT JOIN
                     -- 
-                    (SELECT sml.location_id, sp.date_done FROM stock_move_line sml  -- 3-3-5 a date_done transfer 
+                    (SELECT sml.location_id, (sp.date_done + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') date_done FROM stock_move_line sml  -- 3-3-5 a date_done transfer 
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     WHERE sml.state = 'done'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_id IN {customer_location}
-                    AND sp.date_done <= (
+                    AND (sp.date_done + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') 
+                                        <= 
+                                        (
                                         SELECT so.date_order FROM sale_order so  -- 3-3-1 get measure date from SO date order
                                             WHERE so.state = 'sale'
-                                            AND so.id = sp.sale_id
-                                            AND so.date_order BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                                            -- AND so.id = sp.sale_id
+                                            AND (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
                                         ORDER BY so.date_order desc LIMIT 1
                                         )
                     LIMIT 1
@@ -284,11 +310,14 @@ class LPGasOrder(models.Model):
                     WHERE sml.state = 'done'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_dest_id IN {customer_location}
-                    AND sml.date BETWEEN (
-                                        SELECT so.date_order FROM sale_order so  -- 3-3-1 get measure date from SO date order
+                    AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN (
+                                        SELECT (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') FROM sale_order so  -- 3-3-1 get measure date from SO date order
                                             WHERE so.state = 'sale'
-                                            AND so.id = sp.sale_id
-                                            AND so.date_order BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                                            -- AND so.id = sp.sale_id
+                                            AND (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
                                         ORDER BY so.date_order desc LIMIT 1
                                         )
                                     AND '{end_period_datetime}'
@@ -300,7 +329,8 @@ class LPGasOrder(models.Model):
                     SELECT sml.location_dest_id location_id, sum(sml.qty_done) fill_this_month FROM stock_move_line sml -- 3-5-1 fill amount in this month
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     WHERE sml.state = 'done'
-                    AND sml.date BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                    AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_dest_id IN {customer_location}
                     GROUP BY sml.location_dest_id

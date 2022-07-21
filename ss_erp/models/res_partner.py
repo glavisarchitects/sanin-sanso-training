@@ -147,6 +147,28 @@ class ResPartner(models.Model):
                                           'partner_id',
                                           string='Transaction terms')
     country_id = fields.Many2one('res.country', string='Country', ondelete='restrict', default=_get_default_country_id)
+    # TuyenTN 2022/07/15
+    # Lorry Business
+    product_id = fields.Many2one('product.product',string='プロダクト')
+    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department',string='管轄部門')
+    # x_voucher_pattern
+    x_lorry_type = fields.Selection([('industrial', '産ガス'),
+                                     ('lpg', 'LPG'),
+                                     ('lng','LNG')
+                                     ],string='ローリー種別')
+    x_name = fields.Many2many('ss_erp.delivery.vehicle',string='車両')
+    x_acc_withdrawal = fields.Boolean(string='引落')
+    x_acc_transfer = fields.Boolean(string='取引')
+    x_received_method = fields.Many2one('account.journal',string='支払手段(入金)')
+    x_responsible_person_printing = fields.Selection([('yes', '印字する'),
+                                                      ('no', '印字しない'),
+                                                      ], string="責任者の印字")
+    # x_mini_bulk_business
+    x_creation_target = fields.Boolean(string='配車計画一括作成')
+    manager_id = fields.Many2one('hr.employee',string='担当者')
+    x_delivery_pattern = fields.Many2one('ss_erp.delivery.pattern', string='配送パターン')
+    x_delivery_reference_date = fields.Date(string='配送基準日')
+    location_id = fields.Many2one('stock.location', string='在庫移動元(車両)')
 
     @api.constrains('performance_ids', 'has_performance_info')
     def _check_performance_info_required(self):

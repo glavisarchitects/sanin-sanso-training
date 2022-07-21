@@ -49,6 +49,10 @@ class Organization(models.Model):
         store=True)
 
     warehouse_id = fields.Many2one('stock.warehouse', string="倉庫")
+    # TuyenTN 2022/07/15
+    bank_ids = fields.One2many('res.partner.bank', string='銀行口座', inverse_name='organization_id')
+
+
 
     @api.depends('name', 'parent_id.complete_name')
     def _compute_complete_name(self):

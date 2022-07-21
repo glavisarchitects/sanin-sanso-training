@@ -67,3 +67,5 @@ from . import ss_erp_product_detail_classification
 from . import ss_erp_product_medium_classification
 from . import ss_erp_product_minor_classification
 from . import product_template_form
+from . import ss_erp_delivery_pattern
+from . import ss_erp_delivery_vehicle

@@ -61,6 +61,21 @@
                             <field name="warehouse_id"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page string="銀行">
+                            <field name="bank_ids" >
+                                <tree editable="bottom" string="銀行口座">
+                                    <field name="bank_id"/>
+                                    <field name="x_bank_branch"/>
+                                    <field name="acc_number"/>
+                                    <field name="acc_type" />
+                                    <field name="acc_holder_name"/>
+                                    <field name="x_acc_holder_furigana"/>
+                                </tree>
+                            </field>
+
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
