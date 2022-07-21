@@ -363,6 +363,13 @@
                     </field>
                 </page>
             </xpath>
+            <xpath expr="//page[@name='sales_purchases']/group" position="after">
+                <group name="lorry_business_supplier">
+                    <group string="ローリー業務(仕入先)">
+                        <field name="manager_id"/>
+                    </group>
+                </group>
+            </xpath>
             <!--            <xpath expr="//group[@name='sale']" position="inside">-->
             <!--                <label for="x_payment_terms_ids" string="取引条件" attrs="{-->
             <!--                    'invisible': [('has_x_payment_terms', '=', 'no')],-->
@@ -430,6 +437,10 @@
                                 <field name="bank_id"
                                        attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
                                 <field name="x_bank_branch"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="x_acc_withdrawal"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="x_acc_transfer"
                                        attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
                                 <field name="acc_number"
                                        attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
