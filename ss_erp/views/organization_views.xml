@@ -54,6 +54,7 @@
                         <group>
                             <field name="organization_phone" widget="phone"/>
                             <field name="organization_fax"/>
+                            <field name="responsible_person" required="1"/>
                         </group>
                     </group>
                     <group>
@@ -67,6 +68,7 @@
                                 <tree editable="bottom" string="銀行口座">
                                     <field name="bank_id"/>
                                     <field name="x_bank_branch"/>
+                                    <field name="x_bank_branch_number"/>
                                     <field name="acc_number"/>
                                     <field name="acc_type" />
                                     <field name="acc_holder_name"/>

@@ -51,6 +51,7 @@ class Organization(models.Model):
     warehouse_id = fields.Many2one('stock.warehouse', string="倉庫")
     # TuyenTN 2022/07/15
     bank_ids = fields.One2many('res.partner.bank', string='銀行口座', inverse_name='organization_id')
+    responsible_person = fields.Many2one('hr.employee',string='責任者')
 
 
 

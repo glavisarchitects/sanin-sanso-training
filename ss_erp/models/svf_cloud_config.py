@@ -85,4 +85,5 @@ class SvfCloudConfig(models.Model):
         # signature = base64.b64encode(rsa.sign(sign_data, param['cloud_private_key'], 'SHA-256'))
         # beatoken = headers_64 + payload_64 + signature
         _logger.info("signatureSS: ", signature)
+        # TODO: Wait for SVF config infor
         return signature
