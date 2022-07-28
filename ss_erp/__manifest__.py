@@ -95,11 +95,15 @@
         "views/ss_erp_product_minor_classification_views.xml",
         "views/product_product_views.xml",
         "views/product_template_form_views.xml",
+        "views/account_move_views.xml",
+        # "views/account_payment_views.xml",
         "views/webclient_templates.xml",
         "menu/menu_views.xml",
 
         # Wizard
         "wizards/partner_rebate_attachment_wizard_views.xml",
+        "wizards/account_receivable_balance_confirm_views.xml",
+        "wizards/account_payment_wizard_views.xml",
 
         "data/mail_template_data.xml",
 
@@ -112,5 +116,6 @@
         'static/src/xml/import_custom.xml',
         'static/src/xml/instruction_detail.xml',
         'static/src/xml/instruction_view.xml',
+        'static/src/xml/transfer_fb_buttons.xml',
     ],
 }

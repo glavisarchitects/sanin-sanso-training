@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-<!--        <record id="view_move_form_ss_erp" model="ir.ui.view">-->
-<!--            <field name="name">account.move.ss.erp</field>-->
-<!--            <field name="model">account.move</field>-->
-<!--            <field name="inherit_id" ref="account.view_move_form"/>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//field[@name='invoice_date']" position="attributes">-->
-<!--                    <attribute name="widget">datepicker_widget</attribute>-->
-<!--                </xpath>-->
-<!--            </field>-->
-<!--        </record>-->
+        <record id="view_move_form_ss_erp" model="ir.ui.view">
+            <field name="name">account.move.ss.erp</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_register_payment']" position="before">
+                    <button name="svf_template_export" string="帳票出力" class="oe_highlight" type="object"/>
+                </xpath>
+                <xpath expr="//group[@name='sale_info_group']//field[@name='partner_bank_id']" position="after">
+                    <field name="x_organization_id"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
