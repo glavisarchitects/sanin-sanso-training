@@ -56,7 +56,9 @@
                                     <field name="has_website" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_vat" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_title" widget="radio" options="{'horizontal': true}"/>
-                                    <field name="has_category_id" widget="radio" options="{'horizontal': true}"/>                                </group>
+                                    <field name="has_category_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_lang" widget="radio" options="{'horizontal': true}"/>
+                                </group>
                             </group>
                         </page>
                         <page string="取引先概要" name="categ_partner_overview">
@@ -68,6 +70,11 @@
                                     <field name="has_performance_info" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_construction_info" widget="radio" options="{'horizontal': true}"/>
                                 </group>
+                                <group>
+                                    <field name="has_x_contract_route" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_contract_material" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_contract_monthly_amount" widget="radio" options="{'horizontal': true}"/>
+                                </group>
                             </group>
                         </page>
                         <page string="販売 &amp; 購買" name="categ_sale_and_buy">
@@ -78,6 +85,7 @@
                                     <field name="has_team_id" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_property_payment_term_id" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_property_product_pricelist" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_responsible_stamp" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_sales_term" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_x_collecting_money" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_x_fee_burden" widget="radio" options="{'horizontal': true}"/>
@@ -87,8 +95,11 @@
                                     <field name="has_x_purchase_user_id" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_x_vendor_payment_term" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_property_supplier_payment_term_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_x_payment_method" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_x_minimum_cost" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_x_payment_terms" widget="boolean_toggle"/>
+                                    <field name="has_company_id" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="has_industry_id" widget="radio" options="{'horizontal': true}"/>
                                     <field name="has_property_account_position_id" widget="radio" options="{'horizontal': true}"/>
                                 </group>
                             </group>
@@ -100,14 +111,15 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="内部注記" name="categ_internal_note">
-                            <group>
-                                <group>
-                                    <field name="has_sales_note" widget="radio" options="{'horizontal': true}"/>
-                                    <field name="has_purchase_note" widget="radio" options="{'horizontal': true}"/>
-                                </group>
-                            </group>
-                        </page>
+                            <!--Delete by design F005_連絡先カテゴリ-->
+<!--                        <page string="内部注記" name="categ_internal_note">-->
+<!--                            <group>-->
+<!--                                <group>-->
+<!--                                    <field name="has_sales_note" widget="radio" options="{'horizontal': true}"/>-->
+<!--                                    <field name="has_purchase_note" widget="radio" options="{'horizontal': true}"/>-->
+<!--                                </group>-->
+<!--                            </group>-->
+<!--                        </page>-->
                     </notebook>
                 </sheet>
             </form>

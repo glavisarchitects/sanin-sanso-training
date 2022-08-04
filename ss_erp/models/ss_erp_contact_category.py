@@ -93,7 +93,7 @@ class ContactCategory(models.Model):
     has_x_minimum_cost = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='最低仕入価格', default='optional')
     has_x_payment_terms = fields.Boolean(
-        string='支払条件の当社規定', default=True)
+        string='当社規定(支払条件)', default=True)
     has_property_account_position_id = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='会計ポジション', default='optional')
     has_bank_accounts = fields.Selection(
@@ -102,6 +102,18 @@ class ContactCategory(models.Model):
         CONTACT_CATEGORY_SELECTION, string='販売関連', default='optional')
     has_purchase_note = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='仕入関連', default='optional')
+
+    # HuuPhong 280722
+    has_lang = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='言語')
+    has_x_contract_route = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='取引動機')
+    has_x_contract_material = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='販売/仕入商材')
+    has_contract_monthly_amount = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='月間販売/仕入額')
+    has_x_responsible_stamp = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='責任者の印字')
+    has_x_receipts_term = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='取引条件')
+    has_x_payment_method = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='支払手段')
+    has_company_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='会社')
+    has_industry_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='産業')
+
 
     @api.onchange('has_partner_info')
     def _onchange_has_partner_info(self):

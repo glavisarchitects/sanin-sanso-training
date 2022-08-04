@@ -68,5 +68,35 @@
             <field name="key">R002_form_img_resource_path</field>
             <field name="value"/>
         </record>
+
+        <record id="r004_form_format_path" model="ir.config_parameter">
+            <field name="key">R004_form_format_path</field>
+            <field name="value"/>
+        </record>
+
+        <record id="r004_form_title" model="ir.config_parameter">
+            <field name="key">R004_form_title</field>
+            <field name="value"/>
+        </record>
+
+        <record id="r004_form_storage_dest_path" model="ir.config_parameter">
+            <field name="key">R004_form_storage_dest_path</field>
+            <field name="value"/>
+        </record>
+
+        <record id="r005_form_format_path" model="ir.config_parameter">
+            <field name="key">R005_form_format_path</field>
+            <field name="value"/>
+        </record>
+
+        <record id="r005_form_title" model="ir.config_parameter">
+            <field name="key">R005_form_title</field>
+            <field name="value"/>
+        </record>
+
+        <record id="r005_form_storage_dest_path" model="ir.config_parameter">
+            <field name="key">R005_form_storage_dest_path</field>
+            <field name="value"/>
+        </record>
     </data>
 </odoo>

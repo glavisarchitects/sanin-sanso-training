@@ -46,6 +46,10 @@
                 <field name="has_purchase_note" invisible="1"/>
                 <field name="has_partner_info" invisible="1"/>
                 <field name="has_x_payment_terms" invisible="1"/>
+                <field name="has_x_payment_method" invisible="1"/>
+                <field name="has_x_receipts_term" invisible="1"/>
+
+                <field name="has_lang" invisible="1"/>
             </xpath>
             <xpath expr="//h1" position="after">
                 <div>
@@ -92,9 +96,9 @@
                        attrs="{'required': [('x_is_vendor', '=', True)], 'invisible': [('x_is_vendor', '!=', True)]}"
 
                 />
-                <field name="x_transaction_department" string="部門" widget="many2many_tags"
-                       options="{'no_create': True, 'no_open': True, 'no_edit': True}"
-                       attrs="{'required': [('x_transaction_categ', '=', True)]}"/>
+<!--                <field name="x_transaction_department" string="部門" widget="many2many_tags"-->
+<!--                       options="{'no_create': True, 'no_open': True, 'no_edit': True}"-->
+<!--                       attrs="{'required': [('x_transaction_categ', '=', True)]}"/>-->
                 <field name="ref" string="取引先コード" widget="many2many_tags" attrs="{
                     'invisible': [('has_ref', '=', 'no')],
                     'required': [('has_ref', '=', 'required')]
@@ -120,6 +124,13 @@
             </xpath>
             <xpath expr="//label[@for='mobile']" position="attributes">
                 <attribute name="string">TEL直通</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='lang']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [ ('has_lang', '=', 'no'), ],
+                    'required': [('has_lang', '=', 'required')]}
+                </attribute>
             </xpath>
 
             <xpath expr="//span[@name='address_name']" position="replace">
@@ -249,10 +260,10 @@
                     'invisible': [('has_x_fax_payment', '=', 'no')],
                     'required': [('has_x_fax_payment', '=', 'required')]
                 }"/>
-                <field name="x_contract_check" attrs="{
-                    'invisible': [('has_x_contract_check', '=', 'no')],
-                    'required': [('has_x_contract_check', '=', 'required')]
-                }" widget="radio" options="{'horizontal': true}"/>
+                <field name="x_contract_check"
+                       attrs="{'invisible': [('has_x_contract_check', '=', 'no')],'required': [('has_x_contract_check', '=', 'required')]}"
+                       widget="radio" options="{'horizontal': true}"
+                       help="新規取引、BtoB取引、継続的取引(スポットではない)、月間取引税込30万円以上” すべて該当する場合は必ず締結にする"/>
                 <field name="x_contract_memo" attrs="{
                     'invisible': [('x_contract_check', '!=', 'no_contract')],
                     'required': [('x_contract_check', '=', 'no_contract')]
@@ -406,6 +417,18 @@
                 }"/>
             </xpath>
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="after">
+                <field name="x_more_than_receipts_method" attrs="{
+                    'invisible': [('has_x_receipts_term', '=', 'no')],
+                    'required': [('has_x_receipts_term', '=', 'required')]
+                }"/>
+                <field name="x_payment_method" attrs="{
+                    'invisible': [('has_x_payment_method', '=', 'no')],
+                    'required': [('has_x_payment_method', '=', 'required')]
+                }"/>
+                <field name="x_bank_payment_date" attrs="{
+                    'invisible': [('x_payment_method', 'not in', ['head_bank','branch_bank'])],
+                    'required': [('x_payment_method', 'in', ['head_bank','branch_bank'])]
+                }"/>
                 <field name="x_other_payment_term" attrs="{
                     'invisible': [('x_vendor_payment_term', '=', 'ss_rule')],
                     'required': [('x_vendor_payment_term', '=', 'other')]
@@ -436,6 +459,7 @@
                             <tree editable="bottom">
                                 <field name="bank_id"
                                        attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="x_bank_branch_number" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
                                 <field name="x_bank_branch"
                                        attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
                                 <field name="x_acc_withdrawal"
@@ -541,6 +565,18 @@
             <xpath expr="//field[@name='property_product_pricelist']" position="after">
                 <field name="x_received_method"/>
                 <field name="x_responsible_person_printing"/>
+                <field name="x_collecting_money" widget="radio" attrs="{
+                    'invisible': [('has_x_collecting_money', '=', 'no')],
+                    'required': [('has_x_collecting_money', '=', 'required')]
+                }" />
+                <field name="x_fee_burden" widget="radio" attrs="{
+                    'invisible': [('has_x_fee_burden', '=', 'no')],
+                    'required': [('has_x_fee_burden', '=', 'required')]
+                }" />
+                <field name="x_bill_site" attrs="{
+                    'invisible': [('has_x_bill_site', '=', 'no')],
+                    'required': [('has_x_bill_site', '=', 'required')]
+                }" />
             </xpath>
 
         </field>

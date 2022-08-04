@@ -103,7 +103,10 @@
         # Wizard
         "wizards/partner_rebate_attachment_wizard_views.xml",
         "wizards/account_receivable_balance_confirm_views.xml",
-        "wizards/account_payment_wizard_views.xml",
+        "wizards/comprehensive_create_zengin_fb_wizard_views.xml",
+        "wizards/zengin_account_transfer_request_fb_wizard_views.xml",
+        "wizards/account_receivable_customer_ledger_views.xml",
+        "wizards/account_list_receivable_views.xml",
 
         "data/mail_template_data.xml",
 

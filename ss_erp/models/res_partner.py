@@ -28,9 +28,9 @@ class ResPartner(models.Model):
     ])
     x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_rel',
                                            'categ_id', 'partner_id', string="取引区分", index=True, tracking=True)
-    x_transaction_department = fields.Many2many(
-        'ss_erp.bis.category', 'department_partner_rel', 'department_id', 'partner_id', string="部門", index=True,
-        tracking=True)
+    # x_transaction_department = fields.Many2many(
+    #     'ss_erp.bis.category', 'department_partner_rel', 'department_id', 'partner_id', string="部門", index=True,
+    #     tracking=True)
     x_is_branch = fields.Boolean(string="Organization in charge", default=True, help=_(
         "担当拠点、支店、営業所、出張所がある場合はチェック"), tracking=True)
 
@@ -143,6 +143,9 @@ class ResPartner(models.Model):
     has_x_payment_terms = fields.Boolean(
         related='x_contact_categ.has_x_payment_terms',
         store=True)
+
+    has_lang = fields.Selection(related='x_contact_categ.has_lang',)
+
     x_payment_terms_ids = fields.One2many('ss_erp.partner.payment.term',
                                           'partner_id',
                                           string='Transaction terms')
@@ -169,6 +172,34 @@ class ResPartner(models.Model):
     x_delivery_pattern = fields.Many2one('ss_erp.delivery.pattern', string='配送パターン')
     x_delivery_reference_date = fields.Date(string='配送基準日')
     location_id = fields.Many2one('stock.location', string='在庫移動元(車両)')
+
+    # TuyenTN 2022/29/07
+    x_responsible_stamp = fields.Selection([('yes','印字する'),('no','印字しない')])
+    x_more_than_deadline = fields.Char(string='締日(万円以上)')
+    x_more_than_receipts_site = fields.Char(string='支払サイト(万円以上)')
+    x_more_than_amount = fields.Float(string='金額(万円以上)')
+    x_more_than_receipts_method = fields.Selection([('cash','現金'),('check','小切手'),
+                                                    ('bank','振込'),('transfer','振替'),('bills','手形')],
+                                                   string='入金手段(万円以上)', default='transfer')
+    x_less_than_deadline = fields.Char(string='締日(万円以下)')
+    x_less_than_receipts_site = fields.Char(string='支払サイト(万円以下)')
+    x_less_than_amount = fields.Float(string='金額(万円以下)')
+    less_than_receipts_method = fields.Selection([('cash','現金'),('check','小切手'),
+                                                  ('bank','振込'),('transfer','振替'),('bills','手形')])
+    x_collecting_money = fields.Selection([('yes','印字する'),('no','印字しない')], default='no',string='集金')
+    x_fee_burden = fields.Selection([('other_side','先方'),('out_side','当方')], default='other_side', string='手数料負担')
+    x_bill_site = fields.Char(string='手形サイト')
+    x_payment_method = fields.Selection([('head_bank','本社振込'),('head_check','本社手形'),
+                                         ('bank_cash','支店現金'),('branch_bank','支店振込')],string='支払手段')
+    x_bank_payment_date = fields.Date(string='振込日')
+
+    has_x_payment_method = fields.Selection(
+        related='x_contact_categ.has_x_payment_method',
+        store=True)
+    has_x_receipts_term = fields.Selection(
+        related='x_contact_categ.has_x_receipts_term',
+        store=True)
+
 
     @api.constrains('performance_ids', 'has_performance_info')
     def _check_performance_info_required(self):
