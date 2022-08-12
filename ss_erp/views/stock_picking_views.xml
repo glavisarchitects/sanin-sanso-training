@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="vpicktree_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.tree.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="x_organization_id"/>
+                <field name="user_id" string="業務担当" />
+                <field name="x_account_modify"/>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="string">連絡先</attribute>
+            </field>
+            <field name="origin" position="attributes">
+                <attribute name="string">参照元</attribute>
+            </field>
+            <field name="location_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="location_dest_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="ss_erp_picking_out_form" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="string">入荷元</attribute>
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="string">担当者</attribute>
+                <attribute name="required">1</attribute>
+            </field>
+
+            <field name="picking_type_id" position="before">
+                <field name="x_organization_id" string="組織名"  attrs="{'invisible' :[('x_inventory_order_id', '!=', False)]}" required="1" />
+                <field name="x_responsible_dept_id" string="管轄部門" attrs="{'invisible' :[('x_inventory_order_id', '!=', False)]}" required="1"/>
+            </field>
+            <field name="location_dest_id" position="after">
+                <field name="x_inventory_order_id" invisible="1"/>
+                <field name="x_organization_id" string="移動元組織" attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
+                <field name="x_responsible_dept_id" string="移動元管轄部門" attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
+                <field name="x_organization_dest_id" attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
+                <field name="x_responsible_dept_dest_id" attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
+                <field name="user_id" position="move"/>
+                <field name="has_lot_ids" invisible="1"/>
+                <field name="x_inspection_user_id" attrs="{'required':[('x_inspection_exist', '=', True)],
+                            'invisible' :[('x_inspection_exist', '=', False)]}"/>
+            </field>
+            <field name="origin" position="attributes">
+                <attribute name="string">参照元</attribute>
+            </field>
+            <field name="origin" position="before">
+                <field name="x_shipping_method" readonly="1" widget="radio"/>
+                <field name="x_account_modify"/>
+                <field name="x_inspection_exist" attrs="{'required':[('has_lot_ids', '=', True)],
+                                'invisible' :[('has_lot_ids', '=', False)]}"/>
+            </field>
+            <field name="carrier_id" position="attributes">
+                <attribute name="string">運送会社</attribute>
+            </field>
+            <group name="carrier_data" position="inside">
+                <field name="x_dest_address_info" attrs="{'readonly':1}"/>
+            </group>
+
+            <field name="move_type" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="group_id" position="after">
+                <field name="x_mkt_user_id" readonly="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="ss_erp_stock_view_move_line_tree" model="ir.ui.view">
+        <field name="name">ss_erp.stock.move.line.tree</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location_dest_id']" position="after">
+                <field name="x_partner_id"/>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

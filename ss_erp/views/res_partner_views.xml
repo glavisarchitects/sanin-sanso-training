@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="res_partner_inherit_form">
+        <field name="name">res.partner.inherit.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <form position="attributes">
+                <attribute name="confirm_partner_custom">申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。保存してよろしいですか</attribute>
+            </form>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="has_parent_id" invisible="1"/>
+                <field name="has_ref" invisible="1"/>
+                <field name="has_address" invisible="1"/>
+                <field name="has_function" invisible="1"/>
+                <field name="has_phone" invisible="1"/>
+                <field name="has_mobile" invisible="1"/>
+                <field name="has_x_fax" invisible="1"/>
+                <field name="has_x_fax_payment" invisible="1"/>
+                <field name="has_x_contract_check" invisible="1"/>
+                <field name="has_email" invisible="1"/>
+                <field name="has_website" invisible="1"/>
+                <field name="has_vat" invisible="1"/>
+                <field name="has_title" invisible="1"/>
+                <field name="has_category_id" invisible="1"/>
+                <field name="has_x_found_year" invisible="1"/>
+                <field name="has_x_capital" invisible="1"/>
+                <field name="has_performance_info" invisible="1"/>
+                <field name="has_construction_info" invisible="1"/>
+                <field name="has_user_id" invisible="1"/>
+                <field name="has_team_id" invisible="1"/>
+                <field name="has_property_delivery_carrier_id" invisible="1"/>
+                <field name="has_property_payment_term_id" invisible="1"/>
+                <field name="has_property_product_pricelist" invisible="1"/>
+                <field name="has_sales_term" invisible="1"/>
+                <field name="has_x_collecting_money" invisible="1"/>
+                <field name="has_x_fee_burden" invisible="1"/>
+                <field name="has_x_bill_site" invisible="1"/>
+                <field name="has_x_purchase_user_id" invisible="1"/>
+                <field name="has_x_vendor_payment_term" invisible="1"/>
+                <field name="has_property_supplier_payment_term_id" invisible="1"/>
+                <field name="has_x_minimum_cost" invisible="1"/>
+                <field name="has_property_account_position_id" invisible="1"/>
+                <field name="has_bank_accounts" invisible="1"/>
+                <field name="has_sales_note" invisible="1"/>
+                <field name="has_purchase_note" invisible="1"/>
+                <field name="has_partner_info" invisible="1"/>
+                <field name="has_x_payment_terms" invisible="1"/>
+                <field name="has_x_payment_method" invisible="1"/>
+                <field name="has_x_receipts_term" invisible="1"/>
+
+                <field name="has_lang" invisible="1"/>
+            </xpath>
+            <xpath expr="//h1" position="after">
+                <div>
+                    <field name="x_name_furigana" placeholder="フリガナ"/>
+                </div>
+                <div>
+                    <field name="x_name_abbreviation" placeholder="略称"/>
+
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='type']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_type']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='ref']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//group[@name='container_row_stock']" position="attributes">
+                <attribute name="groups">base.group_user</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_type']" position="before">
+                <field name="x_contact_categ" widget="radio" options="{'horizontal': true, 'no_create_edit': True}"
+                       required="1"/>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="x_is_branch"/>
+                <field name="x_branch_name"
+                       attrs="{'invisible': [('x_is_branch', '=', False)], 'required': [('x_is_branch', '=', True)]}"/>
+                <field name="function" string="職位"/>
+            </xpath>
+            <xpath expr="//field[@name='function']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//group[2]//field[@name='function']" position="before">
+                <field name="x_is_vendor"/>
+            </xpath>
+
+            <xpath expr="//field[@name='type']" position="before">
+                <field name="x_is_customer"/>
+                <field name="x_transaction_categ" widget="many2many_checkboxes"
+                       attrs="{'required': [('x_is_vendor', '=', True)], 'invisible': [('x_is_vendor', '!=', True)]}"
+
+                />
+<!--                <field name="x_transaction_department" string="部門" widget="many2many_tags"-->
+<!--                       options="{'no_create': True, 'no_open': True, 'no_edit': True}"-->
+<!--                       attrs="{'required': [('x_transaction_categ', '=', True)]}"/>-->
+                <field name="ref" string="取引先コード" widget="many2many_tags" attrs="{
+                    'invisible': [('has_ref', '=', 'no')],
+                    'required': [('has_ref', '=', 'required')]
+                }"/>
+
+
+            </xpath>
+
+            <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_phone', '=', 'no')],
+                    'required': [('has_phone', '=', 'required')],
+                }</attribute>
+            </xpath>
+            <xpath expr="//label[@for='phone']" position="attributes">
+                <attribute name="string">TEL代表</attribute>
+            </xpath>
+            <xpath expr="//field[@name='mobile']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_mobile', '=', 'no')],
+                    'required': [('has_mobile', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//label[@for='mobile']" position="attributes">
+                <attribute name="string">TEL直通</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='lang']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [ ('has_lang', '=', 'no'), ],
+                    'required': [('has_lang', '=', 'required')]}
+                </attribute>
+            </xpath>
+
+            <xpath expr="//span[@name='address_name']" position="replace">
+                <span class="o_form_label o_td_label" name="address_name" attrs="{'': [('has_address', '=', 'no')]}">
+                    <b attrs="{'invisible': ['&amp;', ('parent_id', '!=', False), ('type', '!=', False)]  }">取引先住所</b>
+                </span>
+            </xpath>
+
+            <xpath expr="//field[@name='street']" position="attributes">
+                <attribute name="force_save">1</attribute>
+                <attribute name="attrs">{
+                    'invisible': [('has_address', '=', 'no')],
+                    'required': [('has_address', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='street2']" position="attributes">
+                <attribute name="force_save">1</attribute>
+                <attribute name="attrs">{
+                    'invisible': [('has_address', '=', 'no')],
+                    'required': [('has_address', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='city']" position="attributes">
+                <attribute name="force_save">1</attribute>
+                <attribute name="attrs">{
+                    'invisible': [('has_address', '=', 'no')],
+                    'required': [('has_address', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state_id']" position="attributes">
+                <attribute name="force_save">1</attribute>
+                <attribute name="attrs">{
+                    'invisible': [('has_address', '=', 'no')],
+                    'required': [('has_address', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='zip']" position="attributes">
+                <attribute name="force_save">1</attribute>
+                <attribute name="attrs">{
+                    'invisible': [('has_address', '=', 'no')],
+                    'required': [('has_address', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='country_id']" position="attributes">
+                <attribute name="force_save">1</attribute>
+                <attribute name="attrs">{
+                    'invisible': [('has_address', '=', 'no')],
+                    'required': [('has_address', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_vat', '=', 'no')],
+                    'required': [('has_vat', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='function']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_function', '=', 'no')],
+                    'required': [('has_function', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='website']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_website', '=', 'no')],
+                    'required': [('has_website', '=', 'required')]
+                }</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='category_id']" position="before">
+                <xpath expr="//field[@name='title']" position="move"/>
+            </xpath>
+
+
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_title', '=', 'no')],
+                    'required': [('has_title', '=', 'required')]
+                }</attribute>
+
+            </xpath>
+
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_category_id', '=', 'no')],
+                    'required': [('has_category_id', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//group[@name='sale']/field[@name='user_id']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_user_id', '=', 'no')],
+                    'required': [('has_user_id', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='property_delivery_carrier_id']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_property_delivery_carrier_id', '=', 'no')],
+                    'required': [('has_property_delivery_carrier_id', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//page[@name='sales_purchases']//field[@name='team_id']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_team_id', '=', 'no')],
+                    'required': [('has_team_id', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='property_payment_term_id']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_property_payment_term_id', '=', 'no')],
+                    'required': [('has_property_payment_term_id', '=', 'required')]
+                }</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_supplier_payment_term_id']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_property_supplier_payment_term_id', '=', 'no')],
+                    'required': [('has_property_supplier_payment_term_id', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_ids']" position="before">
+                <field name="x_fax" attrs="{
+                    'invisible': [('has_x_fax', '=', 'no')],
+                    'required': [('has_x_fax', '=', 'required')]
+                }"/>
+
+                <field name="x_fax_payment" attrs="{
+                    'invisible': [('has_x_fax_payment', '=', 'no')],
+                    'required': [('has_x_fax_payment', '=', 'required')]
+                }"/>
+                <field name="x_contract_check"
+                       attrs="{'invisible': [('has_x_contract_check', '=', 'no')],'required': [('has_x_contract_check', '=', 'required')]}"
+                       widget="radio" options="{'horizontal': true}"
+                       help="新規取引、BtoB取引、継続的取引(スポットではない)、月間取引税込30万円以上” すべて該当する場合は必ず締結にする"/>
+                <field name="x_contract_memo" attrs="{
+                    'invisible': [('x_contract_check', '!=', 'no_contract')],
+                    'required': [('x_contract_check', '=', 'no_contract')]
+                }" placeholder="契約締結しない場合、理由記入"/>
+            </xpath>
+            <xpath expr="//field[@name='parent_id']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_parent_id', '=', 'no')],
+                    'required': [('has_parent_id', '=', 'required')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']" position="after">
+                <page string="取引先概要" name="business_partner_overview" attrs="{
+                    'invisible': [('has_partner_info', '=', False)],
+                }">
+                    <group>
+                        <group string="基本情報">
+                            <field name="x_found_year" attrs="{
+                                'invisible': [('has_x_found_year', '=', 'no')],
+                                'required': [('has_x_found_year', '=', 'required')]
+                            }"/>
+                            <field name="x_capital" widget="monetary" options="{'currency_field': 'currency_id'}"
+                                   attrs="{
+                                'invisible': [('has_x_capital', '=', 'no')],
+                                'required': [('has_x_capital', '=', 'required')]
+                            }"/>
+                        </group>
+                        <group string="業績情報">
+                            <field name="performance_ids" widget="one2many" attrs="{
+                                'invisible': [('has_performance_info', '=', 'no')],
+                                'required': [('has_performance_info', '=', 'required')]
+                            }" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="accounting_period"
+                                           attrs="{'required': [('parent.has_performance_info', '=', 'required')]}"/>
+                                    <field name="revenue"
+                                           attrs="{'required': [('parent.has_performance_info', '=', 'required')]}"/>
+                                    <field name="ordinary_profit"
+                                           attrs="{'required': [('parent.has_performance_info', '=', 'required')]}"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="accounting_period"/>
+                                            <field name="revenue"/>
+                                            <field name="ordinary_profit"/>
+                                            <field name="active" invisible="1"/>
+                                            <field name="partner_id" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                    </group>
+                    <separator string="建設業許可"/>
+                    <field name="construction_ids" widget="one2many" attrs="{
+                        'invisible': [('has_construction_info', '=', 'no')],
+                        'required': [('has_construction_info', '=', 'required')]
+                    }">
+                        <tree editable="bottom">
+                            <field name="license_figure"
+                                   attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
+                            <field name="license_flag_1"
+                                   attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
+                            <field name="license_flag_2"
+                                   attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
+                            <field name="license_number"
+                                   attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
+                            <field name="license_period"
+                                   attrs="{'required': [('parent.has_construction_info', '=', 'required')]}"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="license_figure"/>
+                                    <field name="license_flag_1"/>
+                                    <field name="license_flag_2"/>
+                                    <field name="license_number"/>
+                                    <field name="license_period"/>
+                                    <field name="active" invisible="1"/>
+                                    <field name="partner_id" invisible="1"/>
+                                </group>
+                            </group>
+
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='sales_purchases']" position="after">
+                <page string="支払条件" name="payment_terms" attrs="{
+                    'invisible': [('has_x_payment_terms', '=', False)],
+                }">
+                    <field name="x_payment_terms_ids" colspan="4" widget="one2many" nolabel="1"
+                           attrs="{'required': [('x_payment_terms_ids', '=', 'required')]}">
+                        <tree editable="top">
+                            <field name="more_than_amount"/>
+                            <field name="more_than_deadline"/>
+                            <field name="more_than_payment_site"/>
+                            <field name="more_than_payment_method"/>
+                            <field name="less_than_amount"/>
+                            <field name="less_than_deadline"/>
+                            <field name="less_than_payment_site"/>
+                            <field name="less_than_payment_method"/>
+                            <field name="collecting_money"/>
+                            <field name="fee_burden"/>
+                            <field name="bill_site"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='sales_purchases']/group" position="after">
+                <group name="lorry_business_supplier">
+                    <group string="ローリー業務(仕入先)">
+                        <field name="manager_id"/>
+                    </group>
+                </group>
+            </xpath>
+            <!--            <xpath expr="//group[@name='sale']" position="inside">-->
+            <!--                <label for="x_payment_terms_ids" string="取引条件" attrs="{-->
+            <!--                    'invisible': [('has_x_payment_terms', '=', 'no')],-->
+            <!--                }" colspan="4"/>-->
+            <!--                <field name="x_payment_terms_ids" colspan="4" widget="one2many" nolabel="1"-->
+            <!--                    attrs="{-->
+            <!--                        'invisible': [('x_payment_terms_ids', '=', 'no')],-->
+            <!--                        'required': [('x_payment_terms_ids', '=', 'required')]-->
+            <!--                    }">-->
+            <!--                    <tree editable="top">-->
+            <!--                        <field name="more_than_amount"/>-->
+            <!--                        <field name="more_than_deadline"/>-->
+            <!--                        <field name="more_than_payment_site"/>-->
+            <!--                        <field name="more_than_payment_method"/>-->
+            <!--                        <field name="less_than_amount"/>-->
+            <!--                        <field name="less_than_deadline"/>-->
+            <!--                        <field name="less_than_payment_site"/>-->
+            <!--                        <field name="less_than_payment_method"/>-->
+            <!--                        <field name="collecting_money"/>-->
+            <!--                        <field name="fee_burden"/>-->
+            <!--                        <field name="bill_site"/>-->
+            <!--                    </tree>-->
+
+            <!--                </field>-->
+            <!--            </xpath>-->
+            <xpath expr="//field[@name='property_supplier_payment_term_id']" position="before">
+                <field name="x_purchase_user_id" attrs="{
+                    'invisible': [('has_x_purchase_user_id', '=', 'no')],
+                    'required': [('has_x_purchase_user_id', '=', 'required')]
+                }"/>
+                <field name="x_vendor_payment_term" widget="radio" options="{'horizontal': true}" attrs="{
+                    'invisible': [('has_x_vendor_payment_term', '=', 'no')],
+                    'required': [('has_x_vendor_payment_term', '=', 'required')]
+                }"/>
+            </xpath>
+            <xpath expr="//field[@name='property_supplier_payment_term_id']" position="after">
+                <field name="x_more_than_receipts_method" attrs="{
+                    'invisible': [('has_x_receipts_term', '=', 'no')],
+                    'required': [('has_x_receipts_term', '=', 'required')]
+                }"/>
+                <field name="x_payment_method" attrs="{
+                    'invisible': [('has_x_payment_method', '=', 'no')],
+                    'required': [('has_x_payment_method', '=', 'required')]
+                }"/>
+                <field name="x_bank_payment_date" attrs="{
+                    'invisible': [('x_payment_method', 'not in', ['head_bank','branch_bank'])],
+                    'required': [('x_payment_method', 'in', ['head_bank','branch_bank'])]
+                }"/>
+                <field name="x_other_payment_term" attrs="{
+                    'invisible': [('x_vendor_payment_term', '=', 'ss_rule')],
+                    'required': [('x_vendor_payment_term', '=', 'other')]
+                }"/>
+                <field name="x_other_payment_reason" attrs="{
+                    'invisible': [('x_vendor_payment_term', '=', 'ss_rule')],
+                }"/>
+                <field name="x_minimum_cost" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{
+                    'invisible': [('has_x_minimum_cost', '=', 'no')],
+                    'required': [('has_x_minimum_cost', '=', 'required')]
+                }"/>
+                <label for="x_payment_terms" colspan="4" string="支払条件の当社規定" attrs="{
+                    'invisible': [('has_x_payment_terms', '=', False)],
+                }"/>
+                <field colspan="4" name="x_payment_terms" nolabel="1" attrs="{
+                    'invisible': [('has_x_payment_terms', '=', False)],
+                }"/>
+            </xpath>
+            <xpath expr="//page[@name='accounting']" position="replace">
+                <page string="会計" name="accounting"
+                      attrs="{'invisible': [('is_company','=',False),('parent_id','!=',False)]}"
+                      modifiers="{'invisible':[['is_company','=',false],['parent_id','!=',false]]}">
+                    <group string="銀行口座" name="banks" modifiers="{}">
+                        <field name="bank_ids" widget="one2many" nolabel="1" attrs="{
+                                'invisible': [('has_bank_accounts', '=', 'no')],
+                                'required': [('has_bank_accounts', '=', 'required')]
+                            }">
+                            <tree editable="bottom">
+                                <field name="bank_id"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="x_bank_branch_number" attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="x_bank_branch"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="x_acc_withdrawal"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="x_acc_transfer"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="acc_number"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="acc_type"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')], 'readonly':0}"/>
+                                <field name="acc_holder_name"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                                <field name="x_acc_holder_furigana"
+                                       attrs="{'required': [('parent.has_bank_accounts', '=', 'required')]}"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group string="勘定科目設定" name="accounting_entries" groups="account.group_account_readonly">
+                        <field name="currency_id" invisible="1"/>
+                        <field name="property_account_receivable_id"/>
+                        <field name="property_account_payable_id"/>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='internal_notes']/field[@name='comment']" position="before">
+                <group>
+                    <group string="販売" attrs="{
+                        'invisible': [('has_sales_note', '=', 'no')],
+                        'required': [('has_sales_note', '=', 'required')],
+                    }">
+                        <field name="x_customer_contract_route"/>
+                        <field name="x_customer_material"/>
+                        <field name="x_customer_monthly_total_price" widget="monetary"
+                               options="{'currency_field': 'currency_id'}"/>
+                    </group>
+                    <group string="購買" attrs="{
+                        'invisible': [('has_purchase_note', '=', 'no')],
+                        'required': [('has_purchase_note', '=', 'required')],
+                    }">
+                        <field name="x_vendor_contract_route"/>
+                        <field name="x_vendor_material"/>
+                        <field name="x_vendor_monthly_total_price" widget="monetary"
+                               options="{'currency_field': 'currency_id'}"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//page/field[@name='child_ids']/form/sheet/group" position="after">
+                <group string="ローリー業務" col="12">
+                    <group  colspan="6">
+                        <field name="product_id" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                        <field name="x_responsible_dept_id" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                    </group>
+                    <group colspan="6">
+                        <field name="x_lorry_type" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                        <field name="x_name" widget="many2many_tags" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                    </group>
+                </group>
+                <group string="ミニバルクローリー業務" col="12">
+                    <group  colspan="6">
+                        <field name="x_creation_target"/>
+                        <field name="manager_id" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                        <field name="location_id" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                    </group>
+                    <group colspan="6">
+                        <field name="x_delivery_pattern" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                        <field name="x_delivery_reference_date" attrs="{'required': [('x_creation_target', '=', True)]}"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="res_partner_view_form_inherit_mail">
+        <field name="name">res.partner.inherit.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="mail.res_partner_view_form_inherit_mail"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='email']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_email', '=', 'no')]
+                }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='email']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_email', '=', 'no')],
+                    'required': [('has_email', '=', 'required')]
+                }</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_partner_property_form_inherit_product">
+        <field name="name">res.partner.form.product</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="product.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <field name="property_product_pricelist" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_property_product_pricelist', '=', 'no')],
+                    'required': [('has_property_product_pricelist', '=', 'required')]
+                }</attribute>
+            </field>
+            <xpath expr="//field[@name='property_product_pricelist']" position="after">
+                <field name="x_received_method"/>
+                <field name="x_responsible_person_printing"/>
+                <field name="x_collecting_money" widget="radio" attrs="{
+                    'invisible': [('has_x_collecting_money', '=', 'no')],
+                    'required': [('has_x_collecting_money', '=', 'required')]
+                }" />
+                <field name="x_fee_burden" widget="radio" attrs="{
+                    'invisible': [('has_x_fee_burden', '=', 'no')],
+                    'required': [('has_x_fee_burden', '=', 'required')]
+                }" />
+                <field name="x_bill_site" attrs="{
+                    'invisible': [('has_x_bill_site', '=', 'no')],
+                    'required': [('has_x_bill_site', '=', 'required')]
+                }" />
+            </xpath>
+
+        </field>
+
+    </record>
+
+    <record model="ir.ui.view" id="view_partner_property_form_inherit_account">
+        <field name="name">res.partner.form.account</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <field name="property_account_position_id" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_property_account_position_id', '=', 'no')],
+                    'required': [('has_property_account_position_id', '=', 'required')]
+                }</attribute>
+            </field>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="purchase.view_partner_property_form">
+        <field name="active">False</field>
+    </record>
+
+</odoo>

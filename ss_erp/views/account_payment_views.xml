@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    <record id="ss_erp_view_account_supplier_payment_tree" model="ir.ui.view">
+        <field name="name">account.supplier.payment.tree</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_supplier_payment_tree"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="js_class">general_transfer_tree</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    </data>
+</odoo>

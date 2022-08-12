@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'approvals'), ('name', '=', 'approval_request_request_owner_rule')]"/>
+        </function>
+        <value eval="{'noupdate': False}"/>
+    </function>
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'approvals'), ('name', '=', 'approval_request_user')]"/>
+        </function>
+        <value eval="{'noupdate': False}"/>
+    </function>
+
+    <record model="ir.rule" id="approvals.approval_request_request_owner_rule">
+        <field name="perm_write" eval="0"/>
+    </record>
+
+    <record model="ir.rule" id="approvals.approval_request_user">
+        <field name="perm_write" eval="0"/>
+    </record>
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'approvals'), ('name', '=', 'approval_request_request_owner_rule')]"/>
+        </function>
+        <value eval="{'noupdate': True}"/>
+    </function>
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('module', '=', 'approvals'), ('name', '=', 'approval_request_user')]"/>
+        </function>        <value eval="{'noupdate': True}"/>
+    </function>
+</odoo>
