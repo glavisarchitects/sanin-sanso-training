@@ -9,7 +9,7 @@ class AccountPaymentRegister(models.TransientModel):
     _description = 'Register Payment'
 
     x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', store=True, string='補助科目')
-    x_total_fraction = fields.Monetary(compute='_compute_total_fraction', string='総分数')
+    x_total_fraction = fields.Monetary(compute='_compute_total_fraction', string='端数会計額')
     x_line_ids = fields.One2many('ss_erp.post.difference.account', 'acc_payment_register_id',
                                  string="Journal items")
 

@@ -9,7 +9,8 @@
     "depends": [
         "base", "delivery", "mail", "contacts", "purchase", "uom", "account_accountant",
         "purchase_stock", "web", "account", "stock_dropshipping", "approvals", "hr",
-        "approvals_purchase_stock", "base_import", "hr_expense", "sale_expense"
+        "approvals_purchase_stock", "base_import", "hr_expense", "sale_expense", "l10n_jp","mrp_workorder",
+        "sale_timesheet"
     ],
     "data": [
         # SECURITY
@@ -32,6 +33,7 @@
         # sales data setting
         'data_setting_param/down_payment_product_data.xml',
         'data_setting_param/default_param_setting_data.xml',
+
 
         # REPORTS
         "reports/paperformat.xml",

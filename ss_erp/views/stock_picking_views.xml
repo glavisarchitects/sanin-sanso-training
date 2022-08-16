@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <field name="name" position="after">
                 <field name="x_organization_id"/>
-                <field name="user_id" string="業務担当" />
+                <field name="user_id" string="業務担当"/>
                 <field name="x_account_modify"/>
             </field>
             <field name="partner_id" position="attributes">
@@ -40,13 +40,17 @@
             </field>
 
             <field name="picking_type_id" position="before">
-                <field name="x_organization_id" string="組織名"  attrs="{'invisible' :[('x_inventory_order_id', '!=', False)]}" required="1" />
-                <field name="x_responsible_dept_id" string="管轄部門" attrs="{'invisible' :[('x_inventory_order_id', '!=', False)]}" required="1"/>
+                <field name="x_organization_id" string="組織名"
+                       attrs="{'invisible' :[('x_inventory_order_id', '!=', False)]}" required="1"/>
+                <field name="x_responsible_dept_id" string="管轄部門"
+                       attrs="{'invisible' :[('x_inventory_order_id', '!=', False)]}" required="1"/>
             </field>
             <field name="location_dest_id" position="after">
                 <field name="x_inventory_order_id" invisible="1"/>
-                <field name="x_organization_id" string="移動元組織" attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
-                <field name="x_responsible_dept_id" string="移動元管轄部門" attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
+                <field name="x_organization_id" string="移動元組織"
+                       attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
+                <field name="x_responsible_dept_id" string="移動元管轄部門"
+                       attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
                 <field name="x_organization_dest_id" attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
                 <field name="x_responsible_dept_dest_id" attrs="{'invisible' :[('x_inventory_order_id', '=', False)]}"/>
                 <field name="user_id" position="move"/>
@@ -63,12 +67,7 @@
                 <field name="x_inspection_exist" attrs="{'required':[('has_lot_ids', '=', True)],
                                 'invisible' :[('has_lot_ids', '=', False)]}"/>
             </field>
-            <field name="carrier_id" position="attributes">
-                <attribute name="string">運送会社</attribute>
-            </field>
-            <group name="carrier_data" position="inside">
-                <field name="x_dest_address_info" attrs="{'readonly':1}"/>
-            </group>
+
 
             <field name="move_type" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -76,6 +75,20 @@
             <field name="group_id" position="after">
                 <field name="x_mkt_user_id" readonly="1"/>
             </field>
+        </field>
+    </record>
+
+    <record id="ss_erp_view_picking_withcarrier_out_form_inherit" model="ir.ui.view">
+        <field name="name">ss_erp.view.picking.withcarrier.out.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
+        <field name="arch" type="xml">
+            <field name="carrier_id" position="attributes">
+                <attribute name="string">運送会社</attribute>
+            </field>
+            <group name="carrier_data" position="inside">
+                <field name="x_dest_address_info" attrs="{'readonly':1}"/>
+            </group>
         </field>
     </record>
 
@@ -89,5 +102,5 @@
             </xpath>
         </field>
     </record>
-    
+
 </odoo>
