@@ -35,14 +35,22 @@
             <field name="has_x_fee_burden">optional</field>
             <field name="has_x_bill_site">optional</field>
             <field name="has_x_purchase_user_id">optional</field>
-            <field name="has_x_vendor_payment_term">optional</field>
             <field name="has_property_supplier_payment_term_id">optional</field>
             <field name="has_x_minimum_cost">optional</field>
-            <field name="has_x_payment_terms">True</field>
             <field name="has_property_account_position_id">optional</field>
             <field name="has_bank_accounts">optional</field>
             <field name="has_sales_note">optional</field>
             <field name="has_purchase_note">optional</field>
+            <field name="has_lang">no</field>
+            <field name="has_x_contract_route">no</field>
+            <field name="has_x_contract_material">no</field>
+            <field name="has_contract_monthly_amount">no</field>
+            <field name="has_x_responsible_stamp">no</field>
+            <field name="has_partner_payment_term">no</field>
+            <field name="has_x_payment_type">no</field>
+            <field name="has_x_fee_burden_paid">no</field>
+            <field name="has_company_id">no</field>
+            <field name="has_industry_id">no</field>
         </record>
         <record id="ss_erp_contact_category_data_1" model="ss_erp.contact.category">
             <field name="name">法人</field>
@@ -78,14 +86,22 @@
             <field name="has_x_fee_burden">optional</field>
             <field name="has_x_bill_site">optional</field>
             <field name="has_x_purchase_user_id">optional</field>
-            <field name="has_x_vendor_payment_term">optional</field>
             <field name="has_property_supplier_payment_term_id">optional</field>
             <field name="has_x_minimum_cost">optional</field>
-            <field name="has_x_payment_terms">True</field>
             <field name="has_property_account_position_id">optional</field>
             <field name="has_bank_accounts">optional</field>
             <field name="has_sales_note">optional</field>
             <field name="has_purchase_note">optional</field>
+            <field name="has_lang">no</field>
+            <field name="has_x_contract_route">optional</field>
+            <field name="has_x_contract_material">optional</field>
+            <field name="has_contract_monthly_amount">optional</field>
+            <field name="has_x_responsible_stamp">optional</field>
+            <field name="has_partner_payment_term">optional</field>
+            <field name="has_x_payment_type">optional</field>
+            <field name="has_x_fee_burden_paid">optional</field>
+            <field name="has_company_id">no</field>
+            <field name="has_industry_id">no</field>
         </record>
         <record id="ss_erp_contact_category_data_2" model="ss_erp.contact.category">
             <field name="name">法人(拠点)</field>
@@ -121,14 +137,22 @@
             <field name="has_x_fee_burden">optional</field>
             <field name="has_x_bill_site">optional</field>
             <field name="has_x_purchase_user_id">optional</field>
-            <field name="has_x_vendor_payment_term">optional</field>
             <field name="has_property_supplier_payment_term_id">optional</field>
             <field name="has_x_minimum_cost">optional</field>
-            <field name="has_x_payment_terms">True</field>
             <field name="has_property_account_position_id">optional</field>
             <field name="has_bank_accounts">optional</field>
             <field name="has_sales_note">optional</field>
             <field name="has_purchase_note">optional</field>
+            <field name="has_lang">no</field>
+            <field name="has_x_contract_route">optional</field>
+            <field name="has_x_contract_material">optional</field>
+            <field name="has_contract_monthly_amount">optional</field>
+            <field name="has_x_responsible_stamp">optional</field>
+            <field name="has_partner_payment_term">optional</field>
+            <field name="has_x_payment_type">optional</field>
+            <field name="has_x_fee_burden_paid">optional</field>
+            <field name="has_company_id">no</field>
+            <field name="has_industry_id">no</field>
         </record>
         <record id="ss_erp_contact_category_data_4" model="ss_erp.contact.category">
             <field name="name">配送先</field>
@@ -164,14 +188,22 @@
             <field name="has_x_fee_burden">no</field>
             <field name="has_x_bill_site">no</field>
             <field name="has_x_purchase_user_id">no</field>
-            <field name="has_x_vendor_payment_term">no</field>
             <field name="has_property_supplier_payment_term_id">no</field>
             <field name="has_x_minimum_cost">no</field>
-            <field name="has_x_payment_terms">False</field>
             <field name="has_property_account_position_id">no</field>
             <field name="has_bank_accounts">no</field>
             <field name="has_sales_note">no</field>
             <field name="has_purchase_note">no</field>
+            <field name="has_lang">no</field>
+            <field name="has_x_contract_route">no</field>
+            <field name="has_x_contract_material">no</field>
+            <field name="has_contract_monthly_amount">no</field>
+            <field name="has_x_responsible_stamp">no</field>
+            <field name="has_partner_payment_term">no</field>
+            <field name="has_x_payment_type">no</field>
+            <field name="has_x_fee_burden_paid">no</field>
+            <field name="has_company_id">no</field>
+            <field name="has_industry_id">no</field>
         </record>
         <record id="ss_erp_contact_category_data_3" model="ss_erp.contact.category">
             <field name="name">請求先</field>
@@ -207,14 +239,22 @@
             <field name="has_x_fee_burden">no</field>
             <field name="has_x_bill_site">no</field>
             <field name="has_x_purchase_user_id">no</field>
-            <field name="has_x_vendor_payment_term">no</field>
             <field name="has_property_supplier_payment_term_id">no</field>
             <field name="has_x_minimum_cost">no</field>
-            <field name="has_x_payment_terms">False</field>
             <field name="has_property_account_position_id">no</field>
             <field name="has_bank_accounts">optional</field>
             <field name="has_sales_note">no</field>
             <field name="has_purchase_note">no</field>
+            <field name="has_lang">no</field>
+            <field name="has_x_contract_route">no</field>
+            <field name="has_x_contract_material">no</field>
+            <field name="has_contract_monthly_amount">no</field>
+            <field name="has_x_responsible_stamp">no</field>
+            <field name="has_partner_payment_term">no</field>
+            <field name="has_x_payment_type">optional</field>
+            <field name="has_x_fee_burden_paid">optional</field>
+            <field name="has_company_id">no</field>
+            <field name="has_industry_id">no</field>
         </record>
         <record id="ss_erp_contact_category_data_5" model="ss_erp.contact.category">
             <field name="name">見積依頼送付先</field>
@@ -250,14 +290,22 @@
             <field name="has_x_fee_burden">no</field>
             <field name="has_x_bill_site">no</field>
             <field name="has_x_purchase_user_id">no</field>
-            <field name="has_x_vendor_payment_term">no</field>
             <field name="has_property_supplier_payment_term_id">no</field>
             <field name="has_x_minimum_cost">no</field>
-            <field name="has_x_payment_terms">False</field>
             <field name="has_property_account_position_id">no</field>
             <field name="has_bank_accounts">no</field>
             <field name="has_sales_note">no</field>
             <field name="has_purchase_note">no</field>
+            <field name="has_lang">no</field>
+            <field name="has_x_contract_route">no</field>
+            <field name="has_x_contract_material">no</field>
+            <field name="has_contract_monthly_amount">no</field>
+            <field name="has_x_responsible_stamp">no</field>
+            <field name="has_partner_payment_term">no</field>
+            <field name="has_x_payment_type">no</field>
+            <field name="has_x_fee_burden_paid">no</field>
+            <field name="has_company_id">no</field>
+            <field name="has_industry_id">no</field>
         </record>
         <record id="ss_erp_contact_category_data_6" model="ss_erp.contact.category">
             <field name="name">発注送付先</field>
@@ -293,14 +341,22 @@
             <field name="has_x_fee_burden">no</field>
             <field name="has_x_bill_site">no</field>
             <field name="has_x_purchase_user_id">no</field>
-            <field name="has_x_vendor_payment_term">no</field>
             <field name="has_property_supplier_payment_term_id">no</field>
             <field name="has_x_minimum_cost">no</field>
-            <field name="has_x_payment_terms">False</field>
             <field name="has_property_account_position_id">no</field>
             <field name="has_bank_accounts">no</field>
             <field name="has_sales_note">no</field>
             <field name="has_purchase_note">no</field>
+            <field name="has_lang">no</field>
+            <field name="has_x_contract_route">no</field>
+            <field name="has_x_contract_material">no</field>
+            <field name="has_contract_monthly_amount">no</field>
+            <field name="has_x_responsible_stamp">no</field>
+            <field name="has_partner_payment_term">no</field>
+            <field name="has_x_payment_type">no</field>
+            <field name="has_x_fee_burden_paid">no</field>
+            <field name="has_company_id">no</field>
+            <field name="has_industry_id">no</field>
         </record>
         <record id="ss_erp_contact_category_data_7" model="ss_erp.contact.category">
             <field name="name">法人業務担当</field>
@@ -336,14 +392,22 @@
             <field name="has_x_fee_burden">no</field>
             <field name="has_x_bill_site">no</field>
             <field name="has_x_purchase_user_id">no</field>
-            <field name="has_x_vendor_payment_term">no</field>
             <field name="has_property_supplier_payment_term_id">no</field>
             <field name="has_x_minimum_cost">no</field>
-            <field name="has_x_payment_terms">False</field>
             <field name="has_property_account_position_id">no</field>
             <field name="has_bank_accounts">optional</field>
             <field name="has_sales_note">no</field>
             <field name="has_purchase_note">no</field>
+            <field name="has_lang">no</field>
+            <field name="has_x_contract_route">no</field>
+            <field name="has_x_contract_material">no</field>
+            <field name="has_contract_monthly_amount">no</field>
+            <field name="has_x_responsible_stamp">no</field>
+            <field name="has_partner_payment_term">no</field>
+            <field name="has_x_payment_type">no</field>
+            <field name="has_x_fee_burden_paid">no</field>
+            <field name="has_company_id">no</field>
+            <field name="has_industry_id">no</field>
         </record>
     </data>
 </odoo>

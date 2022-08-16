@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_install_jp_lang" model="base.language.install">
+            <field name="lang">ja_JP</field>
+            <field name="overwrite" eval="True"/>
+
+        </record>
+
+        <function model="base.language.install" name="lang_install">
+            <value model="base.language.install"
+                   search="[('id', '=', ref('ss_erp_install_jp_lang'))]"/>
+        </function>
+
+
+        <record id="ss_erp_definition_param_settings" model="res.config.settings">
+            <!--            initial common param-->
+            <field name="company_name">山陰酸素工業株式会社</field>
+            <field name="paperformat_id" ref="base.paperformat_euro"/>
+            <field name="external_report_layout_id" ref="web.report_layout_standard"/>
+            <field name="digest_emails" eval="False"/>
+            <field name="module_partner_autocomplete" eval="False"/>
+            <field name="external_email_server_default" eval="True"/>
+            <field name="user_default_rights" eval="False"/>
+            <field name="auth_signup_uninvited">b2b</field>
+            <field name="auth_signup_reset_password" eval="True"/>
+            <field name="module_base_import" eval="True"/>
+            <field name="show_effect" eval="False"/>
+            <field name="product_weight_in_lbs">0</field>
+            <field name="product_volume_volume_in_cubic_feet">0</field>
+            <field name="enable_ocn" eval="True"/>
+            <field name="disable_redirect_firebase_dynamic_link" eval="False"/>
+            <field name="module_pad" eval="False"/>
+
+            <!--    Sale Parameter    -->
+            <field name="group_product_variant" eval="False"/>
+            <field name="module_sale_product_matrix" eval="False"/>
+            <field name="module_sale_product_configurator" eval="False"/>
+            <field name="module_product_email_template" eval="False"/>
+            <field name="group_uom" eval="True"/>
+            <field name="group_stock_packaging" eval="False"/>
+            <field name="group_discount_per_so_line" eval="True"/>
+            <field name="group_product_pricelist" eval="False"/>
+            <field name="module_sale_margin" eval="True"/>
+            <field name="module_sale_coupon" eval="False"/>
+            <!--            <field name="auth_signup_uninvited">b2b</field>-->
+            <field name="portal_confirmation_pay" eval="False"/>
+            <field name="group_sale_order_template" eval="True"/>
+            <field name="group_sale_delivery_address" eval="False"/>
+            <field name="use_quotation_validity_days" eval="False"/>
+            <field name="group_warning_sale" eval="False"/>
+            <field name="group_auto_done_setting" eval="False"/>
+            <field name="group_proforma_sales" eval="False"/>
+            <field name="module_delivery" eval="True"/>
+            <field name="group_display_incoterm" eval="False"/>
+            <field name="module_delivery_fedex" eval="False"/>
+            <field name="module_delivery_bpost" eval="False"/>
+            <field name="module_delivery_ups" eval="False"/>
+            <field name="module_delivery_dhl" eval="False"/>
+            <field name="module_delivery_usps" eval="False"/>
+            <field name="module_delivery_easypost" eval="False"/>
+            <field name="default_invoice_policy">delivery</field>
+            <field name="module_sale_amazon" eval="False"/>
+            <field name="deposit_default_product_id" ref="ss_erp.down_payment_product_product_data"/>
+        </record>
+
+
+        <function model="res.config.settings" name="execute">
+            <value model="res.config.settings"
+                   search="[('id', '=', ref('ss_erp_definition_param_settings'))]"/>
+        </function>
+    </data>
+</odoo>

@@ -71,3 +71,4 @@ from . import ss_erp_delivery_pattern
 from . import ss_erp_delivery_vehicle
 from . import account_payment
 from . import ss_erp_accounts_receivable_hist
+from . import ss_erp_bank_commision

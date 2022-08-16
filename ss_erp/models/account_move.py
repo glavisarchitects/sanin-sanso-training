@@ -8,19 +8,37 @@ import json
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    x_organization_id = fields.Many2one('ss_erp.organization',store=True,
+    x_organization_id = fields.Many2one('ss_erp.organization', store=True,
                                         index=True, string='組織情報')
-    x_more_than_receipts_method = fields.Selection(related="partner_id.x_more_than_receipts_method", store=True,
-                                                   index=True,string='入金手段')
+
     # TuyenTN 2022/29/07
     x_payment_method = fields.Selection(related="partner_id.x_payment_method", store=True,
-                                        index=True,string='支払手段')
-    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department',store=True,
+                                        index=True, string='支払手段')
+    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', store=True,
                                             index=True, string='管轄部門')
-    # x_sub_account_id = fields.Many2one('ss_erp.account.subaccount',store=True, string='補助科目')
     x_responsible_user_id = fields.Many2one('res.users', string='業務担当')
     x_mkt_user_id = fields.Many2one('res.users', string='営業担当')
     x_is_fb_created = fields.Boolean(string='FB作成済みフラグ', store=True, default=False)
+    x_is_not_create_fb = fields.Boolean(string='FB対象外', store=True, index=True)
+
+    x_receipt_type = fields.Selection(
+        string='入金手段',
+        selection=[
+            ('bank', '振込'),
+            ('transfer', '振替'),
+            ('bills', '手形'),
+            ('cash', '現金'),
+            ('paycheck', '小切手'),
+            ('branch_receipt', '他店入金'),
+            ('offset', '相殺'), ],
+        required=False, index=True, store=True)
+
+    x_payment_type = fields.Selection(
+        string='支払手段',
+        selection=[('bank', '振込'),
+                   ('cash', '現金'),
+                   ('bills', '手形'), ],
+        required=False, index=True, store=True)
 
     @api.model
     def create(self, vals):
@@ -40,6 +58,7 @@ class AccountMove(models.Model):
                 # Todo reconfirm
                 vals['x_responsible_user_id'] = sale_reference.user_id.id
                 vals['x_mkt_user_id'] = sale_reference.user_id.id
+            vals['x_payment_method'] = self.x_payment_method
         res = super(AccountMove, self).create(vals)
         return res
 
@@ -101,18 +120,6 @@ class AccountMove(models.Model):
         # TODO: Recheck token return from svf.cloud.config
         # this is just sample code, need to redo when official information about SVF API is available
         token = self.env['svf.cloud.config'].sudo().get_access_token()
-        if token["response"] == 200:
-            pass
-            if token.response == '400 Bad Request':
-                raise UserError('SVF Cloudへの	リクエスト内容が不正です。')
-            if token.response == '401 Unauthorized':
-                raise UserError('SVF Cloudの認証情報が不正なです。')
-            if token.response == '403 Forbidden':
-                raise UserError('SVF Cloudの実行権限がないか、必要なポイントが足りていません。')
-            if token.response == '429 Too many Requests':
-                raise UserError('SVF CloudのAPIコール数が閾値を超えました。')
-            if token.response == '503 Service Unavailable':
-                raise UserError('SVF Cloudの同時に処理できる数の制限を超過しました。しばらく時間を置いてから再度実行してください。')
 
         # Prepare data sent to SVF
         data = {
@@ -138,9 +145,30 @@ class AccountMove(models.Model):
             headers='',
             data=json.dumps(data)
         )
+        # sale_doc_reference = self.invoice_origin.split(', ')
+
+        response = res.json()
+        if response == 200:
+            pass
+            if response == '400 Bad Request':
+                raise UserError('SVF Cloudへの	リクエスト内容が不正です。')
+            if response == '401 Unauthorized':
+                raise UserError('SVF Cloudの認証情報が不正なです。')
+            if response == '403 Forbidden':
+                raise UserError('SVF Cloudの実行権限がないか、必要なポイントが足りていません。')
+            if response == '429 Too many Requests':
+                raise UserError('SVF CloudのAPIコール数が閾値を超えました。')
+            if response == '503 Service Unavailable':
+                raise UserError('SVF Cloudの同時に処理できる数の制限を超過しました。しばらく時間を置いてから再度実行してください。')
 
     # End Region
 
+
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
-    x_sub_account_id = fields.Many2one('ss_erp.account.subaccount',string='補助科目')
+
+    x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', string='補助科目',
+                                       domain="[('account_account_id', '=', account_id)]")
+
+    x_organization_id = fields.Many2one('ss_erp.organization', related='move_id.x_organization_id')
+    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', related='move_id.x_responsible_dept_id')

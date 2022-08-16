@@ -23,7 +23,7 @@ class AccountPaymentWizard(models.TransientModel):
 
     def zengin_general_transfer_fb(self):
         # account_journal = self.env['account.journal']
-        domain = [('payment_type', '=', 'outbound'), ('is_fb_created', '=', False),
+        domain = [('payment_type', '=', 'outbound'), ('x_is_fb_created', '=', False),
                   ('date', '<=', self.to_date), ('date', '>=', self.from_date),
                   ('journal_id.type', '=', 'bank')]
         payment_zengin_data = self.env['account.payment'].search(domain)
@@ -98,7 +98,7 @@ class AccountPaymentWizard(models.TransientModel):
                          get_multi_character(10, '0') + get_multi_character(10, '0') + '7' + get_multi_character(8) + '\r'
 
             # Todo: Now comment this line to test data
-            pay.is_fb_created = True
+            pay.x_is_fb_created = True
         # trailer record
         len_line_record = str(len(payment_zengin_data))
         len_total_amount = len(str(total_sum_amount))

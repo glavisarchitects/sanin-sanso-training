@@ -9,7 +9,7 @@
     "depends": [
         "base", "delivery", "mail", "contacts", "purchase", "uom", "account_accountant",
         "purchase_stock", "web", "account", "stock_dropshipping", "approvals", "hr",
-        "approvals_purchase_stock", "base_import","hr_expense", "sale_expense"
+        "approvals_purchase_stock", "base_import", "hr_expense", "sale_expense"
     ],
     "data": [
         # SECURITY
@@ -29,6 +29,9 @@
         # "data/ss_erp_convert_code_type_data.xml",
         # "data/ss_erp_external_system_type_data.xml",
         # "data/uom_data.xml",
+        # sales data setting
+        'data_setting_param/down_payment_product_data.xml',
+        'data_setting_param/default_param_setting_data.xml',
 
         # REPORTS
         "reports/paperformat.xml",
@@ -96,7 +99,9 @@
         "views/product_product_views.xml",
         "views/product_template_form_views.xml",
         "views/account_move_views.xml",
-        # "views/account_payment_views.xml",
+        "views/account_move_line_view.xml",
+        "views/account_payment_views.xml",
+        "views/ss_erp_bank_commission_view.xml",
         "views/webclient_templates.xml",
         "menu/menu_views.xml",
 
@@ -107,6 +112,7 @@
         "wizards/zengin_account_transfer_request_fb_wizard_views.xml",
         "wizards/account_receivable_customer_ledger_views.xml",
         "wizards/account_list_receivable_views.xml",
+        'wizards/account_register_payment_views.xml',
 
         "data/mail_template_data.xml",
 
