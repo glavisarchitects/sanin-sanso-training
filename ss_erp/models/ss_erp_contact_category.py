@@ -66,6 +66,7 @@ class ContactCategory(models.Model):
         CONTACT_CATEGORY_SELECTION, string='実績情報', default='optional')
     has_construction_info = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='建設業許可', default='optional')
+
     has_user_id = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='販売担当者', default='optional')
     has_property_delivery_carrier_id = fields.Selection(
@@ -76,6 +77,11 @@ class ContactCategory(models.Model):
         CONTACT_CATEGORY_SELECTION, string='支払条件', default='optional')
     has_property_product_pricelist = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='価格リスト', default='optional')
+
+    # 20220815
+    has_partner_payment_term = fields.Selection(
+        CONTACT_CATEGORY_SELECTION, string='支店別販売取引条件', default='optional')
+
     has_sales_term = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='取引条件', default='optional')
     has_x_collecting_money = fields.Selection(
@@ -86,14 +92,14 @@ class ContactCategory(models.Model):
         CONTACT_CATEGORY_SELECTION, string='手形サイト', default='optional')
     has_x_purchase_user_id = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='購買担当者', default='optional')
-    has_x_vendor_payment_term = fields.Selection(
-        CONTACT_CATEGORY_SELECTION, string='支払条件規定', default='optional')
+    # has_x_vendor_payment_term = fields.Selection(
+    #     CONTACT_CATEGORY_SELECTION, string='支払条件規定', default='optional')
     has_property_supplier_payment_term_id = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='支払条件', default='optional')
     has_x_minimum_cost = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='最低仕入価格', default='optional')
-    has_x_payment_terms = fields.Boolean(
-        string='当社規定(支払条件)', default=True)
+    # has_x_payment_terms = fields.Boolean(
+    #     string='当社規定(支払条件)', default=True)
     has_property_account_position_id = fields.Selection(
         CONTACT_CATEGORY_SELECTION, string='会計ポジション', default='optional')
     has_bank_accounts = fields.Selection(
@@ -106,14 +112,21 @@ class ContactCategory(models.Model):
     # HuuPhong 280722
     has_lang = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='言語')
     has_x_contract_route = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='取引動機')
-    has_x_contract_material = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='販売/仕入商材')
-    has_contract_monthly_amount = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='月間販売/仕入額')
-    has_x_responsible_stamp = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='責任者の印字')
+    has_x_contract_material = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')],
+                                               string='販売/仕入商材')
+    has_contract_monthly_amount = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')],
+                                                   string='月間販売/仕入額')
+    has_x_responsible_stamp = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')],
+                                               string='責任者の印字')
     has_x_receipts_term = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='取引条件')
-    has_x_payment_method = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='支払手段')
+    # has_x_payment_method = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='支払手段')
     has_company_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='会社')
     has_industry_id = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], string='産業')
 
+    has_x_payment_type = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], default='no',
+                                          string='支払手段')
+    has_x_fee_burden_paid = fields.Selection([('required', '必須'), ('optional', 'オプション'), ('no', 'なし')], default='no',
+                                             string='手数料負担')
 
     @api.onchange('has_partner_info')
     def _onchange_has_partner_info(self):

@@ -37,7 +37,6 @@
                 <field name="has_x_fee_burden" invisible="1"/>
                 <field name="has_x_bill_site" invisible="1"/>
                 <field name="has_x_purchase_user_id" invisible="1"/>
-                <field name="has_x_vendor_payment_term" invisible="1"/>
                 <field name="has_property_supplier_payment_term_id" invisible="1"/>
                 <field name="has_x_minimum_cost" invisible="1"/>
                 <field name="has_property_account_position_id" invisible="1"/>
@@ -45,8 +44,6 @@
                 <field name="has_sales_note" invisible="1"/>
                 <field name="has_purchase_note" invisible="1"/>
                 <field name="has_partner_info" invisible="1"/>
-                <field name="has_x_payment_terms" invisible="1"/>
-                <field name="has_x_payment_method" invisible="1"/>
                 <field name="has_x_receipts_term" invisible="1"/>
 
                 <field name="has_lang" invisible="1"/>
@@ -92,13 +89,11 @@
 
             <xpath expr="//field[@name='type']" position="before">
                 <field name="x_is_customer"/>
-                <field name="x_transaction_categ" widget="many2many_checkboxes"
+                <field name="x_transaction_categ"
                        attrs="{'required': [('x_is_vendor', '=', True)], 'invisible': [('x_is_vendor', '!=', True)]}"
 
                 />
-<!--                <field name="x_transaction_department" string="部門" widget="many2many_tags"-->
-<!--                       options="{'no_create': True, 'no_open': True, 'no_edit': True}"-->
-<!--                       attrs="{'required': [('x_transaction_categ', '=', True)]}"/>-->
+
                 <field name="ref" string="取引先コード" widget="many2many_tags" attrs="{
                     'invisible': [('has_ref', '=', 'no')],
                     'required': [('has_ref', '=', 'required')]
@@ -353,25 +348,23 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='sales_purchases']" position="after">
-                <page string="支払条件" name="payment_terms" attrs="{
-                    'invisible': [('has_x_payment_terms', '=', False)],
-                }">
-                    <field name="x_payment_terms_ids" colspan="4" widget="one2many" nolabel="1"
-                           attrs="{'required': [('x_payment_terms_ids', '=', 'required')]}">
-                        <tree editable="top">
-                            <field name="more_than_amount"/>
-                            <field name="more_than_deadline"/>
-                            <field name="more_than_payment_site"/>
-                            <field name="more_than_payment_method"/>
-                            <field name="less_than_amount"/>
-                            <field name="less_than_deadline"/>
-                            <field name="less_than_payment_site"/>
-                            <field name="less_than_payment_method"/>
-                            <field name="collecting_money"/>
-                            <field name="fee_burden"/>
-                            <field name="bill_site"/>
-                        </tree>
-                    </field>
+                <page string="支払条件" name="payment_terms">
+<!--                    <field name="x_payment_terms_ids" colspan="4" widget="one2many" nolabel="1"-->
+<!--                           attrs="{'required': [('x_payment_terms_ids', '=', 'required')]}">-->
+<!--                        <tree editable="top">-->
+<!--                            <field name="more_than_amount"/>-->
+<!--                            <field name="more_than_deadline"/>-->
+<!--                            <field name="more_than_payment_site"/>-->
+<!--                            <field name="more_than_payment_method"/>-->
+<!--                            <field name="less_than_amount"/>-->
+<!--                            <field name="less_than_deadline"/>-->
+<!--                            <field name="less_than_payment_site"/>-->
+<!--                            <field name="less_than_payment_method"/>-->
+<!--                            <field name="collecting_money"/>-->
+<!--                            <field name="fee_burden"/>-->
+<!--                            <field name="bill_site"/>-->
+<!--                        </tree>-->
+<!--                    </field>-->
                 </page>
             </xpath>
             <xpath expr="//page[@name='sales_purchases']/group" position="after">
@@ -411,41 +404,25 @@
                     'invisible': [('has_x_purchase_user_id', '=', 'no')],
                     'required': [('has_x_purchase_user_id', '=', 'required')]
                 }"/>
-                <field name="x_vendor_payment_term" widget="radio" options="{'horizontal': true}" attrs="{
-                    'invisible': [('has_x_vendor_payment_term', '=', 'no')],
-                    'required': [('has_x_vendor_payment_term', '=', 'required')]
-                }"/>
             </xpath>
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="after">
                 <field name="x_more_than_receipts_method" attrs="{
                     'invisible': [('has_x_receipts_term', '=', 'no')],
                     'required': [('has_x_receipts_term', '=', 'required')]
                 }"/>
-                <field name="x_payment_method" attrs="{
-                    'invisible': [('has_x_payment_method', '=', 'no')],
-                    'required': [('has_x_payment_method', '=', 'required')]
-                }"/>
+                <field name="x_payment_method"/>
                 <field name="x_bank_payment_date" attrs="{
                     'invisible': [('x_payment_method', 'not in', ['head_bank','branch_bank'])],
                     'required': [('x_payment_method', 'in', ['head_bank','branch_bank'])]
                 }"/>
-                <field name="x_other_payment_term" attrs="{
-                    'invisible': [('x_vendor_payment_term', '=', 'ss_rule')],
-                    'required': [('x_vendor_payment_term', '=', 'other')]
-                }"/>
-                <field name="x_other_payment_reason" attrs="{
-                    'invisible': [('x_vendor_payment_term', '=', 'ss_rule')],
-                }"/>
+                <field name="x_other_payment_term"/>
+                <field name="x_other_payment_reason"/>
                 <field name="x_minimum_cost" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{
                     'invisible': [('has_x_minimum_cost', '=', 'no')],
                     'required': [('has_x_minimum_cost', '=', 'required')]
                 }"/>
-                <label for="x_payment_terms" colspan="4" string="支払条件の当社規定" attrs="{
-                    'invisible': [('has_x_payment_terms', '=', False)],
-                }"/>
-                <field colspan="4" name="x_payment_terms" nolabel="1" attrs="{
-                    'invisible': [('has_x_payment_terms', '=', False)],
-                }"/>
+                <label for="x_payment_terms" colspan="4" string="支払条件の当社規定"/>
+                <field colspan="4" name="x_payment_terms" nolabel="1"/>
             </xpath>
             <xpath expr="//page[@name='accounting']" position="replace">
                 <page string="会計" name="accounting"

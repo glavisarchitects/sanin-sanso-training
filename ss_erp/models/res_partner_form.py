@@ -21,8 +21,8 @@ class ResPartnerForm(models.Model):
         'mail.channel', 'mail_channel_profile_partner_form', 'partner_id', 'channel_id', copy=False)
     meeting_ids = fields.Many2many('calendar.event', 'calendar_event_res_partner_form_rel',
                                    'res_partner_id', 'calendar_event_id', string='Meetings', copy=False)
-    x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_form_rel',
-                                           'categ_id', 'partner_id', string="Transaction classification", index=True)
+    # x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_form_rel',
+    #                                        'categ_id', 'partner_id', string="Transaction classification", index=True)
     x_transaction_department = fields.Many2many(
         'ss_erp.bis.category', 'department_partner_form_rel', 'department_id', 'partner_id', string="部門",
         index=True)
@@ -95,8 +95,8 @@ class ResPartnerForm(models.Model):
         'res.users', 'res_users_res_partner_form_rel', 'partner_id', 'res_users_id', copy=False)
     website_message_ids = fields.Many2many(
         'mail.message', 'web_mail_message_res_partner_form_rel', 'partner_id', 'mail_message_id', copy=False)
-    x_payment_terms_ids = fields.Many2many(
-        'ss_erp.partner.payment.term', 'payment_term_res_partner_form_rel', 'partner_id', 'payment_term_id', copy=False)
+    # x_payment_terms_ids = fields.Many2many(
+    #     'ss_erp.partner.payment.term', 'payment_term_res_partner_form_rel', 'partner_id', 'payment_term_id', copy=False)
 
     @api.model
     def _commercial_fields(self):

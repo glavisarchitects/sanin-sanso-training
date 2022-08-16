@@ -14,6 +14,12 @@ class ResPartner(models.Model):
     x_contact_categ = fields.Many2one(
         'ss_erp.contact.category', string='連絡先カテゴリ', index=True, tracking=True)
 
+    x_transaction_categ = fields.Selection(
+        [('gas_material', 'ガス・器材'),
+         ('construction', '工事')],
+        string='取引区分'
+    )
+
     x_name_abbreviation = fields.Char(string='略称', tracking=True)
     x_name_furigana = fields.Char(string="フリガナ", tracking=True)
 
@@ -26,8 +32,8 @@ class ResPartner(models.Model):
         ('for_rfq', '見積依頼送付先'),
         ('for_po', '発注送付先'),
     ])
-    x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_rel',
-                                           'categ_id', 'partner_id', string="取引区分", index=True, tracking=True)
+    # x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_rel',
+    #                                        'categ_id', 'partner_id', string="取引区分", index=True, tracking=True)
     # x_transaction_department = fields.Many2many(
     #     'ss_erp.bis.category', 'department_partner_rel', 'department_id', 'partner_id', string="部門", index=True,
     #     tracking=True)
@@ -42,16 +48,17 @@ class ResPartner(models.Model):
         ('contract', '締結'),
         ('no_contract', '締結しない'),
         ('noting', '該当なし'),
-    ], string='取引基本契約書', index=True, default='no_contract', tracking=True)
+    ], string='取引基本契約書', index=True, default='no_contract', tracking=True,
+        help='”新規取引、BtoB取引、継続的取引(スポットではない)、月間取引税込30万円以上” すべて該当する場合は必ず締結にする')
     x_contract_memo = fields.Text(string="変動理由", tracking=True)
     x_found_year = fields.Char(string='創立年度', tracking=True)
     x_capital = fields.Float(string='資本金', tracking=True)
     x_purchase_user_id = fields.Many2one(
         'res.users', string='購買担当者', index=True)
-    x_vendor_payment_term = fields.Selection([
-        ('ss_rule', '当社規定(規則参照)'),
-        ('other', 'その他'),
-    ], string='支払条件規定', tracking=True)
+    # x_vendor_payment_term = fields.Selection([
+    #     ('ss_rule', '当社規定(規則参照)'),
+    #     ('other', 'その他'),
+    # ], string='支払条件規定', tracking=True)
     x_other_payment_term = fields.Char(string='その他支払条件', tracking=True)
     x_other_payment_reason = fields.Text(string='変動理由', tracking=True)
     x_minimum_cost = fields.Float(string='最低仕入価格', tracking=True)
@@ -124,8 +131,8 @@ class ResPartner(models.Model):
         related='x_contact_categ.has_x_bill_site', store=True, )
     has_x_purchase_user_id = fields.Selection(
         related='x_contact_categ.has_x_purchase_user_id', store=True, )
-    has_x_vendor_payment_term = fields.Selection(
-        related='x_contact_categ.has_x_vendor_payment_term', store=True, )
+    # has_x_vendor_payment_term = fields.Selection(
+    #     related='x_contact_categ.has_x_vendor_payment_term', store=True, )
     has_property_supplier_payment_term_id = fields.Selection(
         related='x_contact_categ.has_property_supplier_payment_term_id', store=True, )
     has_x_minimum_cost = fields.Selection(
@@ -140,66 +147,65 @@ class ResPartner(models.Model):
         related='x_contact_categ.has_purchase_note', store=True, )
     has_partner_info = fields.Boolean(
         related='x_contact_categ.has_partner_info', store=True)
-    has_x_payment_terms = fields.Boolean(
-        related='x_contact_categ.has_x_payment_terms',
-        store=True)
+    # has_x_payment_terms = fields.Boolean(
+    #     related='x_contact_categ.has_x_payment_terms',
+    #     store=True)
 
-    has_lang = fields.Selection(related='x_contact_categ.has_lang',)
+    has_lang = fields.Selection(related='x_contact_categ.has_lang', )
 
-    x_payment_terms_ids = fields.One2many('ss_erp.partner.payment.term',
-                                          'partner_id',
-                                          string='Transaction terms')
+    # x_payment_terms_ids = fields.One2many('ss_erp.partner.payment.term',
+    #                                       'partner_id',
+    #                                       string='Transaction terms')
     country_id = fields.Many2one('res.country', string='Country', ondelete='restrict', default=_get_default_country_id)
     # TuyenTN 2022/07/15
     # Lorry Business
-    product_id = fields.Many2one('product.product',string='プロダクト')
-    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department',string='管轄部門')
+    product_id = fields.Many2one('product.product', string='プロダクト')
+    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string='管轄部門')
     # x_voucher_pattern
     x_lorry_type = fields.Selection([('industrial', '産ガス'),
                                      ('lpg', 'LPG'),
-                                     ('lng','LNG')
-                                     ],string='ローリー種別')
-    x_name = fields.Many2many('ss_erp.delivery.vehicle',string='車両')
+                                     ('lng', 'LNG')
+                                     ], string='ローリー種別')
+    x_name = fields.Many2many('ss_erp.delivery.vehicle', string='車両')
     x_acc_withdrawal = fields.Boolean(string='引落')
     x_acc_transfer = fields.Boolean(string='取引')
-    x_received_method = fields.Many2one('account.journal',string='支払手段(入金)')
+    x_received_method = fields.Many2one('account.journal', string='支払手段(入金)')
     x_responsible_person_printing = fields.Selection([('yes', '印字する'),
                                                       ('no', '印字しない'),
                                                       ], string="責任者の印字")
     # x_mini_bulk_business
     x_creation_target = fields.Boolean(string='配車計画一括作成')
-    manager_id = fields.Many2one('hr.employee',string='担当者')
+    manager_id = fields.Many2one('hr.employee', string='担当者')
     x_delivery_pattern = fields.Many2one('ss_erp.delivery.pattern', string='配送パターン')
     x_delivery_reference_date = fields.Date(string='配送基準日')
     location_id = fields.Many2one('stock.location', string='在庫移動元(車両)')
 
     # TuyenTN 2022/29/07
-    x_responsible_stamp = fields.Selection([('yes','印字する'),('no','印字しない')])
+    x_responsible_stamp = fields.Selection([('yes', '印字する'), ('no', '印字しない')])
     x_more_than_deadline = fields.Char(string='締日(万円以上)')
     x_more_than_receipts_site = fields.Char(string='支払サイト(万円以上)')
     x_more_than_amount = fields.Float(string='金額(万円以上)')
-    x_more_than_receipts_method = fields.Selection([('cash','現金'),('check','小切手'),
-                                                    ('bank','振込'),('transfer','振替'),('bills','手形')],
+    x_more_than_receipts_method = fields.Selection([('cash', '現金'), ('check', '小切手'),
+                                                    ('bank', '振込'), ('transfer', '振替'), ('bills', '手形')],
                                                    string='入金手段(万円以上)', default='transfer')
     x_less_than_deadline = fields.Char(string='締日(万円以下)')
     x_less_than_receipts_site = fields.Char(string='支払サイト(万円以下)')
     x_less_than_amount = fields.Float(string='金額(万円以下)')
-    less_than_receipts_method = fields.Selection([('cash','現金'),('check','小切手'),
-                                                  ('bank','振込'),('transfer','振替'),('bills','手形')])
-    x_collecting_money = fields.Selection([('yes','印字する'),('no','印字しない')], default='no',string='集金')
-    x_fee_burden = fields.Selection([('other_side','先方'),('out_side','当方')], default='other_side', string='手数料負担')
+    less_than_receipts_method = fields.Selection([('cash', '現金'), ('check', '小切手'),
+                                                  ('bank', '振込'), ('transfer', '振替'), ('bills', '手形')])
+    x_collecting_money = fields.Selection([('yes', '印字する'), ('no', '印字しない')], default='no', string='集金')
+    x_fee_burden = fields.Selection([('other_side', '先方'), ('out_side', '当方')], default='other_side', string='手数料負担')
     x_bill_site = fields.Char(string='手形サイト')
-    x_payment_method = fields.Selection([('head_bank','本社振込'),('head_check','本社手形'),
-                                         ('bank_cash','支店現金'),('branch_bank','支店振込')],string='支払手段')
+    x_payment_method = fields.Selection([('head_bank', '本社振込'), ('head_check', '本社手形'),
+                                         ('bank_cash', '支店現金'), ('branch_bank', '支店振込')], string='支払手段')
     x_bank_payment_date = fields.Date(string='振込日')
 
-    has_x_payment_method = fields.Selection(
-        related='x_contact_categ.has_x_payment_method',
-        store=True)
+    # has_x_payment_method = fields.Selection(
+    #     related='x_contact_categ.has_x_payment_method',
+    #     store=True)
     has_x_receipts_term = fields.Selection(
         related='x_contact_categ.has_x_receipts_term',
         store=True)
-
 
     @api.constrains('performance_ids', 'has_performance_info')
     def _check_performance_info_required(self):
@@ -218,29 +224,6 @@ class ResPartner(models.Model):
         for record in self:
             if record.has_bank_accounts == 'required' and not record.bank_ids:
                 raise ValidationError(_("銀行口座は入力してください。"))
-
-    # @api.constrains('phone')
-    # def _check_default_phone(self):
-    #     for record in self:
-    #         if record.phone:
-    #             partner = self.env['ss_erp.res.partner.form'].search([('phone', '=', self.phone)])
-    #             if len(partner) > 1:
-    #                 raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
-
-    @api.constrains('x_transaction_categ')
-    def _check_transaction_categ(self):
-        for record in self:
-            if record.x_is_customer or record.x_is_vendor:
-                if len(record.x_transaction_categ) == 0:
-                    raise ValidationError(_("取引区分は入力してください。"))
-
-    # @api.constrains('name')
-    # def _check_default_company_name(self):
-    #     for record in self:
-    #         if record.name:
-    #             partner = self.search([('name', '=', self.name)])
-    #             if len(partner) > 1:
-    #                 raise ValidationError(_("申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。"))
 
     @api.depends('is_company', 'x_contact_categ')
     def compute_company_type(self):
@@ -284,7 +267,7 @@ class ResPartner(models.Model):
             return False
 
         if all([vals.get('zip'), vals.get('state_id'), vals.get('city'), vals.get('street'), vals.get('street2'),
-                    vals.get('x_contact_categ')]):
+                vals.get('x_contact_categ')]):
             # Check Duplicate Address
             dup_add = [('zip', '=', vals.get('zip')), ('state_id', '=', vals.get('state_id')),
                        ('city', '=', vals.get('city')), ('street', '=', vals.get('street')),

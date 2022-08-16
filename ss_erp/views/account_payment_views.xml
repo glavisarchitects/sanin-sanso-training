@@ -1,17 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-    <record id="ss_erp_view_account_supplier_payment_tree" model="ir.ui.view">
-        <field name="name">account.supplier.payment.tree</field>
-        <field name="model">account.payment</field>
-        <field name="inherit_id" ref="account.view_account_supplier_payment_tree"/>
-        <field name="mode">primary</field>
-        <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="js_class">general_transfer_tree</attribute>
-            </xpath>
-        </field>
-    </record>
+        <record id="ss_erp_view_account_supplier_payment_tree" model="ir.ui.view">
+            <field name="name">account.supplier.payment.tree</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_supplier_payment_tree"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="js_class">general_transfer_tree</attribute>
+                </xpath>
+            </field>
+        </record>
 
+        <record id="ss_erp_view_account_payment_tree" model="ir.ui.view">
+            <field name="name">ss.erp.account.payment.tree</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='journal_id']" position="after">
+                    <field name="x_payment_type"/>
+                    <field name="x_receipt_type"/>
+                    <field name="x_is_not_create_fb"/>
+                    <field name="x_is_fb_created" string="FB作成済"/>
+                    <field name="x_organization_id"/>
+                    <field name="x_responsible_dept_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit Form View to Modify it -->
+        <record id="ss_erp_view_account_payment_form" model="ir.ui.view">
+            <field name="name">ss.erp.account.payment.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='is_internal_transfer']" position="before">
+                    <field name="x_sub_account_id"/>
+                </xpath>
+                <xpath expr="//field[@name='move_id']" position="after">
+                    <field name="x_payment_type" attrs="{'invisible': [('payment_type', '=', 'outbound')]}"/>
+                    <field name="x_receipt_type" attrs="{'invisible': [('payment_type', '=', 'inbound')]}"/>
+                    <field name="x_is_not_create_fb" readonly="1"/>
+                    <field name="x_is_fb_created" readonly="1"/>
+                    <field name="x_organization_id" readonly="1"/>
+                    <field name="x_responsible_dept_id" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
