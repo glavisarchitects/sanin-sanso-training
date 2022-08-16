@@ -220,12 +220,7 @@
                     'required': [('has_user_id', '=', 'required')]
                 }</attribute>
             </xpath>
-            <xpath expr="//field[@name='property_delivery_carrier_id']" position="attributes">
-                <attribute name="attrs">{
-                    'invisible': [('has_property_delivery_carrier_id', '=', 'no')],
-                    'required': [('has_property_delivery_carrier_id', '=', 'required')]
-                }</attribute>
-            </xpath>
+
             <xpath expr="//page[@name='sales_purchases']//field[@name='team_id']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_team_id', '=', 'no')],
@@ -505,6 +500,20 @@
                         <field name="x_delivery_reference_date" attrs="{'required': [('x_creation_target', '=', True)]}"/>
                     </group>
                 </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="res_partner_delivery_inherit_form">
+        <field name="name">res.partner.delivery.inherit.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="delivery.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_delivery_carrier_id']" position="attributes">
+                <attribute name="attrs">{
+                    'invisible': [('has_property_delivery_carrier_id', '=', 'no')],
+                    'required': [('has_property_delivery_carrier_id', '=', 'required')]
+                }</attribute>
             </xpath>
         </field>
     </record>

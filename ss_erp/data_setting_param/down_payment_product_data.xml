@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
 
-        <record id="down_payment_product_product_data" model="product.product">
+        <record id="down_payment_product_product_data" model="product.template">
             <field name="name">前受金</field>
             <field name="categ_id" ref="product.product_category_all"/>
             <field name="type">service</field>
