@@ -42,10 +42,13 @@ odoo.define("ss_erp.import", function (require) {
                     return "youki_kensa";
                 case "ss_erp.ifdb.propane.sales.detail":
                     return "propane";
+                case "ss_erp.account.transfer.result.line":
+                    return "account_transfer";
             }
         },
 
         onTransform: function () {
+            console.log('run here')
             var transform_type = this._getTransformType();
             this._rpc({
                 model: "base_import.import",
@@ -68,6 +71,7 @@ odoo.define("ss_erp.import", function (require) {
             this.$buttons.filter(".oe_youki_kanri_import_transform").on("click", this.onTransform.bind(this));
             this.$buttons.filter(".oe_youki_kensa_import_transform").on("click", this.onTransform.bind(this));
             this.$buttons.filter(".oe_propane_import_transform").on("click", this.onTransform.bind(this));
+            this.$buttons.filter(".o_account_transfer_import_transform").on("click", this.onTransform.bind(this));
             this.$buttons.filter('.o_import_transform').on('click', function () {
                 this.transformed = true;
                 this['settings_changed']();
@@ -125,8 +129,12 @@ odoo.define("ss_erp.import", function (require) {
                             break;
                         case "ss_erp.ifdb.propane.sales.detail":
                             this.$buttons.filter(".oe_propane_import_transform").removeClass("d-none");
+
                     }
                 }
+            if (this.parent_context.default_account_transfer_result_header_id){
+                this.$buttons.filter(".o_account_transfer_import_transform").removeClass("d-none");
+            }
             if (this.transformed) {
                 this.$buttons.filter('.o_import_transform').addClass('d-none');
             } else {

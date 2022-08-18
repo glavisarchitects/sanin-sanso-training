@@ -45,6 +45,8 @@
                 <field name="has_purchase_note" invisible="1"/>
                 <field name="has_partner_info" invisible="1"/>
                 <field name="has_x_receipts_term" invisible="1"/>
+                <field name="has_x_payment_type" invisible="1"/>
+                <field name="has_x_fee_burden_paid" invisible="1"/>
 
                 <field name="has_lang" invisible="1"/>
             </xpath>
@@ -362,11 +364,25 @@
 <!--                    </field>-->
                 </page>
             </xpath>
+
             <xpath expr="//page[@name='sales_purchases']/group" position="after">
                 <group name="lorry_business_supplier">
                     <group string="ローリー業務(仕入先)">
                         <field name="manager_id"/>
                     </group>
+                </group>
+                <group string="支店別販売取引条件">
+                    <field name="x_payment_terms_ids"   nolabel="1"
+                           attrs="{'required': [('x_payment_terms_ids', '=', 'required')]}">
+                        <tree editable="bottom">
+                            <field name="organization_id"/>
+                            <field name="total_amount"/>
+                            <field name="payment_term"/>
+                            <field name="receipt_type_branch"/>
+                            <field name="collecting_money"/>
+                            <field name="fee_burden"/>
+                        </tree>
+                    </field>
                 </group>
             </xpath>
             <!--            <xpath expr="//group[@name='sale']" position="inside">-->
@@ -401,23 +417,32 @@
                 }"/>
             </xpath>
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="after">
-                <field name="x_more_than_receipts_method" attrs="{
-                    'invisible': [('has_x_receipts_term', '=', 'no')],
-                    'required': [('has_x_receipts_term', '=', 'required')]
+                <field name="x_payment_type"
+                       attrs="{
+                    'invisible': [('has_x_payment_type', '=', 'no')],
+                    'required': [('has_x_payment_type', '=', 'required')]
                 }"/>
-                <field name="x_payment_method"/>
-                <field name="x_bank_payment_date" attrs="{
-                    'invisible': [('x_payment_method', 'not in', ['head_bank','branch_bank'])],
-                    'required': [('x_payment_method', 'in', ['head_bank','branch_bank'])]
+                <field name="x_fee_burden_paid" attrs="{
+                    'invisible': [('has_x_fee_burden_paid', '=', 'no')],
+                    'required': [('has_x_fee_burden_paid', '=', 'required')]
                 }"/>
-                <field name="x_other_payment_term"/>
+<!--                <field name="x_more_than_receipts_method" attrs="{-->
+<!--                    'invisible': [('has_x_receipts_term', '=', 'no')],-->
+<!--                    'required': [('has_x_receipts_term', '=', 'required')]-->
+<!--                }"/>-->
+<!--                <field name="x_payment_method"/>-->
+<!--                <field name="x_bank_payment_date" attrs="{-->
+<!--                    'invisible': [('x_payment_method', 'not in', ['head_bank','branch_bank'])],-->
+<!--                    'required': [('x_payment_method', 'in', ['head_bank','branch_bank'])]-->
+<!--                }"/>-->
+<!--                <field name="x_other_payment_term"/>-->
                 <field name="x_other_payment_reason"/>
                 <field name="x_minimum_cost" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{
                     'invisible': [('has_x_minimum_cost', '=', 'no')],
                     'required': [('has_x_minimum_cost', '=', 'required')]
                 }"/>
-                <label for="x_payment_terms" colspan="4" string="支払条件の当社規定"/>
-                <field colspan="4" name="x_payment_terms" nolabel="1"/>
+<!--                <label for="x_payment_terms" colspan="4" string="支払条件の当社規定"/>-->
+<!--                <field colspan="4" name="x_payment_terms" nolabel="1"/>-->
             </xpath>
             <xpath expr="//page[@name='accounting']" position="replace">
                 <page string="会計" name="accounting"
@@ -549,20 +574,20 @@
                 }</attribute>
             </field>
             <xpath expr="//field[@name='property_product_pricelist']" position="after">
-                <field name="x_received_method"/>
+<!--                <field name="x_received_method"/>-->
                 <field name="x_responsible_person_printing"/>
-                <field name="x_collecting_money" widget="radio" attrs="{
-                    'invisible': [('has_x_collecting_money', '=', 'no')],
-                    'required': [('has_x_collecting_money', '=', 'required')]
-                }" />
-                <field name="x_fee_burden" widget="radio" attrs="{
-                    'invisible': [('has_x_fee_burden', '=', 'no')],
-                    'required': [('has_x_fee_burden', '=', 'required')]
-                }" />
-                <field name="x_bill_site" attrs="{
-                    'invisible': [('has_x_bill_site', '=', 'no')],
-                    'required': [('has_x_bill_site', '=', 'required')]
-                }" />
+<!--                <field name="x_collecting_money" widget="radio" attrs="{-->
+<!--                    'invisible': [('has_x_collecting_money', '=', 'no')],-->
+<!--                    'required': [('has_x_collecting_money', '=', 'required')]-->
+<!--                }" />-->
+<!--                <field name="x_fee_burden" widget="radio" attrs="{-->
+<!--                    'invisible': [('has_x_fee_burden', '=', 'no')],-->
+<!--                    'required': [('has_x_fee_burden', '=', 'required')]-->
+<!--                }" />-->
+<!--                <field name="x_bill_site" attrs="{-->
+<!--                    'invisible': [('has_x_bill_site', '=', 'no')],-->
+<!--                    'required': [('has_x_bill_site', '=', 'required')]-->
+<!--                }" />-->
             </xpath>
 
         </field>

@@ -101,14 +101,13 @@
             sequence="35"/>
 
 
-
     <!-- HuuPhong Menu Import Purchase 060522   -->
 
     <!--    外部システム連携-->
     <menuitem id="external_system_cooperation_purchase_menu" name="外部システム連携" parent="purchase.menu_purchase_root"
               sequence="5"/>
 
-        <!--  インポートデータの親メニュー  -->
+    <!--  インポートデータの親メニュー  -->
     <menuitem id="external_system_cooperation_importing_performance_purchase" name="実績情報取込"
               parent="ss_erp.external_system_cooperation_purchase_menu" sequence="1"/>
 
@@ -213,4 +212,23 @@
             action="product_template_form_action"
             parent="stock.menu_stock_inventory_control"
             sequence="0"/>
+
+    <menuitem name="請求書" id="ss_erp_invoices" parent="account.menu_finance_receivables" sequence="0"/>
+    <menuitem
+            name="全銀口座振替依頼FB作成"
+            id="ss_erp_account_transfer_request_fb_menu"
+            parent="ss_erp_invoices"
+            sequence="1"/>
+
+    <menuitem
+            id="ss_erp_account_transfer_result_header_menu"
+            action="ss_erp.action_account_transfer_result_header"
+            parent="ss_erp_invoices"
+            sequence="2"/>
+
+    <menuitem
+        id="ss_erp_account_transfer_result_menu"
+        action="ss_erp.action_account_transfer_result_line"
+        parent="ss_erp_invoices"
+        sequence="3"/>
 </odoo>

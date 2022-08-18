@@ -59,7 +59,7 @@ class ResPartner(models.Model):
     #     ('ss_rule', '当社規定(規則参照)'),
     #     ('other', 'その他'),
     # ], string='支払条件規定', tracking=True)
-    x_other_payment_term = fields.Char(string='その他支払条件', tracking=True)
+    # x_other_payment_term = fields.Char(string='その他支払条件', tracking=True)
     x_other_payment_reason = fields.Text(string='変動理由', tracking=True)
     x_minimum_cost = fields.Float(string='最低仕入価格', tracking=True)
     x_payment_terms = fields.Html(
@@ -153,9 +153,9 @@ class ResPartner(models.Model):
 
     has_lang = fields.Selection(related='x_contact_categ.has_lang', )
 
-    # x_payment_terms_ids = fields.One2many('ss_erp.partner.payment.term',
-    #                                       'partner_id',
-    #                                       string='Transaction terms')
+    x_payment_terms_ids = fields.One2many('ss_erp.partner.payment.term',
+                                          'partner_id',
+                                          string='Transaction terms')
     country_id = fields.Many2one('res.country', string='Country', ondelete='restrict', default=_get_default_country_id)
     # TuyenTN 2022/07/15
     # Lorry Business
@@ -206,6 +206,22 @@ class ResPartner(models.Model):
     has_x_receipts_term = fields.Selection(
         related='x_contact_categ.has_x_receipts_term',
         store=True)
+    # TuyenTN 08/18/2022 update F004
+    x_payment_type = fields.Selection(string='支払手段',selection=[('bank', '振込'),
+                                                                   ('cash', '現金'),
+                                                                   ('heck', '本社手形')])
+    has_x_payment_type = fields.Selection(related='x_contact_categ.has_x_payment_type',store=True)
+    x_fee_burden_paid = fields.Selection([('other_side_paid','先方負担'),
+                                          ('our_side_paid','当社負担')],string='支払手数料負担')
+    has_x_fee_burden_paid = fields.Selection(related='x_contact_categ.has_x_fee_burden_paid',store=True)
+    x_receipt_type_branch = fields.Selection([('bank','振込'),
+                                              ('transfer','振替'),
+                                              ('bills','手形'),
+                                              ('cash','現金'),
+                                              ('paycheck','小切手'),
+                                              ('branch_receipt','他店入金'),
+                                              ('offset','相殺')
+                                              ],string='入金手段')
 
     @api.constrains('performance_ids', 'has_performance_info')
     def _check_performance_info_required(self):
