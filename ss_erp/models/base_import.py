@@ -338,11 +338,11 @@ class Import(models.TransientModel):
         return df_sorted[FIELDS_AFTER]
 
     def _read_file(self, options):
-        # MODEL_NAMES = ['ss_erp.ifdb.yg.summary', 'ss_erp.ifdb.yg.detail', 'ss_erp.ifdb.powernet.sales.detail',
-        #                'ss_erp.ifdb.youki.kanri.detail', 'ss_erp.ifdb.autogas.file.data.rec',
-        #                'ss_erp.ifdb.propane.sales.detail']
-        # if self.res_model not in MODEL_NAMES:
-        #     options['encoding'] = 'shift_jis'
+        MODEL_NAMES = ['ss_erp.ifdb.yg.summary', 'ss_erp.ifdb.yg.detail', 'ss_erp.ifdb.powernet.sales.detail',
+                       'ss_erp.ifdb.youki.kanri.detail', 'ss_erp.ifdb.autogas.file.data.rec',
+                       'ss_erp.ifdb.propane.sales.detail', 'ss_erp.account.transfer.result.line']
+        if self.res_model in MODEL_NAMES:
+            options['encoding'] = 'shift_jis'
         res = super(Import, self)._read_file(options)
         if options.get('custom_transform'):
             # header
@@ -361,3 +361,45 @@ class Import(models.TransientModel):
             # 標準
             for row in res:
                 yield row
+
+    def transform_account_transfer_file(self, options, parent_context={}):
+        transfer_header_id = self.env['ss_erp.account.transfer.result.header'].browse(
+            parent_context['default_account_transfer_result_header_id'])
+        data = self.file.decode('shift-jis').split('\r\n')
+        if not data[0].startswith('1'):
+            raise UserError(
+                _("データファイルをリロードしてください!")
+            )
+        # Todo Confirm dummy
+        new_data = [
+            b'"account_transfer_result_header_id","withdrawal_bank_number","withdrawal_bank_name",' + \
+            b'"withdrawal_branch_number","withdrawal_branch_name",' + \
+            b'"dummy1","deposit_type",' + \
+            b'"account_number","depositor_name","withdrawal_amount",' + \
+            b'"new_code","customer_number","transfer_result_code",' + \
+            b'"dummy2","error_message",' + \
+            b'"payment_id"'
+        ]
+
+        encode = "Shift-JIS"
+        name_header = '\n' + str(transfer_header_id.name) + ','
+        new_data.append(name_header.encode(encode))
+
+        withdrawal_bank_number = (data[0][4:14]) + ','
+        new_data.append(withdrawal_bank_number.encode(encode))
+
+        withdrawal_bank_name = (data[0][14:54]) + ','
+        new_data.append(withdrawal_bank_name.encode(encode))
+
+        withdrawal_branch_number = (data[0][14:54]) + ','
+        new_data.append(withdrawal_branch_name.encode(encode))
+        # if options.get('encoding'):
+        #     encode = options.get('encoding')
+        # for line in data:
+        #     if line == b"":
+        #         continue
+        #     new_line = b'"%s",' % (transfer_header_id.name.encode(encode)) + line
+        #     new_data.append(line)
+        # line = b",".join(new_data)
+        # line = b'"%s",' % (new_data.encode(encode))
+        self.file = b"".join(new_data)
