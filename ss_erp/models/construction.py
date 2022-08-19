@@ -39,7 +39,7 @@ class Construction(models.Model):
     all_margin_rate = fields.Float(string='一律マージン率')
     construction_component_ids = fields.One2many(comodel_name='ss.erp.construction.component',
                                                  inverse_name='construction_id', string='構成品')
-    construction_wordorder_ids = fields.One2many(comodel_name='ss.erp.construction.workorder',
+    construction_workorder_ids = fields.One2many(comodel_name='ss.erp.construction.workorder',
                                                  inverse_name='construction_id', string='作業オーダー')
     state = fields.Selection(
         string='ステータス',
@@ -120,3 +120,15 @@ class ConstructionWorkorder(models.Model):
         ('cancel', '取消済み'),
     ], string='ステータス')
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
+
+    def open_workorder(self):
+        self.ensure_one()
+        view_id = self.env.ref('ss_erp.ss_erp_construction_workorder_form_view').id
+        return {
+            'name': _('作業オーダーの詳細を開く'),
+            'res_model': 'ss.erp.construction.workorder',
+            'view_mode': 'form',
+            'view_id': view_id,
+            'type': 'ir.actions.act_window',
+            'res_id': self.id,
+        }
