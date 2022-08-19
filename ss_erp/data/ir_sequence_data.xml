@@ -33,7 +33,7 @@
         </record>
         <record id="seq_construction" model="ir.sequence">
             <field name="name">工事</field>
-            <field name="code">construction</field>
+            <field name="code">ss_erp.construction</field>
             <field name="prefix">工事</field>
             <field name="padding">5</field>
         </record>
