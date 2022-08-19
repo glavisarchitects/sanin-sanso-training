@@ -42,5 +42,19 @@ odoo.define('ss_erp.account_payment_list', function (require) {
             });
 
         },
+
+        updateButtons: function () {
+            this._super.apply(this, arguments);
+            if (this.$buttons) {
+                if (this.renderer.state.context.default_move_type === 'out_invoice'){
+                    this.$buttons.find('.o_list_button_account_transfer_request_fb').show();
+                } else {
+                    this.$buttons.find('.o_list_button_account_transfer_request_fb').hide();
+                }
+
+            }
+        },
+
     });
 });
+

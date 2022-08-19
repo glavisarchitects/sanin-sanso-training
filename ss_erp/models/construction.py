@@ -4,6 +4,7 @@ from odoo import fields, models, api
 class Construction(models.Model):
     _name = 'ss.erp.construction'
     _description = '工事'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='シーケンス',default='新規')
     construction_name = fields.Char(string='工事名')
@@ -33,7 +34,7 @@ class Construction(models.Model):
     @api.model
     def create(self, values):
         # Auto create name sequence
-        name = self.env['ir.sequence'].next_by_code('seq_construction')
+        name = self.env['ir.sequence'].next_by_code('ss_erp.construction')
         values['name'] = name
         return super(Construction, self).create(values)
 
@@ -113,6 +114,7 @@ class ConstructionComponent(models.Model):
 
 class ConstructionWorkorder(models.Model):
     _name = 'ss.erp.construction.workorder'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = '工事の作業オーダー'
 
     name = fields.Char(string='工程')

@@ -41,14 +41,19 @@
                         </group>
                         <notebook>
                             <page name="construction_component" string="構成品">
-                                <field name="move_raw_ids" widget="one2many" nolabel="1" context="{'default_location_id': location_id, 'default_location_dest_id': location_dest_id, 'default_state':'draft', 'default_name': name}">
+                                <field name="move_raw_ids" widget="one2many" nolabel="1"
+                                       context="{'default_location_id': location_id, 'default_location_dest_id': location_dest_id, 'default_state':'draft', 'default_name': name}">
                                     <tree default_order="is_done,sequence" editable="bottom">
-                                        <field name="product_id" force_save="1" required="1"  context="{'default_type': 'product'}" attrs="{'readonly': ['|', '|', ('has_move_lines', '=', True), ('state', '=', 'cancel'), ('state', '!=', 'draft') ]}"/>
+                                        <field name="product_id" force_save="1" required="1"
+                                               context="{'default_type': 'product'}"
+                                               attrs="{'readonly': ['|', '|', ('has_move_lines', '=', True), ('state', '=', 'cancel'), ('state', '!=', 'draft') ]}"/>
                                         <field name="company_id" invisible="1"/>
                                         <field name="state" invisible="1"/>
                                         <field name="has_move_lines" invisible="1"/>
                                         <field name="product_uom_qty" widget="mrp_should_consume" string="消費対象"/>
-                                        <field name="forecast_availability" string="引当済" attrs="{'column_invisible': [('parent.state', 'in', ['draft', 'done'])]}" widget="forecast_widget"/>
+                                        <field name="forecast_availability" string="引当済"
+                                               attrs="{'column_invisible': [('parent.state', 'in', ['draft', 'done'])]}"
+                                               widget="forecast_widget"/>
                                         <field name="quantity_done" string="消費済"/>
                                         <field name="product_uom" string="単位"/>
                                         <field name="product_uom_category_id" invisible="1"/>
@@ -58,6 +63,11 @@
 
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter" modifiers="{}">
+                        <field name="message_follower_ids" modifiers="{}" id="message_follower_ids"/>
+                        <field name="activity_ids" modifiers="{}" id="activity_ids"/>
+                        <field name="message_ids" modifiers="{}" id="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>

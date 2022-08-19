@@ -40,7 +40,7 @@
                         </group>
                         <notebook>
                             <page name="data_records" string="データレコード">
-                                <field name="account_transfer_result_record_ids" readonly="1">
+                                <field name="account_transfer_result_record_ids" >
                                     <tree>
                                         <field name="status" readonly="1"
                                                widget="badge"

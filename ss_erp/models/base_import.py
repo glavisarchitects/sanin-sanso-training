@@ -72,6 +72,11 @@ class Import(models.TransientModel):
         model_field="import_file_header_model"
     )
 
+    x_header_account_transfer = fields.Char(
+        string="Data Header",
+        readonly=True,
+    )
+
     def _get_ifdb_file_header(self, parent_context):
         self.ensure_one()
         if (
@@ -362,9 +367,26 @@ class Import(models.TransientModel):
             for row in res:
                 yield row
 
+    def do(self, fields, columns, options, dryrun=False):
+        if self.import_file_header_id and self.res_model == 'ss_erp.account.transfer.result.line':
+            header_rec = self.env['ss_erp.account.transfer.result.header'].browse(self.import_file_header_id)
+            data_header = self.x_header_account_transfer
+            header_rec.data_class = data_header[0][:1]
+            header_rec.type_code = data_header[0][1:3]
+            header_rec.entruster_code = data_header[0][4:10]
+            header_rec.entruster_name = data_header[0][10:50]
+            header_rec.withdrawal_date = data_header[0][50:54]
+            header_rec.bank_id = data_header[0][54:58]
+            header_rec.bank_branch_number = data_header[0][73:76]
+            acc_type_number = 'normal' if data_header[0][91:92] == '1' else 'checking'
+            header_rec.acc_type = acc_type_number
+            header_rec.acc_number = data_header[0][92:99]
+        return super(Import, self).do(fields, columns, options, dryrun=dryrun)
+
     def transform_account_transfer_file(self, options, parent_context={}):
         transfer_header_id = self.env['ss_erp.account.transfer.result.header'].browse(
             parent_context['default_account_transfer_result_header_id'])
+        self.import_file_header_id = parent_context['default_account_transfer_result_header_id']
         data = self.file.decode('shift-jis').split('\r\n')
         if not data[0].startswith('1'):
             raise UserError(
@@ -382,6 +404,7 @@ class Import(models.TransientModel):
 
         encode = "Shift-JIS"
 
+        self.x_header_account_transfer = data[:1]
         body_data = data[1:-2]
         line = []
         for bd in body_data:
