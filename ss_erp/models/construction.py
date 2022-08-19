@@ -20,11 +20,14 @@ class Construction(models.Model):
 
     company_id = fields.Many2one('res.company', string='会社', default=lambda self: self.env.user.company_id.id)
 
-    partner_id = fields.Many2one('res.partner', string='顧客', domain=[('x_is_customer', '=', True)],)
+    partner_id = fields.Many2one('res.partner', string='顧客', domain=[('x_is_customer', '=', True)], )
 
-    picking_type_id = fields.Many2one('stock.picking.type', related='organization_id.warehouse_id.out_type_id', store=True)
-    location_id = fields.Many2one('stock.location', related='organization_id.warehouse_id.lot_stock_id', store=True)
-    location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True)
+    picking_type_id = fields.Many2one('stock.picking.type', related='organization_id.warehouse_id.out_type_id',
+                                      store=True, string='オペレーションタイプ')
+    location_id = fields.Many2one('stock.location', related='organization_id.warehouse_id.lot_stock_id', store=True,
+                                  string='構成品ロケーション')
+    location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
+                                       string='配送ロケーション')
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
@@ -96,7 +99,8 @@ class ConstructionComponent(models.Model):
     @api.onchange('construction_sale_price')
     def _onchange_construction_sale_price(self):
         self.margin = self.construction_sale_price - self.standard_price
-        self.margin_rate = (self.construction_sale_price - self.standard_price) / self.standard_price if self.standard_price != 0 else 0
+        self.margin_rate = (
+                                       self.construction_sale_price - self.standard_price) / self.standard_price if self.standard_price != 0 else 0
 
 
 class ConstructionWorkorder(models.Model):
@@ -104,6 +108,24 @@ class ConstructionWorkorder(models.Model):
     _description = '工事の作業オーダー'
 
     name = fields.Char(string='工程')
+    organization_id = fields.Many2one(
+        comodel_name='ss_erp.organization',
+        string='組織',
+        related='construction_id.organization_id',
+        required=False)
+    responsible_dept_id = fields.Many2one(
+        comodel_name='ss_erp.responsible.department',
+        string='管轄部門',
+        related='construction_id.responsible_dept_id',
+    )
+
+    picking_type_id = fields.Many2one('stock.picking.type', related='construction_id.picking_type_id',
+                                      store=True, string='オペレーションタイプ')
+    location_id = fields.Many2one('stock.location', related='construction_id.location_id', store=True,
+                                  string='構成品ロケーション')
+    location_dest_id = fields.Many2one('stock.location', related='construction_id.location_dest_id', store=True,
+                                       string='配送ロケーション')
+
     planned_labor_costs = fields.Monetary(string='[予定] 労務費')
     result_labor_costs = fields.Monetary(string='[実績] 労務費')
     planned_expenses = fields.Monetary(string='[予定] 経費')
@@ -127,4 +149,4 @@ class ConstructionWorkorder(models.Model):
     ], string='ステータス')
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
 
-    move_raw_ids = fields.One2many(comodel_name='stock.move',inverse_name='construction_workorder_id')
+    move_raw_ids = fields.One2many(comodel_name='stock.move', inverse_name='construction_workorder_id')
