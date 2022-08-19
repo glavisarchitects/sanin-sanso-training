@@ -377,29 +377,63 @@ class Import(models.TransientModel):
             b'"dummy1","deposit_type",' + \
             b'"account_number","depositor_name","withdrawal_amount",' + \
             b'"new_code","customer_number","transfer_result_code",' + \
-            b'"dummy2","error_message",' + \
-            b'"payment_id"'
+            b'"dummy2"'
         ]
 
         encode = "Shift-JIS"
-        name_header = '\n' + str(transfer_header_id.name) + ','
-        new_data.append(name_header.encode(encode))
 
-        withdrawal_bank_number = (data[0][4:14]) + ','
-        new_data.append(withdrawal_bank_number.encode(encode))
+        body_data = data[1:-2]
+        line = []
+        for bd in body_data:
+            name_header = '\n' + str(transfer_header_id.name) + ','
+            line.append(name_header.encode(encode))
 
-        withdrawal_bank_name = (data[0][14:54]) + ','
-        new_data.append(withdrawal_bank_name.encode(encode))
+            withdrawal_bank_number = (data[0][4:14]) + ','
+            line.append(withdrawal_bank_number.encode(encode))
 
-        withdrawal_branch_number = (data[0][14:54]) + ','
-        new_data.append(withdrawal_branch_number.encode(encode))
-        # if options.get('encoding'):
-        #     encode = options.get('encoding')
-        # for line in data:
-        #     if line == b"":
-        #         continue
-        #     new_line = b'"%s",' % (transfer_header_id.name.encode(encode)) + line
-        #     new_data.append(line)
-        # line = b",".join(new_data)
-        # line = b'"%s",' % (new_data.encode(encode))
+            withdrawal_bank_name = (data[0][14:54]) + ','
+            line.append(withdrawal_bank_name.encode(encode))
+
+            withdrawal_branch_number = (bd[20:23]) + ','
+            line.append(withdrawal_branch_number.encode(encode))
+
+            withdrawal_branch_name = (bd[23:38]) + ','
+            line.append(withdrawal_branch_name.encode(encode))
+
+            dummy1 = (bd[38:42]) + ','
+            line.append(dummy1.encode(encode))
+
+            deposit_code = (bd[42:43])
+            deposit_type = 'normal' if deposit_code == '1' else 'checking'
+            line.append(deposit_type.encode(encode))
+
+            account_number = ',' + (bd[43:50]) + ','
+            line.append(account_number.encode(encode))
+
+            deposit_name = (bd[50:80]) + ','
+            line.append(deposit_name.encode(encode))
+
+            withdrawal_amount = (bd[80:90]) + ','
+            line.append(withdrawal_amount.encode(encode))
+
+            new_code = (bd[90:91])
+            if new_code == '0':
+                string_new_code = 'その他'
+            elif new_code == '1':
+                string_new_code = '第1回引落分'
+            else:
+                string_new_code = '変更分'
+            line.append(string_new_code.encode(encode))
+
+            customer_number = ',' + (bd[91:111]) + ','
+            line.append(customer_number.encode(encode))
+
+            transfer_result_code = (bd[111:112]) + ','
+            line.append(transfer_result_code.encode(encode))
+
+            dummy2 = (bd[112:120]) + ','
+            line.append(dummy2.encode(encode))
+
+            new_data += line
+            line = []
         self.file = b"".join(new_data)
