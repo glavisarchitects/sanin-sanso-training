@@ -392,7 +392,7 @@ class Import(models.TransientModel):
         new_data.append(withdrawal_bank_name.encode(encode))
 
         withdrawal_branch_number = (data[0][14:54]) + ','
-        new_data.append(withdrawal_branch_name.encode(encode))
+        new_data.append(withdrawal_branch_number.encode(encode))
         # if options.get('encoding'):
         #     encode = options.get('encoding')
         # for line in data:

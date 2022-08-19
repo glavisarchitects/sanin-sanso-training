@@ -106,6 +106,7 @@
         "views/account_move_line_view.xml",
         "views/account_payment_views.xml",
         "views/construction_view.xml",
+        "views/construction_workorder_view.xml",
         "views/ss_erp_bank_commission_view.xml",
         "views/webclient_templates.xml",
         "menu/menu_views.xml",
