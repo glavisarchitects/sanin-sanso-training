@@ -5,7 +5,8 @@ class Construction(models.Model):
     _name = 'ss.erp.construction'
     _description = '工事'
 
-    name = fields.Char(string='工事名')
+    name = fields.Char(string='シーケンス',default='新規')
+    construction_name = fields.Char(string='工事名')
     sequence = fields.Char(string='シーケンス')
     organization_id = fields.Many2one(
         comodel_name='ss_erp.organization',
@@ -28,6 +29,13 @@ class Construction(models.Model):
                                   string='構成品ロケーション')
     location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
                                        string='配送ロケーション')
+
+    @api.model
+    def create(self, values):
+        # Auto create name sequence
+        name = self.env['ir.sequence'].next_by_code('seq_construction')
+        values['name'] = name
+        return super(Construction, self).create(values)
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
