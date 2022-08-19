@@ -20,6 +20,12 @@ class Construction(models.Model):
 
     company_id = fields.Many2one('res.company', string='会社', default=lambda self: self.env.user.company_id.id)
 
+    partner_id = fields.Many2one('res.partner', string='顧客', domain=[('x_is_customer', '=', True)],)
+
+    picking_type_id = fields.Many2one('stock.picking.type', related='organization_id.warehouse_id.out_type_id', store=True)
+    location_id = fields.Many2one('stock.location', related='organization_id.warehouse_id.lot_stock_id', store=True)
+    location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True)
+
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
@@ -121,14 +127,4 @@ class ConstructionWorkorder(models.Model):
     ], string='ステータス')
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
 
-    def open_workorder(self):
-        self.ensure_one()
-        view_id = self.env.ref('ss_erp.ss_erp_construction_workorder_form_view').id
-        return {
-            'name': _('作業オーダーの詳細を開く'),
-            'res_model': 'ss.erp.construction.workorder',
-            'view_mode': 'form',
-            'view_id': view_id,
-            'type': 'ir.actions.act_window',
-            'res_id': self.id,
-        }
+    move_raw_ids = fields.One2many(comodel_name='stock.move',inverse_name='construction_workorder_id')

@@ -2,23 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dfba10f4-20f1-4765-b08f-30b86813d392" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/ss_erp/controllers/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ss_erp/controllers/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ss_erp/models/account_move.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/i18n/ja_JP.po" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/i18n/ja_JP.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/__manifest__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/__manifest__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/menu/menu_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/menu/menu_views.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ss_erp/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/models/approval_category.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/approval_category.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/models/approval_request.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/approval_request.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/models/base_import.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/base_import.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/models/purchase_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/purchase_order.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/models/sale_order.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/sale_order.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_code_convert.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_code_convert.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_convert_code_type.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_convert_code_type.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/models/stock_inventory.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/stock_inventory.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/views/approval_request_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/views/approval_request_views.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/views/ss_erp_ifdb_powernet_sales_detail_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/views/ss_erp_ifdb_powernet_sales_detail_views.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ss_erp/views/stock_inventory_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/views/stock_inventory_views.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_autogas_file_header.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_autogas_file_header.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_powernet_sales_header.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_powernet_sales_header.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_propane_sales_header.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_propane_sales_header.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_yg_header.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_yg_header.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_youki_kanri.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_youki_kanri.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_youkikensa_billing_file.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_youkikensa_billing_file.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/security/ir.model.access.csv" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/security/ir.model.access.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/views/webclient_templates.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/views/webclient_templates.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

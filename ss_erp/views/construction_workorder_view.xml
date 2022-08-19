@@ -36,6 +36,19 @@
                                 <field name="total_amount"/>
                             </group>
                         </group>
+                        <notebook>
+                            <page name="construction_component" string="構成品">
+                                <field name="move_raw_ids" widget="one2many" nolabel="1">
+                                    <tree default_order="is_done,sequence" editable="bottom">
+                                        <field name="product_id" force_save="1" required="1" context="{'default_type': 'product'}" attrs="{'readonly': ['|', '|', ('has_move_lines', '=', True), ('state', '=', 'cancel'), '&amp;', ('state', '!=', 'draft') ]}"/>
+                                        <field name="company_id" invisible="1"/>
+                                        <field name="state" invisible="1"/>
+                                        <field name="has_move_lines" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                        </notebook>
                     </sheet>
                 </form>
             </field>
