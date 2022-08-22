@@ -6,7 +6,7 @@ class Construction(models.Model):
     _description = '工事'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string='シーケンス',default='新規')
+    name = fields.Char(string='シーケンス', default='新規')
     construction_name = fields.Char(string='工事名')
     sequence = fields.Char(string='シーケンス')
     organization_id = fields.Many2one(
@@ -22,6 +22,9 @@ class Construction(models.Model):
 
     company_id = fields.Many2one('res.company', string='会社', default=lambda self: self.env.user.company_id.id)
 
+    currency_id = fields.Many2one('res.currency', 'Currency', required=True,
+                                  default=lambda self: self.env.user.company_id.currency_id.id)
+
     partner_id = fields.Many2one('res.partner', string='顧客', domain=[('x_is_customer', '=', True)], )
 
     picking_type_id = fields.Many2one('stock.picking.type', related='organization_id.warehouse_id.out_type_id',
@@ -30,6 +33,35 @@ class Construction(models.Model):
                                   string='構成品ロケーション')
     location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
                                        string='配送ロケーション')
+
+    amount_untaxed = fields.Monetary(string='税抜金額', compute='_compute_amount')
+    amount_tax = fields.Monetary(string='税', compute='_compute_amount')
+    amount_total = fields.Monetary(string='合計', compute='_compute_amount')
+    margin = fields.Monetary(string='粗利益', compute='_compute_amount')
+    margin_percent = fields.Float(string='マージン(%)')
+
+    @api.depends('construction_component_ids.quantity', 'construction_component_ids.sale_price',
+                 'construction_component_ids.tax_id', 'construction_component_ids.standard_price')
+    def _compute_amount(self):
+        for rec in self:
+            amount_purchased = 0
+            amount_untaxed = 0
+            amount_tax = 0
+
+            for line in rec.construction_component_ids:
+                amount_untaxed += line.quantity * line.sale_price
+                amount_purchased += line.quantity * line.standard_price
+                amount_tax += (line.quantity * line.sale_price) * line.tax_id.amount / 100
+
+            amount_total = amount_untaxed + amount_tax
+            margin = amount_untaxed - amount_purchased
+            margin_percent = margin / amount_untaxed if amount_untaxed != 0 else 100
+
+            rec.amount_total = amount_total
+            rec.amount_untaxed = amount_untaxed
+            rec.margin = margin
+            rec.margin_percent = margin_percent
+            rec.amount_tax = amount_tax
 
     @api.model
     def create(self, values):
@@ -99,8 +131,8 @@ class ConstructionComponent(models.Model):
     standard_price = fields.Monetary(string='仕入価格')
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id)
-    construction_tax = fields.Many2one(comodel_name='account.tax', string='税')
-    construction_sale_price = fields.Monetary(string='販売価格')
+    tax_id = fields.Many2one(comodel_name='account.tax', string='税')
+    sale_price = fields.Monetary(string='販売価格')
     margin = fields.Monetary(string='粗利益')
     margin_rate = fields.Float(string='マージン(%)')
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
@@ -109,7 +141,7 @@ class ConstructionComponent(models.Model):
     def _onchange_construction_sale_price(self):
         self.margin = self.construction_sale_price - self.standard_price
         self.margin_rate = (
-                                       self.construction_sale_price - self.standard_price) / self.standard_price if self.standard_price != 0 else 0
+                                   self.construction_sale_price - self.standard_price) / self.standard_price if self.standard_price != 0 else 0
 
 
 class ConstructionWorkorder(models.Model):
