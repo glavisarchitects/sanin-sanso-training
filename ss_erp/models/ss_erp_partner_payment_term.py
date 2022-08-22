@@ -18,6 +18,7 @@ class PartnerPaymentTerm(models.Model):
         string='組織情報',
         required=False)
     partner_id = fields.Many2one('res.partner', 'Contact address')
+    partner_form_id = fields.Many2one('ss_erp.res.partner.form', string="連絡先フォーム")
     total_amount = fields.Float(string='取引条件金額')
     range = fields.Selection([('up', '以上'), ('down', '未満')], string='単位')
     payment_term = fields.Char(string='支払サイト')

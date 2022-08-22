@@ -37,41 +37,33 @@ class ResPartner(models.Model):
     # x_transaction_department = fields.Many2many(
     #     'ss_erp.bis.category', 'department_partner_rel', 'department_id', 'partner_id', string="部門", index=True,
     #     tracking=True)
-    x_is_branch = fields.Boolean(string="Organization in charge", default=True, help=_(
-        "担当拠点、支店、営業所、出張所がある場合はチェック"), tracking=True)
+    # x_is_branch = fields.Boolean(string="Organization in charge", default=True, help=_(
+    #     "担当拠点、支店、営業所、出張所がある場合はチェック"), tracking=True)
 
-    x_branch_name = fields.Many2one(
-        'ss_erp.organization', string='担当組織', tracking=True)
+    # x_branch_name = fields.Many2one(
+    #     'ss_erp.organization', string='担当組織', tracking=True)
     x_fax = fields.Char('FAX代表', tracking=True)
     x_fax_payment = fields.Char('FAX支払通知書', tracking=True)
     x_contract_check = fields.Selection([
         ('contract', '締結'),
         ('no_contract', '締結しない'),
         ('noting', '該当なし'),
-    ], string='取引基本契約書', index=True, default='no_contract', tracking=True,
+    ], string='取引基本契約書', index=True, default='contract', tracking=True,
         help='”新規取引、BtoB取引、継続的取引(スポットではない)、月間取引税込30万円以上” すべて該当する場合は必ず締結にする')
     x_contract_memo = fields.Text(string="変動理由", tracking=True)
     x_found_year = fields.Char(string='創立年度', tracking=True)
     x_capital = fields.Float(string='資本金', tracking=True)
     x_purchase_user_id = fields.Many2one(
         'res.users', string='購買担当者', index=True)
-    # x_vendor_payment_term = fields.Selection([
-    #     ('ss_rule', '当社規定(規則参照)'),
-    #     ('other', 'その他'),
-    # ], string='支払条件規定', tracking=True)
-    # x_other_payment_term = fields.Char(string='その他支払条件', tracking=True)
     x_other_payment_reason = fields.Text(string='変動理由', tracking=True)
-    x_minimum_cost = fields.Float(string='最低仕入価格', tracking=True)
+    x_minimum_cost = fields.Monetary(string='最低仕入価格', tracking=True)
     x_payment_terms = fields.Html(
         related='company_id.x_payment_terms', string='支払条件の当社規定', tracking=True)
-    x_customer_contract_route = fields.Text(string='販売動機', tracking=True)
-    x_customer_material = fields.Text(string='販売商材', tracking=True)
-    x_customer_monthly_total_price = fields.Float(
-        string='月間販売額', tracking=True)
-    x_vendor_contract_route = fields.Text(string='仕入動機', tracking=True)
-    x_vendor_material = fields.Text(string='仕入商材', tracking=True)
-    x_vendor_monthly_total_price = fields.Float(
-        string='月間仕入額', tracking=True)
+
+    x_contract_route = fields.Text(string='取引動機', tracking=True)
+    x_material = fields.Text(string='販売/仕入商材', tracking=True)
+    x_monthly_total_price = fields.Text(string='月間販売額/仕入額', tracking=True)
+
     performance_ids = fields.One2many(
         'ss_erp.partner.performance', 'partner_id', string='業績情報', tracking=True)
     construction_ids = fields.One2many(
@@ -147,9 +139,18 @@ class ResPartner(models.Model):
         related='x_contact_categ.has_purchase_note', store=True, )
     has_partner_info = fields.Boolean(
         related='x_contact_categ.has_partner_info', store=True)
-    # has_x_payment_terms = fields.Boolean(
-    #     related='x_contact_categ.has_x_payment_terms',
-    #     store=True)
+    has_x_responsible_stamp = fields.Selection(
+        related='x_contact_categ.has_x_responsible_stamp', store=True)
+
+    has_industry_id= fields.Selection(
+        related='x_contact_categ.has_industry_id', store=True)
+
+    has_x_contract_route = fields.Selection(
+        related='x_contact_categ.has_x_contract_route', store=True)
+    has_x_contract_material = fields.Selection(
+        related='x_contact_categ.has_x_contract_material', store=True)
+    has_contract_monthly_amount = fields.Selection(
+        related='x_contact_categ.has_contract_monthly_amount', store=True)
 
     has_lang = fields.Selection(related='x_contact_categ.has_lang', )
 
@@ -181,7 +182,7 @@ class ResPartner(models.Model):
     location_id = fields.Many2one('stock.location', string='在庫移動元(車両)')
 
     # TuyenTN 2022/29/07
-    x_responsible_stamp = fields.Selection([('yes', '印字する'), ('no', '印字しない')])
+    x_responsible_stamp = fields.Selection([('yes', '印字する'), ('no', '印字しない')], string='責任者の印字')
     x_more_than_deadline = fields.Char(string='締日(万円以上)')
     x_more_than_receipts_site = fields.Char(string='支払サイト(万円以上)')
     x_more_than_amount = fields.Float(string='金額(万円以上)')
@@ -207,21 +208,21 @@ class ResPartner(models.Model):
         related='x_contact_categ.has_x_receipts_term',
         store=True)
     # TuyenTN 08/18/2022 update F004
-    x_payment_type = fields.Selection(string='支払手段',selection=[('bank', '振込'),
-                                                                   ('cash', '現金'),
-                                                                   ('heck', '本社手形')])
-    has_x_payment_type = fields.Selection(related='x_contact_categ.has_x_payment_type',store=True)
-    x_fee_burden_paid = fields.Selection([('other_side_paid','先方負担'),
-                                          ('our_side_paid','当社負担')],string='支払手数料負担')
-    has_x_fee_burden_paid = fields.Selection(related='x_contact_categ.has_x_fee_burden_paid',store=True)
-    x_receipt_type_branch = fields.Selection([('bank','振込'),
-                                              ('transfer','振替'),
-                                              ('bills','手形'),
-                                              ('cash','現金'),
-                                              ('paycheck','小切手'),
-                                              ('branch_receipt','他店入金'),
-                                              ('offset','相殺')
-                                              ],string='入金手段')
+    x_payment_type = fields.Selection(string='支払手段', selection=[('bank', '振込'),
+                                                                ('cash', '現金'),
+                                                                ('heck', '本社手形')])
+    has_x_payment_type = fields.Selection(related='x_contact_categ.has_x_payment_type', store=True)
+    x_fee_burden_paid = fields.Selection([('other_side_paid', '先方負担'),
+                                          ('our_side_paid', '当社負担')], string='支払手数料負担')
+    has_x_fee_burden_paid = fields.Selection(related='x_contact_categ.has_x_fee_burden_paid', store=True)
+    x_receipt_type_branch = fields.Selection([('bank', '振込'),
+                                              ('transfer', '振替'),
+                                              ('bills', '手形'),
+                                              ('cash', '現金'),
+                                              ('paycheck', '小切手'),
+                                              ('branch_receipt', '他店入金'),
+                                              ('offset', '相殺')
+                                              ], string='入金手段')
 
     @api.constrains('performance_ids', 'has_performance_info')
     def _check_performance_info_required(self):
@@ -240,6 +241,17 @@ class ResPartner(models.Model):
         for record in self:
             if record.has_bank_accounts == 'required' and not record.bank_ids:
                 raise ValidationError(_("銀行口座は入力してください。"))
+
+    is_company = fields.Boolean(string='Is a Company', default=False,
+        help="Check if the contact is a company, otherwise it is a person", compute='_compute_is_company', store=True)
+
+    @api.depends('x_contact_categ')
+    def _compute_is_company(self):
+         for partner in self:
+            if partner.x_contact_categ and partner.x_contact_categ.company_type == 'company':
+                partner.is_company = True
+            else:
+                partner.is_company = False
 
     @api.depends('is_company', 'x_contact_categ')
     def compute_company_type(self):

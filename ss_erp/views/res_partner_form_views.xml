@@ -12,6 +12,10 @@
             <field name="x_is_customer" position="after">
                 <field name="approval_state" invisible="1"/>
             </field>
+
+            <xpath expr="//field[@name='industry_id']" position="attributes">
+                <attribute name="string">産業</attribute>
+            </xpath>
         </field>
     </record>
 
