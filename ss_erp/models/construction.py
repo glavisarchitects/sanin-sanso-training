@@ -115,8 +115,8 @@ class Construction(models.Model):
     def _onchange_all_margin_rate(self):
         for rec in self.construction_component_ids:
             rec.margin_rate = self.all_margin_rate
-            rec.construction_sale_price = rec.standard_price * (100 + self.all_margin_rate) / 100
-            rec.margin = rec.standard_price * self.all_margin_rate / 100
+            rec.sale_price = rec.standard_price * (1 + rec.margin_rate / 100)
+            rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
 
 
 class ConstructionComponent(models.Model):
@@ -137,11 +137,10 @@ class ConstructionComponent(models.Model):
     margin_rate = fields.Float(string='マージン(%)')
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
 
-    @api.onchange('construction_sale_price')
-    def _onchange_construction_sale_price(self):
-        self.margin = self.construction_sale_price - self.standard_price
-        self.margin_rate = (
-                                   self.construction_sale_price - self.standard_price) / self.standard_price if self.standard_price != 0 else 0
+    @api.onchange('sale_price')
+    def _onchange_sale_price(self):
+        self.margin = self.sale_price - self.standard_price
+        self.margin_rate = self.margin / self.sale_price
 
 
 class ConstructionWorkorder(models.Model):
