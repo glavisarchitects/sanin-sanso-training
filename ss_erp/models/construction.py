@@ -111,12 +111,12 @@ class Construction(models.Model):
     def action_mark_lost(self):
         self.write({'state': 'lost'})
 
-    @api.onchange('all_margin_rate')
-    def _onchange_all_margin_rate(self):
-        for rec in self.construction_component_ids:
-            rec.margin_rate = self.all_margin_rate
-            rec.sale_price = rec.standard_price * (1 + rec.margin_rate / 100)
-            rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
+    # @api.onchange('all_margin_rate')
+    # def _onchange_all_margin_rate(self):
+    #     for rec in self.construction_component_ids:
+    #         rec.margin_rate = self.all_margin_rate
+    #         rec.sale_price = rec.standard_price * (1 + rec.margin_rate)
+    #         rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
 
 
 class ConstructionComponent(models.Model):
@@ -133,14 +133,20 @@ class ConstructionComponent(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     tax_id = fields.Many2one(comodel_name='account.tax', string='税')
     sale_price = fields.Monetary(string='販売価格')
-    margin = fields.Monetary(string='粗利益')
-    margin_rate = fields.Float(string='マージン(%)')
+    margin = fields.Monetary(string='粗利益', compute='_compute_margin')
+    margin_rate = fields.Float(string='マージン(%)', compute='_compute_margin')
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
 
-    @api.onchange('sale_price')
-    def _onchange_sale_price(self):
-        self.margin = self.sale_price - self.standard_price
-        self.margin_rate = self.margin / self.sale_price * 100
+    @api.depends('sale_price', 'construction_id.all_margin_rate')
+    def _compute_margin(self):
+        for rec in self:
+            if rec.construction_id.all_margin_rate != 0:
+                rec.margin_rate = rec.construction_id.all_margin_rate
+                rec.sale_price = rec.standard_price * (1 + rec.margin_rate)
+                rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
+            else:
+                rec.margin_rate = rec.sale_price / rec.standard_price - 1 if rec.standard_price !=0 else 1
+                rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
 
 
 class ConstructionWorkorder(models.Model):

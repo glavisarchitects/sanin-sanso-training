@@ -73,7 +73,7 @@
                                                   modifiers="{'invisible':[['amount_untaxed','=',0]]}">
 
                                                 (
-                                                <field name="margin_percent" nolabel="1" class="oe_inline"
+                                                <field name="margin_percent" nolabel="1" class="oe_inline" readonly="1"
                                                        widget="percentage" modifiers="{'readonly':true}"
                                                        id="margin_percent"/>
                                                 )
