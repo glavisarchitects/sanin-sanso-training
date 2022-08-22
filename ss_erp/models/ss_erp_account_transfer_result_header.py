@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 
 class AccountTransferResultHeader(models.Model):
     _name = 'ss_erp.account.transfer.result.header'
     _description = '全銀口座振替結果FBファイル取込/新規'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-
 
     upload_date = fields.Datetime('アップロード日時', index=True,
                                   default=fields.Datetime.now)
@@ -48,14 +48,47 @@ class AccountTransferResultHeader(models.Model):
         }
 
     def processing_execution(self):
-        pass
+        a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
+            'R002_form_format_path')
+        if not a005_account_transfer_result_journal_id:
+            raise UserError('仕訳帳情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+        transfer_line = self.account_transfer_result_record_ids.search([('status', '=', 'wait')])
+        for tl in transfer_line:
+            partner_bank = self.env['res.partner.bank'].search([('bank_bic', '=', tl.withdrawal_bank_number), (
+                'x_bank_branch_number', '=', tl.withdrawal_branch_number), ('acc_number', '=', tl.account_number)])
+            if not partner_bank:
+                tl.status = 'error'
+                tl.error_message = '対象の口座情報が見つかりませんでした。'
+                continue
+            partner = partner_bank.partner_id
+            if not partner:
+                tl.status = 'error'
+                tl.error_message = '対象の口座情報が見つかりませんでした。'
+                continue
+            partner_invoice = self.env['account.move'].search(
+                [('move_type', '=', 'out_invoice'), ('x_organization_id', '=', self.branch_id.id),
+                 ('x_more_than_receipts_method', '=', 'transfer'), ('x_is_fb_created', '=', True),
+                 ('status', '=', 'posted'), ('payment_state', '=', 'not_paid'), ('partner_id', '=', partner.id),
+                 ('amount_total', '=', float(tl.withdrawal_amount)), ])
+            if len(partner_invoice) != 1:
+                tl.status = 'error'
+                if not partner_invoice:
+                    tl.error_message = '消込対象の請求情報が見つかりませんでした。'
+                if len(partner_invoice) > 1:
+                    tl.error_message = '消込対象の請求情報が複数見つかりました。'
+                continue
+            register_payment = self.env['account.payment.register'].create({
+                # 'active_model': 'account.move',
+                'active_ids': partner_invoice.id
+            })
+            register_payment.action_create_payments()
 
 
 class AccountTransferResultLine(models.Model):
     _name = 'ss_erp.account.transfer.result.line'
     _description = '全銀口座振替実績FBインポートデータ'
 
-    account_transfer_result_header_id = fields.Many2one('ss_erp.account.transfer.result.header',string='全銀口座振替結果ヘッダ')
+    account_transfer_result_header_id = fields.Many2one('ss_erp.account.transfer.result.header', string='全銀口座振替結果ヘッダ')
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
         ('success', '成功'),
@@ -76,4 +109,4 @@ class AccountTransferResultLine(models.Model):
     transfer_result_code = fields.Char(string='振込結果コード')
     dummy2 = fields.Char(string='ダミー２')
     error_message = fields.Char(string='エラーメッセージ')
-    payment_id = fields.Many2one('account.payment',string='支払参照')
+    payment_id = fields.Many2one('account.payment', string='支払参照')

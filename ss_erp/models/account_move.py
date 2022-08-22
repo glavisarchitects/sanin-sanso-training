@@ -10,8 +10,8 @@ class AccountMove(models.Model):
 
     x_organization_id = fields.Many2one('ss_erp.organization', store=True,
                                         index=True, string='組織情報')
+    x_payment_type = fields.Selection(related="partner_id.x_payment_type", store=True, string='入金手段')
 
-    # TuyenTN 2022/29/07
     x_payment_method = fields.Selection(related="partner_id.x_payment_method", store=True,
                                         index=True, string='支払手段')
     x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', store=True,
