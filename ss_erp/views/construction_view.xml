@@ -44,13 +44,44 @@
                                         <field name="uom_id"/>
                                         <field name="standard_price"/>
                                         <field name="currency_id" attrs="{'column_invisible':1}"/>
-                                        <field name="construction_tax"/>
-                                        <field name="construction_sale_price"/>
+                                        <field name="tax_id"/>
+                                        <field name="sale_price"/>
                                         <field name="margin" readonly="1"/>
                                         <field name="margin_rate" readonly="1"/>
                                     </tree>
                                 </field>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0" modifiers="{}">
+                                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total"
+                                           modifiers="{}">
+                                        <field name="amount_untaxed" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}" on_change="1"
+                                               modifiers="{'readonly':true}" id="amount_untaxed"/>
+                                        <field name="amount_tax" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}" modifiers="{'readonly':true}"
+                                               id="amount_tax"/>
+                                        <div class="oe_subtotal_footer_separator oe_inline o_td_label" modifiers="{}">
+                                            <label for="amount_total" modifiers="{}"/>
+                                        </div>
+                                        <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                               widget="monetary" options="{'currency_field': 'currency_id'}"
+                                               modifiers="{'readonly':true}" id="amount_total"/>
+                                        <label for="margin" modifiers="{}"/>
+                                        <div class="text-nowrap" modifiers="{}">
+                                            <field name="margin" class="oe_inline" modifiers="{'readonly':true}"
+                                                   id="margin"/>
+                                            <span class="oe_inline" attrs="{'invisible': [('amount_untaxed', '=', 0)]}"
+                                                  modifiers="{'invisible':[['amount_untaxed','=',0]]}">
 
+                                                (
+                                                <field name="margin_percent" nolabel="1" class="oe_inline"
+                                                       widget="percentage" modifiers="{'readonly':true}"
+                                                       id="margin_percent"/>
+                                                )
+                                            </span>
+                                        </div>
+                                    </group>
+                                    <div class="oe_clear" modifiers="{}"/>
+                                </group>
                             </page>
                             <page name="construction_workorder" string="作業オーダー">
                                 <field name="construction_workorder_ids" widget="one2many" nolabel="1">
@@ -72,6 +103,7 @@
                                         <field name="currency_id" attrs="{'column_invisible':1}"/>
                                     </tree>
                                 </field>
+
                             </page>
                         </notebook>
                     </sheet>

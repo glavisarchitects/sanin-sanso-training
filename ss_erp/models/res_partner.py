@@ -210,7 +210,7 @@ class ResPartner(models.Model):
     # TuyenTN 08/18/2022 update F004
     x_payment_type = fields.Selection(string='支払手段', selection=[('bank', '振込'),
                                                                 ('cash', '現金'),
-                                                                ('heck', '本社手形')])
+                                                                ('check', '本社手形')])
     has_x_payment_type = fields.Selection(related='x_contact_categ.has_x_payment_type', store=True)
     x_fee_burden_paid = fields.Selection([('other_side_paid', '先方負担'),
                                           ('our_side_paid', '当社負担')], string='支払手数料負担')
