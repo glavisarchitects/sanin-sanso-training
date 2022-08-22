@@ -68,6 +68,12 @@ class ResPartnerForm(models.Model):
     bank_ids = fields.Many2many(
         'res.partner.bank', 'res_partner_bank_res_partner_form_rel', 'partner_id', 'bank_id', string="Banks",
         copy=False)
+
+    # 20220822
+    x_payment_terms_ids = fields.Many2many(
+        'ss_erp.partner.payment.term', 'ss_erp_partner_payment_term_res_partner_form_rel', 'partner_id', 'payment_terms_id', string="Contact", copy=False)
+
+
     child_ids = fields.Many2many(
         'res.partner', 'res_partner_child_res_partner_form_rel', 'partner_id', 'child_id', string="Contact", copy=False)
     construction_ids = fields.Many2many('ss_erp.partner.construction', 'partner_construction_res_partner_form_rel',
