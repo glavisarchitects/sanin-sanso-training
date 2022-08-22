@@ -140,7 +140,7 @@ class ConstructionComponent(models.Model):
     @api.onchange('sale_price')
     def _onchange_sale_price(self):
         self.margin = self.sale_price - self.standard_price
-        self.margin_rate = self.margin / self.sale_price
+        self.margin_rate = self.margin / self.sale_price * 100
 
 
 class ConstructionWorkorder(models.Model):

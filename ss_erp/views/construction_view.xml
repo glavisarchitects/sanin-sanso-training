@@ -30,7 +30,7 @@
                                 <field name="plan_date"/>
                                 <field name="user_id" required="1"/>
                                 <field name="company_id" readonly="1"/>
-                                <field name="all_margin_rate"/>
+                                <field name="all_margin_rate" widget="percentage"/>
                             </group>
                         </group>
                         <notebook>
@@ -47,7 +47,7 @@
                                         <field name="tax_id"/>
                                         <field name="sale_price"/>
                                         <field name="margin" readonly="1"/>
-                                        <field name="margin_rate" readonly="1"/>
+                                        <field name="margin_rate" readonly="1" widget="percentage"/>
                                     </tree>
                                 </field>
                                 <group name="note_group" col="6" class="mt-2 mt-md-0" modifiers="{}">
