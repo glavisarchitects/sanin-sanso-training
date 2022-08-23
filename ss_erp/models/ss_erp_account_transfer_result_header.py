@@ -49,7 +49,7 @@ class AccountTransferResultHeader(models.Model):
 
     def processing_execution(self):
         a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
-            'R002_form_format_path')
+            'A005_account_transfer_result_journal_id')
         if not a005_account_transfer_result_journal_id:
             raise UserError('仕訳帳情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
         transfer_line = self.account_transfer_result_record_ids.search([('status', '=', 'wait')])
@@ -68,6 +68,7 @@ class AccountTransferResultHeader(models.Model):
             partner_invoice = self.env['account.move'].search(
                 [('move_type', '=', 'out_invoice'), ('x_organization_id', '=', self.branch_id.id),
                  ('x_more_than_receipts_method', '=', 'transfer'), ('x_is_fb_created', '=', True),
+                 ('x_is_not_create_fb', '=', False),
                  ('status', '=', 'posted'), ('payment_state', '=', 'not_paid'), ('partner_id', '=', partner.id),
                  ('amount_total', '=', float(tl.withdrawal_amount)), ])
             if len(partner_invoice) != 1:
@@ -82,6 +83,7 @@ class AccountTransferResultHeader(models.Model):
                 'active_ids': partner_invoice.id
             })
             register_payment.action_create_payments()
+            tl.status = 'success'
 
 
 class AccountTransferResultLine(models.Model):
