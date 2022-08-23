@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_construction_operation_form_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.operation.form</field>
+            <field name="model">construction.template.operation</field>
+            <field name="arch" type="xml">
+                <form string="オペレーション">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="workcenter_id"/>
+                                <field name="template_id"/>
+                            </group>
+                            <group>
+                                <field name="time_cycle"/>
+                                <field name="company_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_operation_tree_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.operation.tree</field>
+            <field name="model">construction.template.operation</field>
+            <field name="arch" type="xml">
+                <tree string="オペレーション">
+                    <field name="name"/>
+                    <field name="workcenter_id"/>
+                    <field name="time_cycle"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_operation_search_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.template.operation.search</field>
+            <field name="model">construction.template.operation</field>
+            <field name="arch" type="xml">
+                <search string="オペレーション">
+                    <field name="name"/>
+                    <field name="workcenter_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_operation_act_window" model="ir.actions.act_window">
+            <field name="name">オペレーション</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">construction.template.operation</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="オペレーション" id="ss_erp_construction_operation_menu" sequence="200" parent="ss_erp.ss_erp_construction_config_menu" action="ss_erp_construction_operation_act_window"/>
+
+    </data>
+</odoo>
