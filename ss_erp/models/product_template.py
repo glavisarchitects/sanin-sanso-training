@@ -34,6 +34,7 @@ class ProductTemplate(models.Model):
             form_id = self.env['ss_erp.product.template.form'].search([('product_template_id', '=', self.id)])
             values.update({'source': 'product_template'})
             for field_name, field_value in vals.items():
+                value = False
                 if type(self._fields[field_name].compute) != str:
                     if self._fields[field_name].type in ['one2many', 'many2many']:
                         value = getattr(self, field_name, ())

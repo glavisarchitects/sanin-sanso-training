@@ -75,3 +75,5 @@ from . import ss_erp_bank_commision
 from . import construction
 from . import ss_erp_bank_commision
 from . import ss_erp_account_transfer_result_header
+from . import construction_workcenter
+from . import construction_template

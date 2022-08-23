@@ -403,7 +403,6 @@ class Import(models.TransientModel):
         ]
 
         encode = "Shift-JIS"
-        a = str(data[0])
         self.x_header_account_transfer = str(data[0])
         body_data = data[1:-2]
         line = []
@@ -411,10 +410,10 @@ class Import(models.TransientModel):
             name_header = '\n' + str(transfer_header_id.name) + ','
             line.append(name_header.encode(encode))
 
-            withdrawal_bank_number = (data[0][4:14]) + ','
+            withdrawal_bank_number = (bd[1:5]) + ','
             line.append(withdrawal_bank_number.encode(encode))
 
-            withdrawal_bank_name = (data[0][14:54]) + ','
+            withdrawal_bank_name = (bd[5:20]) + ','
             line.append(withdrawal_bank_name.encode(encode))
 
             withdrawal_branch_number = (bd[20:23]) + ','
