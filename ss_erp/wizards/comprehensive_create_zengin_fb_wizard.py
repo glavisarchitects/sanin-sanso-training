@@ -23,7 +23,7 @@ class AccountPaymentWizard(models.TransientModel):
 
     def zengin_general_transfer_fb(self):
         # account_journal = self.env['account.journal']
-        domain = [('payment_type', '=', 'outbound'), ('is_fb_created', '=', False),
+        domain = [('payment_type', '=', 'outbound'), ('x_is_fb_created', '=', False),
                   ('date', '<=', self.to_date), ('date', '>=', self.from_date),
                   ('journal_id.type', '=', 'bank')]
         payment_zengin_data = self.env['account.payment'].search(domain)
@@ -67,7 +67,7 @@ class AccountPaymentWizard(models.TransientModel):
         # header
         file_data = "1210" + transfer_requester_code + company_name + get_multi_character(40 - len(company_name)) + \
                     transfer_date_month + bic_bank_organization + get_multi_character(15) + branch_number + \
-                    get_multi_character(15) + acc_type + acc_number + get_multi_character(17) + '\r'  # '\n\r' = CRLF ?
+                    get_multi_character(15) + acc_type + acc_number + get_multi_character(17) + '\r\n'  # '\n\r' = CRLF ?
         # data
         total_sum_amount = 0
         for pay in payment_zengin_data:
@@ -95,15 +95,15 @@ class AccountPaymentWizard(models.TransientModel):
                          partner_acc_number + partner_acc_holder_furigana + \
                          get_multi_character(30 - len(partner_acc_holder_furigana)) + \
                          get_multi_character(10 - len(partner_bank_amount), '0') + partner_bank_amount + '0' + \
-                         get_multi_character(10, '0') + get_multi_character(10, '0') + '7' + get_multi_character(8) + '\r'
+                         get_multi_character(10, '0') + get_multi_character(10, '0') + '7' + get_multi_character(8) + '\r\n'
 
             # Todo: Now comment this line to test data
-            pay.is_fb_created = True
+            pay.x_is_fb_created = True
         # trailer record
         len_line_record = str(len(payment_zengin_data))
         len_total_amount = len(str(total_sum_amount))
         file_data += '8' + get_multi_character(6 - len(len_line_record), '0') + len_line_record + \
-                     get_multi_character(12 - len_total_amount, '0') + str(total_sum_amount) + get_multi_character(101) + '\r'
+                     get_multi_character(12 - len_total_amount, '0') + str(total_sum_amount) + get_multi_character(101) + '\r\n'
 
         # end record
         file_data += '9' + get_multi_character(119)

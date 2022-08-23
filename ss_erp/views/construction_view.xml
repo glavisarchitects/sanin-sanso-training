@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_construction_form_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.form</field>
+            <field name="model">ss.erp.construction</field>
+            <field name="arch" type="xml">
+                <form string="工事">
+                    <header>
+                        <button name="action_pending" string="保留" type="object"/>
+                        <button name="action_receive_order" string="受注" type="object"/>
+                        <button name="action_mark_lost" string="失注" type="object"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="construction_name" required="1"/>
+                                <field name="partner_id" required="1"/>
+                                <field name="organization_id" required="1"/>
+                                <field name="responsible_dept_id" required="1"/>
+                            </group>
+                            <group>
+                                <field name="plan_date"/>
+                                <field name="user_id" required="1"/>
+                                <field name="company_id" readonly="1"/>
+                                <field name="all_margin_rate" widget="percentage"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="construction_component" string="構成品">
+                                <field name="construction_component_ids" widget="one2many" nolabel="1">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="partner_id"/>
+                                        <field name="payment_term_id"/>
+                                        <field name="quantity"/>
+                                        <field name="uom_id"/>
+                                        <field name="standard_price"/>
+                                        <field name="currency_id" attrs="{'column_invisible':1}"/>
+                                        <field name="tax_id"/>
+                                        <field name="sale_price"/>
+                                        <field name="margin" readonly="1"/>
+                                        <field name="margin_rate" readonly="1" widget="percentage"/>
+                                        <field name="subtotal_exclude_tax" readonly="1"/>
+                                        <field name="subtotal" readonly="1"/>
+                                    </tree>
+                                </field>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0" modifiers="{}">
+                                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total"
+                                           modifiers="{}">
+                                        <field name="amount_untaxed" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}" on_change="1"
+                                               modifiers="{'readonly':true}" id="amount_untaxed"/>
+                                        <field name="amount_tax" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}" modifiers="{'readonly':true}"
+                                               id="amount_tax"/>
+                                        <div class="oe_subtotal_footer_separator oe_inline o_td_label" modifiers="{}">
+                                            <label for="amount_total" modifiers="{}"/>
+                                        </div>
+                                        <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                               widget="monetary" options="{'currency_field': 'currency_id'}"
+                                               modifiers="{'readonly':true}" id="amount_total"/>
+                                        <label for="margin" modifiers="{}"/>
+                                        <div class="text-nowrap" modifiers="{}">
+                                            <field name="margin" class="oe_inline" modifiers="{'readonly':true}"
+                                                   id="margin"/>
+                                            <span class="oe_inline" attrs="{'invisible': [('amount_untaxed', '=', 0)]}"
+                                                  modifiers="{'invisible':[['amount_untaxed','=',0]]}">
+
+                                                (
+                                                <field name="margin_percent" nolabel="1" class="oe_inline" readonly="1"
+                                                       widget="percentage" modifiers="{'readonly':true}"
+                                                       id="margin_percent"/>
+                                                )
+                                            </span>
+                                        </div>
+                                    </group>
+                                    <div class="oe_clear" modifiers="{}"/>
+                                </group>
+                            </page>
+                            <page name="construction_workorder" string="作業オーダー">
+                                <field name="construction_workorder_ids" widget="one2many" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="planned_labor_costs"/>
+                                        <field name="result_labor_costs"/>
+                                        <field name="planned_expenses"/>
+                                        <field name="result_expenses"/>
+                                        <field name="construction_work_notes"/>
+                                        <field name="total_amount"/>
+                                        <field name="date_planned_start"/>
+                                        <field name="date_planned_finished"/>
+                                        <field name="date_start"/>
+                                        <field name="date_end"/>
+                                        <field name="duration_expected"/>
+                                        <field name="duration"/>
+                                        <field name="state" readonly="1"/>
+                                        <field name="currency_id" attrs="{'column_invisible':1}"/>
+                                    </tree>
+                                </field>
+
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter" modifiers="{}">
+                        <field name="message_follower_ids" modifiers="{}" id="message_follower_ids"/>
+                        <field name="activity_ids" modifiers="{}" id="activity_ids"/>
+                        <field name="message_ids" modifiers="{}" id="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_tree_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.tree</field>
+            <field name="model">ss.erp.construction</field>
+            <field name="arch" type="xml">
+                <tree string="工事">
+                    <field name="name"/>
+                    <field name="construction_name"/>
+                    <field name="organization_id"/>
+                    <field name="responsible_dept_id"/>
+                    <field name="partner_id"/>
+                    <field name="plan_date"/>
+                    <field name="user_id"/>
+                    <field name="company_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_search_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.search</field>
+            <field name="model">ss.erp.construction</field>
+            <field name="arch" type="xml">
+                <search string="工事">
+                    <field name="construction_name"/>
+                    <field name="organization_id"/>
+                    <field name="partner_id"/>
+                    <group expand="0" string="Group By">
+                        <filter name="organization" string="組織" context="{'group_by':'organization_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_act_window" model="ir.actions.act_window">
+            <field name="name">工事オーダー</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ss.erp.construction</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="ss_erp_construction_root_menu" name="工事" sequence="100"
+                  web_icon="ss_erp,static/description/icon.png"/>
+
+        <menuitem id="ss_erp_construction_menu" name="工事オーダー" parent="ss_erp.ss_erp_construction_root_menu"
+                  action="ss_erp_construction_act_window"/>
+
+    </data>
+</odoo>
