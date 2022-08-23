@@ -40,8 +40,8 @@
                         </group>
                         <notebook>
                             <page name="data_records" string="データレコード">
-                                <field name="account_transfer_result_record_ids" >
-                                    <tree>
+                                <field name="account_transfer_result_record_ids" options="{'no_open': True}">
+                                    <tree create="0" editable="bottom">
                                         <field name="status" readonly="1"
                                                widget="badge"
                                                decoration-info="status=='success'"

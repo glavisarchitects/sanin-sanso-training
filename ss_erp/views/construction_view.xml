@@ -48,6 +48,8 @@
                                         <field name="sale_price"/>
                                         <field name="margin" readonly="1"/>
                                         <field name="margin_rate" readonly="1" widget="percentage"/>
+                                        <field name="subtotal_exclude_tax" readonly="1"/>
+                                        <field name="subtotal" readonly="1"/>
                                     </tree>
                                 </field>
                                 <group name="note_group" col="6" class="mt-2 mt-md-0" modifiers="{}">

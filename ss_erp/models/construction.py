@@ -22,7 +22,7 @@ class Construction(models.Model):
 
     company_id = fields.Many2one('res.company', string='会社', default=lambda self: self.env.user.company_id.id)
 
-    currency_id = fields.Many2one('res.currency', 'Currency', required=True,
+    currency_id = fields.Many2one('res.currency', '通貨', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id)
 
     partner_id = fields.Many2one('res.partner', string='顧客', domain=[('x_is_customer', '=', True)], )
@@ -85,7 +85,7 @@ class Construction(models.Model):
             return False
 
     plan_date = fields.Date(string='予定日')
-    user_id = fields.Many2one(comodel_name='res.users', string='担当者')
+    user_id = fields.Many2one(comodel_name='res.users', string='担当者', default=lambda self: self.env.user)
     all_margin_rate = fields.Float(string='一律マージン率')
     construction_component_ids = fields.One2many(comodel_name='ss.erp.construction.component',
                                                  inverse_name='construction_id', string='構成品')
@@ -129,12 +129,14 @@ class ConstructionComponent(models.Model):
     partner_id = fields.Many2one(comodel_name='res.partner', domain=[('x_is_vendor', '=', True)], string='仕入先')
     payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件')
     standard_price = fields.Monetary(string='仕入価格')
-    currency_id = fields.Many2one('res.currency', 'Currency', required=True,
+    currency_id = fields.Many2one('res.currency', '通貨', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     tax_id = fields.Many2one(comodel_name='account.tax', string='税')
     sale_price = fields.Monetary(string='販売価格')
-    margin = fields.Monetary(string='粗利益', compute='_compute_margin')
-    margin_rate = fields.Float(string='マージン(%)', compute='_compute_margin')
+    margin = fields.Monetary(string='粗利益', compute='_compute_margin', store=True)
+    margin_rate = fields.Float(string='マージン(%)', compute='_compute_margin', store=True)
+    subtotal_exclude_tax = fields.Monetary(string='小計（税別）', compute='_compute_margin', store=True)
+    subtotal = fields.Monetary(string='小計', compute='_compute_margin', store=True)
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
 
     @api.depends('sale_price', 'construction_id.all_margin_rate')
@@ -145,8 +147,10 @@ class ConstructionComponent(models.Model):
                 rec.sale_price = rec.standard_price * (1 + rec.margin_rate)
                 rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
             else:
-                rec.margin_rate = rec.sale_price / rec.standard_price - 1 if rec.standard_price !=0 else 1
+                rec.margin_rate = rec.sale_price / rec.standard_price - 1 if rec.standard_price != 0 else 1
                 rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
+            rec.subtotal_exclude_tax = rec.quantity * rec.sale_price
+            rec.subtotal = rec.subtotal_exclude_tax * (1 + tax_id.amount / 100)
 
 
 class ConstructionWorkorder(models.Model):
