@@ -18,7 +18,7 @@ class AccountMove(models.Model):
                                             index=True, string='管轄部門')
     x_responsible_user_id = fields.Many2one('res.users', string='業務担当')
     x_mkt_user_id = fields.Many2one('res.users', string='営業担当')
-    x_is_fb_created = fields.Boolean(string='FB作成済みフラグ', store=True, default=False)
+    x_is_fb_created = fields.Boolean(string='FB作成済みフラグ', store=True, default=False, copy=False)
     x_is_not_create_fb = fields.Boolean(string='FB対象外', store=True, index=True)
 
     x_receipt_type = fields.Selection(

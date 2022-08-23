@@ -17,7 +17,7 @@ class AccountTransferResultHeader(models.Model):
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり')
-    ], string='ステータス', default="wait", store=True)
+    ], compute='_compute_status', string='ステータス', default="wait", store=True)
     account_transfer_result_record_ids = fields.One2many(
         comodel_name="ss_erp.account.transfer.result.line",
         inverse_name="account_transfer_result_header_id",
@@ -32,6 +32,15 @@ class AccountTransferResultHeader(models.Model):
     bank_branch_number = fields.Char(string='取引支店番号')
     acc_type = fields.Char(string='預金種別')
     acc_number = fields.Char(string='口座番号')
+
+    @api.depends('account_transfer_result_record_ids')
+    def _compute_status(self):
+        for rec in self:
+            rec.status = 'wait'
+            if any(line.status == 'error' for line in rec.account_transfer_result_record_ids):
+                rec.status = 'error'
+            elif all(line.status == 'success' for line in rec.account_transfer_result_record_ids):
+                rec.status = 'success'
 
     def action_import(self):
         self.ensure_one()
@@ -54,7 +63,8 @@ class AccountTransferResultHeader(models.Model):
             raise UserError('仕訳帳情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
         transfer_line = self.account_transfer_result_record_ids.search([('status', '=', 'wait')])
         for tl in transfer_line:
-            partner_bank = self.env['res.partner.bank'].search([('bank_bic', '=', tl.withdrawal_bank_number), (
+            bank = self.env['res.bank'].search([('bic', '=', tl.withdrawal_bank_number)], limit=1)
+            partner_bank = self.env['res.partner.bank'].search([('bank_id', '=', bank.id), (
                 'x_bank_branch_number', '=', tl.withdrawal_branch_number), ('acc_number', '=', tl.account_number)])
             if not partner_bank:
                 tl.status = 'error'
@@ -67,10 +77,10 @@ class AccountTransferResultHeader(models.Model):
                 continue
             partner_invoice = self.env['account.move'].search(
                 [('move_type', '=', 'out_invoice'), ('x_organization_id', '=', self.branch_id.id),
-                 ('x_more_than_receipts_method', '=', 'transfer'), ('x_is_fb_created', '=', True),
+                 ('x_payment_type', '=', 'bank'), ('x_is_fb_created', '=', True),
                  ('x_is_not_create_fb', '=', False),
-                 ('status', '=', 'posted'), ('payment_state', '=', 'not_paid'), ('partner_id', '=', partner.id),
-                 ('amount_total', '=', float(tl.withdrawal_amount)), ])
+                 ('state', '=', 'posted'), ('payment_state', '=', 'not_paid'), ('partner_id', '=', partner.id),
+                 ('amount_total', '=', int(tl.withdrawal_amount)), ])
             if len(partner_invoice) != 1:
                 tl.status = 'error'
                 if not partner_invoice:
@@ -78,11 +88,25 @@ class AccountTransferResultHeader(models.Model):
                 if len(partner_invoice) > 1:
                     tl.error_message = '消込対象の請求情報が複数見つかりました。'
                 continue
-            register_payment = self.env['account.payment.register'].create({
-                # 'active_model': 'account.move',
-                'active_ids': partner_invoice.id
-            })
-            register_payment.action_create_payments()
+            # register_payment = partner_invoice.action_register_payment()
+            register_payment = self.env['account.payment.register'].with_context(
+                active_model='account.move',
+                active_ids=[partner_invoice.id],
+                active_id=partner_invoice.id,
+                allowed_company_ids=[partner_invoice.company_id.id],
+                dont_redirect_to_payments=True).create(
+                {
+                    # 'active_model': 'account.move',
+                    # 'active_ids': partner_invoice.id,
+                    'journal_id': int(a005_account_transfer_result_journal_id),
+                    # 'amount': partner_invoice.amount_total,
+                    # 'payment_date': fields.Date.context_today,
+                    # 'company_id': partner_invoice.company_id.id,
+                })
+            register_payment.sudo().action_create_payments()
+            # assign payment_id
+            created_payment = self.env['account.payment'].search([('ref', '=', partner_invoice.name)], limit=1)
+            tl.payment_id = created_payment.id
             tl.status = 'success'
 
 

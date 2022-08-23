@@ -48,12 +48,14 @@
                                                decoration-warning="status=='wait'"
                                                decoration-danger="status=='error'"/>
                                         <field name="processing_date" readonly="1"/>
+                                        <field name="withdrawal_bank_number" readonly="1"/>
                                         <field name="payment_id" readonly="1"/>
                                         <field name="withdrawal_branch_number" readonly="1"/>
                                         <field name="deposit_type" readonly="1"/>
                                         <field name="account_number" readonly="1"/>
                                         <field name="withdrawal_amount" readonly="1"/>
                                         <field name="transfer_result_code" readonly="1"/>
+                                        <field name="error_message" readonly="1"/>
 
                                     </tree>
                                 </field>
