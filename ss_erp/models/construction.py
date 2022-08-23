@@ -139,7 +139,7 @@ class ConstructionComponent(models.Model):
     subtotal = fields.Monetary(string='小計', compute='_compute_margin', store=True)
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
 
-    @api.depends('sale_price', 'construction_id.all_margin_rate')
+    @api.depends('sale_price', 'construction_id.all_margin_rate', 'tax_id')
     def _compute_margin(self):
         for rec in self:
             if rec.construction_id.all_margin_rate != 0:
