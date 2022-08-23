@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_construction_workcenter_form_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.workcenter.form</field>
+            <field name="model">construction.workcenter</field>
+            <field name="arch" type="xml">
+                <form string="作業区">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="1"/>
+                            </group>
+                            <group>
+                                <field name="code" required="1"/>
+                                <field name="company_id" required="1"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="一般情報">
+                                <group string="費用情報">
+                                    <field name="costs_hour"/>
+                                </group>
+                                <group string="説明">
+                                    <field name="note"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_workcenter_tree_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.workcenter.tree</field>
+            <field name="model">construction.workcenter</field>
+            <field name="arch" type="xml">
+                <tree string="作業区">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_workcenter_act_window" model="ir.actions.act_window">
+            <field name="name">作業区</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">construction.workcenter</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="作業区" id="ss_erp_construction_workcenter_menu" parent="ss_erp.ss_erp_construction_config_menu" sequence="300"
+                  action="ss_erp_construction_workcenter_act_window"/>
+
+    </data>
+</odoo>

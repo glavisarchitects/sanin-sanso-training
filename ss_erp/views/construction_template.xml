@@ -7,10 +7,10 @@
             <field name="model">construction.template</field>
             <field name="arch" type="xml">
                 <form string="工事テンプレート">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
                     <sheet>
-                        <header>
-                            <field name="state" widget="statusbar"/>
-                        </header>
                         <group>
                             <group>
                                 <field name="name" required="1"/>
@@ -21,18 +21,18 @@
                         </group>
                         <notebook>
                             <page name="template_lines" string="構成品">
-                                <field name="template_line_ids" widget="one2many" nolabel="1">
+                                <field name="component_line_ids" widget="one2many" nolabel="1">
                                     <tree editable="bottom">
                                         <field name="product_id"/>
                                         <field name="product_qty"/>
                                         <field name="product_uom_id"/>
-                                        <field name="operation_id"/>
+                                        <field name="operation_id" string="工程に消費"/>
                                     </tree>
                                 </field>
                             </page>
                             <page name="operation_lines" string="オペレーション">
                                 <field name="operation_line_ids" widget="one2many" nolabel="1">
-                                    <tree>
+                                    <tree editable="bottom">
                                         <field name="name"/>
                                         <field name="workcenter_id"/>
                                         <field name="time_cycle"/>
@@ -68,15 +68,16 @@
             </field>
         </record>
 
-        <record id="ss_erp_construction_act_window" model="ir.actions.act_window">
+        <record id="ss_erp_construction_template_act_window" model="ir.actions.act_window">
             <field name="name">工事テンプレート</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">construction.template</field>
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem name="工事テンプレート" id="ss_erp_construction_menu" parent="ss_erp.ss_erp_construction_root_menu" sequence="200"
-                  action="ss_erp_construction_act_window"/>
+        <menuitem name="工事テンプレート" id="ss_erp_construction_template_menu" parent="ss_erp.ss_erp_construction_config_menu"
+                  sequence="100"
+                  action="ss_erp_construction_template_act_window"/>
 
     </data>
 </odoo>

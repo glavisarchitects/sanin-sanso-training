@@ -40,6 +40,41 @@ class Construction(models.Model):
     margin = fields.Monetary(string='粗利益', compute='_compute_amount')
     margin_percent = fields.Float(string='マージン(%)')
 
+    template_id = fields.Many2one(
+        comodel_name='construction.template',
+        string='工事テンプレート',
+        required=False)
+
+    @api.onchange('template_id')
+    def _onchange_template_id(self):
+        if not self.template_id:
+            return
+
+        template = self.template_id
+
+        component_lines = [(5, 0, 0)]
+        workorder_lines = [(5, 0, 0)]
+
+        for component in template.component_line_ids:
+            data = {}
+            data.update({
+                'quantity': component.product_qty,
+                'product_id': component.product_id.id,
+                'uom_id': component.product_uom_id.id,
+            })
+            component_lines.append((0, 0, data))
+
+        for workorder in template.operation_line_ids:
+            data = {}
+            data.update({
+                'name': workorder.name,
+                'workcenter_id': workorder.workcenter_id.id,
+            })
+            workorder_lines.append((0, 0, data))
+
+        self.construction_workorder_ids = workorder_lines
+        self.construction_component_ids = component_lines
+
     @api.depends('construction_component_ids.quantity', 'construction_component_ids.sale_price',
                  'construction_component_ids.tax_id', 'construction_component_ids.standard_price')
     def _compute_amount(self):
@@ -100,6 +135,7 @@ class Construction(models.Model):
                    ('progress', '進行中'),
                    ('done', '完了'),
                    ('lost', '失注')],
+        default='draft',
         required=False, )
 
     def action_pending(self):
@@ -110,13 +146,6 @@ class Construction(models.Model):
 
     def action_mark_lost(self):
         self.write({'state': 'lost'})
-
-    # @api.onchange('all_margin_rate')
-    # def _onchange_all_margin_rate(self):
-    #     for rec in self.construction_component_ids:
-    #         rec.margin_rate = self.all_margin_rate
-    #         rec.sale_price = rec.standard_price * (1 + rec.margin_rate)
-    #         rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
 
 
 class ConstructionComponent(models.Model):
@@ -169,6 +198,11 @@ class ConstructionWorkorder(models.Model):
         string='管轄部門',
         related='construction_id.responsible_dept_id',
     )
+
+    workcenter_id = fields.Many2one(
+        comodel_name='construction.workcenter',
+        string='作業区',
+        required=False)
 
     picking_type_id = fields.Many2one('stock.picking.type', related='construction_id.picking_type_id',
                                       store=True, string='オペレーションタイプ')
