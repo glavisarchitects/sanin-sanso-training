@@ -150,7 +150,7 @@ class ConstructionComponent(models.Model):
                 rec.margin_rate = rec.sale_price / rec.standard_price - 1 if rec.standard_price != 0 else 1
                 rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
             rec.subtotal_exclude_tax = rec.quantity * rec.sale_price
-            rec.subtotal = rec.subtotal_exclude_tax * (1 + tax_id.amount / 100)
+            rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
 
 
 class ConstructionWorkorder(models.Model):
