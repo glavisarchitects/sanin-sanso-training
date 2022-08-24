@@ -25,6 +25,7 @@
                                 <field name="partner_id" required="1"/>
                                 <field name="organization_id" required="1"/>
                                 <field name="responsible_dept_id" required="1"/>
+                                <field name="template_id" attrs="{'readonly':[('state','!=','draft')],}"/>
                             </group>
                             <group>
                                 <field name="plan_date"/>
@@ -89,6 +90,7 @@
                                 <field name="construction_workorder_ids" widget="one2many" nolabel="1">
                                     <tree>
                                         <field name="name"/>
+                                        <field name="workcenter_id" readonly="1"/>
                                         <field name="planned_labor_costs"/>
                                         <field name="result_labor_costs"/>
                                         <field name="planned_expenses"/>
@@ -161,8 +163,10 @@
         <menuitem id="ss_erp_construction_root_menu" name="工事" sequence="100"
                   web_icon="ss_erp,static/description/icon.png"/>
 
-        <menuitem id="ss_erp_construction_menu" name="工事オーダー" parent="ss_erp.ss_erp_construction_root_menu"
+        <menuitem id="ss_erp_construction_order_menu" name="工事オーダー" parent="ss_erp.ss_erp_construction_root_menu"
                   action="ss_erp_construction_act_window"/>
+
+        <menuitem id="ss_erp_construction_config_menu" name="設定" parent="ss_erp.ss_erp_construction_root_menu" sequence="500"/>
 
     </data>
 </odoo>

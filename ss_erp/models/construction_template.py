@@ -26,7 +26,7 @@ class ConstructionTemplate(models.Model):
         for rec in self:
             rec.display_name = '[%s] %s' % (rec.code, rec.name)
 
-    template_line_ids = fields.One2many(
+    component_line_ids = fields.One2many(
         comodel_name='construction.template.line',
         inverse_name='template_id',
         string='工事構成品',
@@ -37,7 +37,7 @@ class ConstructionTemplate(models.Model):
         string='オペレーション',
         required=False)
 
-    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")
 
 
 class ConstructionTemplateLine(models.Model):
@@ -58,7 +58,12 @@ class ConstructionTemplateLine(models.Model):
         string='単位',
         required=False)
     operation_id = fields.Many2one(comodel_name='construction.template.operation')
-    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.product_uom_id = self.product_id.uom_id
 
 
 class ConstructionTemplateOperation(models.Model):
@@ -81,4 +86,4 @@ class ConstructionTemplateOperation(models.Model):
         comodel_name='construction.template',
         string='工事テンプレート',
         required=False)
-    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")

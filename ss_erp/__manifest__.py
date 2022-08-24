@@ -108,6 +108,8 @@
         "views/construction_view.xml",
         "views/construction_workorder_view.xml",
         "views/construction_template.xml",
+        "views/construction_workcenter.xml",
+        "views/construction_operation.xml",
         "views/ss_erp_bank_commission_view.xml",
         "views/webclient_templates.xml",
         "menu/menu_views.xml",
