@@ -43,39 +43,78 @@ class Construction(models.Model):
     template_id = fields.Many2one(
         comodel_name='construction.template',
         string='工事テンプレート',
+        required=False
+    )
+
+    picking_ids = fields.One2many(
+        comodel_name='stock.picking',
+        inverse_name='x_construction_id',
         required=False)
+
+    def _prepare_construction_component_data(self):
+        template = self.template_id
+        component_lines = [(5, 0, 0)]
+
+        data = {}
+        for component in template.component_line_ids:
+            key = str(component.product_id.id) + '_' + str(component.product_uom_id.id)
+            if key not in data.keys():
+                data[key] = {
+                    'product_uom_qty': component.product_uom_qty,
+                    'product_id': component.product_id.id,
+                    'product_uom_id': component.product_uom_id.id,
+                }
+            else:
+                data[key]['product_uom_qty'] += component.product_uom_qty
+
+        for v in data.values():
+            component_lines.append((0, 0, v))
+
+        return component_lines
+
+    def _prepare_workoder_line(self):
+        template = self.template_id
+        # workorder_lines = [(5, 0, 0)]
+
+        self.construction_workorder_ids = False
+
+        for operation in template.operation_line_ids:
+
+            # 構成品を準備
+            components = [(5, 0, 0)]
+            for line in operation.component_ids:
+                components.append((0, 0, {
+                    'product_uom_qty': line.product_uom_qty,
+                    'product_id': line.product_id.id,
+                    'product_uom_id': line.product_uom_id.id,
+                }))
+
+            workorder_lines = self.env['ss.erp.construction.workorder'].create({
+                'construction_id': self.id,
+                'name': operation.name,
+                'workcenter_id': operation.workcenter_id.id,
+            })
+            workorder_lines.workorder_component_ids = components
+
+            # workorder_lines.append((0, 0, {
+            #     'name': operation.name,
+            #     'workcenter_id': operation.workcenter_id.id,
+            #     # 'workorder_component_ids': components,
+            # }))
+
+        # return workorder_lines
 
     @api.onchange('template_id')
     def _onchange_template_id(self):
         if not self.template_id:
             return
 
-        template = self.template_id
+        self.construction_component_ids = self._prepare_construction_component_data()
 
-        component_lines = [(5, 0, 0)]
-        workorder_lines = [(5, 0, 0)]
+        # self.construction_workorder_ids = self._prepare_workoder_line()
+        self._prepare_workoder_line()
 
-        for component in template.component_line_ids:
-            data = {}
-            data.update({
-                'quantity': component.product_qty,
-                'product_id': component.product_id.id,
-                'uom_id': component.product_uom_id.id,
-            })
-            component_lines.append((0, 0, data))
-
-        for workorder in template.operation_line_ids:
-            data = {}
-            data.update({
-                'name': workorder.name,
-                'workcenter_id': workorder.workcenter_id.id,
-            })
-            workorder_lines.append((0, 0, data))
-
-        self.construction_workorder_ids = workorder_lines
-        self.construction_component_ids = component_lines
-
-    @api.depends('construction_component_ids.quantity', 'construction_component_ids.sale_price',
+    @api.depends('construction_component_ids.product_uom_qty', 'construction_component_ids.sale_price',
                  'construction_component_ids.tax_id', 'construction_component_ids.standard_price')
     def _compute_amount(self):
         for rec in self:
@@ -84,9 +123,9 @@ class Construction(models.Model):
             amount_tax = 0
 
             for line in rec.construction_component_ids:
-                amount_untaxed += line.quantity * line.sale_price
-                amount_purchased += line.quantity * line.standard_price
-                amount_tax += (line.quantity * line.sale_price) * line.tax_id.amount / 100
+                amount_untaxed += line.product_uom_qty * line.sale_price
+                amount_purchased += line.product_uom_qty * line.standard_price
+                amount_tax += (line.product_uom_qty * line.sale_price) * line.tax_id.amount / 100
 
             amount_total = amount_untaxed + amount_tax
             margin = amount_untaxed - amount_purchased
@@ -104,6 +143,16 @@ class Construction(models.Model):
         name = self.env['ir.sequence'].next_by_code('ss_erp.construction')
         values['name'] = name
         return super(Construction, self).create(values)
+
+    def _create_stock_picking(self):
+
+        return
+
+    def write(self, values):
+        if values.get('state') and values.get('state') == 'order_received':
+            self._create_stock_picking()
+        res = super(Construction, self).write(values)
+        return res
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
@@ -123,13 +172,17 @@ class Construction(models.Model):
     user_id = fields.Many2one(comodel_name='res.users', string='担当者', default=lambda self: self.env.user)
     all_margin_rate = fields.Float(string='一律マージン率')
     construction_component_ids = fields.One2many(comodel_name='ss.erp.construction.component',
-                                                 inverse_name='construction_id', string='構成品')
-    construction_workorder_ids = fields.One2many(comodel_name='ss.erp.construction.workorder',
-                                                 inverse_name='construction_id', string='作業オーダー')
+                                                 inverse_name='construction_id', string='構成品',
+                                                 tracking=True)
+    construction_workorder_ids = fields.One2many(comodel_name='ss.erp.construction.workorder',ondelete="cascade",
+                                                 inverse_name='construction_id', string='作業オーダー',
+                                                 tracking=True)
     state = fields.Selection(
         string='ステータス',
         selection=[('draft', 'ドラフト'),
+                   ('request_approve', '申請中'),
                    ('confirmed', '確認済'),
+                   ('sent', '提出済'),
                    ('pending', '保留'),
                    ('order_received', '受注'),
                    ('progress', '進行中'),
@@ -147,21 +200,35 @@ class Construction(models.Model):
     def action_mark_lost(self):
         self.write({'state': 'lost'})
 
+    def action_sent(self):
+        self.write({'state': 'send'})
+
+    def action_request_approve(self):
+        self.write({'state': 'request_approve'})
+
+    def action_back_to_draft(self):
+        self.write({'state': 'draft'})
+
 
 class ConstructionComponent(models.Model):
     _name = 'ss.erp.construction.component'
     _description = '構成品'
 
-    product_id = fields.Many2one(comodel_name='product.product', string='プロダクト')
-    quantity = fields.Float(string='数量')
-    uom_id = fields.Many2one(comodel_name='uom.uom', string='単位')
-    partner_id = fields.Many2one(comodel_name='res.partner', domain=[('x_is_vendor', '=', True)], string='仕入先')
-    payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件')
-    standard_price = fields.Monetary(string='仕入価格')
+    product_id = fields.Many2one(comodel_name='product.product', string='プロダクト', tracking=True)
+    product_uom_qty = fields.Float(string='数量', tracking=True)
+    qty_reserved = fields.Float(string='引当済み')
+    qty_done = fields.Float(string='消費済み')
+    product_uom_id = fields.Many2one(comodel_name='uom.uom', string='単位', tracking=True,
+                                     domain="[('category_id', '=', product_uom_category_id)]")
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True)
+    partner_id = fields.Many2one(comodel_name='res.partner', domain=[('x_is_vendor', '=', True)], string='仕入先',
+                                 tracking=True)
+    payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件', tracking=True)
+    standard_price = fields.Monetary(string='仕入価格', tracking=True)
     currency_id = fields.Many2one('res.currency', '通貨', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id)
-    tax_id = fields.Many2one(comodel_name='account.tax', string='税')
-    sale_price = fields.Monetary(string='販売価格')
+    tax_id = fields.Many2one(comodel_name='account.tax', string='税', tracking=True)
+    sale_price = fields.Monetary(string='販売価格', tracking=True)
     margin = fields.Monetary(string='粗利益', compute='_compute_margin', store=True)
     margin_rate = fields.Float(string='マージン(%)', compute='_compute_margin', store=True)
     subtotal_exclude_tax = fields.Monetary(string='小計（税別）', compute='_compute_margin', store=True)
@@ -174,11 +241,11 @@ class ConstructionComponent(models.Model):
             if rec.construction_id.all_margin_rate != 0:
                 rec.margin_rate = rec.construction_id.all_margin_rate
                 rec.sale_price = rec.standard_price * (1 + rec.margin_rate)
-                rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
+                rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
             else:
                 rec.margin_rate = rec.sale_price / rec.standard_price - 1 if rec.standard_price != 0 else 1
-                rec.margin = (rec.sale_price - rec.standard_price) * rec.quantity
-            rec.subtotal_exclude_tax = rec.quantity * rec.sale_price
+                rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
+            rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
             rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
 
 
@@ -216,7 +283,6 @@ class ConstructionWorkorder(models.Model):
     planned_expenses = fields.Monetary(string='[予定] 経費')
     result_expenses = fields.Monetary(string='[実績] 経費')
     construction_work_notes = fields.Text(string='備考')
-    total_amount = fields.Monetary(string='合計金額')
     date_planned_start = fields.Datetime(string='計画開始日')
     date_planned_finished = fields.Datetime(string='計画終了日')
     date_start = fields.Datetime(string='開始日')
@@ -233,5 +299,32 @@ class ConstructionWorkorder(models.Model):
         ('cancel', '取消済み'),
     ], string='ステータス')
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
+    workorder_component_ids = fields.One2many(
+        comodel_name='ss.erp.construction.workorder.component',
+        inverse_name='workorder_id',
+        string='構成品',
+        required=False)
 
-    move_raw_ids = fields.One2many(comodel_name='stock.move', inverse_name='construction_workorder_id')
+
+class ConstructionWorkorderComponent(models.Model):
+    _name = 'ss.erp.construction.workorder.component'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _description = '作業オーダーの構成品'
+
+    workorder_id = fields.Many2one(
+        comodel_name='ss.erp.construction.workorder',
+        string='作業オーダー',
+        required=False)
+
+    product_id = fields.Many2one(
+        comodel_name='product.product',
+        string='プロダクト',
+        required=False)
+    product_uom_qty = fields.Float(string='数量')
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True)
+    product_uom_id = fields.Many2one(
+        comodel_name='uom.uom',
+        string='単位',
+        domain="[('category_id', '=', product_uom_category_id)]",
+        required=False)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")

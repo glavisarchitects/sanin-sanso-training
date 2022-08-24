@@ -20,22 +20,23 @@
                             </group>
                         </group>
                         <notebook>
-                            <page name="template_lines" string="構成品">
-                                <field name="component_line_ids" widget="one2many" nolabel="1">
-                                    <tree editable="bottom">
-                                        <field name="product_id"/>
-                                        <field name="product_qty"/>
-                                        <field name="product_uom_id"/>
-                                        <field name="operation_id" string="工程に消費"/>
-                                    </tree>
-                                </field>
-                            </page>
                             <page name="operation_lines" string="オペレーション">
                                 <field name="operation_line_ids" widget="one2many" nolabel="1">
-                                    <tree editable="bottom">
+                                    <tree>
                                         <field name="name"/>
                                         <field name="workcenter_id"/>
                                         <field name="time_cycle"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="template_lines" string="構成品">
+                                <field name="component_line_ids" force_save="1" widget="one2many" nolabel="1" >
+                                    <tree>
+                                        <field name="product_uom_category_id" attrs="{'column_invisible':1}"/>
+                                        <field name="product_id"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="product_uom_id"/>
+                                        <field name="operation_id" string="工程に消費"/>
                                     </tree>
                                 </field>
                             </page>
