@@ -8,9 +8,12 @@
             <field name="arch" type="xml">
                 <form string="工事">
                     <header>
-                        <button name="action_pending" string="保留" type="object"/>
-                        <button name="action_receive_order" string="受注" type="object"/>
-                        <button name="action_mark_lost" string="失注" type="object"/>
+                        <button name="action_pending" string="保留" type="object" attrs="{'invisible':[('state','!=','confirmed')],}"/>
+                        <button name="action_sent" string="提出済としてマーク" type="object" attrs="{'invisible':[('state','!=','confirmed')],}"/>
+                        <button name="action_receive_order" string="受注" type="object" attrs="{'invisible':[('state','!=','confirmed')],}"/>
+                        <button name="action_mark_lost" string="失注" type="object" attrs="{'invisible':[('state','in',('order_received','progress','done','lost'))],}"/>
+                        <button name="action_request_approve" string="申請" type="object" attrs="{'invisible':[('state','!=','draft')],}"/>
+                        <button name="action_back_to_draft" string="ドラフトへ戻す" type="object" attrs="{'invisible':[('state','!=','lost')],}"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -41,8 +44,9 @@
                                         <field name="product_id"/>
                                         <field name="partner_id"/>
                                         <field name="payment_term_id"/>
-                                        <field name="quantity"/>
-                                        <field name="uom_id"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="product_uom_id"/>
+                                        <field name="product_uom_category_id" attrs="{'column_invisible':1}"/>
                                         <field name="standard_price"/>
                                         <field name="currency_id" attrs="{'column_invisible':1}"/>
                                         <field name="tax_id"/>
@@ -96,7 +100,6 @@
                                         <field name="planned_expenses"/>
                                         <field name="result_expenses"/>
                                         <field name="construction_work_notes"/>
-                                        <field name="total_amount"/>
                                         <field name="date_planned_start"/>
                                         <field name="date_planned_finished"/>
                                         <field name="date_start"/>

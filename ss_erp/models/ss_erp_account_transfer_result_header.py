@@ -73,11 +73,11 @@ class AccountTransferResultHeader(models.Model):
             partner = partner_bank.partner_id
             if not partner:
                 tl.status = 'error'
-                tl.error_message = '対象の口座情報が見つかりませんでした。'
+                tl.error_message = '対象の顧客情報が見つかりませんでした。'
                 continue
             partner_invoice = self.env['account.move'].search(
                 [('move_type', '=', 'out_invoice'), ('x_organization_id', '=', self.branch_id.id),
-                 ('x_payment_type', '=', 'bank'), ('x_is_fb_created', '=', True),
+                 ('x_receipt_type', '=', 'bank'), ('x_is_fb_created', '=', True),
                  ('x_is_not_create_fb', '=', False),
                  ('state', '=', 'posted'), ('payment_state', '=', 'not_paid'), ('partner_id', '=', partner.id),
                  ('amount_total', '=', int(tl.withdrawal_amount)), ])
