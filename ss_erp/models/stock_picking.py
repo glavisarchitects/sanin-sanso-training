@@ -37,6 +37,8 @@ class StockPicking(models.Model):
 
     x_inventory_order_id = fields.Many2one('ss_erp.inventory.order')
 
+    x_construction_id = fields.Many2one('ss.erp.construction')
+
     @api.depends("move_line_nosuggest_ids.product_id", "move_ids_without_package.product_id", "picking_type_id")
     def _compute_has_lot_ids(self):
         for r in self:

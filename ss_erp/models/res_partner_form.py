@@ -23,9 +23,9 @@ class ResPartnerForm(models.Model):
                                    'res_partner_id', 'calendar_event_id', string='Meetings', copy=False)
     # x_transaction_categ = fields.Many2many('ss_erp.bis.category', 'category_partner_form_rel',
     #                                        'categ_id', 'partner_id', string="Transaction classification", index=True)
-    x_transaction_department = fields.Many2many(
-        'ss_erp.bis.category', 'department_partner_form_rel', 'department_id', 'partner_id', string="部門",
-        index=True)
+    # x_transaction_department = fields.Many2many(
+    #     'ss_erp.bis.category', 'department_partner_form_rel', 'department_id', 'partner_id', string="部門",
+    #     index=True)
 
     property_account_payable_id = fields.Many2one('account.account', string="Account Payable",
                                                   domain="[('internal_type', '=', 'payable'), ('deprecated', '=', False), ('company_id', '=', current_company_id)]",
