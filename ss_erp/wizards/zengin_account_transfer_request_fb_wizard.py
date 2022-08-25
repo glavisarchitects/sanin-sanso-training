@@ -25,7 +25,7 @@ class AccountMoveWizard(models.TransientModel):
 
         organization_user = self.env.user.employee_id.organization_first.id
         domain = [('move_type', '=', 'out_invoice'), ('x_organization_id','=',organization_user),
-                  ('x_more_than_receipts_method', '=', 'transfer'),('x_is_fb_created', '=', False),
+                  ('x_receipt_type', '=', 'bank'), ('x_is_fb_created', '=', False),
                   ('invoice_date', '<=', self.fb_end_date), ('invoice_date', '>=', self.fb_start_date),
                   ('state','=','posted'), ('payment_state', '=', 'not_paid')]
         invoice_zengin_data = self.env['account.move'].search(domain)
@@ -64,7 +64,7 @@ class AccountMoveWizard(models.TransientModel):
         # # header
         file_data = "1910" + transfer_requester_code + company_name + get_multi_character(40 - len(company_name)) + \
                     transfer_date_month + bic_bank_organization + get_multi_character(15) + branch_number + \
-                    get_multi_character(15) + acc_type + acc_number + get_multi_character(17) + '\r'  # '\n\r' = CRLF ?
+                    get_multi_character(15) + acc_type + acc_number + get_multi_character(17) + '\r\n'  # '\n\r' = CRLF ?
         # # data
         total_sum_amount = 0
         for inv in invoice_zengin_data:
@@ -86,7 +86,8 @@ class AccountMoveWizard(models.TransientModel):
                 raise UserError('口座番号長が一致しません')
 
             partner_acc_holder_furigana = inv.partner_id.bank_ids[0].x_acc_holder_furigana
-        
+            if not partner_acc_holder_furigana:
+                raise UserError('銀行口座 フリガナ まだ設定されていません')
             partner_bank_amount = str(int(inv.amount_total))
             total_sum_amount += int(inv.amount_total)
 
@@ -95,7 +96,7 @@ class AccountMoveWizard(models.TransientModel):
                          partner_acc_number + partner_acc_holder_furigana + \
                          get_multi_character(30 - len(partner_acc_holder_furigana)) + \
                          get_multi_character(10 - len(partner_bank_amount), '0') + partner_bank_amount + \
-                         '0' + get_multi_character(20) + '0' + get_multi_character(8) + '\r'
+                         '0' + get_multi_character(20) + '0' + get_multi_character(8) + '\r\n'
         #
         #     # Todo: Now comment this line to test data
             inv.x_is_fb_created = True
@@ -106,7 +107,7 @@ class AccountMoveWizard(models.TransientModel):
                             get_multi_character(12 - len_total_amount, '0') + str(total_sum_amount) + \
                             get_multi_character(6, '0') + get_multi_character(12, '0') + \
                             get_multi_character(6, '0') + get_multi_character(12, '0') + \
-                            get_multi_character(65) + '\r'
+                            get_multi_character(65) + '\r\n'
         #
         # # end record
         file_data += '9' + get_multi_character(119)

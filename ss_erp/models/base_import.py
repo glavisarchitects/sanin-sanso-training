@@ -72,6 +72,11 @@ class Import(models.TransientModel):
         model_field="import_file_header_model"
     )
 
+    x_header_account_transfer = fields.Char(
+        string="Data Header",
+        readonly=True,
+    )
+
     def _get_ifdb_file_header(self, parent_context):
         self.ensure_one()
         if (
@@ -338,11 +343,11 @@ class Import(models.TransientModel):
         return df_sorted[FIELDS_AFTER]
 
     def _read_file(self, options):
-        # MODEL_NAMES = ['ss_erp.ifdb.yg.summary', 'ss_erp.ifdb.yg.detail', 'ss_erp.ifdb.powernet.sales.detail',
-        #                'ss_erp.ifdb.youki.kanri.detail', 'ss_erp.ifdb.autogas.file.data.rec',
-        #                'ss_erp.ifdb.propane.sales.detail']
-        # if self.res_model not in MODEL_NAMES:
-        #     options['encoding'] = 'shift_jis'
+        MODEL_NAMES = ['ss_erp.ifdb.yg.summary', 'ss_erp.ifdb.yg.detail', 'ss_erp.ifdb.powernet.sales.detail',
+                       'ss_erp.ifdb.youki.kanri.detail', 'ss_erp.ifdb.autogas.file.data.rec',
+                       'ss_erp.ifdb.propane.sales.detail', 'ss_erp.account.transfer.result.line']
+        if self.res_model in MODEL_NAMES:
+            options['encoding'] = 'shift_jis'
         res = super(Import, self)._read_file(options)
         if options.get('custom_transform'):
             # header
@@ -361,3 +366,96 @@ class Import(models.TransientModel):
             # 標準
             for row in res:
                 yield row
+
+    def do(self, fields, columns, options, dryrun=False):
+        if self.import_file_header_id and self.res_model == 'ss_erp.account.transfer.result.line':
+            header_rec = self.env['ss_erp.account.transfer.result.header'].browse(self.import_file_header_id)
+            data_header = self.x_header_account_transfer
+            header_rec.data_class = data_header[:1]
+            header_rec.type_code = data_header[1:3]
+            header_rec.entruster_code = data_header[4:14]
+            header_rec.entruster_name = data_header[14:54]
+            header_rec.withdrawal_date = data_header[54:58]
+            header_rec.bank_id = data_header[58:62]
+            header_rec.bank_branch_number = data_header[77:80]
+            acc_type_number = 'normal' if data_header[95:96] == '1' else 'checking'
+            header_rec.acc_type = acc_type_number
+            header_rec.acc_number = data_header[96:103]
+        return super(Import, self).do(fields, columns, options, dryrun=dryrun)
+
+    def transform_account_transfer_file(self, options, parent_context={}):
+        transfer_header_id = self.env['ss_erp.account.transfer.result.header'].browse(
+            parent_context['default_account_transfer_result_header_id'])
+        self.import_file_header_id = parent_context['default_account_transfer_result_header_id']
+        data = self.file.decode('shift-jis').split('\r\n')
+        if not data[0].startswith('1'):
+            raise UserError(
+                _("データファイルをリロードしてください!")
+            )
+        # Todo Confirm dummy
+        new_data = [
+            b'"account_transfer_result_header_id","withdrawal_bank_number","withdrawal_bank_name",' + \
+            b'"withdrawal_branch_number","withdrawal_branch_name",' + \
+            b'"dummy1","deposit_type",' + \
+            b'"account_number","depositor_name","withdrawal_amount",' + \
+            b'"new_code","customer_number","transfer_result_code",' + \
+            b'"dummy2"'
+        ]
+
+        encode = "Shift-JIS"
+        self.x_header_account_transfer = str(data[0])
+        body_data = data[1:-2]
+        line = []
+        for bd in body_data:
+            name_header = '\n' + str(transfer_header_id.name) + ','
+            line.append(name_header.encode(encode))
+
+            withdrawal_bank_number = (bd[1:5]) + ','
+            line.append(withdrawal_bank_number.encode(encode))
+
+            withdrawal_bank_name = (bd[5:20]) + ','
+            line.append(withdrawal_bank_name.encode(encode))
+
+            withdrawal_branch_number = (bd[20:23]) + ','
+            line.append(withdrawal_branch_number.encode(encode))
+
+            withdrawal_branch_name = (bd[23:38]) + ','
+            line.append(withdrawal_branch_name.encode(encode))
+
+            dummy1 = (bd[38:42]) + ','
+            line.append(dummy1.encode(encode))
+
+            deposit_code = (bd[42:43])
+            deposit_type = 'normal' if deposit_code == '1' else 'checking'
+            line.append(deposit_type.encode(encode))
+
+            account_number = ',' + (bd[43:50]) + ','
+            line.append(account_number.encode(encode))
+
+            deposit_name = (bd[50:80]) + ','
+            line.append(deposit_name.encode(encode))
+
+            withdrawal_amount = (bd[80:90]) + ','
+            line.append(withdrawal_amount.encode(encode))
+
+            new_code = (bd[90:91])
+            if new_code == '0':
+                string_new_code = 'その他'
+            elif new_code == '1':
+                string_new_code = '第1回引落分'
+            else:
+                string_new_code = '変更分'
+            line.append(string_new_code.encode(encode))
+
+            customer_number = ',' + (bd[91:111]) + ','
+            line.append(customer_number.encode(encode))
+
+            transfer_result_code = (bd[111:112]) + ','
+            line.append(transfer_result_code.encode(encode))
+
+            dummy2 = (bd[112:120]) + ','
+            line.append(dummy2.encode(encode))
+
+            new_data += line
+            line = []
+        self.file = b"".join(new_data)

@@ -12,10 +12,15 @@
                             string="帳票出力" class="oe_highlight" type="object"/>
                 </xpath>
 
-                <xpath expr="//field[@name='purchase_vendor_bill_id']" position="after">
-                    <field name="x_payment_method"  attrs="{'invisible': [('move_type', 'not in', ('out_invoice','in_refund'))]}"/>
-                    <field name="x_more_than_receipts_method" attrs="{'invisible': [('move_type', 'not in', ('out_invoice','out_refund'))]}"/>
+                <xpath expr="//group[@id='header_left_group']//field[@name='purchase_vendor_bill_id']" position="after">
+                    <field name="x_receipt_type" attrs="{'invisible': [('move_type', 'not in', ['out_invoice','out_refund'])]}"/>
+                    <field name="x_payment_type" attrs="{'invisible': [('move_type', 'not in', ['in_invoice','in_refund'])]}"/>
                 </xpath>
+
+                <xpath expr="//field[@name='journal_id']" position="after">
+                    <field name="x_is_not_create_fb" attrs="{'invisible': ['|', ('x_receipt_type', 'not in', ('bank','transfer')), ('x_payment_type', '!=', 'bank')]}"/>
+                </xpath>
+
                 <xpath expr="//group[@name='accounting_info_group']" position="after">
                     <group>
                         <field name="x_responsible_user_id"  required="1"/>
@@ -28,13 +33,28 @@
                     <field name="x_responsible_dept_id" required="1"/>
                 </xpath>
 
-                <xpath expr="//page[@id='invoice_tab']//tree//field[@name='account_id']" position="after">
-                    <field name="x_sub_account_id" />
-                </xpath>
-                <xpath expr="//page[@id='aml_tab']//tree//field[@name='account_id']" position="after">
+                <xpath expr="//page[@id='aml_tab']//tree//field[@name='name']" position="after">
                     <field name="x_sub_account_id" />
                 </xpath>
             </field>
         </record>
+
+        <record id="ss_erp_account_move_tree" model="ir.ui.view">
+            <field name="name">ss.erp.account.move.tree</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='invoice_partner_display_name']" position="after">
+                    <field name="x_organization_id"/>
+                    <field name="x_responsible_dept_id"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_date_due']" position="after">
+                    <field name="x_payment_type" invisible="context.get('default_move_type') in ('out_invoice', 'out_refund','out_receipt')"/>
+                    <field name="x_receipt_type" invisible="context.get('default_move_type') in ('in_invoice', 'in_refund','in_receipt')"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

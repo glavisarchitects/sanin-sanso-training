@@ -71,3 +71,9 @@ from . import ss_erp_delivery_pattern
 from . import ss_erp_delivery_vehicle
 from . import account_payment
 from . import ss_erp_accounts_receivable_hist
+from . import ss_erp_bank_commision
+from . import construction
+from . import ss_erp_bank_commision
+from . import ss_erp_account_transfer_result_header
+from . import construction_workcenter
+from . import construction_template
