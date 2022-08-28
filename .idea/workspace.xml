@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="dfba10f4-20f1-4765-b08f-30b86813d392" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/__manifest__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/__manifest__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/menu/menu_views.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/menu/menu_views.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_autogas_file_header.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_autogas_file_header.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_powernet_sales_header.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_powernet_sales_header.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_propane_sales_header.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_propane_sales_header.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_yg_header.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_yg_header.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_youki_kanri.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_youki_kanri.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_youkikensa_billing_file.py" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/models/ss_erp_ifdb_youkikensa_billing_file.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/security/ir.model.access.csv" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/security/ir.model.access.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ss_erp/views/webclient_templates.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ss_erp/views/webclient_templates.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="26ziefxOVn3MBtSXCX987CXWrqr" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dfba10f4-20f1-4765-b08f-30b86813d392" name="Default Changelist" comment="" />
+      <created>1648432915497</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1648432915497</updated>
+    </task>
+    <servers />
+  </component>
+</project>

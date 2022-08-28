@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <!--    組織カテゴリ-->
+    <menuitem id="menu_organization_category_setting" name="組織カテゴリ" parent="base.menu_users"
+              action="action_organizations_category"/>
+
+    <!--    組織-->
+    <menuitem id="menu_organization_settings" name="組織" parent="base.menu_users"
+              action="action_organizations"/>
+
+    <!--管轄部門-->
+    <menuitem id="responsible_department_view_action_menu" name="管轄部門"
+              action="responsible_department_view_action" parent="base.menu_users" sequence="10"/>
+
+    <!--    リベート条件-->
+    <menuitem id="ss_erp_partner_rebate_action_management_menu" name="リベート条件"
+              action="ss_erp_partner_rebate_action" parent="purchase.menu_procurement_management" sequence="10"/>
+    <menuitem id="ss_erp_partner_rebate_finance_action_menu" name="リベート条件"
+              action="ss_erp_partner_rebate_action" parent="account.menu_finance_payables" sequence="400"/>
+
+    <!--    連絡先フォーム-->
+    <menuitem id="ss_erp_res_partner_form_menu" name="連絡先フォーム" action="action_ss_erp_res_partner_form"
+              parent="contacts.menu_contacts" sequence="1"/>
+
+    <!--    連絡先カテゴリ-->
+    <menuitem id="ss_erp_contact_category_action_menu" name="連絡先カテゴリ" parent="contacts.res_partner_menu_config"
+              action="ss_erp_contact_category_action" sequence="4"/>
+
+    <!--    取引区分-->
+    <menuitem id="transaction_classification_menu" name="取引区分" action="ss_erp_bis_category_action"
+              parent="contacts.res_partner_menu_config" sequence="7"/>
+
+    <!--    外部システム連携-->
+    <menuitem id="external_system_cooperation_menu" name="外部システム連携" parent="sale.sale_menu_root"
+              sequence="5"/>
+
+    <menuitem id="external_system_cooperation_other" name="その他" parent="external_system_cooperation_menu"
+              sequence="100"/>
+    <menuitem id="ss_erp_code_convert_action_menu" name="コード変換" parent="ss_erp.external_system_cooperation_other"
+              action="ss_erp_code_convert_action" sequence="1"/>
+    <menuitem id="ss_erp_convert_code_type_action_menu" name="変換コード種別"
+              parent="external_system_cooperation_other" action="ss_erp_convert_code_type_action" sequence="30"/>
+    <menuitem id="ss_erp_external_system_type_action_menu" name="外部システム種別"
+              parent="external_system_cooperation_other" action="ss_erp_external_system_type_action" sequence="40"/>
+
+
+    <!-- Menu Stock -->
+    <menuitem id="menu_ss_erp_instruction_order_action" name="棚卸計画" parent="stock.menu_stock_warehouse_mgmt"
+              action="ss_erp_instruction_order_action" sequence="99"/>
+
+    <menuitem id="menu_ss_erp_lpgas_order" name="LPガス棚卸伝票" parent="stock.menu_stock_warehouse_mgmt"
+              action="ss_erp_lpgas_order_action" sequence="200"/>
+
+    <!--  インポートデータの親メニュー  -->
+    <menuitem id="external_system_cooperation_importing_performance" name="実績情報取込"
+              parent="ss_erp.external_system_cooperation_menu" sequence="50"/>
+    <menuitem id="external_system_cooperation_imported_data" name="取込データ"
+              parent="ss_erp.external_system_cooperation_menu" sequence="60"/>
+
+
+    <menuitem id="menu_ss_erp_ifdb_propane_sales_header_action" name="プロパン売上（米子）ファイル取込"
+              parent="ss_erp.external_system_cooperation_importing_performance"
+              action="ss_erp_ifdb_propane_sales_header_action"
+              sequence="50"/>
+    <menuitem id="menu_ss_erp_ifdb_propane_sales_detail_action" name="プロパン売上（米子）取込データ"
+              parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_propane_sales_detail_action"
+              sequence="60"/>
+    <menuitem id="menu_ss_erp_ifdb_yg_header_action" name="ヤマサンガスサプライファイル取込"
+              parent="ss_erp.external_system_cooperation_importing_performance" action="ss_erp_ifdb_yg_header_action"
+              sequence="10"/>
+    <menuitem id="menu_ss_erp_ifdb_yg_detail_action" name="ヤマサンガスサプライ取込データ（検針明細表）"
+              parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_detail_action"
+              sequence="21"/>
+
+
+    <menuitem id="menu_ss_erp_ifdb_yg_summary_action" name="ヤマサンガスサプライ取込データ（検針集計表）"
+              parent="ss_erp.external_system_cooperation_imported_data" action="ss_erp_ifdb_yg_summary_action"
+              sequence="20"/>
+    <menuitem id="menu_ss_erp_ifdb_powernet_saleshead" name="PowerNetファイル取込"
+              parent="ss_erp.external_system_cooperation_importing_performance"
+              action="ss_erp_ifdb_powernet_sales_header_action" sequence="25"/>
+    <menuitem id="menu_ss_erp_ifdb_powernet_salesdetail" name="PowerNet取込データ"
+              parent="ss_erp.external_system_cooperation_imported_data" sequence="30"
+              action="ss_erp_ifdb_powernet_sales_detail_action"/>
+    <menuitem id="ss_erp_ifdb_autogas_file_data_rec_menu" name="オートガスPOS（松江）取込データ"
+              action="ss_erp_ifdb_autogas_file_data_rec_action"
+              sequence="50"
+              parent="ss_erp.external_system_cooperation_imported_data"/>
+    <menuitem id="ss_erp_ifdb_autogas_file_header_menu" name="オートガスPOS（松江）ファイル取込"
+              action="ss_erp_ifdb_autogas_file_header_action" sequence="40"
+              parent="ss_erp.external_system_cooperation_importing_performance"/>
+
+    <menuitem id="ss_erp_youki_kanri_menu" name="容器管理システムファイル取込"
+              action="ss_erp_ifdb_youki_kanri_action" sequence="35"
+              parent="ss_erp.external_system_cooperation_importing_performance"/>
+    <menuitem
+            id="ss_erp_youki_kanri_detail_menu"
+            name="容器管理ファイル取込データ"
+            action="ss_erp_ifdb_youki_kanri_detail_action"
+            parent="ss_erp.external_system_cooperation_imported_data"
+            sequence="35"/>
+
+
+    <!-- HuuPhong Menu Import Purchase 060522   -->
+
+    <!--    外部システム連携-->
+    <menuitem id="external_system_cooperation_purchase_menu" name="外部システム連携" parent="purchase.menu_purchase_root"
+              sequence="5"/>
+
+    <!--  インポートデータの親メニュー  -->
+    <menuitem id="external_system_cooperation_importing_performance_purchase" name="実績情報取込"
+              parent="ss_erp.external_system_cooperation_purchase_menu" sequence="1"/>
+
+    <menuitem id="external_system_cooperation_imported_data_purchase" name="取込データ"
+              parent="ss_erp.external_system_cooperation_purchase_menu" sequence="2"/>
+
+
+    <menuitem id="ss_erp_youki_kensa_menu"
+              action="ss_erp_ifdb_youki_kensa_action" sequence="1"
+              parent="ss_erp.external_system_cooperation_importing_performance_purchase"/>
+
+    <menuitem id="ss_erp_youki_kensa_detail_menu"
+              action="ss_erp_ifdb_youki_kensa_detail_action"
+              parent="ss_erp.external_system_cooperation_imported_data_purchase"
+              sequence="1"/>
+
+    <!--  PURCHASE PRODUCT CONFIG  -->
+    <menuitem
+            id="ss_erp_product_detail_classification_in_menu_purchase_config"
+            action="ss_erp_product_detail_classification_action"
+            parent="purchase.menu_product_in_config_purchase"
+            sequence="8"/>
+    <menuitem
+            id="ss_erp_product_major_classification_in_menu_purchase_config"
+            action="ss_erp_product_major_classification_action"
+            parent="purchase.menu_product_in_config_purchase"
+            sequence="5"/>
+
+    <menuitem
+            id="ss_erp_product_medium_classification_in_menu_purchase_config"
+            action="ss_erp_product_medium_classification_action"
+            parent="purchase.menu_product_in_config_purchase"
+            sequence="6"/>
+
+    <menuitem
+            id="ss_erp_product_minor_classification_in_menu_purchase_config"
+            action="ss_erp_product_minor_classification_action"
+            parent="purchase.menu_product_in_config_purchase"
+            sequence="7"/>
+
+    <!--  SALE PRODUCT CONFIG  -->
+    <menuitem
+            id="ss_erp_product_detail_classification_in_menu_sale_config"
+            action="ss_erp_product_detail_classification_action"
+            parent="sale.prod_config_main"
+            sequence="12"/>
+    <menuitem
+            id="ss_erp_product_major_classification_in_menu_sale_config"
+            action="ss_erp_product_major_classification_action"
+            parent="sale.prod_config_main"
+            sequence="9"/>
+
+    <menuitem
+            id="ss_erp_product_medium_classification_in_menu_sale_config"
+            action="ss_erp_product_medium_classification_action"
+            parent="sale.prod_config_main"
+            sequence="10"/>
+
+    <menuitem
+            id="ss_erp_product_minor_classification_in_menu_sale_config"
+            action="ss_erp_product_minor_classification_action"
+            parent="sale.prod_config_main"
+            sequence="11"/>
+
+    <!--    INVENTORY PRODUCT CONFIG-->
+    <menuitem
+            id="ss_erp_product_detail_classification_in_menu_stock_config"
+            action="ss_erp_product_detail_classification_action"
+            parent="stock.menu_product_in_config_stock"
+            sequence="45"/>
+    <menuitem
+            id="ss_erp_product_major_classification_in_menu_stock_config"
+            action="ss_erp_product_major_classification_action"
+            parent="stock.menu_product_in_config_stock"
+            sequence="42"/>
+
+    <menuitem
+            id="ss_erp_product_medium_classification_in_menu_stock_config"
+            action="ss_erp_product_medium_classification_action"
+            parent="stock.menu_product_in_config_stock"
+            sequence="43"/>
+
+    <menuitem
+            id="ss_erp_product_minor_classification_in_menu_stock_config"
+            action="ss_erp_product_minor_classification_action"
+            parent="stock.menu_product_in_config_stock"
+            sequence="44"/>
+
+    <menuitem
+            id="product_template_form_sale_menu"
+            action="product_template_form_action"
+            parent="sale.product_menu_catalog"
+            sequence="0"/>
+    <menuitem
+            id="product_template_form_purchase_menu"
+            action="product_template_form_action"
+            parent="purchase.menu_purchase_products"
+            sequence="0"/>
+
+    <menuitem
+            id="product_template_form_stock_menu"
+            action="product_template_form_action"
+            parent="stock.menu_stock_inventory_control"
+            sequence="0"/>
+
+    <menuitem name="請求書" id="ss_erp_invoices" parent="account.menu_finance_receivables" sequence="0"/>
+    <menuitem
+            name="全銀口座振替依頼FB作成"
+            id="ss_erp_account_transfer_request_fb_menu"
+            parent="ss_erp_invoices"
+            sequence="1"/>
+
+    <menuitem
+            id="ss_erp_account_transfer_result_header_menu"
+            action="ss_erp.action_account_transfer_result_header"
+            parent="ss_erp_invoices"
+            sequence="2"/>
+
+    <menuitem
+        id="ss_erp_account_transfer_result_menu"
+        action="ss_erp.action_account_transfer_result_line"
+        parent="ss_erp_invoices"
+        sequence="3"/>
+</odoo>

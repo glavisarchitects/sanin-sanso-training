@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="account_list_receivable_form" model="ir.ui.view">
+            <field name="name">account.receivable.list.form</field>
+            <field name="model">account.receivable.list</field>
+            <field name="arch" type="xml">
+                <form string="売掛金残高確認書">
+                    <sheet>
+                        <group>
+                            <field name="due_date_start"/>
+                            <field name="due_date_end"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string="売掛金一覧表作成" class="btn-primary" name="create_list_of_accounts_receivable"
+                                type="object"/>
+                        <button string="取消" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="account_list_receivabler_action" model="ir.actions.act_window">
+            <field name="name">売掛金一覧表</field>
+            <field name="res_model">account.receivable.list</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="account_list_receivable_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+
+    <menuitem
+            id="account_list_receivable_menu"
+            name="売掛金一覧表"
+            action="account_list_receivabler_action"
+            parent="account_reports.account_reports_partners_reports_menu"
+            sequence="12"/>
+
+</odoo>

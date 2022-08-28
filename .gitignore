@@ -1,0 +1,14 @@
+
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/sanin-sanso.iml
+.idea/vcs.xml
+report_pdf_options/images/main_1.png
+report_pdf_options/images/main_screenshot.png
+report_pdf_options/static/description/defaultoption.gif
+report_pdf_options/static/description/printoptions.gif
+report_pdf_options/static/description/printoptions2.gif
+*.gif
+*.png

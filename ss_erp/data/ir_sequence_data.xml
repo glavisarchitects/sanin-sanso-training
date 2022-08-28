@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Sequences for x.partner.rebate -->
+        <record id="seq_ss_erp_partner_rebate" model="ir.sequence">
+            <field name="name">リベート</field>
+            <field name="code">ss_erp.partner.rebate</field>
+            <field name="prefix">リベート-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_name_inventory_order" model="ir.sequence">
+            <field name="name">拠点間移動</field>
+            <field name="code">ss_erp.inventory.order</field>
+            <field name="prefix">I</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_name_stock_inventory" model="ir.sequence">
+            <field name="name">Name</field>
+            <field name="code">stock.inventory.name</field>
+            <field name="prefix">SI</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_name_lpgas_oder" model="ir.sequence">
+            <field name="name">LPガス棚卸伝票</field>
+            <field name="code">lpgas.order.name</field>
+            <field name="prefix">LI</field>
+            <field name="padding">5</field>
+        </record>
+        <record id="seq_construction" model="ir.sequence">
+            <field name="name">工事</field>
+            <field name="code">ss_erp.construction</field>
+            <field name="prefix">工事</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+</odoo>
