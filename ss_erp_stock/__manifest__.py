@@ -4,11 +4,7 @@
     "summary": """
         山陰酸素工業　在庫カスタマイズ
     """,
-    "depends": [
-        "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
-        "ss_erp_responsible_dept", "ss_erp_res_company", "ss_erp_res_users",
-        "ss_erp_external_data_import",
-    ],
+    "depends": ["mail", "stock", "delivery"],
     "data": [
         # SECURITY
         "security/ir.model.access.csv",
@@ -28,7 +24,7 @@
         # DATA
         'data/ir_action_server_data.xml',
         'data/ir_sequence_data.xml',
-        'data/default_param_setting_data.xml',
+        # 'data/default_param_setting_data.xml',
     ],
     "application": False,
     "installable": True,

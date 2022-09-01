@@ -5,8 +5,7 @@
         山陰酸素工業　連絡先カスタマイズ
     """,
     "depends": [
-        "base", "account", "mail", "stock", "contacts", "contacts_enterprise", "ss_erp_res_company",
-        "sale", "purchase", "delivery", "web_enterprise"
+        "base", "contacts", "delivery", "mail"
     ],
     "data": [
         # SECURITY

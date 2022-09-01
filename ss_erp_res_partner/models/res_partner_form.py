@@ -18,8 +18,8 @@ class ResPartnerForm(models.Model):
 
     # Override fields and fucntion in res.partner
     channel_ids = fields.Many2many(
-        'mail.channel', 'mail_channel_profile_partner_form', 'partner_id', 'channel_id', copy=False)
-    meeting_ids = fields.Many2many('calendar.event', 'calendar_event_res_partner_form_rel',
+        'mail.channel', 'ss_erp_mail_channel_profile_partner_form', 'partner_id', 'channel_id', copy=False)
+    meeting_ids = fields.Many2many('calendar.event', 'ss_erp_calendar_event_res_partner_form_rel',
                                    'res_partner_id', 'calendar_event_id', string='Meetings', copy=False)
 
     property_account_payable_id = fields.Many2one('account.account', string="Account Payable",
@@ -58,10 +58,10 @@ class ResPartnerForm(models.Model):
 
     # Override one2many field -> many2many field
     activity_ids = fields.Many2many(
-        'mail.activity', 'mail_activity_res_partner_form_rel', 'partner_id', 'activity_id', string="Activities",
+        'mail.activity', 'ss_erp_mail_activity_res_partner_form_rel', 'partner_id', 'activity_id', string="Activities",
         copy=False)
     bank_ids = fields.Many2many(
-        'res.partner.bank', 'res_partner_bank_res_partner_form_rel', 'partner_id', 'bank_id', string="Banks",
+        'res.partner.bank', 'ss_erp_res_partner_bank_res_partner_form_rel', 'partner_id', 'bank_id', string="Banks",
         copy=False)
 
     # 20220822
@@ -70,32 +70,32 @@ class ResPartnerForm(models.Model):
 
 
     child_ids = fields.Many2many(
-        'res.partner', 'res_partner_child_res_partner_form_rel', 'partner_id', 'child_id', string="Contact", copy=False)
-    construction_ids = fields.Many2many('ss_erp.partner.construction', 'partner_construction_res_partner_form_rel',
+        'res.partner', 'ss_erp_res_partner_child_res_partner_form_rel', 'partner_id', 'child_id', string="Contact", copy=False)
+    construction_ids = fields.Many2many('ss_erp.partner.construction', 'ss_erp_partner_construction_res_partner_form_rel',
                                         'partner_id', 'construction_id', string="Construction", copy=False)
     contract_ids = fields.Many2many(
-        'account.analytic.account', 'analytic_account_res_partner_form_rel', 'partner_id', 'account_id', copy=False)
+        'account.analytic.account', 'ss_erp_analytic_account_res_partner_form_rel', 'partner_id', 'account_id', copy=False)
     invoice_ids = fields.Many2many(
         'account.move', 'account_move_res_partner_form_rel', 'partner_id', 'account_move_id', copy=False)
     message_follower_ids = fields.Many2many(
-        'mail.followers', 'mail_followers_res_partner_form_rel', 'partner_id', 'followers_id', copy=False)
+        'mail.followers', 'ss_erp_mail_followers_res_partner_form_rel', 'partner_id', 'followers_id', copy=False)
     message_ids = fields.Many2many(
-        'mail.message', 'mail_message_res_partner_form_rel', 'partner_id', 'message_id', copy=False)
+        'mail.message', 'ss_erp_mail_message_res_partner_form_rel', 'partner_id', 'message_id', copy=False)
     payment_token_ids = fields.Many2many(
-        'payment.token', 'payment_token_res_partner_form_rel', 'partner_id', 'token_id', copy=False)
+        'payment.token', 'ss_erp_payment_token_res_partner_form_rel', 'partner_id', 'token_id', copy=False)
     performance_ids = fields.Many2many(
-        'ss_erp.partner.performance', 'partner_performance_res_partner_form_rel', 'partner_id',
+        'ss_erp.partner.performance', 'ss_erp_partner_performance_res_partner_form_rel', 'partner_id',
         'partner_performance_id', copy=False)
     purchase_line_ids = fields.Many2many(
-        'purchase.order.line', 'po_line_res_partner_form_rel', 'partner_id', 'po_line_id', copy=False)
+        'purchase.order.line', 'ss_erp_po_line_res_partner_form_rel', 'partner_id', 'po_line_id', copy=False)
     ref_company_ids = fields.Many2many(
-        'res.company', 'res_company_res_partner_form_rel', 'partner_id', 'res_company_id', copy=False)
+        'res.company', 'ss_erp_res_company_res_partner_form_rel', 'partner_id', 'res_company_id', copy=False)
     sale_order_ids = fields.Many2many(
-        'sale.order', 'sale_order_res_partner_form_rel', 'partner_id', 'sale_order_id', copy=False)
+        'sale.order', 'ss_erp_sale_order_res_partner_form_rel', 'partner_id', 'sale_order_id', copy=False)
     user_ids = fields.Many2many(
-        'res.users', 'res_users_res_partner_form_rel', 'partner_id', 'res_users_id', copy=False)
+        'res.users', 'ss_erp_res_users_res_partner_form_rel', 'partner_id', 'res_users_id', copy=False)
     website_message_ids = fields.Many2many(
-        'mail.message', 'web_mail_message_res_partner_form_rel', 'partner_id', 'mail_message_id', copy=False)
+        'mail.message', 'ss_erp_web_mail_message_res_partner_form_rel', 'partner_id', 'mail_message_id', copy=False)
 
     @api.model
     def _commercial_fields(self):

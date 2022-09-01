@@ -10,7 +10,6 @@ class HrExpense(models.Model):
     x_request_date = fields.Date(string='申請日')
     x_organization_id = fields.Many2one('ss_erp.organization', string='申請組織',default=lambda self: self._get_default_x_organization_id())
     x_responsible_id = fields.Many2one('ss_erp.responsible.department', string='申請部署',default=lambda self: self._get_default_x_responsible_dept_id())
-    # x_sub_account_related_ids = fields.Many2many(related='account_id.x_sub_account_ids')
 
     @api.onchange('account_id')
     def onchange_sub_account_id(self):

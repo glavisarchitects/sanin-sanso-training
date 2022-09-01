@@ -23,7 +23,7 @@
 
                 <xpath expr="//group[@name='accounting_info_group']" position="after">
                     <group>
-                        <field name="x_responsible_user_id"  attrs="{'required': [('move_type', 'in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'))]}"/>
+                        <field name="x_responsible_user_id"  required="1"/>
                         <field name="x_mkt_user_id" />
                         <field name="x_is_fb_created" groups="base.group_no_one"/>
                     </group>

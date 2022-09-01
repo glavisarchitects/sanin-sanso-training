@@ -13,7 +13,6 @@
 
         # Data
         'data/param_data.xml',
-        # 'data/account_journal_data.xml', # DANGER.The customer has created it manually, so it has not been created with data yet
 
         # VIEWS
         'views/ss_erp_account_transfer_result_header_views.xml',

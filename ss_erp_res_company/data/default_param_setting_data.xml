@@ -29,7 +29,7 @@
             <field name="show_effect" eval="False"/>
             <field name="product_weight_in_lbs">0</field>
             <field name="product_volume_volume_in_cubic_feet">0</field>
-            <field name="enable_ocn" eval="True"/>
+<!--            <field name="enable_ocn" eval="True"/>-->
             <field name="disable_redirect_firebase_dynamic_link" eval="False"/>
             <field name="module_pad" eval="False"/>
             <field name="module_web_unsplash" eval="False"/>

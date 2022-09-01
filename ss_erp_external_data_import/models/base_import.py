@@ -346,8 +346,7 @@ class Import(models.TransientModel):
     def _read_file(self, options):
         MODEL_NAMES = ['ss_erp.ifdb.yg.summary', 'ss_erp.ifdb.yg.detail', 'ss_erp.ifdb.powernet.sales.detail',
                        'ss_erp.ifdb.youki.kanri.detail', 'ss_erp.ifdb.autogas.file.data.rec',
-                       'ss_erp.ifdb.propane.sales.detail', 'ss_erp.account.transfer.result.line',
-                       'ss_erp.account.receipt.notification.line']
+                       'ss_erp.ifdb.propane.sales.detail', 'ss_erp.account.transfer.result.line']
         if self.res_model in MODEL_NAMES:
             options['encoding'] = 'shift_jis'
         res = super(Import, self)._read_file(options)
@@ -480,13 +479,6 @@ class Import(models.TransientModel):
 
 
     def transform_account_receipt_file(self, options, parent_context={}):
-        def _ymd(short_dt):
-            # convert 210203 to 20210203
-            dt = short_dt.strip()
-            if len(dt) != 6:
-                return ''
-            else:
-                return '-'.join(['20' + dt[:2], dt[2:4], dt[4:]])
         transfer_receipt_header_id = self.env['ss_erp.account.receipt.notification.header'].browse(
             parent_context['default_account_receipt_result_header_id'])
         self.import_file_header_id = parent_context['default_account_receipt_result_header_id']
@@ -502,9 +494,12 @@ class Import(models.TransientModel):
             b'"other_ticket_amount","transfer_client_code",' + \
             b'"transfer_client_name","bank_name","bank_branch_name",' + \
             b'"cancel_code","edi_information","dummy"'
+
         ]
 
         encode = "Shift-JIS"
+        if options.get('encoding'):
+            encode = options.get('encoding')
         self.x_header_account_receipt = str(data[0])
         body_data = data[1:-2]
         line = []
@@ -512,40 +507,40 @@ class Import(models.TransientModel):
             name_header = '\n' + str(transfer_receipt_header_id.name) + ','
             line.append(name_header.encode(encode))
 
-            reference_number = (bd[1:7]) + ','
+            reference_number = (bd[1:6]) + ','
             line.append(reference_number.encode(encode))
 
-            account_date = (bd[7:13]) + ','
+            account_date = (bd[6:12]) + ','
             line.append(account_date.encode(encode))
 
-            starting_date = (bd[13:19]) + ','
+            starting_date = (bd[12:18]) + ','
             line.append(starting_date.encode(encode))
 
-            transfer_amount = (bd[19:29]) + ','
+            transfer_amount = (bd[18:28]) + ','
             line.append(transfer_amount.encode(encode))
 
-            other_ticket_amount = (bd[29:39]) + ','
+            other_ticket_amount = (bd[28:38]) + ','
             line.append(other_ticket_amount.encode(encode))
 
-            transfer_client_code = (bd[39:49]) + ','
+            transfer_client_code = (bd[38:48]) + ','
             line.append(transfer_client_code.encode(encode))
 
-            transfer_client_name = (bd[49:97]) + ','
+            transfer_client_name = (bd[48:96]) + ','
             line.append(transfer_client_name.encode(encode))
 
-            bank_name = (bd[97:112]) + ','
+            bank_name = (bd[96:111]) + ','
             line.append(bank_name.encode(encode))
 
-            bank_branch_name = (bd[112:127]) + ','
+            bank_branch_name = (bd[111:126]) + ','
             line.append(bank_branch_name.encode(encode))
 
-            cancel_code = (bd[127:128])
+            cancel_code = (bd[126:127])
             line.append(cancel_code.encode(encode))
 
-            edi_information = (bd[128:148]) + ','
+            edi_information = (bd[127:147]) + ','
             line.append(edi_information.encode(encode))
 
-            dummy = (bd[148:200]) + ','
+            dummy = (bd[147:200]) + ','
             line.append(dummy.encode(encode))
 
             new_data += line

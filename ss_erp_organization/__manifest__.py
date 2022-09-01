@@ -5,7 +5,7 @@
         山陰酸素工業　組織カスタマイズ
     """,
     "depends": [
-        "base", "mail", "ss_erp_res_partner"
+        "base", "mail", "stock"
     ],
     "data": [
         # SECURITY

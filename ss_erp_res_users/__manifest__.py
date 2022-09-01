@@ -5,7 +5,7 @@
         山陰酸素工業　ユーザカスタマイズ
     """,
     "depends": [
-        "base", "ss_erp_organization", "auth_totp"
+        "auth_totp"
     ],
     "data": [
         # SECURITY

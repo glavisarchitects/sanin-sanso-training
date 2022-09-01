@@ -22,12 +22,12 @@ class ApprovalRequest(models.Model):
     x_inventory_order_ids = fields.Many2many(
         'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票')
     x_sale_order_ids = fields.Many2many(
-        'sale.order', 'sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票')
+        'sale.order', 'ss_erp_sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票')
     x_lpgas_inventory_ids = fields.Many2many('ss_erp.lpgas.order', string='LPガス棚卸伝票')
     x_account_move_ids = fields.Many2many(
-        'account.move', 'account_move_request_rel', 'move_id', 'request_id', string='仕入請求伝票')
+        'account.move', 'ss_erp_account_move_request_rel', 'move_id', 'request_id', string='仕入請求伝票')
     x_purchase_order_ids = fields.Many2many(
-        'purchase.order', 'purchase_request_rel', 'purchase_id', 'request_id', string='見積依頼伝票')
+        'purchase.order', 'ss_erp_purchase_request_rel', 'purchase_id', 'request_id', string='見積依頼伝票')
     x_payment_date = fields.Date('請求書締日')
     x_purchase_material = fields.Text('仕入商材')
     x_cash_amount = fields.Float('現金仕入額')
@@ -45,7 +45,7 @@ class ApprovalRequest(models.Model):
     multi_approvers_ids = fields.One2many(
         'ss_erp.multi.approvers', 'x_request_id', string='多段階承認', readonly=True, copy=False)
     x_inventory_instruction_ids = fields.Many2many(
-        'ss_erp.instruction.order', 'instruction_request_rel', 'instruction_id', 'request_id',
+        'ss_erp.instruction.order', 'ss_erp_instruction_request_rel', 'instruction_id', 'request_id',
         string='指示伝票')
 
     x_approval_date = fields.Date('申請日', default=datetime.now())

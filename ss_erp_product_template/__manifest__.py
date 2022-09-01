@@ -5,8 +5,7 @@
         山陰酸素工業　プロダクトカスタマイズ
     """,
     "depends": [
-        "base", "account", "mail", "stock", "contacts", "contacts_enterprise",
-        "sale", "purchase", "delivery", "uom"
+        "purchase", "sale", "stock"
     ],
     "data": [
         # SECURITY

@@ -29,7 +29,7 @@ class ApprovalCategory(models.Model):
         CATEGORY_SELECTION, string="仕入請求伝票", default="no", )
     x_is_multiple_approval = fields.Boolean(
         string='多段階承認', default=False)
-    multi_approvers_ids = fields.Many2many('ss_erp.multi.approvers', column1='approval_categ_id',
+    multi_approvers_ids = fields.Many2many('ss_erp.multi.approvers', relation='ss_erp_multi_approves_approval_category_rel',column1='approval_categ_id',
                                            column2='multi_approver_id', string='多段階承認',
                                            domain="[('x_request_id', '=', False)]")
     has_x_payment_date = fields.Selection(

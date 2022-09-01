@@ -5,10 +5,7 @@
         山陰酸素工業　会計管理カスタマイズ
     """,
     "depends": [
-        "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
-        "ss_erp_responsible_dept", "ss_erp_res_company", "ss_erp_res_users",
-        "ss_erp_external_data_import", "ss_erp_bank_fb", "ss_erp_superstream", "account_accountant", "account_reports"
-
+        "account_accountant",
     ],
     "data": [
         # SECURITY
@@ -34,7 +31,7 @@
         'menu/menu_item.xml',
 
         # DATA
-        'data/default_param_setting_data.xml',
+        # 'data/default_param_setting_data.xml',
     ],
     "application": False,
     "installable": True,

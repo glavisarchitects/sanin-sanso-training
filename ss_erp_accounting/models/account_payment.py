@@ -8,7 +8,7 @@ class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
     # add name of rel table
-    reconciled_invoice_ids = fields.Many2many('account.move', relation="account_payment_reconciled_invoice_rel", string="Reconciled Invoices",
+    reconciled_invoice_ids = fields.Many2many('account.move', relation="ss_erp_account_payment_reconciled_invoice_rel", string="Reconciled Invoices",
         compute='_compute_stat_buttons_from_reconciliation',
         help="Invoices whose journal items have been reconciled with these payments.")
 

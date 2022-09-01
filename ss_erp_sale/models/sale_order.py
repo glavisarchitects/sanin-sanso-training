@@ -10,10 +10,6 @@ from odoo.tools.float_utils import float_round
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    # add relation name
-    # invoice_ids = fields.Many2many("account.move", relation="sale_order_invoice_rel", string='Invoices', compute="_get_invoiced", readonly=True,
-    #                                copy=False, search="_search_invoice_ids")
-
     x_organization_id = fields.Many2one('ss_erp.organization', string="販売組織", copy=True,
                                         default=lambda self: self._get_default_x_organization_id())
     x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string="管轄部門", copy=True,
