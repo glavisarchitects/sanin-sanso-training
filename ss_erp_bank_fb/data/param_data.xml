@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="transfer_requester_code" model="ir.config_parameter">
+            <field name="key">transfer_requester_code</field>
+            <field name="value"></field>
+        </record>
+
+        <record id="A005_account_transfer_result_journal_id" model="ir.config_parameter">
+            <field name="key">A005_account_transfer_result_journal_id</field>
+            <field name="value"></field>
+        </record>
+    </data>
+</odoo>

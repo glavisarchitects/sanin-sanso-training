@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="ss_erp_ifdb_youki_kanri_view_search" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.youki.kanri.view.search</field>
+        <field name="model">ss_erp.ifdb.youki.kanri</field>
+        <field name="arch" type="xml">
+            <search string="Youki kanri">
+                <field name="upload_date"/>
+                <field name="name"
+                       filter_domain="[('name', 'ilike', self)]"/>
+                <group string="Group By">
+                    <filter name="flt_status" string="Status" context="{'group_by': 'status'}"/>
+                    <filter name="flt_branch" string="Branch" context="{'group_by': 'branch_id'}"/>
+                    <filter name="flt_user" string="User" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ss_erp_ss_erp_ifdb_youki_kanri_tree" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.youki.kanri.view.tree</field>
+        <field name="model">ss_erp.ifdb.youki.kanri</field>
+        <field name="arch" type="xml">
+            <tree string="容器管理システムファイル取込">
+                <field name="upload_date"/>
+                <field name="name"/>
+                <field name="branch_id"/>
+                <field name="user_id"/>
+                <field name="status"
+                       widget="badge"
+                       decoration-info="status=='success'"
+                       decoration-warning="status=='wait'"
+                       decoration-danger="status=='error'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_youki_kanri_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.youki.kanri.view.form</field>
+        <field name="model">ss_erp.ifdb.youki.kanri</field>
+        <field name="arch" type="xml">
+            <form string="容器管理システムファイル取込">
+                <header>
+                    <field name="has_data_import" invisible="1"/>
+                    <button type="object" attrs="{'invisible' : [('has_data_import', '=', True)]}"
+                            name="action_import"
+                            string="アップロード"
+                            class="oe_highlight"/>
+                    <button type="object"
+                            name="action_processing_execution"
+                            string="処理実行"
+                            class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="upload_date" required="1"/>
+                            <field name="status" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="user_id" required="1" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                            <field name="branch_id" required="1" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="data_records" string="データレコード">
+                            <field name="youki_kanri_detail_ids" readonly="1">
+                                <tree>
+                                    <field name="status"
+                                           widget="badge"
+                                           decoration-info="status=='success'"
+                                           decoration-warning="status=='wait'"
+                                           decoration-danger="status=='error'"/>
+                                    <field name="processing_date" readonly="True"/>
+                                    <field name="external_data_type" readonly="True"/>
+                                    <field name="customer_branch_code" readonly="True"/>
+                                    <field name="customer_branch_sub_code" readonly="True"/>
+                                    <field name="customer_business_partner_code" readonly="True"/>
+                                    <field name="customer_business_partner_branch_code" readonly="True"/>
+                                    <field name="customer_delivery_code" readonly="True" optional="show"/>
+                                    <field name="direct_branch_code" readonly="True" optional="show"/>
+                                    <field name="direct_branch_sub_code" readonly="True" optional="show"/>
+                                    <field name="direct_business_partner_code" readonly="True" optional="show"/>
+                                    <field name="direct_business_partner_sub_code" readonly="True" optional="show"/>
+                                    <field name="direct_delivery_code" readonly="True" optional="show"/>
+                                    <field name="customer_name" readonly="True" optional="show"/>
+                                    <field name="codeommercial_branch_code" readonly="True" optional="show"/>
+                                    <field name="codeommercial_branch_sub_code" readonly="True" optional="show"/>
+                                    <field name="codeommercial_product_code" readonly="True" optional="show"/>
+                                    <field name="product_name" readonly="True" optional="show"/>
+                                    <field name="standard_name" readonly="True" optional="show"/>
+                                    <field name="standard" readonly="True" optional="show"/>
+                                    <field name="number" readonly="True" optional="show"/>
+                                    <field name="slip_date" readonly="True" optional="show"/>
+                                    <field name="codelassification_code" readonly="True" optional="show"/>
+                                    <field name="line_break" readonly="True" optional="show"/>
+                                    <field name="quantity" readonly="True" optional="show"/>
+                                    <field name="unit_code" readonly="True" optional="show"/>
+                                    <field name="unit_price" readonly="True" optional="show"/>
+                                    <field name="amount_of_money" readonly="True" optional="show"/>
+                                    <field name="unit_price_2" readonly="True" optional="show"/>
+                                    <field name="amount_2" readonly="True" optional="show"/>
+                                    <field name="unified_quantity" readonly="True" optional="show"/>
+                                    <field name="order_number" readonly="True" optional="show"/>
+                                    <field name="comment" readonly="True" optional="show"/>
+                                    <field name="codeommercial_branch_code2" readonly="True" optional="show"/>
+                                    <field name="codeommercial_branch_sub_code2" readonly="True" optional="show"/>
+                                    <field name="codeommercial_product_code2" readonly="True" optional="show"/>
+                                    <field name="amount_calculation_classification" readonly="True" optional="show"/>
+                                    <field name="slip_processing_classification" readonly="True" optional="show"/>
+                                    <field name="error_message" readonly="True" optional="show"/>
+                                    <field name="sale_id" readonly="True" optional="show"/>
+                                    <field name="purchase_id" readonly="True" optional="show"/>
+                                    <field name="inventory_order_id" readonly="True" optional="show"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_youki_kanri_action"
+            model="ir.actions.act_window">
+        <field name="name">容器管理システムファイル取込</field>
+        <field name="res_model">ss_erp.ifdb.youki.kanri</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+</odoo>

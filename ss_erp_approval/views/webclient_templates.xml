@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend" name="Additional alert">
+        <xpath expr="//script[last()]" position="after">
+            <script type="text/javascript" src="/ss_erp_approval/static/src/js/hide_create_buttons.js"/>
+            <script type="text/javascript" src="/ss_erp_approval/static/src/js/hide_edit_buttons.js"/>
+        </xpath>
+    </template>
+</odoo>

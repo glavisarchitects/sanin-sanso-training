@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ss_erp_lpgas_order,access_ss_erp_lpgas_order,model_ss_erp_lpgas_order,,1,1,1,1
+access_ss_erp_lpgas_order_line,access_ss_erp_lpgas_order_line,model_ss_erp_lpgas_order_line,,1,1,1,1
+access_ss_erp_stock_scrap_category,access_ss_erp_stock_scrap_category,model_ss_erp_stock_scrap_category,,1,1,1,1
+access_ss_erp_instruction_order,access_ss_erp_instruction_order,model_ss_erp_instruction_order,,1,1,1,1
+access_ss_erp_instruction_order_line,access_ss_erp_instruction_order_line,model_ss_erp_instruction_order_line,,1,1,1,1
+access_ss_erp_inventory_order,access_ss_erp_inventory_order,model_ss_erp_inventory_order,,1,1,1,1
+access_ss_erp_inventory_order_line,access_ss_erp_inventory_order_line,model_ss_erp_inventory_order_line,,1,1,1,1

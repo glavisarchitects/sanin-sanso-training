@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ss_erp_responsible_department,access_ss_erp_responsible_department,model_ss_erp_responsible_department,,1,1,1,1

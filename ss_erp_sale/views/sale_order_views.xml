@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <form position="attributes">
+                <attribute name="options">{'edit': [('approval_status', 'in', ('in_process', 'approved'))]}</attribute>
+                <attribute name="js_class">custom_form</attribute>
+            </form>
+            <!--     Invisible btn when show from approval.request       -->
+            <xpath expr="//header" position="replace">
+                <header>
+                    <field name="authorized_transaction_ids" invisible="1"/>
+                    <field name="x_no_approval_required_flag" invisible="1"/>
+                    <field name="approval_status" invisible="1"/>
+
+                    <!--         SVF Region           -->
+                    <button name="send_data_svf_cloud" type="object"
+                            string="Send SVF Cloud" class="oe_highlight"/>
+                    <!--           End region         -->
+
+                    <button name="payment_action_capture" type="object"
+                            invisible="context.get('active_model')=='approval.request'"
+                            string="トランザクションをキャプチャする" class="oe_highlight"
+                            attrs="{'invisible': [('authorized_transaction_ids', '=', [])]}"/>
+                    <button name="payment_action_void" type="object"
+                            invisible="context.get('active_model')=='approval.request'"
+                            string="無効な取引"
+                            confirm="Are you sure you want to void the authorized transaction? This action can't be undone."
+                            attrs="{'invisible': [('authorized_transaction_ids', '=', [])]}"/>
+                    <button name="%(sale.action_view_sale_advance_payment_inv)d" string="請求書作成"
+                            invisible="context.get('active_model')=='approval.request'"
+                            type="action" class="btn-primary"
+                            attrs="{'invisible': [('invoice_status', '!=', 'to invoice')]}"/>
+                    <button name="%(sale.action_view_sale_advance_payment_inv)d" string="請求書作成"
+                            invisible="context.get('active_model')=='approval.request'"
+                            type="action" context="{'default_advance_payment_method': 'percentage'}"
+                            attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale')]}"/>
+                    <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
+                            attrs="{'invisible': [('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
+                            string="Eメールで送信" type="object" class="btn-primary"/>
+                    <button name="action_quotation_send" type="object" string="見積送状を送付"
+                            groups="sale.group_proforma_sales" class="btn-primary"
+                            attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('invoice_count','&gt;=',1),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
+                            context="{'proforma': True}"/>
+                    <button name="action_confirm" id="action_confirm"
+                            invisible="context.get('active_model')=='approval.request'"
+                            string="確認" class="btn-primary" type="object"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['sent']),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"/>
+                    <button name="action_confirm" invisible=""
+                            string="確認" type="object"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft']),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"/>
+                    <button name="action_quotation_send" invisible="context.get('active_model')=='approval.request'"
+                            type="object" string="見積送状を送付" groups="sale.group_proforma_sales"
+                            attrs="{'invisible': ['|', '|', ('state', '=', 'draft'), ('invoice_count','&gt;=',1),'&amp;', ('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
+                            context="{'proforma': True}"/>
+                    <button name="action_quotation_send" invisible="1"
+                            attrs="{'invisible': [('x_no_approval_required_flag', '=', False), ('approval_status', '!=', 'approved')]}"
+                            string="Eメールで送信" type="object" states="sent,sale"/>
+                    <button name="action_cancel" type="object"
+                            invisible="context.get('active_model')=='approval.request'"
+                            string="取消"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale']), ('id', '=', False)]}"/>
+                    <button name="action_draft" invisible="context.get('active_model')=='approval.request'"
+                            states="cancel" type="object" string="見積に設定"/>
+                    <field name="state" invisible="context.get('active_model')=='approval.request'"
+                           widget="statusbar" statusbar_visible="draft,sent,sale"/>
+                </header>
+            </xpath>
+
+            <xpath expr="//group[@name='order_details']//div[1]" position="replace">
+                <div class="o_td_label">
+                    <label for="date_order" string="見積日"/>
+                </div>
+            </xpath>
+
+            <xpath expr="//group[@name='order_details']//field[@name='date_order']" position="replace">
+                <field name="date_order" nolabel="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+            </xpath>
+
+            <xpath expr="//group[@name='order_details']//div[2]" position="replace">
+            </xpath>
+
+            <xpath expr="//group[@name='order_details']//field[@name='date_order'][2]" position="replace">
+            </xpath>
+
+
+            <xpath expr="//field[@name='validity_date']" position="before">
+                <field name="x_organization_id" string="販売組織" required="1"
+                       attrs="{'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}"
+                       options="{'no_open': True, 'no_quick_create': True}"/>
+                <field name="x_responsible_dept_id" required="1"
+                       attrs="{'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}"
+                       options="{'no_open': True, 'no_quick_create': True}"/>
+            </xpath>
+            <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+                <attribute name="required">0</attribute>
+            </xpath>
+
+            <field name="partner_id" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+                <attribute name="domain">[
+                    '|', ('company_id', '=', False),
+                    ('company_id', '=', company_id),
+                    ('x_is_customer', '=', True),
+                ]</attribute>
+            </field>
+            <button name="update_prices" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </button>
+
+            <xpath expr="//label[@for='pricelist_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <field name="partner_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|', ('state', 'not in', ['draft']), '&amp;',
+                                  ('approval_status', 'not in', ['out_of_process']), ('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="partner_invoice_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|', ('state', 'not in', ['draft']), '&amp;',
+                                  ('approval_status', 'not in', ['out_of_process']), ('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="partner_shipping_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|', ('state', 'not in', ['draft']), '&amp;',
+                                  ('approval_status', 'not in', ['out_of_process']), ('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="sale_order_template_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|', ('state', 'not in', ['draft']), '&amp;',
+                                  ('approval_status', 'not in', ['out_of_process']), ('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="validity_date" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|', ('state', 'not in', ['draft']), '&amp;',
+                                  ('approval_status', 'not in', ['out_of_process']), ('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="date_order" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|', ('state', 'not in', ['draft']), '&amp;',
+                                  ('approval_status', 'not in', ['out_of_process']), ('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+            <field name="payment_term_id" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': ['|', ('state', 'not in', ['draft']), '&amp;',
+                                  ('approval_status', 'not in', ['out_of_process']), ('state', 'in', ['draft'])]}
+                </attribute>
+            </field>
+
+            <xpath expr="//field[@name='order_line']//tree//field[@name='tax_id']" position="after">
+                <field name="x_is_required_x_pricelist" invisible="1"/>
+                <field name="x_approval_status" invisible="1"/>
+                <field name="x_pricelist"
+                       domain="['&amp;', '&amp;', '&amp;', '&amp;', '&amp;',
+                                     '|', ('organization_id', '=', parent.x_organization_id), ('organization_id', '=', False),
+                                     '|', ('uom_id', '=', product_uom), ('uom_id', '=', False),
+                                     '|', ('product_uom_qty_min', '&lt;=', product_uom_qty), ('product_uom_qty_min', '=', 0),
+                                     '|', ('product_uom_qty_max', '&gt;=', product_uom_qty), ('product_uom_qty_max', '=', 0),
+                                     '|', ('partner_id', '=', parent.partner_id), ('partner_id', '=', False),
+                                     ('company_id', '=', parent.company_id), ('product_id', '=', product_id),
+                                     ('start_date', '&lt;=', parent.date_order), ('end_date', '&gt;=', parent.date_order)]"
+                       attrs="{'readonly':['|',('state','in',('done','cancel','sale')),('x_approval_status', 'in', ['in_process', 'approved'])],'required':[ ('x_is_required_x_pricelist', '=', True)], }"/>
+                <!--                            <field name="x_pricelist" attrs="{'required':[ ('x_is_required_x_pricelist', '=', True)], }"/>-->
+                <field name="x_expected_delivery_date" context="{'edit': True}"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+
+            <!--                        20220310-->
+            <xpath expr="//field[@name='order_line']//tree//field[@name='discount']" position="after">
+                <field name="x_remarks" attrs="{
+                                'required':[('discount', '!=', 0)],
+                                'readonly':['|',('state','in',('done','cancel','sale')),('x_approval_status', 'in', ['in_process', 'approved'])]}"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']//tree//field[@name='discount']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('state', 'in', ('done', 'cancel', 'sale')), (
+                'x_approval_status', 'in', ['in_process', 'approved'])]}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']//tree//field[@name='product_uom_qty']" position="attributes">
+                <attribute name="attrs">{'required': True,
+                                         'readonly': ['|', ('state', 'in', ('done', 'cancel', 'sale')), (
+                                         'x_approval_status', 'in', ['in_process', 'approved'])]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree//field[@name='tax_id']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly':['|','|',('state','in',('done','cancel','sale')),('qty_invoiced','>',0),('x_approval_status', 'in', ['in_process', 'approved'])]}
+                </attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']//tree//field[@name='product_uom']" position="after">
+                <field name="x_product_alternative_unit_ids" invisible="1"/>
+                <field name="x_conversion_quantity" readonly="1"/>
+                <field name="x_alternative_unit_id" domain="[('id', 'in', x_product_alternative_unit_ids)]"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <!--  Change context order  -->
+    <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="context">{'default_x_no_approval_required_flag': True}</field>
+    </record>
+
+    <!--Change context of quotation-->
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="context">{'default_x_no_approval_required_flag': False}</field>
+    </record>
+
+</odoo>
+
+

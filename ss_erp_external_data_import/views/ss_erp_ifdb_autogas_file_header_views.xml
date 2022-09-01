@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="ss_erp_ifdb_autogas_file_header_view_search"
+            model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.autogas.file.header.view.search</field>
+        <field name="model">ss_erp.ifdb.autogas.file.header</field>
+        <field name="arch" type="xml">
+            <search string="オートガスPOS（松江）ファイル取込">
+                <field name="upload_date"/>
+                <field name="name"
+                       filter_domain="[('name', 'ilike', self)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_autogas_file_header_view_tree"
+            model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.autogas.file.header.view.tree</field>
+        <field name="model">ss_erp.ifdb.autogas.file.header</field>
+        <field name="arch" type="xml">
+            <tree string="オートガスPOS（松江）ファイル取込">
+                <field name="upload_date"/>
+                <field name="name"/>
+                <field name="branch_id"/>
+                <field name="user_id"/>
+                <field name="status"
+                       widget="badge"
+                       decoration-info="status=='success'"
+                       decoration-warning="status=='wait'"
+                       decoration-danger="status=='error'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_autogas_file_header_view_form"
+            model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.autogas.file.header.view.form</field>
+        <field name="model">ss_erp.ifdb.autogas.file.header</field>
+        <field name="arch" type="xml">
+            <form string="オートガスPOS（松江）ファイル取込">
+                <header>
+                    <field name="has_data_import" invisible="1"/>
+                    <button type="object" attrs="{'invisible' : [('has_data_import', '=', True)]}"
+                            name="action_import"
+                            string="アップロード"
+                            class="oe_highlight"/>
+                    <button type="object"
+                            name="action_processing_excution"
+                            string="処理実行"
+                            class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <label for="name" class="oe_edit_only"/>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="upload_date"/>
+                            <field name="status" readonly="True"/>
+                        </group>
+                        <group>
+                            <field name="user_id" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                            <field name="branch_id" required="True" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="data_records" string="データレコード">
+                            <field name="autogas_data_record_ids" readonly="1">
+                                <tree>
+                                    <field name="status"
+                                           widget="badge"
+                                           decoration-info="status=='success'"
+                                           decoration-warning="status=='wait'"
+                                           decoration-danger="status=='error'"/>
+                                    <field name="card_classification" readonly="True"/>
+                                    <field name="processing_division" readonly="True"/>
+                                    <field name="unused" readonly="True"/>
+                                    <field name="group_division" readonly="True"/>
+                                    <field name="actual_car_number" readonly="True"/>
+                                    <field name="card_number" readonly="True"/>
+                                    <field name="product_code" readonly="True"/>
+                                    <field name="data_no" readonly="True"/>
+                                    <field name="quantity_1" readonly="True"/>
+                                    <field name="unit_price" readonly="True"/>
+                                    <field name="amount_of_money" readonly="True"/>
+                                    <field name="staff_code" readonly="True"/>
+                                    <field name="processing_time" readonly="True"/>
+                                    <field name="calendar_date" readonly="True"/>
+                                    <field name="consumption_tax_output_classification" readonly="True"/>
+                                    <field name="consumption_tax" readonly="True"/>
+                                    <field name="credit_terminal_processing_serial_number" readonly="True"/>
+                                    <field name="credit_classification" readonly="True"/>
+                                    <field name="credit_data_no" readonly="True"/>
+                                    <field name="tax_classification_code" readonly="True"/>
+                                    <field name="filer1" readonly="True"/>
+                                    <field name="quantity_2" readonly="True"/>
+                                    <field name="filer2" readonly="True"/>
+                                    <field name="error_message" readonly="True"/>
+                                    <field name="sale_id" readonly="True"/>
+                                    <field name="processing_date" readonly="True" groups="base.group_no_one"/>
+                                    <field name="customer_code" readonly="True"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_autogas_file_header_action"
+            model="ir.actions.act_window">
+        <field name="name">オートガスPOS（松江）ファイル取込</field>
+        <field name="res_model">ss_erp.ifdb.autogas.file.header</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+</odoo>

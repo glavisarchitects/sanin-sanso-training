@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="ss_erp_approval_category_form_views_inherit">
+        <field name="name">approval.category.form</field>
+        <field name="model">approval.category</field>
+        <field name="inherit_id" ref="approvals.approval_category_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='has_location']" position="after">
+                <field name="has_x_organization" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_department" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_reject" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_contact_form_id" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_product_template_form_id" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_inventory_order_ids" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_inventory_instruction_ids" widget="radio" options="{'horizontal': true}"
+                       attrs="{'invisible': [('approval_type', '!=', 'inventory_request_manager')]}"/>
+                <field name="has_lp_gas_inventory_ids" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_sale_order_ids" widget="radio" options="{'horizontal': true}"/>
+                <field name="has_x_account_move_ids" widget="radio" options="{'horizontal': true}"/>
+            </xpath>
+
+            <xpath expr="//field[@name='is_manager_approver']" position="before">
+                <field name="x_is_multiple_approval"/>
+<!--                <field name="x_existing_request_user_ids" invisble="1"/>-->
+                <label for="multi_approvers_ids" colspan="4"
+                       attrs="{'invisible': [('x_is_multiple_approval', '=', False)]}"/>
+                <field name="multi_approvers_ids" widget="one2many" nolabel="1" colspan="4"
+                       attrs="{'invisible': [('x_is_multiple_approval', '=', False)]}">
+                    <tree editable="bottom">
+                        <field name="x_approval_seq" widget="handle"/>
+                        <field name="x_approver_group_ids" widget="many2many_tags"/>
+                        <field name="x_related_group_ids" widget="many2many_tags"/>
+                        <field name="x_is_own_branch_only"/>
+                        <field name="x_is_manager_approver" string="マネージャー承認"/>
+                        <field name="x_minimum_approvers" string="最小限承認数"/>
+                    </tree>
+                </field>
+            </xpath>
+            <field name="automated_sequence" position="attributes">
+                <attribute name="string">コード自動採番</attribute>
+            </field>
+            <field name="is_manager_approver" position="attributes">
+                <attribute name="attrs">{'invisible': [('x_is_multiple_approval', '=', True)]}</attribute>
+            </field>
+            <field name="user_ids" position="attributes">
+                <attribute name="attrs">{'invisible': [('x_is_multiple_approval', '=', True)]}</attribute>
+            </field>
+            <field name="approval_minimum" position="attributes">
+                <attribute name="attrs">{'invisible': [('x_is_multiple_approval', '=', True)]}</attribute>
+            </field>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="仕入事前承認" name="pre_purchase">
+                    <group>
+                        <group string="仕入事前承認項目">
+                            <field name="has_x_payment_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_purchase_material" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_cash_amount" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_cash_payment_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_prepay_amount" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_prepay_payment_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_payment_reason" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_purchase_order_ids" widget="radio" options="{'horizontal': true}"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="小口現金補給" name="replenishment">
+                    <group>
+                        <group string="小口現金補給項目">
+                            <field name="has_x_transfer_preferred_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_present_date" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_cash_balance" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_bank_balance" widget="radio" options="{'horizontal': true}"/>
+                            <field name="has_x_transfer_date" widget="radio" options="{'horizontal': true}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

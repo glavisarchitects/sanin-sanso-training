@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--    組織カテゴリ-->
+        <menuitem id="menu_organization_category_setting" name="組織カテゴリ" parent="base.menu_users"
+                  action="action_organizations_category"/>
+
+        <!--    組織-->
+        <menuitem id="menu_organization_settings" name="組織" parent="base.menu_users"
+                  action="action_organizations"/>
+
+    </data>
+</odoo>

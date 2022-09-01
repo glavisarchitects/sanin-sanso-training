@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_bank_commission_form_view" model="ir.ui.view">
+            <field name="name">ss_erp_bank_commission.form</field>
+            <field name="model">ss_erp.bank.commission</field>
+            <field name="arch" type="xml">
+                <form string="振込手数料">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="bank_id" required="1"/>
+                                <label for="paid_amount" string="振込金額" required="1"/>
+                                    <div class="paid_amount">
+                                         <field name="paid_amount" style="width: 33%" required="1"/>
+                                         <field name="range" style="width: 33%" required="1"/>
+                                    </div>
+                                <field name="memo" required="1"/>
+                            </group>
+                            <group>
+                                <field name="netbanking_service" required="1"/>
+                                <field name="our_bank" required="1"/>
+                                <field name="other_bank" required="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="ss_erp_bank_commission_tree_view" model="ir.ui.view">
+            <field name="name">ss_erp_bank_commission.tree</field>
+            <field name="model">ss_erp.bank.commission</field>
+            <field name="arch" type="xml">
+                <tree string="振込手数料">
+                    <field name="bank_id" string="振込利用銀行名"/>
+                    <field name="netbanking_service" string="利用サービス"/>
+                    <field name="paid_amount"/>
+                    <field name="range" nolabel="1"/>
+                    <field name="our_bank"/>
+                    <field name="other_bank"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ss_erp_bank_commission_search_view" model="ir.ui.view">
+            <field name="name">ss_erp_bank_commission.search</field>
+            <field name="model">ss_erp.bank.commission</field>
+            <field name="arch" type="xml">
+                <search string="振込手数料">
+                    <group expand="1" string="Group By">
+                        <filter string="銀行名" name="bank_id" domain="[]"
+                                context="{'group_by':'bank_id'}"/>
+                    </group>
+                    <field name="bank_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="ss_erp_bank_commission_act_window" model="ir.actions.act_window">
+            <field name="name">振込手数料</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ss_erp.bank.commission</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

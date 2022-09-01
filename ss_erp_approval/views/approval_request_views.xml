@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="approval_request_view_form_inherit">
+        <field name="name">approval.request.form</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_withdraw']" position="attributes">
+                <attribute name="invisible">1</attribute>
+                <attribute name="string">取り下げ</attribute>
+            </xpath>
+            <button name="action_approve" position="before">
+                <button name="action_temporary_approve" string="承認" type="object"
+                        attrs="{'invisible':[('show_btn_temporary_approve', '=', False)]}"/>
+                <button name="%(ss_erp_approval.ss_erp_approval_lost_action)d" string="却下"
+                        type="action" context="{'default_approval_request': active_id}"
+                        attrs="{'invisible':[('show_btn_refuse','=',False)]}"/>
+            </button>
+            <button name="action_cancel" position="attributes">
+                <attribute name="attrs">
+                    {'invisible':['|',('request_status','in',['new','cancel']),'&amp;',('user_status','==',False),('has_access_to_request','==',False)]}
+                </attribute>
+            </button>
+            <button name="action_refuse" position="attributes">
+                <attribute name="attrs">{'invisible':1}</attribute>
+            </button>
+            <button name="action_approve" position="attributes">
+                <attribute name="attrs">{'invisible':[('show_btn_approve', '=', False)]}</attribute>
+            </button>
+
+            <button name="action_draft" position="attributes">
+                <attribute name="attrs">{'invisible':[('show_btn_draft','=',False)]}</attribute>
+            </button>
+            <xpath expr="//field[@name='has_date']" position="before">
+                <field name="show_btn_temporary_approve" invisible="1"/>
+                <field name="show_btn_approve" invisible="1"/>
+            </xpath>
+
+            <field name="request_owner_id" position="attributes">
+                <attribute name="string">申請者</attribute>
+                <attribute name="required">1</attribute>
+                <attribute name="attrs">{'readonly':[('request_status','!=','new')]}</attribute>
+                <attribute name="options">{'no_quick_create':True,'no_create_edit':True,'no_open': True,}</attribute>
+            </field>
+            <field name="category_id" position="attributes">
+                <attribute name="string">申請タイプ</attribute>
+                <attribute name="options">{'no_quick_create':True,'no_create_edit':True,'no_open': True,}</attribute>
+            </field>
+            <field name="date_confirmed" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <page name="description" position="attributes">
+                <attribute name="string">説明</attribute>
+            </page>
+            <page name="approvers" position="attributes">
+                <attribute name="attrs">{'invisible': [('x_is_multiple_approval', '=', True)]}</attribute>
+            </page>
+
+            <xpath expr='//widget[@name="attach_document"]' position="attributes">
+                <attribute name="attrs">{'invisible': ['|',('attachment_number', '&lt;',
+                    1),('request_status','!=','new')]}
+                </attribute>
+            </xpath>
+            <xpath expr='//widget[@name="attach_document"][2]' position="attributes">
+                <attribute name="attrs">{'invisible': ['|',('attachment_number', '&gt;=',
+                    1),('request_status','!=','new')]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='request_owner_id']" position="after">
+                <field name="x_department_id" attrs="{
+                    'invisible': [('has_x_department', '=', 'no')],
+                    'required': [('has_x_department', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_organization_id" attrs="{
+                    'invisible': [('has_x_organization', '=', 'no')],
+                    'required': [('has_x_organization', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_approval_date" attrs="{'readonly':[('request_status','!=','new')]}"/>
+                <field name="x_is_multiple_approval" invisible="1"/>
+                <field name="has_x_organization" invisible="1"/>
+                <field name="has_x_department" invisible="1"/>
+                <field name="has_x_reject" invisible="1"/>
+                <field name="has_x_contact_form_id" invisible="1"/>
+                <field name="has_x_product_template_form_id" invisible="1"/>
+                <field name="has_x_inventory_order_ids" invisible="1"/>
+                <field name="has_x_inventory_instruction_ids" invisible="1"/>
+                <field name="has_lp_gas_inventory_ids" invisible="1"/>
+                <field name="has_lp_gas_inventory_ids" invisible="1"/>
+                <field name="has_x_sale_order_ids" invisible="1"/>
+                <field name="has_x_account_move_ids" invisible="1"/>
+                <field name="has_x_payment_date" invisible="1"/>
+                <field name="has_x_purchase_material" invisible="1"/>
+                <field name="has_x_cash_amount" invisible="1"/>
+                <field name="has_x_cash_payment_date" invisible="1"/>
+                <field name="has_x_prepay_amount" invisible="1"/>
+                <field name="has_x_prepay_payment_date" invisible="1"/>
+                <field name="has_x_payment_reason" invisible="1"/>
+                <field name="has_x_purchase_order_ids" invisible="1"/>
+                <field name="has_x_transfer_preferred_date" invisible="1"/>
+                <field name="has_x_present_date" invisible="1"/>
+                <field name="has_x_cash_balance" invisible="1"/>
+                <field name="has_x_bank_balance" invisible="1"/>
+                <field name="has_x_transfer_date" invisible="1"/>
+                <field name="show_btn_draft" invisible="1"/>
+                <field name="show_btn_refuse" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="x_purchase_material" attrs="{
+                    'invisible': [('has_x_purchase_material', '=', 'no')],
+                    'required': [('has_x_purchase_material', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_payment_date" attrs="{
+                    'invisible': [('has_x_payment_date', '=', 'no')],
+                    'required': [('has_x_payment_date', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_cash_amount" attrs="{
+                    'invisible': [('has_x_cash_amount', '=', 'no')],
+                    'required': [('has_x_cash_amount', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_cash_payment_date" attrs="{
+                    'invisible': [('has_x_cash_payment_date', '=', 'no')],
+                    'required': [('has_x_cash_payment_date', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_prepay_amount" attrs="{
+                    'invisible': [('has_x_prepay_amount', '=', 'no')],
+                    'required': [('has_x_prepay_amount', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_prepay_payment_date" attrs="{
+                    'invisible': [('has_x_prepay_payment_date', '=', 'no')],
+                    'required': [('has_x_prepay_payment_date', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_payment_reason" attrs="{
+                    'invisible': [('has_x_payment_reason', '=', 'no')],
+                    'required': [('has_x_payment_reason', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+
+            </xpath>
+            <field name="reason" attrs="{'readonly':[('request_status','!=','new')]}"/>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="attrs">{'readonly':[('request_status','!=','new')]}</attribute>
+            </xpath>
+
+            <xpath expr="//group[@name='request_details']" position="inside">
+                <field name="x_transfer_preferred_date" attrs="{
+                    'invisible': [('has_x_transfer_preferred_date', '=', 'no')],
+                    'required': [('has_x_transfer_preferred_date', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_present_date" attrs="{
+                    'invisible': [('has_x_present_date', '=', 'no')],
+                    'required': [('has_x_present_date', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_cash_balance" attrs="{
+                    'invisible': [('has_x_cash_balance', '=', 'no')],
+                    'required': [('has_x_cash_balance', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_bank_balance" attrs="{
+                    'invisible': [('has_x_bank_balance', '=', 'no')],
+                    'required': [('has_x_bank_balance', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+                <field name="x_transfer_date" attrs="{
+                    'invisible': [('has_x_transfer_date', '=', 'no')],
+                    'required': [('has_x_transfer_date', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }" placeholder="Items to be filled in by the accounting department of the head office"/>
+                <field name="x_contact_form_id" attrs="{
+                    'invisible': [('has_x_contact_form_id', '=', 'no')],
+                    'required': [('has_x_contact_form_id', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }" options="{'no_quick_create': True}"
+                       context="{'request_id': active_id}"
+                />
+                <field name="x_product_template_form_id" attrs="{
+                    'invisible': [('has_x_product_template_form_id', '=', 'no')],
+                    'required': [('has_x_product_template_form_id', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }" options="{'no_quick_create': True}"
+                       context="{'request_id': active_id}"
+                />
+
+                <field name="x_reject" attrs="{
+                    'invisible': ['|',('has_x_reject', '=', 'no'),'&amp;',('has_x_reject', '!=', 'no'),('request_status','!=','refused')],
+                    'required': [('has_x_reject', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }"/>
+            </xpath>
+            <xpath expr="//page[@name='description']" position="after">
+                <page string="見積依頼伝票" name="purchase_order"
+                      attrs="{'invisible': [('has_x_purchase_order_ids', '=', 'no')]}">
+                    <field name="x_purchase_order_ids" attrs="{
+                        'invisible': [('has_x_purchase_order_ids', '=', 'no')],
+                        'required': [('has_x_purchase_order_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }">
+                        <tree>
+                            <field name="name" string="伝票No."/>
+                            <field name="x_bis_categ_id" string="取引区分"/>
+                            <field name="x_responsible_dept_id" string="管轄部門"/>
+                            <field name="partner_id" string="仕入先"/>
+                            <field name="user_id" string="購買担当者"/>
+                            <field name="x_organization_id" string="担当組織"/>
+                            <field name="date_order" string="回答期日"/>
+                            <field name="amount_total" string="合計"/>
+                            <field name="state" string="ステータス"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="見積伝票" name="sale_order" attrs="{'invisible': [('has_x_sale_order_ids', '=', 'no')]}">
+                    <field name="x_sale_order_ids" context="{'active_model': 'approval.request'}" attrs="{
+                        'invisible': [('has_x_sale_order_ids', '=', 'no')],
+                        'required': [('has_x_sale_order_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }"
+                           domain="[('state', '=', 'draft'),('approval_status','=','out_of_process')]"
+                    >
+                        <tree>
+                            <field name="name" string="伝票No."/>
+                            <field name="date_order" string="作成日"/>
+                            <field name="partner_id" string="顧客"/>
+                            <field name="user_id" string="販売担当者"/>
+                            <field name="amount_total" string="合計"/>
+                            <field name="state" string="ステータス"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="仕入請求伝票" name="account_move"
+                      attrs="{'invisible': [('has_x_account_move_ids', '=', 'no')]}">
+                    <field name="x_account_move_ids" context="{'active_model': 'approval.request'}" attrs="{
+                        'invisible': [('has_x_account_move_ids', '=', 'no')],
+                        'required': [('has_x_account_move_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }">
+                        <tree>
+                            <field name="name"/>
+                            <field name="invoice_partner_display_name" string="取引先"/>
+                            <field name="invoice_date" string="請求日"/>
+                            <field name="invoice_date_due" string="期日"/>
+                            <field name="amount_total_signed" string="合計"/>
+                            <field name="state" string="ステータス"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="棚卸伝票" name="inventory_order"
+                      attrs="{'invisible': [('has_x_inventory_order_ids', '=', 'no')]}">
+                    <field name="x_inventory_order_ids" attrs="{
+                        'invisible': [('has_x_inventory_order_ids', '=', 'no')],
+                        'required': [('has_x_inventory_order_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }" domain="[('state', 'not in', ['cancel', 'done'])]"/>
+                </page>
+                <page string="指示伝票" name="inventory_instruction"
+                      attrs="{'invisible': [('has_x_inventory_instruction_ids', '=', 'no')]}">
+                    <field name="x_inventory_instruction_ids" attrs="{
+                        'invisible': [('has_x_inventory_instruction_ids', '=', 'no')],
+                        'required': [('has_x_inventory_instruction_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }"/>
+                </page>
+                <page string="LPガス棚卸伝票" name="lp_gas_inventory"
+                      attrs="{'invisible': [('has_lp_gas_inventory_ids', '=', 'no')]}">
+                    <field name="x_lpgas_inventory_ids" attrs="{
+                        'invisible': [('has_lp_gas_inventory_ids', '=', 'no')],
+                        'required': [('has_lp_gas_inventory_ids', '=', 'required')],
+                        'readonly':[('request_status','!=','new')]
+                    }" domain="[('state', '=', 'waiting')]">
+                        <tree create="0" edit="0">
+                            <field name="name"/>
+                            <field name="organization_id"/>
+                            <field name="inventory_type"/>
+                            <field name="accounting_date"/>
+                            <field name="aggregation_period"/>
+                            <field name="state"/>
+                        </tree>
+                        <form>
+                            <sheet>
+                                <div>
+                                    <h3>
+                                        <field name="name" readonly="1"/>
+                                    </h3>
+                                </div>
+                                <group>
+                                    <group>
+                                        <field name="organization_id" readonly="1"/>
+                                        <field name="inventory_type" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="accounting_date" readonly="1"/>
+                                        <field name="aggregation_period"
+                                               options="{'datepicker': {'showMonthsPeriod': true}}"
+                                               readonly="1"/>
+                                    </group>
+                                </group>
+                            </sheet>
+                        </form>
+
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="多段階承認"
+                      attrs="{'invisible': [('x_is_multiple_approval', '=', False)], 'readonly':[('request_status','!=','new')]}">
+                    <field name="multi_approvers_ids" force_save="1" options="{'no_create': True, 'no_open': True}">
+                        <tree create="0" edit="0" delete="0">
+                            <field name="x_approval_seq"/>
+                            <field name="x_approver_group_ids" widget="many2many_tags"/>
+                            <field name="x_related_group_ids" widget="many2many_tags"/>
+                            <field name="x_is_own_branch_only"/>
+                            <field name="x_is_manager_approver"/>
+                            <field name="x_user_status"/>
+                            <field name="x_minimum_approvers"/>
+                            <field name="write_date" string="最終更新日"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='approver_ids']//tree" position="attributes">
+                <attribute name="create">false</attribute>
+                <attribute name="edit">false</attribute>
+                <attribute name="delete">false</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

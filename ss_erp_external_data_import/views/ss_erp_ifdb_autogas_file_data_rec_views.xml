@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="ss_erp_ifdb_autogas_file_data_rec_view_search"
+            model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.autogas.file.data.rec.view.search</field>
+        <field name="model">ss_erp.ifdb.autogas.file.data.rec</field>
+        <field name="arch" type="xml">
+            <search string="オートガスPOS（松江）取込データ">
+                <field name="card_classification"
+                       filter_domain="[('card_classification', 'ilike', self)]" />
+                <field name="processing_division"
+                       filter_domain="[('processing_division', 'ilike', self)]" />
+                <field name="group_division"
+                       filter_domain="[('group_division', 'ilike', self)]" />
+                <group string="Group By">
+                    <filter name="flt_status"
+                            string="ステータス"
+                            context="{'group_by': 'status'}" />
+                    <filter name="flt_file_head"
+                            string="ファイル"
+                            context="{'group_by': 'autogas_file_header_id'}" />
+                    <filter name="flt_sale_order"
+                            string="販売オーダー"
+                            context="{'group_by': 'sale_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_autogas_file_data_rec_view_tree"
+            model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.autogas.file.data.rec.view.tree</field>
+        <field name="model">ss_erp.ifdb.autogas.file.data.rec</field>
+        <field name="arch" type="xml">
+            <tree string="オートガスPOS（松江）取込データ" js_class="import_detail_tree">
+                <field name="processing_date" readonly="True"/>
+                <field name="card_classification" readonly="True" optional="show" />
+                <field name="processing_division" readonly="True" optional="show" />
+                <field name="unused" readonly="True" optional="show" />
+                <field name="group_division" readonly="True" optional="show" />
+                <field name="actual_car_number" readonly="True" optional="show" />
+                <field name="card_number" readonly="True" optional="show" />
+                <field name="customer_code" readonly="True" optional="show"/>
+                <field name="product_code" readonly="True" optional="show" />
+                <field name="data_no" readonly="True" optional="show" />
+                <field name="quantity_1" readonly="True" optional="show" />
+                <field name="unit_price" readonly="True" optional="show" />
+                <field name="amount_of_money" readonly="True" optional="show" />
+                <field name="staff_code" readonly="True" optional="show" />
+                <field name="processing_time" readonly="True" optional="show" />
+                <field name="calendar_date" readonly="True" optional="show" />
+                <field name="consumption_tax_output_classification" readonly="True" optional="show" />
+                <field name="consumption_tax" readonly="True" optional="show" />
+                <field name="credit_terminal_processing_serial_number" readonly="True" optional="show" />
+                <field name="credit_classification" readonly="True" optional="show" />
+                <field name="credit_data_no" readonly="True" optional="show" />
+                <field name="tax_classification_code" readonly="True" optional="show" />
+                <field name="filer1" readonly="True" optional="show" />
+                <field name="quantity_2" readonly="True" optional="show" />
+                <field name="filer2" readonly="True" optional="show" />
+                <field name="error_message" readonly="True" optional="show" />
+                <field name="customer_code" readonly="True" optional="show"
+                    groups="base.group_no_one" />
+                <field name="status"
+                       widget="badge"
+                       decoration-info="status=='success'"
+                       decoration-warning="status=='wait'"
+                       decoration-danger="status=='error'" />
+                <field name="autogas_file_header_id"
+                       optional="show" />
+                <field name="sale_id"
+                       optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_autogas_file_data_rec_action"
+            model="ir.actions.act_window">
+        <field name="name">オートガスPOS（松江）取込データ</field>
+        <field name="res_model">ss_erp.ifdb.autogas.file.data.rec</field>
+        <field name="view_mode">tree</field>
+    </record>
+</odoo>
