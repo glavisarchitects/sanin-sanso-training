@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ss_erp_lpgas_order_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.lpgas.order.view.tree</field>
+        <field name="model">ss_erp.lpgas.order</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" readonly="1"/>
+                <field name="organization_id"/>
+                <field name="inventory_type"/>
+                <field name="accounting_date"/>
+                <field name="aggregation_period"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_lpgas_order_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.lpgas.order.view.form</field>
+        <field name="model">ss_erp.lpgas.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="集計" confirm="既存のデータは削除されてしまいます。実行をしますか。" name="calculate_aggregate_lpgas" type="object"  attrs="{'invisible': [('state', 'not in', ['draft', 'confirm', 'waiting'])]}" class="oe_highlight"/>
+                    <button string="検証" name="verify_lpgas_slip" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['approved'])]}"/>
+                    <button string="表示" name="show_lpgas_report" type="object" class="oe_highlight"/>
+                    <button string="取消" name="cancel_lpgas_slip" attrs="{'invisible': [('state', 'not in', ['draft', 'confirm', 'waiting'])]}" type="object"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirm,waiting,approval,approved,done"/>
+                </header>
+                <sheet>
+                    <div>
+                        <h3>
+                            <field name="name" readonly="1"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="user_organization_ids" invisible="1"/>
+                            <field name="organization_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}" options="{'no_open': True, 'no_quick_create': True}"/>
+                            <field name="inventory_type" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                        <group>
+                            <field name="accounting_date" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="aggregation_period" options="{'datepicker': {'showMonthsPeriod': true}}"
+                                   required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="ss_erp_lpgas_order_line_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.lpgas.order.line.view.tree</field>
+        <field name="model">ss_erp.lpgas.order.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" create="0" delete="0">
+                <field name="state" invisible="1"/>
+                <field name="organization_id" readonly="1"/>
+                <field name="location_id" readonly="1"/>
+                <field name="tank_capacity" readonly="1"/>
+                <field name="meter_reading_date" readonly="1"/>
+                <field name="month_amount_of_use" readonly="1"/>
+                <field name="meter_reading_inventory" readonly="1"/>
+                <field name="filling_after_meter_reading" readonly="1"/>
+                <field name="previous_last_inventory" readonly="1"/>
+                <field name="this_month_filling" readonly="1"/>
+                <field name="this_month_inventory" attrs="{'readonly': [('state', 'not in', ['draft', 'confirm'])]}"/>
+                <field name="theoretical_inventory" readonly="1"/>
+                <field name="difference_qty" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_lpgas_order_action" model="ir.actions.act_window">
+        <field name="name">LPガス棚卸伝票</field>
+        <field name="res_model">ss_erp.lpgas.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                LPガス棚卸伝票
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ss_erp_petty_cash_note_tree_view" model="ir.ui.view">
+            <field name="name">ss_erp.petty.cash.note.tree</field>
+            <field name="model">ss_erp.petty.cash.note</field>
+            <field name="arch" type="xml">
+                <tree string="支店小口現金メモ帳" editable="bottom">
+                    <field name="organization_id" required="1"/>
+                    <field name="name" required="1"/>
+                    <field name="ref"/>
+                    <field name="create_uid" readonly="1" string="作成者"/>
+                    <field name="create_date" readonly="1" string="作成日"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ss_erp_petty_cash_note_search_view" model="ir.ui.view">
+            <field name="name">ss_erp.petty.cash.note.search</field>
+            <field name="model">ss_erp.petty.cash.note</field>
+            <field name="arch" type="xml">
+                <search string="支店小口現金メモ帳">
+                    <field name="organization_id"/>
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="ss_erp_petty_cash_note_act_window" model="ir.actions.act_window">
+            <field name="name">支店小口現金メモ帳</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ss_erp.petty.cash.note</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="支店小口現金メモ帳" id="ss_erp_petty_cash_note_menu" parent="account.menu_finance_entries_accounting_miscellaneous" action="ss_erp_petty_cash_note_act_window"/>
+
+    </data>
+</odoo>

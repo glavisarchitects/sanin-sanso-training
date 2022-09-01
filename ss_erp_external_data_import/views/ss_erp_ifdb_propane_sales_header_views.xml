@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="ss_erp_ifdb_propane_sales_header_tree" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.propane.sales.header.tree</field>
+        <field name="model">ss_erp.ifdb.propane.sales.header</field>
+        <field name="arch" type="xml">
+            <tree string="プロパン売上（米子）ファイル取込">
+                <field name="upload_date"/>
+                <field name="name"/>
+                <field name="branch_id"/>
+                <field name="user_id"/>
+                <field name="status" decoration-danger="status == 'error'" decoration-success="status == 'success'"
+                       decoration-info="status == 'wait'" widget="badge" optional="show"/>
+            </tree>
+        </field>
+    </record>
+    <record id="_form" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.propane.sales.header.form</field>
+        <field name="model">ss_erp.ifdb.propane.sales.header</field>
+        <field name="arch" type="xml">
+            <form string="プロパン売上（米子）ファイル取込">
+                <header>
+                    <field name="has_data_import" invisible="1"/>
+                    <button name="action_import"
+                            string="アップロード"
+                            type="object"
+                            attrs="{'invisible' : [('has_data_import', '=', True)]}"
+                            class="oe_highlight"/>
+                    <button name="btn_processing_execution"
+                            type="object" string="処理実行"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="upload_date"/>
+                            <field name="status"/>
+                        </group>
+                        <group>
+                            <field name="user_id" required="1" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                            <field name="branch_id" required="1" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                        </group>
+                    </group>
+                    <field name="sales_detail_ids" string="レコード" readonly="1">
+                        <tree>
+                            <field name="status" decoration-danger="status == 'error'"
+                                   decoration-success="status == 'success'" decoration-info="status == 'wait'"
+                                   widget="badge" optional="show"/>
+                            <field name="processing_date" readonly="1"/>
+                            <field name="external_data_type" readonly="1"/>
+                            <field name="customer_branch_code" readonly="1"/>
+                            <field name="customer_branch_sub_code" readonly="1"/>
+                            <field name="customer_business_partner_code" readonly="1"/>
+                            <field name="customer_business_partner_branch_code" readonly="1"/>
+                            <field name="customer_delivery_code" readonly="1"/>
+                            <field name="direct_branch_code" readonly="1"/>
+                            <field name="direct_branch_sub_code" readonly="1"/>
+                            <field name="direct_business_partner_code" readonly="1"/>
+                            <field name="direct_business_partner_sub_code" readonly="1"/>
+                            <field name="direct_delivery_code" readonly="1"/>
+                            <field name="customer_name" readonly="1"/>
+                            <field name="codeommercial_branch_code" readonly="1"/>
+                            <field name="codeommercial_branch_sub_code" readonly="1"/>
+                            <field name="codeommercial_product_code" readonly="1"/>
+                            <field name="product_name" readonly="1"/>
+                            <field name="standard_name" readonly="1"/>
+                            <field name="standard" readonly="1"/>
+
+                            <!--HuuPhong 232121-->
+                            <field name="number" readonly="1"/>
+                            <field name="slip_date" readonly="1"/>
+                            <field name="codelassification_code" readonly="1"/>
+                            <field name="line_break" readonly="1"/>
+                            <field name="quantity" readonly="1"/>
+                            <field name="unit_code" readonly="1"/>
+                            <field name="unit_price" readonly="1"/>
+
+                            <field name="amount_of_money" readonly="1"/>
+                            <field name="unit_price_2" readonly="1"/>
+                            <field name="unified_quantity" readonly="1"/>
+                            <field name="order_number" readonly="1"/>
+                            <field name="comment" readonly="1"/>
+                            <field name="codeommercial_branch_code2" readonly="1"/>
+                            <field name="amount_calculation_classification" readonly="1"/>
+                            <field name="slip_processing_classification" readonly="1"/>
+                            <field name="sale_id" readonly="1"/>
+                            <field name="error_message" readonly="1"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="ss_erp_ifdb_propane_sales_header_search" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.propane.sales.header.search</field>
+        <field name="model">ss_erp.ifdb.propane.sales.header</field>
+        <field name="arch" type="xml">
+            <search string="">
+                <field name="user_id"/>
+                <field name="branch_id"/>
+            </search>
+        </field>
+    </record>
+    <record id="ss_erp_ifdb_propane_sales_header_action" model="ir.actions.act_window">
+        <field name="name">プロパン売上（米子）ファイル取込</field>
+        <field name="res_model">ss_erp.ifdb.propane.sales.header</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

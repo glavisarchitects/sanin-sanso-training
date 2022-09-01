@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="ss_erp_manufacturing_definition_param_settings" model="res.config.settings">
+            <!--Manufacturing-->
+            <field name="module_mrp_workorder" eval="True"/>
+            <field name="module_mrp_subcontracting" eval="True"/>
+            <field name="group_mrp_wo_tablet_timer" eval="True"/>
+            <field name="module_quality_control" eval="True"/>
+            <field name="group_locked_by_default" eval="False"/>
+            <field name="group_mrp_byproducts" eval="False"/>
+            <field name="module_mrp_mps" eval="False"/>
+            <field name="security_lead" eval="False"/>
+        </record>
+        <function model="res.config.settings" name="execute">
+            <value model="res.config.settings"
+                   search="[('id', '=', ref('ss_erp_manufacturing_definition_param_settings'))]"/>
+        </function>
+    </data>
+</odoo>

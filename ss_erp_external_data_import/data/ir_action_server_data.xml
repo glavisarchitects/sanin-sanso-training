@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="ss_erp_code_convert_duplicate_action" model="ir.actions.server">
+        <field name="name">複製</field>
+        <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_code_convert"/>
+        <field name="binding_model_id" ref="ss_erp_external_data_import.model_ss_erp_code_convert"/>
+        <field name="state">code</field>
+        <field name="code">
+    act = env.ref('ss_erp_external_data_import.ss_erp_code_convert_action').read()[0]
+        act.update({
+        'views': [(env.ref('ss_erp_external_data_import.ss_erp_code_convert_view_form').id, 'form')],
+        'context': {
+        'default_external_system': record.external_system and record.external_system.id,
+        'default_convert_code_type': record.convert_code_type and record.convert_code_type.id,
+        'default_external_code': record.external_code,
+        'default_priority_conversion': record.priority_conversion,
+        },
+    })
+    action = act
+        </field>
+        <field name="binding_view_types">form</field>
+    </record>
+
+    <record id="ss_erp_code_convert_type_duplicate_action" model="ir.actions.server">
+        <field name="name">複製</field>
+        <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_convert_code_type"/>
+        <field name="binding_model_id" ref="ss_erp_external_data_import.model_ss_erp_convert_code_type"/>
+        <field name="state">code</field>
+        <field name="code">
+    act = env.ref('ss_erp_external_data_import.ss_erp_convert_code_type_action').read()[0]
+    act.update({
+        'views': [(env.ref('ss_erp_external_data_import.ss_erp_convert_code_type_form').id, 'form')],
+        'context': {
+        'default_name': record.name,
+        'default_code': record.code,
+        'default_model': record.model and record.model.id,
+        },
+    })
+    action = act
+        </field>
+        <field name="binding_view_types">form</field>
+    </record>
+</odoo>

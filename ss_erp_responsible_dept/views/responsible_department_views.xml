@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="responsible_department_view_tree" model="ir.ui.view">
+        <field name="name">ss.erp.responsible.department.view.tree</field>
+        <field name="model">ss_erp.responsible.department</field>
+        <field name="arch" type="xml">
+            <tree string="管轄部門">
+                <field name="sequence" widget="handle"/>
+                <field name="code" string="管轄部門コード"/>
+                <field name="name" string="管轄部門名称"/>
+                <field name="company_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="responsible_department_view_form" model="ir.ui.view">
+        <field name="name">responsible_department_view_form</field>
+        <field name="model">ss_erp.responsible.department</field>
+        <field name="arch" type="xml">
+            <form string="管轄部門">
+                <sheet>
+                    <widget name="web_ribbon" title="アーカイブ済み" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <group>
+                        <group>
+                            <field name="code" string="管轄部門コード" required="1"/>
+                            <field name="company_id" required="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="name" string='管轄部門名称' required="1"/>
+                            <field name="start_date" required="1"/>
+                            <field name="end_date" required="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="responsible_department_view_search" model="ir.ui.view">
+        <field name="name">ss.erp.responsible.department.view.search</field>
+        <field name="model">ss_erp.responsible.department</field>
+        <field name="arch" type="xml">
+            <search string="管轄部門">
+                <field name="name"/>
+                <filter name="archived" string="アーカイブ済み" domain="[('active', '=', False)]" />
+            </search>
+        </field>
+    </record>
+
+    <record id="responsible_department_view_action" model="ir.actions.act_window">
+        <field name="name">管轄部門</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ss_erp.responsible.department</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+</odoo>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem name="振込手数料" id="ss_erp_bank_commission_menu" parent="account.account_banks_menu"
+                  action="ss_erp_bank_commission_act_window"/>
+        <menuitem id="ss_erp_subaccount_menu" name="補助科目表" action="subaccount_model_action"
+                  sequence="1" parent="account.account_account_menu"/>
+        <menuitem id="account_invoice_list_history_menu" name="請求書一覧表" action="account_invoice_list_history_action"
+                  parent="account_reports.account_reports_partners_reports_menu" sequence="13"/>
+    </data>
+</odoo>

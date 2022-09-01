@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ss_erp_partner_rebate,accessss_erp_partner_rebate,model_ss_erp_partner_rebate,,1,1,1,1
+access_partner_rebate_attachment_wizard,access_partner_rebate_attachment_wizard,model_partner_rebate_attachment_wizard,,1,1,1,1
+access_ss_erp_bis_category,access_ss_erp_bis_category,model_ss_erp_bis_category,,1,1,1,1

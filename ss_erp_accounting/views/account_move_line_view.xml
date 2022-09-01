@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_account_move_line_form_inherit" model="ir.ui.view">
+            <field name="name">ss_erp_account_move_line.form</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='account_id']" position="after">
+                    <field name="x_sub_account_id"/>
+                </xpath>
+                <xpath expr="//field[@name='move_id']" position="after">
+                    <field name="x_organization_id"/>
+                    <field name="x_responsible_dept_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="ss_erp_account_move_line_tree_inherit" model="ir.ui.view">
+            <field name="name">ss_erp_account_move_line.tree</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='account_id']" position="after">
+                    <field name="x_sub_account_id"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

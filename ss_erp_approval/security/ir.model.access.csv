@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ss_erp_approval_lost,access_ss_erp_approval_lost,model_ss_erp_approval_lost,,1,1,1,1
+access_ss_erp_multi_approvers,access_ss_erp_multi_approvers,model_ss_erp_multi_approvers,,1,1,1,1

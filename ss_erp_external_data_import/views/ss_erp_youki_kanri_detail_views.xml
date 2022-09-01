@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ss_erp_ifdb_youki_kanri_detail_view_search" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.youki.kanri.detail.view.search</field>
+        <field name="model">ss_erp.ifdb.youki.kanri.detail</field>
+        <field name="arch" type="xml">
+            <search string="容器管理ファイル取込データ">
+                <field name="order_number" />
+                <filter name="flr_error_status" string="ラーあ" domain="[('status', '=', 'error')]" />
+                <filter name="flr_wait_status" string="処理待ち" domain="[('status', '=', 'wait')]" />
+                <filter name="flr_success_status" string="成功" domain="[('status', '=', 'success')]" />
+                <group string="Group By" expand="0">
+                    <filter name="grp_sale_id" string="販売オーダ参照" context="{'group_by': 'sale_id'}" />
+                    <filter name="grp_purchase_id" string="購買オーダ参照" context="{'group_by': 'purchase_id'}" />
+                    <filter name="grp_inventory_order_id" string="在庫移動伝票参照" context="{'group_by': 'inventory_order_id'}" />
+                    <filter name="grp_ifdb_youki_kanri_id" string="容器管理IFDB" context="{'group_by': 'ifdb_youki_kanri_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_youki_kanri_detail_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.youki.kanri.detail.view.tree</field>
+        <field name="model">ss_erp.ifdb.youki.kanri.detail</field>
+        <field name="arch" type="xml">
+            <tree string="容器管理ファイル取込データ" js_class="import_detail_tree">
+                <field name="status"
+                        widget="badge"
+                        decoration-info="status=='success'"
+                        decoration-warning="status=='wait'"
+                        decoration-danger="status=='error'"/>
+                <field name="processing_date" readonly="True"/>
+                <field name="external_data_type" readonly="True"/>
+                <field name="customer_branch_code" readonly="True"/>
+                <field name="customer_branch_sub_code" readonly="True"/>
+                <field name="customer_business_partner_code" readonly="True"/>
+                <field name="customer_business_partner_branch_code" readonly="True"/>
+                <field name="customer_delivery_code" readonly="True" />
+                <field name="direct_branch_code" readonly="True" optional="show" />
+                <field name="direct_branch_sub_code" readonly="True" optional="show" />
+                <field name="direct_business_partner_code" readonly="True" optional="show" />
+                <field name="direct_business_partner_sub_code" readonly="True" optional="show" />
+                <field name="direct_delivery_code" readonly="True" optional="show" />
+                <field name="customer_name" readonly="True" optional="show" />
+                <field name="codeommercial_branch_code" readonly="True" optional="show" />
+                <field name="codeommercial_branch_sub_code" readonly="True" optional="show" />
+                <field name="codeommercial_product_code" readonly="True" optional="show" />
+                <field name="product_name" readonly="True" optional="show" />
+                <field name="standard_name" readonly="True" optional="show" />
+                <field name="standard" readonly="True" optional="show" />
+                <field name="number" readonly="True" optional="show" />
+                <field name="slip_date" readonly="True" optional="show" />
+                <field name="codelassification_code" readonly="True" optional="show" />
+                <field name="line_break" readonly="True" optional="show" />
+                <field name="quantity" readonly="True" optional="show" />
+                <field name="unit_code" readonly="True" optional="show" />
+                <field name="unit_price" readonly="True" optional="show" />
+                <field name="amount_of_money" readonly="True" optional="show" />
+                <field name="unit_price_2" readonly="True" optional="show" />
+                <field name="amount_2" readonly="True" optional="show" />
+                <field name="unified_quantity" readonly="True" optional="show" />
+                <field name="order_number" readonly="True" optional="show" />
+                <field name="comment" readonly="True" optional="show" />
+                <field name="codeommercial_branch_code2" readonly="True" optional="show" />
+                <field name="codeommercial_branch_sub_code2" readonly="True" optional="show" />
+                <field name="codeommercial_product_code2" readonly="True" optional="show" />
+                <field name="amount_calculation_classification" readonly="True" optional="show" />
+                <field name="slip_processing_classification" readonly="True" optional="show" />
+                <field name="error_message" readonly="True" optional="show" />
+                <field name="sale_id" readonly="True" optional="show" />
+                <field name="purchase_id" readonly="True" optional="show" />
+                <field name="inventory_order_id" readonly="True" optional="show" />
+                <field name="ifdb_youki_kanri_id" invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_ifdb_youki_kanri_detail_action" model="ir.actions.act_window">
+        <field name="name">容器管理ファイル取込データ</field>
+        <field name="res_model">ss_erp.ifdb.youki.kanri.detail</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>
