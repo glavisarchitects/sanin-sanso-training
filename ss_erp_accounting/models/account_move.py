@@ -12,8 +12,8 @@ class AccountMove(models.Model):
                                         index=True, string='組織情報')
     # x_payment_type = fields.Selection(related="partner_id.x_payment_type", store=True, string='入金手段')
 
-    x_payment_method = fields.Selection(related="partner_id.x_payment_type", store=True,
-                                        index=True, string='支払手段')
+    # x_payment_method = fields.Selection(related="partner_id.x_payment_type", store=True,
+    #                                     index=True, string='支払手段')
     x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', store=True,
                                             index=True, string='管轄部門')
     x_responsible_user_id = fields.Many2one('res.users', string='業務担当')
@@ -58,7 +58,7 @@ class AccountMove(models.Model):
                 # Todo reconfirm
                 vals['x_responsible_user_id'] = sale_reference.user_id.id
                 vals['x_mkt_user_id'] = sale_reference.user_id.id
-            vals['x_payment_method'] = self.x_payment_method
+            # vals['x_payment_method'] = self.x_payment_method
         res = super(AccountMove, self).create(vals)
         return res
 
