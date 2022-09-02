@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ss_erp_product_price_list_class_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.product.class.view.tree</field>
+        <field name="model">product.pricelist.class</field>
+        <field name="arch" type="xml">
+            <tree string="Product Price List Class">
+                <field name="name"/>
+                <field name="organization_id"/>
+                <field name="partner_id"/>
+                <field name="uom_id"/>
+                <field name="product_uom_qty_min"/>
+                <field name="product_uom_qty_max"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_product_pricelist_class_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.product.price.class.view.form</field>
+        <field name="model">product.pricelist.class</field>
+        <field name="arch" type="xml">
+            <form string="Product Price Form">
+                <sheet>
+                    <h1><field name="name" placeholder="名称" required="1"/></h1>
+                    <label for="description"/>
+                    <field name="description"/>
+                    <notebook>
+                        <page string="基本">
+                            <group>
+                                <field name="organization_id" required="1" widget="radio"
+                                       options="{'horizontal': true}"/>
+                                <field name="partner_id" required="1" widget="radio" options="{'horizontal': true}"/>
+                                <field name="uom_id" required="1" widget="radio" options="{'horizontal': true}"/>
+                                <field name="product_uom_qty_min" widget="radio" options="{'horizontal': true}"/>
+                                <field name="product_uom_qty_max" widget="radio" options="{'horizontal': true}"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="ss_erp_product_price_class_action" model="ir.actions.act_window">
+        <field name="name">プロダクト価格リスト区分</field>
+        <field name="res_model">product.pricelist.class</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="ss_erp_product_price_list_class_menu"
+            action="ss_erp_product_price_class_action"
+            parent="sale.product_menu_catalog"
+            sequence="8"/>
+
+</odoo>

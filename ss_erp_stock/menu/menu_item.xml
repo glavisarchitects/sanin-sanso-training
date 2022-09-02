@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Menu Stock -->
+        <menuitem id="menu_ss_erp_instruction_order_action" name="棚卸計画" parent="stock.menu_stock_warehouse_mgmt"
+                  action="ss_erp_instruction_order_action" sequence="99"/>
+
+        <menuitem id="menu_ss_erp_lpgas_order" name="LPガス棚卸伝票" parent="stock.menu_stock_warehouse_mgmt"
+                  action="ss_erp_lpgas_order_action" sequence="200"/>
+        <menuitem
+                id="ss_erp_inventory_order_menu"
+                action="ss_erp_inventory_order_action"
+                parent="stock.menu_stock_warehouse_mgmt"
+                sequence="200"/>
+
+    </data>
+</odoo>

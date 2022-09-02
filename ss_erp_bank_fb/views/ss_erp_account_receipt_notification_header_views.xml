@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ss_erp_account_receipt_notification_header_form_view" model="ir.ui.view">
+            <field name="name">ss_erp.account.receipt.notification.header.form</field>
+            <field name="model">ss_erp.account.receipt.notification.header</field>
+            <field name="arch" type="xml">
+                <form string="全銀口座振替結果FBファイル取込/新規">
+                    <header>
+                        <button name="action_import"
+                                string="アップロード"
+                                type="object"
+                                class="oe_highlight"/>
+                        <button name="processing_execution" string="処理実行" type="object"
+                                class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label class="oe_edit_only" for="name"/>
+                            <h1><field name="name" required="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="upload_date" readonly="1"/>
+                                <field name="status" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="user_id" required="1" />
+                                <field name="branch_id" required="1" />
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="data_records" string="データレコード">
+                                <field name="account_receipt_notification_header_ids" options="{'no_open': True}">
+                                    <tree create="0" editable="bottom">
+                                        <field name="status" readonly="1"
+                                               widget="badge"
+                                               decoration-info="status=='success'"
+                                               decoration-warning="status=='wait'"
+                                               decoration-danger="status=='error'"/>
+                                        <field name="processing_date" readonly="1"/>
+                                        <field name="id" string="外部ID"/>
+                                        <field name="account_date" readonly="1"/>
+                                        <field name="starting_date" readonly="1"/>
+                                        <field name="transfer_client_name" readonly="1"/>
+                                        <field name="transfer_amount" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="ss_erp_account_receipt_notification_header_tree_view" model="ir.ui.view">
+            <field name="name">ss_erp.account.receipt.notification.header.tree</field>
+            <field name="model">ss_erp.account.receipt.notification.header</field>
+            <field name="arch" type="xml">
+                <tree string="全銀口座振替結果FBファイル取込/新規">
+                    <field name="upload_date"/>
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="branch_id"/>
+                    <field name="status"
+                           widget="badge"
+                           decoration-info="status=='success'"
+                           decoration-warning="status=='wait'"
+                           decoration-danger="status=='error'"
+                    />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_account_receipt_notification_result_header" model="ir.actions.act_window">
+            <field name="name">全銀振込入金通知データ取込</field>
+            <field name="res_model">ss_erp.account.receipt.notification.header</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="ss_erp_account_receipt_notification_header_tree_view"/>
+            <field name="domain"></field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    全銀振込入金通知データ取込
+                </p><p>
+                全銀振込入金通知データ取込
+            </p>
+            </field>
+        </record>
+    </data>
+</odoo>

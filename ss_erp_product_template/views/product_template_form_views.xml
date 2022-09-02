@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="product_template_form_tree">
+        <field name="name">product.template.form.tree</field>
+        <field name="model">ss_erp.product.template.form</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="list_price"/>
+                <field name="type"/>
+                <field name="product_template_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="product_template_form_inherit_form">
+        <field name="name">product.template.form.inherit.form</field>
+        <field name="model">ss_erp.product.template.form</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <button name="%(product.product_attribute_value_action)d" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </button>
+
+            <div name="button_box" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </div>
+            <field name="x_product_unit_measure_ids" position="replace">
+                <field name="x_product_unit_measure_ids" nolabel="1" widget="one2many">
+                    <tree editable="bottom">
+                        <field name="alternative_uom_id" required="1"/>
+                        <field name="converted_value"/>
+                        <field name="remarks"/>
+                    </tree>
+                </field>
+            </field>
+        </field>
+    </record>
+
+
+    <record id="product_template_form_action" model="ir.actions.act_window">
+        <field name="name">プロダクト申請フォーム</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ss_erp.product.template.form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

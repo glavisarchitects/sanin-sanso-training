@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SEARCH VIEW -->
+    <record id="ss_erp_ifdb_powernet_sales_header_view_search" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.powernet.sales.header.view.search</field>
+        <field name="model">ss_erp.ifdb.powernet.sales.header</field>
+        <field name="arch" type="xml">
+            <search string="">
+                <field name="upload_date"/>
+                <field name="name"
+                       filter_domain="[('name', 'ilike', self)]"/>
+            </search>
+        </field>
+    </record>
+    <!-- TREE VIEW -->
+    <record id="ss_erp_ifdb_powernet_sales_header_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.powernet.sales.head.view.tree</field>
+        <field name="model">ss_erp.ifdb.powernet.sales.header</field>
+        <field name="arch" type="xml">
+            <tree string="PowerNetファイル取込">
+                <field name="upload_date"/>
+                <field name="name"/>
+                <field name="branch_id"/>
+                <field name="user_id"/>
+                <field name="status"
+                       widget="badge"
+                       decoration-info="status=='success'"
+                       decoration-warning="status=='wait'"
+                       decoration-danger="status=='error'"
+                />
+            </tree>
+        </field>
+    </record>
+    <!-- FORM VIEW   -->
+    <record id="ss_erp_ifdb_powernet_sales_header_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.ifdb.powernet.sales.head.view.form</field>
+        <field name="model">ss_erp.ifdb.powernet.sales.header</field>
+        <field name="arch" type="xml">
+            <form string="PowerNet取込データ">
+                <header>
+                    <field name="has_data_import" invisible="1"/>
+                    <button name="action_import" attrs="{'invisible' : [('has_data_import', '=', True)]}"
+                            string="アップロード"
+                            type="object"
+                            class="oe_highlight"/>
+                    <button name="processing_execution" string="処理実行" type="object"
+                            class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="upload_date" readonly="1"/>
+                            <field name="status" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="user_id" required="1" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                            <field name="branch_id" required="1" options="{'no_create_edit': True,'no_open': True, 'no_quick_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="data_records" string="データレコード">
+                            <field name="powernet_sale_record_ids" readonly="1">
+                                <tree>
+                                    <field name="status" readonly="1"
+                                           widget="badge"
+                                           decoration-info="status=='success'"
+                                           decoration-warning="status=='wait'"
+                                           decoration-danger="status=='error'"/>
+                                    <field name="processing_date" readonly="1"/>
+                                    <field name="customer_code" readonly="1"/>
+                                    <field name="billing_summary_code" readonly="1"/>
+                                    <field name="sales_date" readonly="1"/>
+                                    <field name="sale_id" readonly="1"/>
+                                    <field name="slip_type" readonly="1"/>
+                                    <field name="slip_no" readonly="1"/>
+                                    <field name="data_types" readonly="1"/>
+                                    <field name="cash_classification" readonly="1"/>
+                                    <field name="product_code" readonly="1"/>
+                                    <field name="product_code_2" readonly="1"/>
+                                    <field name="product_name" readonly="1"/>
+                                    <field name="product_remarks" readonly="1"/>
+                                    <field name="sales_category" readonly="1"/>
+                                    <field name="quantity" readonly="1"/>
+                                    <field name="unit_code" readonly="1"/>
+                                    <field name="unit_price" readonly="1"/>
+                                    <field name="amount_of_money" readonly="1"/>
+                                    <field name="consumption_tax" readonly="1"/>
+                                    <field name="sales_amount" readonly="1"/>
+                                    <field name="quantity_after_conversion" readonly="1"/>
+                                    <field name="search_remarks_1" readonly="1"/>
+                                    <field name="search_remarks_2" readonly="1"/>
+                                    <field name="search_remarks_3" readonly="1"/>
+                                    <field name="search_remarks_4" readonly="1"/>
+                                    <field name="search_remarks_5" readonly="1"/>
+                                    <field name="search_remarks_6" readonly="1"/>
+                                    <field name="search_remarks_7" readonly="1"/>
+                                    <field name="search_remarks_8" readonly="1"/>
+                                    <field name="search_remarks_9" readonly="1"/>
+                                    <field name="search_remarks_10" readonly="1"/>
+                                    <field name="sales_classification_code_1" readonly="1"/>
+                                    <field name="sales_classification_code_2" readonly="1"/>
+                                    <field name="sales_classification_code_3" readonly="1"/>
+                                    <field name="consumer_sales_classification_code_1" readonly="1"/>
+                                    <field name="consumer_sales_classification_code_2" readonly="1"/>
+                                    <field name="consumer_sales_classification_code_3" readonly="1"/>
+                                    <field name="consumer_sales_classification_code_4" readonly="1"/>
+                                    <field name="consumer_sales_classification_code_5" readonly="1"/>
+                                    <field name="product_classification_code_1" readonly="1"/>
+                                    <field name="product_classification_code_2" readonly="1"/>
+                                    <field name="product_classification_code_3" readonly="1"/>
+                                    <field name="error_message" optional="show"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <!-- ACTION -->
+    <record id="ss_erp_ifdb_powernet_sales_header_action" model="ir.actions.act_window">
+        <field name="name">PowerNetファイル取込</field>
+        <field name="res_model">ss_erp.ifdb.powernet.sales.header</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

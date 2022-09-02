@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- TREE VIEW -->
+        <record id="ss_erp_code_convert_view_tree" model="ir.ui.view">
+            <field name="name">ss_erp.code.convert.view.tree</field>
+            <field name="model">ss_erp.code.convert</field>
+            <field name="arch" type="xml">
+                <tree string="" duplicate="false">
+                    <field name="external_system"/>
+                    <field name="convert_code_type" string="コード種別"/>
+                    <field name="external_code" string="外部コード"/>
+                    <field name="internal_code" string="Odooコード"/>
+                    <field name="priority_conversion"/>
+                </tree>
+            </field>
+        </record>
+        <!-- FORM VIEW -->
+        <record id="ss_erp_code_convert_view_form" model="ir.ui.view">
+            <field name="name">ss_erp.code.convert.view.form</field>
+            <field name="model">ss_erp.code.convert</field>
+            <field name="arch" type="xml">
+                <form string="" duplicate="false">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="external_system"/>
+                                <field name="convert_code_type"/>
+                            </group>
+                            <group>
+                                <field name="priority_conversion"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="external_code"
+                                       attrs="{'invisible': [('convert_code_type','=', False)], 'required': [('convert_code_type','!=', False)]}"/>
+                            </group>
+                            <group>
+                                <field name="internal_code"
+                                       options="{'hide_model': True, 'no_create': True, 'no_edit': True, 'no_open': True}"
+                                       attrs="{'invisible': [('convert_code_type','=', False)], 'required': [('convert_code_type','!=', False)]}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- SEARCH VIEW -->
+        <record id="ss_erp_code_convert_view_search" model="ir.ui.view">
+            <field name="name">ss_erp.code.convert.view.search</field>
+            <field name="model">ss_erp.code.convert</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="external_system"/>
+                    <field name="convert_code_type"/>
+                    <field name="external_code"/>
+                    <field name="internal_code"/>
+                    <field name="priority_conversion"/>
+                </search>
+            </field>
+        </record>
+        <!-- ACTION -->
+        <record id="ss_erp_code_convert_action" model="ir.actions.act_window">
+            <field name="name">コード変換</field>
+            <field name="res_model">ss_erp.code.convert</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ss_erp_product_minor_classification_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.product.minor.classification.view.tree</field>
+        <field name="model">ss_erp.product.minor.classification</field>
+        <field name="arch" type="xml">
+            <tree editable="top" string="プロダクト大分類">
+                <field name="medium_classification_code" required="1"/>
+                <field name="minor_classification_code" required="1"/>
+                <field name="name" required="1"/>
+                <field name="remarks"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="ss_erp_product_minor_classification_action" model="ir.actions.act_window">
+        <field name="name">プロダクト小分類</field>
+        <field name="res_model">ss_erp.product.minor.classification</field>
+        <field name="view_mode">tree</field>
+        <field name="target">current</field>
+    </record>
+
+
+
+</odoo>
