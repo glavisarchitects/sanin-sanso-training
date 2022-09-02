@@ -106,9 +106,9 @@ class ApprovalRequest(models.Model):
         for rec in self:
             rec.x_current_sequence = False
             if rec.request_status == 'pending':
-                rec.x_current_sequence = min(
-                    set(rec.multi_approvers_ids.filtered(lambda r: r.x_user_status == 'pending').mapped(
-                        'x_approval_seq')))
+                set_approvers = set(rec.multi_approvers_ids.filtered(lambda r: r.x_user_status == 'pending').mapped(
+                        'x_approval_seq'))
+                rec.x_current_sequence = min(set_approvers) if set_approvers else 0
             rec.x_user_sequence = rec.multi_approvers_ids.filtered(lambda r: self.env.user in r.x_approval_user_ids).x_approval_seq
 
     @api.constrains('x_approval_date')
