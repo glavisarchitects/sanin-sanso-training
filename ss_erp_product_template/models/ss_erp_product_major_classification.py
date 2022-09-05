@@ -17,4 +17,5 @@ class ProductMajorClassification(models.Model):
 
     @api.depends('major_classification_code', 'name')
     def _compute_display_name(self):
-        self.display_name = "[%s]%s" % (self.major_classification_code, self.name)
+        for rec in self:
+            rec.display_name = "[%s]%s" % (rec.major_classification_code, rec.name)
