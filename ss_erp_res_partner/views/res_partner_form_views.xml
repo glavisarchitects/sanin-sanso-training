@@ -16,6 +16,86 @@
             <xpath expr="//field[@name='industry_id']" position="attributes">
                 <attribute name="string">産業</attribute>
             </xpath>
+
+            <xpath expr="//field[@name='vat']" position="attributes">
+                <attribute name="string">税ID</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='function']" position="attributes">
+                <attribute name="string">職位</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='email']" position="attributes">
+                <attribute name="string">Eメール</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='website']" position="attributes">
+                <attribute name="string">ウェブサイトリンク	</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='lang']" position="attributes">
+                <attribute name="string">言語</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="string">タイトル</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="string">タグ</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">販売担当者</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_delivery_carrier_id']" position="attributes">
+                <attribute name="string">配送方法</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='team_id']" position="attributes">
+                <attribute name="string">販売チーム</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_account_position_id']" position="attributes">
+                <attribute name="string">会計ポジション</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_stock_customer']" position="attributes">
+                <attribute name="string">顧客ロケーション</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_stock_supplier']" position="attributes">
+                <attribute name="string">仕入先ロケーション</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_stock_subcontractor']" position="attributes">
+                <attribute name="string">外注先ロケーション</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_account_payable_id']" position="attributes">
+                <attribute name="string">買掛金勘定</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_account_receivable_id']" position="attributes">
+                <attribute name="string">売掛金勘定</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">販売担当者</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">販売担当者</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">販売担当者</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="string">販売担当者</attribute>
+            </xpath>
         </field>
     </record>
 

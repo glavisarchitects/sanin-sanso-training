@@ -195,20 +195,21 @@ class ApprovalRequest(models.Model):
             if line.x_is_manager_approver:
                 employee = self.env['hr.employee'].search(
                     [('user_id', '=', self.env.user.id)], limit=1)
-                if employee.parent_id.user_id:
+                if employee.parent_id.user_id and employee.parent_id.user_id.id not in new_users:
                     line_approver_ids.append(employee.parent_id.user_id.id)
                     new_users.append(employee.parent_id.user_id.id)
 
             # 承認ユーザ
             for group in line.x_approver_group_ids:
                 for user in group.users:
-                    if not line.x_is_own_branch_only:
-                        new_users.append(user.id)
-                        line_approver_ids.append(user.id)
-                    else:
-                        if self.x_organization_id in user.organization_ids:
+                    if user.id not in new_users:
+                        if not line.x_is_own_branch_only:
                             new_users.append(user.id)
                             line_approver_ids.append(user.id)
+                        else:
+                            if self.x_organization_id in user.organization_ids:
+                                new_users.append(user.id)
+                                line_approver_ids.append(user.id)
             line.write({'x_approval_user_ids': [(6, 0, line_approver_ids)]})
 
             line_related_ids = []
