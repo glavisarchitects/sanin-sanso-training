@@ -18,5 +18,6 @@ class ProductDetailClassification(models.Model):
 
     @api.depends('detail_classification_code', 'minor_classification_code.display_name', 'name')
     def _compute_display_name(self):
-        self.display_name = "%s/[%s]%s" % (
-            self.minor_classification_code.display_name, self.detail_classification_code, self.name)
+        for rec in self:
+            rec.display_name = "%s/[%s]%s" % (
+                rec.minor_classification_code.display_name, rec.detail_classification_code, rec.name)
