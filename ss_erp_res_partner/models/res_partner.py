@@ -188,8 +188,8 @@ class ResPartner(models.Model):
     x_collecting_money = fields.Selection([('yes', '印字する'), ('no', '印字しない')], default='no', string='集金')
     x_fee_burden = fields.Selection([('other_side', '先方'), ('out_side', '当方')], default='other_side', string='手数料負担')
     x_bill_site = fields.Char(string='手形サイト')
-    x_payment_method = fields.Selection([('head_bank', '本社振込'), ('head_check', '本社手形'),
-                                         ('bank_cash', '支店現金'), ('branch_bank', '支店振込')], string='支払手段')
+    # x_payment_method = fields.Selection([('head_bank', '本社振込'), ('head_check', '本社手形'),
+    #                                      ('bank_cash', '支店現金'), ('branch_bank', '支店振込')], string='支払手段')
     x_bank_payment_date = fields.Date(string='振込日')
 
     # has_x_payment_method = fields.Selection(
