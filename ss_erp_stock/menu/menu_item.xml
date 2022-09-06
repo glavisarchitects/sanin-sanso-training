@@ -13,5 +13,9 @@
                 parent="stock.menu_stock_warehouse_mgmt"
                 sequence="200"/>
 
+        <menuitem name="廃棄種別" id="ss_erp_stock_scrap_category_menu" parent="stock.menu_warehouse_config"
+                  action="ss_erp_stock_scrap_category_act_window"/>
+
+
     </data>
 </odoo>

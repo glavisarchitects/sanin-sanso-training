@@ -19,6 +19,7 @@
         'views/stock_location_views.xml',
         'views/stock_picking_views.xml',
         'views/stock_scrap.xml',
+        'views/ss_erp_stock_scrap_category_views.xml',
         'menu/menu_item.xml',
 
         # DATA

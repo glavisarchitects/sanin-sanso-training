@@ -16,6 +16,69 @@
             <xpath expr="//field[@name='industry_id']" position="attributes">
                 <attribute name="string">産業</attribute>
             </xpath>
+            <xpath expr="//field[@name='vat']" position="attributes">
+                <attribute name="string">税ID</attribute>
+            </xpath>
+
+            <xpath expr="//group/group[2]//field[@name='function']" position="attributes">
+                <attribute name="string">職位</attribute>
+            </xpath>
+
+            <xpath expr="//label[@for='email']" position="attributes">
+                <attribute name="string">Eメール</attribute>
+            </xpath>
+
+            <xpath expr="//group/group[2]//field[@name='website']" position="attributes">
+                <attribute name="string">ウェブサイトリンク</attribute>
+            </xpath>
+
+            <xpath expr="//label[@for='lang']" position="attributes">
+                <attribute name="string">言語</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="string">タイトル</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="string">タグ</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='sales_purchases']//field[@name='user_id']" position="attributes">
+                <attribute name="string">販売担当者</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_delivery_carrier_id']" position="attributes">
+                <attribute name="string">配送方法</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='team_id']" position="attributes">
+                <attribute name="string">販売チーム</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_account_position_id']" position="attributes">
+                <attribute name="string">会計ポジション</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_stock_customer']" position="attributes">
+                <attribute name="string">顧客ロケーション</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_stock_supplier']" position="attributes">
+                <attribute name="string">仕入先ロケーション</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_stock_subcontractor']" position="attributes">
+                <attribute name="string">外注先ロケーション</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_account_payable_id']" position="attributes">
+                <attribute name="string">買掛金勘定</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='property_account_receivable_id']" position="attributes">
+                <attribute name="string">売掛金勘定</attribute>
+            </xpath>
         </field>
     </record>
 
@@ -26,19 +89,19 @@
             <tree>
                 <field name="name" string="名称"/>
                 <field name="function" invisible="1"/>
-                <field name="phone" class="o_force_ltr" optional="show"/>
-                <field name="email" optional="show"/>
-                <field name="user_id" optional="show" widget="many2one_avatar_user" domain="[('share', '=', False)]"/>
-                <field name="city" optional="show"/>
-                <field name="state_id" optional="hide" readonly="1"/>
-                <field name="country_id" optional="show" readonly="1"/>
-                <field name="vat" optional="hide" readonly="1"/>
-                <field name="category_id" optional="hide" widget="many2many_tags" options="{'color_field': 'color'}"/>
-                <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                <field name="phone" class="o_force_ltr" optional="show" string="電話"/>
+                <field name="email" optional="show" string="Eメール"/>
+                <field name="user_id" optional="show" string="販売担当者" widget="many2one_avatar_user" domain="[('share', '=', False)]"/>
+                <field name="city" optional="show" string="市区町村"/>
+                <field name="state_id" optional="hide" readonly="1" string="都道府県/州"/>
+                <field name="country_id" optional="show" readonly="1" string="国"/>
+                <field name="vat" optional="hide" readonly="1" string="税ID"/>
+                <field name="category_id" string="タグ" optional="hide" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                <field name="company_id" string="会社" groups="base.group_multi_company" readonly="1"/>
                 <field name="is_company" invisible="1"/>
                 <field name="parent_id" invisible="1" readonly="1"/>
                 <field name="active" invisible="1"/>
-                <field name="res_partner_id" invisible="0"/>
+                <field name="res_partner_id" invisible="1"/>
             </tree>
         </field>
     </record>

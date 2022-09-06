@@ -382,7 +382,7 @@ class Import(models.TransientModel):
             acc_type_number = 'normal' if data_header[95:96] == '1' else 'checking'
             header_rec.acc_type = acc_type_number
             header_rec.acc_number = data_header[96:103]
-        else:
+        elif self.import_file_header_id and self.res_model == 'ss_erp.account.receipt.notification.header':
             header_rec = self.env['ss_erp.account.receipt.notification.header'].browse(self.import_file_header_id)
             data_header = self.x_header_account_receipt
             header_rec.data_class = data_header[:1]
@@ -396,6 +396,8 @@ class Import(models.TransientModel):
             header_rec.acc_type = acc_type_number
             header_rec.acc_number = data_header[96:103]
             header_rec.acc_name = data_header[103:110]
+        else:
+            return super(Import, self).do(fields, columns, options, dryrun=dryrun)
 
         return super(Import, self).do(fields, columns, options, dryrun=dryrun)
 

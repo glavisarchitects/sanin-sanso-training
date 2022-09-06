@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="sale_form_inherit" model="ir.ui.view">
+    <record id="ss_erp_sale_form_inherit" model="ir.ui.view">
         <field name="name">sale.order.view.form</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
@@ -80,13 +80,6 @@
                 <field name="date_order" nolabel="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
             </xpath>
 
-            <xpath expr="//group[@name='order_details']//div[2]" position="replace">
-            </xpath>
-
-            <xpath expr="//group[@name='order_details']//field[@name='date_order'][2]" position="replace">
-            </xpath>
-
-
             <xpath expr="//field[@name='validity_date']" position="before">
                 <field name="x_organization_id" string="販売組織" required="1"
                        attrs="{'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}"
@@ -102,11 +95,7 @@
 
             <field name="partner_id" position="attributes">
                 <attribute name="options">{'no_create': True}</attribute>
-                <attribute name="domain">[
-                    '|', ('company_id', '=', False),
-                    ('company_id', '=', company_id),
-                    ('x_is_customer', '=', True),
-                ]</attribute>
+                <attribute name="domain">[('x_is_customer', '=', True)]</attribute>
             </field>
             <button name="update_prices" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -205,7 +194,7 @@
 
             <xpath expr="//field[@name='order_line']//tree//field[@name='product_uom']" position="after">
                 <field name="x_product_alternative_unit_ids" invisible="1"/>
-                <field name="x_conversion_quantity" readonly="1"/>
+                <field name="x_conversion_quantity" readonly="1" force_save="1"/>
                 <field name="x_alternative_unit_id" domain="[('id', 'in', x_product_alternative_unit_ids)]"/>
             </xpath>
 

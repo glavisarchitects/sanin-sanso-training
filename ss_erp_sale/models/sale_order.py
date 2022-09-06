@@ -93,7 +93,7 @@ class SaleOrder(models.Model):
                     # Can't find ss_erp_pricelist match with input condition
                     line.x_pricelist = False
                     line.x_is_required_x_pricelist = False
-                    line.price_unit = line.product_id.lst_price
+                    line.price_unit = line.product_id.list_price
 
                 elif len(product_pricelist) == 1:
                     line.price_unit = product_pricelist.price_unit
@@ -215,7 +215,7 @@ class SaleOrderLine(models.Model):
             # Can't find ss_erp_pricelist match with input condition
             self.update({
                 'x_pricelist': False,
-                'price_unit': self.product_id.lst_price,
+                'price_unit': self.product_id.list_price,
                 'x_is_required_x_pricelist': False
             })
 
@@ -232,6 +232,10 @@ class SaleOrderLine(models.Model):
     @api.onchange('x_pricelist')
     def _compute_price_unit(self):
         if self.x_pricelist:
+            self.write({
+                'price_unit': self.product_id.list_price,
+            })
+        else:
             self.write({
                 'price_unit': self.x_pricelist.price_unit,
             })

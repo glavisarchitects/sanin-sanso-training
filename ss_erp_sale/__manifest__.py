@@ -5,7 +5,7 @@
         山陰酸素工業　販売管理カスタマイズ
     """,
     "depends": [
-
+        "sale", "ss_erp_res_partner"
     ],
     "data": [
         # SECURITY

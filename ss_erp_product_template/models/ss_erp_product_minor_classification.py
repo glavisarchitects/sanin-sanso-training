@@ -18,5 +18,6 @@ class ProductMinorClassification(models.Model):
 
     @api.depends('minor_classification_code', 'medium_classification_code.display_name', 'name')
     def _compute_display_name(self):
-        self.display_name = "%s/[%s]%s" % (
-            self.medium_classification_code.display_name, self.minor_classification_code, self.name)
+        for rec in self:
+            rec.display_name = "%s/[%s]%s" % (
+                rec.medium_classification_code.display_name, rec.minor_classification_code, rec.name)
