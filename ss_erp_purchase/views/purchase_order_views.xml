@@ -172,7 +172,7 @@
             <!--DUNK-F-001_開発設計書_C001_ガス換算-->
             <xpath expr="//page[@name='products']/field/tree/field[@name='product_uom']" position="after">
                 <field name="x_product_alternative_unit_ids" invisible="1"/>
-                <field name="x_conversion_quantity" readonly="1"/>
+                <field name="x_conversion_quantity" readonly="1" force_save="1"/>
                 <field name="x_alternative_unit_id" options="{'no_create_edit':True, 'no_create':True}"
                        domain="[('id', 'in', x_product_alternative_unit_ids)]"/>
             </xpath>
