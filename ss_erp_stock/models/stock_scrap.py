@@ -67,4 +67,4 @@ class ScrapCategory(models.Model):
     _name = 'ss_erp.stock.scrap.category'
     _description = '廃棄種別'
 
-    name = fields.Char('廃棄種別名称')
+    name = fields.Char('廃棄種別ppp')
