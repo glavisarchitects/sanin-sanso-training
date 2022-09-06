@@ -80,13 +80,6 @@
                 <field name="date_order" nolabel="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
             </xpath>
 
-            <xpath expr="//group[@name='order_details']//div[2]" position="replace">
-            </xpath>
-
-            <xpath expr="//group[@name='order_details']//field[@name='date_order'][2]" position="replace">
-            </xpath>
-
-
             <xpath expr="//field[@name='validity_date']" position="before">
                 <field name="x_organization_id" string="販売組織" required="1"
                        attrs="{'readonly': ['|',('state', 'not in', ['draft']),'&amp;',('approval_status', 'not in', ['out_of_process']),('state', 'in', ['draft'])]}"
