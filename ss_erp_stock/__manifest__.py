@@ -4,7 +4,7 @@
     "summary": """
         山陰酸素工業　在庫カスタマイズ
     """,
-    "depends": ["mail", "stock", "delivery"],
+    "depends": ["mail", "stock", "delivery", "ss_erp_product_template"],
     "data": [
         # SECURITY
         "security/ir.model.access.csv",

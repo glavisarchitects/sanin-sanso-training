@@ -39,7 +39,7 @@
                                                decoration-warning="status=='wait'"
                                                decoration-danger="status=='error'"/>
                                         <field name="processing_date" readonly="1"/>
-                                        <field name="id" string="外部ID"/>
+<!--                                        <field name="id" string="外部ID"/>-->
                                         <field name="account_date" readonly="1"/>
                                         <field name="starting_date" readonly="1"/>
                                         <field name="transfer_client_name" readonly="1"/>

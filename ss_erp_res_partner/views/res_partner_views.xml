@@ -554,8 +554,6 @@
             </field>
         </field>
     </record>
-    <record model="ir.ui.view" id="purchase.view_partner_property_form">
-        <field name="active">False</field>
-    </record>
+
 
 </odoo>

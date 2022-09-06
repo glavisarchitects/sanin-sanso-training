@@ -5,9 +5,9 @@
         山陰酸素工業　承認管理カスタマイズ
     """,
     "depends": [
-        "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
+        "approvals", "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
         "ss_erp_responsible_dept", "ss_erp_res_company", "ss_erp_res_users",
-        "ss_erp_sale", "ss_erp_purchase", "ss_erp_stock", "approvals"
+        "ss_erp_sale", "ss_erp_purchase", "ss_erp_stock",
     ],
     "data": [
         # SECURITY

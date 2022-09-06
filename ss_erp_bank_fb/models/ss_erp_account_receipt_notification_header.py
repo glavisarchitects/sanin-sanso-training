@@ -74,8 +74,6 @@ class AccountReceiptNotificationHeader(models.Model):
         #          ('amount_total', '=', int(ac.withdrawal_amount)), ])
 
 
-
-
 class AccountReceiptNotificationLine(models.Model):
     _name = 'ss_erp.account.receipt.notification.line'
     _description = '全銀振込入金通知結果結果データ'
@@ -86,7 +84,7 @@ class AccountReceiptNotificationLine(models.Model):
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラー')
-    ], string='ステータス',index= True)
+    ], string='ステータス', default='wait', index=True)
     processing_date = fields.Datetime('処理日時', index=True)
 
     reference_number = fields.Char(string='照会番号')

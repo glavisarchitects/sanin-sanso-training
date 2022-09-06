@@ -5,7 +5,7 @@
         山陰酸素工業　販売管理カスタマイズ
     """,
     "depends": [
-        "sale", "ss_erp_res_partner"
+        "sale_management", "ss_erp_res_partner", "ss_erp_product_template"
     ],
     "data": [
         # SECURITY
@@ -16,6 +16,7 @@
 
         # DATA
         # 'data/default_param_setting_data.xml',
+        'data/menu_item.xml',
     ],
     "application": False,
     "installable": True,
