@@ -20,19 +20,19 @@
                 <attribute name="string">税ID</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='function']" position="attributes">
+            <xpath expr="//group/group[2]//field[@name='function']" position="attributes">
                 <attribute name="string">職位</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='email']" position="attributes">
+            <xpath expr="//group/group[2]//field[@name='email']" position="attributes">
                 <attribute name="string">Eメール</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='website']" position="attributes">
+            <xpath expr="//group/group[2]//field[@name='website']" position="attributes">
                 <attribute name="string">ウェブサイトリンク	</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='lang']" position="attributes">
+            <xpath expr="//group/group[2]//field[@name='lang']" position="attributes">
                 <attribute name="string">言語</attribute>
             </xpath>
 
@@ -101,7 +101,7 @@
                 <field name="is_company" invisible="1"/>
                 <field name="parent_id" invisible="1" readonly="1"/>
                 <field name="active" invisible="1"/>
-                <field name="res_partner_id" invisible="0"/>
+                <field name="res_partner_id" invisible="1"/>
             </tree>
         </field>
     </record>
