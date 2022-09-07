@@ -16,7 +16,7 @@ class StockMove(models.Model):
                 'journal_id': journal_id,
                 'x_organization_id': self.x_organization_id.id,
                 'x_responsible_dept_id': self.x_responsible_dept_id.id,
-                'x_mkt_user_id': self.x_mkt_user_id.id,
+                'x_mkt_user_id': self.picking_id.x_mkt_user_id.id,
                 'x_account_modify': self.picking_id.x_account_modify,
                 'line_ids': move_lines,
                 'date': date,
