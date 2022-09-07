@@ -10,3 +10,4 @@ from . import stock_move_line
 from . import stock_picking
 from . import stock_scrap
 from . import product_template_form
+from . import organization

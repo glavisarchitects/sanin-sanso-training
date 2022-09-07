@@ -7,7 +7,7 @@
     "depends": [
         "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
         "ss_erp_responsible_dept", "ss_erp_res_company", "ss_erp_res_users",
-        "ss_erp_external_data_import", "ss_erp_approval"
+        "ss_erp_approval", "stock"
 
     ],
     "data": [

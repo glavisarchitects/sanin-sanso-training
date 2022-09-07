@@ -61,25 +61,14 @@ class AccountReceiptNotificationHeader(models.Model):
         }
 
 
-    def processing_execution(self):
-        pass
-        # account_receipt = self.account_receipt_notification_header_ids.search([('status', '=', 'wait')])
-        # for ac in account_receipt:
-        #     partner = self.env['res.partner'].search([])
-        #     partner_invoice = self.env['account.move'].search(
-        #         [('move_type', '=', 'out_invoice'), ('x_organization_id', '=', self.branch_id.id),
-        #          ('x_receipt_type', '=', 'bank'), ('x_is_fb_created', '=', True),
-        #          ('x_is_not_create_fb', '=', False),
-        #          ('state', '=', 'posted'), ('payment_state', '=', 'not_paid'), ('partner_id', '=', partner.name),
-        #          ('amount_total', '=', int(ac.withdrawal_amount)), ])
-
-
 class AccountReceiptNotificationLine(models.Model):
     _name = 'ss_erp.account.receipt.notification.line'
     _description = '全銀振込入金通知結果結果データ'
 
     account_receipt_notification_header_id = fields.Many2one('ss_erp.account.receipt.notification.header',
                                                              string='全銀振込入金通知結果ヘッダ')
+
+    name = fields.Char('名称')
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
         ('success', '成功'),
@@ -102,4 +91,21 @@ class AccountReceiptNotificationLine(models.Model):
     error_message = fields.Char(string='エラーメッセージ')
     payment_id = fields.Many2one('account.payment', string='支払参照')
 
+    def search_account_move(self):
+        pass
+        # account_receipt = self.account_receipt_notification_header_ids.search([('status', '=', 'wait')])
+        # for ac in account_receipt:
+
+
+    def processing_execution(self):
+        pass
+        # account_receipt = self.account_receipt_notification_header_ids.search([('status', '=', 'wait')])
+        # for ac in account_receipt:
+        #     partner = self.env['res.partner'].search([])
+        #     partner_invoice = self.env['account.move'].search(
+        #         [('move_type', '=', 'out_invoice'), ('x_organization_id', '=', self.branch_id.id),
+        #          ('x_receipt_type', '=', 'bank'), ('x_is_fb_created', '=', True),
+        #          ('x_is_not_create_fb', '=', False),
+        #          ('state', '=', 'posted'), ('payment_state', '=', 'not_paid'), ('partner_id', '=', partner.name),
+        #          ('amount_total', '=', int(ac.withdrawal_amount)), ])
 

@@ -6,8 +6,8 @@
     """,
     "depends": [
         "ss_erp_sale", "ss_erp_purchase", "ss_erp_organization", "ss_erp_res_users", "ss_erp_product_template",
-        "ss_erp_hr", "ss_erp_res_company", "ss_erp_res_partner", "ss_erp_responsible_dept", "ss_erp_sale",
-        "ss_erp_stock"
+        "ss_erp_hr", "ss_erp_res_company", "ss_erp_res_partner", "ss_erp_responsible_dept", "ss_erp_sale", "ss_erp_bank_fb",
+        "ss_erp_stock", "ss_erp_accounting",
     ],
     "data": [
         # SECURITY
