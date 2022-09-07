@@ -40,15 +40,12 @@ class ProductTemplateForm(models.Model):
     # rewrite relation table
     taxes_id = fields.Many2many('account.tax', 'ss_erp_product_template_form_taxes_rel', 'prod_id', 'tax_id',
                                 help="Default taxes used when selling the product.", string='Customer Taxes',
-                                domain=[('type_tax_use', '=', 'sale')],
                                 default=lambda self: self.env.company.account_sale_tax_id)
     supplier_taxes_id = fields.Many2many('account.tax', 'ss_erp_product_template_form_supplier_taxes_rel', 'prod_id', 'tax_id',
                                          string='Vendor Taxes', help='Default taxes used when buying the product.',
-                                         domain=[('type_tax_use', '=', 'purchase')],
                                          default=lambda self: self.env.company.account_purchase_tax_id)
     route_ids = fields.Many2many(
         'stock.location.route', 'ss_erp_stock_route_product_template_form', 'product_id', 'route_id', 'Routes',
-        domain=[('product_selectable', '=', True)],
         help="Depending on the modules installed, this will allow you to define the route of the product: whether it will be bought, manufactured, replenished on order, etc.")
 
     optional_product_ids = fields.Many2many(

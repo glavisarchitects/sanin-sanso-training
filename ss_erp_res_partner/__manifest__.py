@@ -5,7 +5,7 @@
         山陰酸素工業　連絡先カスタマイズ
     """,
     "depends": [
-        "base", "contacts", "delivery", "mail", "mrp_subcontracting"
+        "base", "contacts", "calendar", "delivery", "mail", "mrp_subcontracting"
     ],
     "data": [
         # SECURITY

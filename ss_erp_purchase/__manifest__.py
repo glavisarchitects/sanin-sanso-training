@@ -5,7 +5,7 @@
         山陰酸素工業　購買管理カスタマイズ
     """,
     "depends": [
-        "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
+        "purchase", "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
         "ss_erp_responsible_dept", "ss_erp_res_company", "ss_erp_res_users", "account"
     ],
     "data": [
@@ -16,6 +16,7 @@
         'views/partner_rebate_views.xml',
         'views/purchase_order_views.xml',
         'views/ss_erp_bis_category_views.xml',
+        'views/account_move_views.xml',
         'wizards/partner_rebate_attachment_wizard_views.xml',
         'menu/menu_item.xml',
 

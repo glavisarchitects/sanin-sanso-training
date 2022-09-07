@@ -5,7 +5,7 @@
         山陰酸素工業　組織カスタマイズ
     """,
     "depends": [
-        "base", "mail", "stock"
+        "base", "mail"
     ],
     "data": [
         # SECURITY

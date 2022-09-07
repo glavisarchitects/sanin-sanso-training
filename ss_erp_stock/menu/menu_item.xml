@@ -17,5 +17,35 @@
                   action="ss_erp_stock_scrap_category_act_window"/>
 
 
+        <!--    INVENTORY PRODUCT CONFIG-->
+        <menuitem
+                id="ss_erp_product_detail_classification_in_menu_stock_config"
+                action="ss_erp_product_template.ss_erp_product_detail_classification_action"
+                parent="stock.menu_product_in_config_stock"
+                sequence="45"/>
+        <menuitem
+                id="ss_erp_product_major_classification_in_menu_stock_config"
+                action="ss_erp_product_template.ss_erp_product_major_classification_action"
+                parent="stock.menu_product_in_config_stock"
+                sequence="42"/>
+
+        <menuitem
+                id="ss_erp_product_medium_classification_in_menu_stock_config"
+                action="ss_erp_product_template.ss_erp_product_medium_classification_action"
+                parent="stock.menu_product_in_config_stock"
+                sequence="43"/>
+
+        <menuitem
+                id="ss_erp_product_minor_classification_in_menu_stock_config"
+                action="ss_erp_product_template.ss_erp_product_minor_classification_action"
+                parent="stock.menu_product_in_config_stock"
+                sequence="44"/>
+
+        <menuitem
+                id="product_template_form_stock_menu"
+                action="ss_erp_product_template.product_template_form_action"
+                parent="stock.menu_stock_inventory_control"
+                sequence="0"/>
+
     </data>
 </odoo>

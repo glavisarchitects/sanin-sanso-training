@@ -102,5 +102,9 @@
             <field name="search_view_id" ref="ss_erp_partner_rebate_search"/>
         </record>
 
+        <record model="ir.ui.view" id="purchase.view_partner_property_form">
+            <field name="active">False</field>
+        </record>
+
     </data>
 </odoo>

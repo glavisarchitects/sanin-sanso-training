@@ -23,6 +23,8 @@
                                 attrs="{'invisible':[('state','!=','draft')],}"/>
                         <button name="action_start" string="開始" class="oe_highlight" type="object"
                                 attrs="{'invisible':[('state','!=','order_received')],}"/>
+                        <button name="action_purchase" string="購買発注" class="oe_highlight" type="object"
+                                attrs="{'invisible':[('state','!=','progress')],}"/>
                         <field name="state" widget="statusbar" nolabel="1"
                                statusbar_visible="draft,request_approve,confirmed,sent,order_received,progress,done"/>
                     </header>
@@ -67,8 +69,8 @@
                                         <field name="payment_term_id"/>
                                         <field name="product_uom_qty"/>
                                         <field name="product_uom_id"/>
-                                        <field name="qty_reserved"/>
-                                        <field name="qty_done"/>
+<!--                                        <field name="qty_reserved"/>-->
+<!--                                        <field name="qty_done"/>-->
                                         <field name="product_uom_category_id" attrs="{'column_invisible':1}"/>
                                         <field name="standard_price"/>
                                         <field name="currency_id" attrs="{'column_invisible':1}"/>

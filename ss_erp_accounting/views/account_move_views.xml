@@ -12,20 +12,17 @@
                             string="帳票出力" class="oe_highlight" type="object"/>
                 </xpath>
 
-                <xpath expr="//group[@id='header_left_group']//field[@name='purchase_vendor_bill_id']" position="after">
-                    <field name="x_receipt_type" attrs="{'invisible': [('move_type', 'not in', ['out_invoice','out_refund'])]}"/>
-                    <field name="x_payment_type" attrs="{'invisible': [('move_type', 'not in', ['in_invoice','in_refund'])]}"/>
-                </xpath>
-
-                <xpath expr="//field[@name='journal_id']" position="after">
-                    <field name="x_is_not_create_fb" attrs="{'invisible': ['|', ('x_receipt_type', 'not in', ('bank','transfer')), ('x_payment_type', '!=', 'bank')]}"/>
-                </xpath>
 
                 <xpath expr="//group[@name='accounting_info_group']" position="after">
                     <group>
-                        <field name="x_responsible_user_id"  required="1"/>
+                        <field name="x_responsible_user_id"  attrs="{'required': [('move_type', '!=', 'entry')]}"/>
                         <field name="x_mkt_user_id" />
                         <field name="x_is_fb_created" groups="base.group_no_one"/>
+                    </group>
+                </xpath>
+                <xpath expr="//page[@name='other_info']//field[@name='company_id']" position="after">
+                    <group>
+                        <field name="x_responsible_user_id"  attrs="{'required': [('move_type', '=', 'entry')]}"/>
                     </group>
                 </xpath>
                 <xpath expr="//group[@id='header_right_group']//div[@class='o_td_label']" position="before">

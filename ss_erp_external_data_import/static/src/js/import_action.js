@@ -45,7 +45,7 @@ odoo.define("ss_erp.import", function (require) {
                 case "ss_erp.account.transfer.result.line":
                     return "account_transfer";
                 case "ss_erp.account.receipt.notification.line":
-                    return "account_receipt";
+                    return "account_receipt_notification";
             }
         },
 

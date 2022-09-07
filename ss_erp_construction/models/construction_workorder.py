@@ -62,7 +62,7 @@ class ConstructionWorkorder(models.Model):
         string='構成品',
         required=False)
 
-    move_ids = fields.One2many('stock.move', 'x_workorder_id')
+    picking_ids = fields.One2many('stock.picking', 'x_workorder_id', string='配送')
 
 
 class ConstructionWorkorderComponent(models.Model):
@@ -89,7 +89,7 @@ class ConstructionWorkorderComponent(models.Model):
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")
 
 
-class COnstructionWorkorderTimesheet(models.Model):
+class ConstructionWorkorderTimesheet(models.Model):
     _name = 'ss.erp.construction.workorder.timesheet'
     _description = '作業オーダーのタイムシート'
 

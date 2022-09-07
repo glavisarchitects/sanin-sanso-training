@@ -79,10 +79,6 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem
-            id="ss_erp_product_price_list_menu"
-            action="ss_erp_product_price_action"
-            parent="sale.product_menu_catalog"
-            sequence="7"/>
+
 
 </odoo>

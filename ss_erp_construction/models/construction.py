@@ -47,7 +47,6 @@ class Construction(models.Model):
         required=False
     )
 
-    move_ids = fields.One2many('stock.move', 'x_construction_order_id')
     picking_ids = fields.One2many('stock.picking', 'x_construction_order_id', string='配送')
 
     delivery_count = fields.Integer(string='工事出荷', compute='_compute_picking_ids')
@@ -81,8 +80,8 @@ class Construction(models.Model):
                                  default_origin=self.name,
                                  default_location_id=self.location_id.id,
                                  default_location_dest_id=self.location_dest_id.id,
-                                 default_organization_id = self.organization_id.id,
-                                 default_responsible_dept_id = self.organization_id.id
+                                 default_organization_id=self.organization_id.id,
+                                 default_responsible_dept_id=self.organization_id.id
                                  )
         return action
 
@@ -185,19 +184,21 @@ class Construction(models.Model):
             }
             move_live = []
             for component in workorder.workorder_component_ids:
-                move_live.append((0, 0, {
-                    'name': component.product_id.name or '/',
-                    'product_id': component.product_id.id,
-                    'product_uom': component.product_uom_id.id,
-                    'product_uom_qty': component.product_uom_qty,
-                    'location_id': workorder.location_id.id,
-                    'location_dest_id': workorder.location_dest_id.id,
-                    'date': workorder.date_planned_start or datetime.now(),
-                    'picking_type_id': workorder.picking_type_id.id,
-                }))
+                if component.product_id.type == 'product':
+                    move_live.append((0, 0, {
+                        'name': component.product_id.name or '/',
+                        'product_id': component.product_id.id,
+                        'product_uom': component.product_uom_id.id,
+                        'product_uom_qty': component.product_uom_qty,
+                        'location_id': workorder.location_id.id,
+                        'location_dest_id': workorder.location_dest_id.id,
+                        'date': workorder.date_planned_start or datetime.now(),
+                        'picking_type_id': workorder.picking_type_id.id,
+                    }))
 
             picking['move_ids_without_package'] = move_live
-            self.env['stock.picking'].create(picking)
+            construction_picking = self.env['stock.picking'].create(picking)
+            construction_picking.action_assign()
 
     def write(self, values):
         res = super(Construction, self).write(values)
@@ -264,8 +265,6 @@ class Construction(models.Model):
     def action_start(self):
         self.write({'state': 'progress'})
 
-
-
-
-
-
+    def action_purchase(self):
+        self.picking_ids.filtered(lambda r: r.picking_type_id.code == 'outgoing')
+        return
