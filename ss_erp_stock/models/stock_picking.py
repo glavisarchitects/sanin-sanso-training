@@ -16,10 +16,10 @@ class StockPicking(models.Model):
         'ss_erp.organization', string="移動元組織", domain="[('warehouse_id','!=',False)]")
     x_responsible_dept_id = fields.Many2one(
         'ss_erp.responsible.department', string="移動元管轄部門")
-    x_responsible_dept_dest_id = fields.Many2one('ss_erp.responsible.department', string='移動先管轄部門')
-    x_organization_dest_id = fields.Many2one('ss_erp.organization', string='移動先組織')
+    x_responsible_dept_dest_id = fields.Many2one('ss_erp.responsible.department', string='移動先管轄部門', store=True)
+    x_organization_dest_id = fields.Many2one('ss_erp.organization', string='移動先組織', store=True)
     x_mkt_user_id = fields.Many2one(
-        'res.users', string="営業担当")
+        'res.users', string="営業担当", store=True)
     x_shipping_method = fields.Selection(related='x_inventory_order_id.shipping_method')
     # TODO
     x_import_id = fields.Char("Capture ID", copy=False)
