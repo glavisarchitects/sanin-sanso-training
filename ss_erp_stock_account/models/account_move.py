@@ -10,3 +10,4 @@ class AccountMove(models.Model):
 
     x_account_modify = fields.Boolean(
         "在庫仕訳訂正", index=True)
+    

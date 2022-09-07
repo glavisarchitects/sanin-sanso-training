@@ -11,6 +11,5 @@ class StockMove(models.Model):
 
     x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department',
                                                  related='picking_id.x_responsible_dept_id', string='管轄部門', store=True)
-    x_mkt_user_id = fields.Many2one(
-        'res.users',related='picking_id.x_mkt_user_id', string="営業担当", store=True)
+
 
