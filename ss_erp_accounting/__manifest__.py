@@ -5,7 +5,7 @@
         山陰酸素工業　会計管理カスタマイズ
     """,
     "depends": [
-        "account_accountant",
+        "account_accountant", "ss_erp_product_template", "ss_erp_organization", "ss_erp_responsible_dept",
     ],
     "data": [
         # SECURITY
@@ -26,6 +26,7 @@
         'wizards/account_receivable_balance_confirm_views.xml',
         'wizards/account_receivable_customer_ledger_views.xml',
         'wizards/account_register_payment_views.xml',
+        'wizards/payment_term_change_views.xml',
 
         # MENU
         'menu/menu_item.xml',

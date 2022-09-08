@@ -1,5 +1,3 @@
-from . import stock_picking
-from . import stock_move
 from . import construction
 from . import construction_component
 from . import construction_workcenter
@@ -7,3 +5,6 @@ from . import construction_workorder
 from . import construction_template
 from . import approval_request
 from . import approval_category
+from . import stock_picking
+# from . import stock_move
+

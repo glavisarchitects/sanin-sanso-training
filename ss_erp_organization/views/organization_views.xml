@@ -39,7 +39,7 @@
                             <field name="expire_end_date"/>
                         </group>
                     </group>
-                    <group>
+                    <group name="organization_contact_info">
                         <group>
                             <label for="organization_street" string="組織所在アドレス"/>
                             <div class="o_address_format">
@@ -55,11 +55,6 @@
                             <field name="organization_phone" widget="phone"/>
                             <field name="organization_fax"/>
                             <field name="responsible_person" required="1"/>
-                        </group>
-                    </group>
-                    <group>
-                        <group>
-                            <field name="warehouse_id"/>
                         </group>
                     </group>
                     <notebook>

@@ -53,10 +53,5 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem
-            id="ss_erp_product_price_list_class_menu"
-            action="ss_erp_product_price_class_action"
-            parent="sale.product_menu_catalog"
-            sequence="8"/>
 
 </odoo>

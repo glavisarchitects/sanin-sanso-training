@@ -12,29 +12,23 @@
                             string="帳票出力" class="oe_highlight" type="object"/>
                 </xpath>
 
-                <xpath expr="//group[@id='header_left_group']//field[@name='purchase_vendor_bill_id']" position="after">
-                    <field name="x_receipt_type" attrs="{'invisible': [('move_type', 'not in', ['out_invoice','out_refund'])]}"/>
-                    <field name="x_payment_type" attrs="{'invisible': [('move_type', 'not in', ['in_invoice','in_refund'])]}"/>
-                </xpath>
-
-                <xpath expr="//field[@name='journal_id']" position="after">
-                    <field name="x_is_not_create_fb" attrs="{'invisible': ['|', ('x_receipt_type', 'not in', ('bank','transfer')), ('x_payment_type', '!=', 'bank')]}"/>
-                </xpath>
 
                 <xpath expr="//group[@name='accounting_info_group']" position="after">
                     <group>
-                        <field name="x_responsible_user_id"  required="1"/>
-                        <field name="x_mkt_user_id" />
+                        <field name="x_responsible_user_id" attrs="{'required': [('move_type', '!=', 'entry')]}"/>
+                        <field name="x_mkt_user_id"/>
                         <field name="x_is_fb_created" groups="base.group_no_one"/>
                     </group>
                 </xpath>
                 <xpath expr="//group[@id='header_right_group']//div[@class='o_td_label']" position="before">
                     <field name="x_organization_id" required="1"/>
                     <field name="x_responsible_dept_id" required="1"/>
+                    <field name="x_responsible_user_id"
+                           attrs="{'invisible':[('move_type', '!=', 'entry')], 'required': [('move_type', '=', 'entry')]}"/>
                 </xpath>
 
                 <xpath expr="//page[@id='aml_tab']//tree//field[@name='name']" position="after">
-                    <field name="x_sub_account_id" />
+                    <field name="x_sub_account_id"/>
                 </xpath>
             </field>
         </record>
@@ -50,8 +44,10 @@
                     <field name="x_responsible_dept_id"/>
                 </xpath>
                 <xpath expr="//field[@name='invoice_date_due']" position="after">
-                    <field name="x_payment_type" invisible="context.get('default_move_type') in ('out_invoice', 'out_refund','out_receipt')"/>
-                    <field name="x_receipt_type" invisible="context.get('default_move_type') in ('in_invoice', 'in_refund','in_receipt')"/>
+                    <field name="x_payment_type"
+                           invisible="context.get('default_move_type') in ('out_invoice', 'out_refund','out_receipt')"/>
+                    <field name="x_receipt_type"
+                           invisible="context.get('default_move_type') in ('in_invoice', 'in_refund','in_receipt')"/>
                 </xpath>
             </field>
         </record>

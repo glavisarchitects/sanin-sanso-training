@@ -5,7 +5,7 @@
         山陰酸素工業　プロダクトカスタマイズ
     """,
     "depends": [
-        "purchase", "sale", "stock"
+        "product"
     ],
     "data": [
         # SECURITY
@@ -29,7 +29,7 @@
         'views/ss_erp_product_pricelist_class_views.xml',
 
         # MENU
-        'menu/menu_item.xml',
+        # 'menu/menu_item.xml',
 
     ],
     "application": False,

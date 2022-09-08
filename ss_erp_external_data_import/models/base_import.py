@@ -72,11 +72,10 @@ class Import(models.TransientModel):
         model_field="import_file_header_model"
     )
 
-    x_header_account_transfer = fields.Char(
+    x_header_account_zengin = fields.Char(
         string="Data Header",
         readonly=True,
     )
-    x_header_account_receipt = fields.Char(string="Data Header",readonly=True)
 
     def _get_ifdb_file_header(self, parent_context):
         self.ensure_one()
@@ -346,7 +345,8 @@ class Import(models.TransientModel):
     def _read_file(self, options):
         MODEL_NAMES = ['ss_erp.ifdb.yg.summary', 'ss_erp.ifdb.yg.detail', 'ss_erp.ifdb.powernet.sales.detail',
                        'ss_erp.ifdb.youki.kanri.detail', 'ss_erp.ifdb.autogas.file.data.rec',
-                       'ss_erp.ifdb.propane.sales.detail', 'ss_erp.account.transfer.result.line']
+                       'ss_erp.ifdb.propane.sales.detail', 'ss_erp.account.transfer.result.line',
+                       'ss_erp.account.receipt.notification.line']
         if self.res_model in MODEL_NAMES:
             options['encoding'] = 'shift_jis'
         res = super(Import, self)._read_file(options)
@@ -371,7 +371,7 @@ class Import(models.TransientModel):
     def do(self, fields, columns, options, dryrun=False):
         if self.import_file_header_id and self.res_model == 'ss_erp.account.transfer.result.line':
             header_rec = self.env['ss_erp.account.transfer.result.header'].browse(self.import_file_header_id)
-            data_header = self.x_header_account_transfer
+            data_header = self.x_header_account_zengin
             header_rec.data_class = data_header[:1]
             header_rec.type_code = data_header[1:3]
             header_rec.entruster_code = data_header[4:14]
@@ -379,12 +379,12 @@ class Import(models.TransientModel):
             header_rec.withdrawal_date = data_header[54:58]
             header_rec.bank_id = data_header[58:62]
             header_rec.bank_branch_number = data_header[77:80]
-            acc_type_number = 'normal' if data_header[95:96] == '1' else 'checking'
-            header_rec.acc_type = acc_type_number
+            # acc_type_number = 'normal' if data_header[95:96] == '1' else 'checking'
+            header_rec.acc_type = data_header[95:96]
             header_rec.acc_number = data_header[96:103]
         elif self.import_file_header_id and self.res_model == 'ss_erp.account.receipt.notification.header':
             header_rec = self.env['ss_erp.account.receipt.notification.header'].browse(self.import_file_header_id)
-            data_header = self.x_header_account_receipt
+            data_header = self.x_header_account_zengin
             header_rec.data_class = data_header[:1]
             header_rec.type_code = data_header[1:3]
             header_rec.create_date = data_header[4:14]
@@ -396,8 +396,6 @@ class Import(models.TransientModel):
             header_rec.acc_type = acc_type_number
             header_rec.acc_number = data_header[96:103]
             header_rec.acc_name = data_header[103:110]
-        else:
-            return super(Import, self).do(fields, columns, options, dryrun=dryrun)
 
         return super(Import, self).do(fields, columns, options, dryrun=dryrun)
 
@@ -407,10 +405,18 @@ class Import(models.TransientModel):
             parent_context['default_account_transfer_result_header_id'])
         self.import_file_header_id = parent_context['default_account_transfer_result_header_id']
         data = self.file.decode('shift-jis').split('\r\n')
+
         if not data[0].startswith('1'):
             raise UserError(
                 _("データファイルをリロードしてください!")
             )
+
+        # check data frame
+        index_trailer = 0
+        for index, da in enumerate(data):
+            if not da.startswith('1') and not da.startswith('2'):
+                index_trailer = index
+                break
         # Todo Confirm dummy
         new_data = [
             b'"account_transfer_result_header_id","withdrawal_bank_number","withdrawal_bank_name",' + \
@@ -422,8 +428,8 @@ class Import(models.TransientModel):
         ]
 
         encode = "Shift-JIS"
-        self.x_header_account_transfer = str(data[0])
-        body_data = data[1:-2]
+        self.x_header_account_zengin = str(data[0])
+        body_data = data[1:index_trailer]
         line = []
         for bd in body_data:
             name_header = '\n' + str(transfer_header_id.name) + ','
@@ -479,8 +485,8 @@ class Import(models.TransientModel):
             line = []
         self.file = b"".join(new_data)
 
+    def transform_account_receipt_notification_file(self, options, parent_context={}):
 
-    def transform_account_receipt_file(self, options, parent_context={}):
         transfer_receipt_header_id = self.env['ss_erp.account.receipt.notification.header'].browse(
             parent_context['default_account_receipt_result_header_id'])
         self.import_file_header_id = parent_context['default_account_receipt_result_header_id']
@@ -489,6 +495,13 @@ class Import(models.TransientModel):
             raise UserError(
                 _("データファイルをリロードしてください!")
             )
+        # check data frame
+        index_trailer = 0
+        for index, da in enumerate(data):
+            if not da.startswith('1') and not da.startswith('2'):
+                index_trailer = index
+                break
+
         # Todo Confirm dummy
         new_data = [
             b'"account_receipt_notification_header_id","reference_number","account_date",' + \
@@ -502,38 +515,38 @@ class Import(models.TransientModel):
         encode = "Shift-JIS"
         if options.get('encoding'):
             encode = options.get('encoding')
-        self.x_header_account_receipt = str(data[0])
-        body_data = data[1:-2]
+        self.x_header_account_zengin = str(data[0])
+        body_data = data[1:index_trailer]
         line = []
         for bd in body_data:
             name_header = '\n' + str(transfer_receipt_header_id.name) + ','
             line.append(name_header.encode(encode))
 
-            reference_number = (bd[1:6]) + ','
+            reference_number = (bd[1:7]) + ','
             line.append(reference_number.encode(encode))
 
-            account_date = (bd[6:12]) + ','
+            account_date = (bd[7:13]) + ','
             line.append(account_date.encode(encode))
 
-            starting_date = (bd[12:18]) + ','
+            starting_date = (bd[13:19]) + ','
             line.append(starting_date.encode(encode))
 
-            transfer_amount = (bd[18:28]) + ','
+            transfer_amount = (bd[19:29]) + ','
             line.append(transfer_amount.encode(encode))
 
-            other_ticket_amount = (bd[28:38]) + ','
+            other_ticket_amount = (bd[29:39]) + ','
             line.append(other_ticket_amount.encode(encode))
 
-            transfer_client_code = (bd[38:48]) + ','
+            transfer_client_code = (bd[39:49]) + ','
             line.append(transfer_client_code.encode(encode))
 
-            transfer_client_name = (bd[48:96]) + ','
+            transfer_client_name = (bd[49:97]) + ','
             line.append(transfer_client_name.encode(encode))
 
-            bank_name = (bd[96:111]) + ','
+            bank_name = (bd[97:112]) + ','
             line.append(bank_name.encode(encode))
 
-            bank_branch_name = (bd[111:126]) + ','
+            bank_branch_name = (bd[112:127]) + ','
             line.append(bank_branch_name.encode(encode))
 
             cancel_code = (bd[126:127])

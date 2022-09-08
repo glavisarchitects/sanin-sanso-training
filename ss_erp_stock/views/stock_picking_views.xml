@@ -35,7 +35,7 @@
                 <attribute name="string">入荷元</attribute>
             </field>
             <field name="user_id" position="attributes">
-                <attribute name="string">担当者</attribute>
+                <attribute name="string">業務担当</attribute>
                 <attribute name="required">1</attribute>
             </field>
 
