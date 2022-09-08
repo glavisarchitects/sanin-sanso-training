@@ -9,6 +9,9 @@
                 <attribute name="invisible">1</attribute>
                 <attribute name="string">取り下げ</attribute>
             </xpath>
+            <xpath expr="//header/button[@name='action_draft']" position="attributes">
+                <attribute name="string">ドラフトへ戻す</attribute>
+            </xpath>
             <button name="action_approve" position="before">
                 <button name="action_temporary_approve" string="承認" type="object"
                         attrs="{'invisible':[('show_btn_temporary_approve', '=', False)]}"/>
