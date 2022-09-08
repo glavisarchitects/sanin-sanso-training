@@ -308,7 +308,7 @@ class ApprovalRequest(models.Model):
             self._refuse_multi_approvers()
 
         users = self.request_owner_id
-        users |= self.multi_approvers_ids.mapped('x_related_user_ids').mapped('users')
+        users |= self.multi_approvers_ids.mapped('x_related_user_ids')
         self.notify_approval(users=users, approver=self.env.user)
         self.sudo().write({'last_approver': self.env.user.id})
         self.activity_ids.sudo().unlink()
