@@ -64,6 +64,35 @@ class ConstructionWorkorder(models.Model):
 
     picking_ids = fields.One2many('stock.picking', 'x_workorder_id', string='配送')
 
+    def _prepare_stock_picking(self):
+        picking = {
+            'partner_id': self.partner_id.id,
+            'x_organization_id': self.organization_id.id,
+            'x_responsible_dept_id': self.responsible_dept_id.id,
+            'picking_type_id': self.picking_type_id.id,
+            'location_id': self.location_id.id,
+            'location_dest_id': self.location_dest_id.id,
+            'scheduled_date': self.date_planned_start,
+            'x_construction_order_id': self.id,
+            'x_workorder_id': self.id
+        }
+        move_live = []
+        for component in self.workorder_component_ids:
+            if component.product_id.type == 'product':
+                move_live.append((0, 0, {
+                    'name': component.product_id.name or '/',
+                    'product_id': component.product_id.id,
+                    'product_uom': component.product_uom_id.id,
+                    'product_uom_qty': component.product_uom_qty,
+                    'location_id': self.location_id.id,
+                    'location_dest_id': self.location_dest_id.id,
+                    'date': self.date_planned_start or datetime.now(),
+                    'picking_type_id': self.picking_type_id.id,
+                }))
+
+        picking['move_ids_without_package'] = move_live
+        self.env['stock.picking'].create(picking).action_assign()
+
 
 class ConstructionWorkorderComponent(models.Model):
     _name = 'ss.erp.construction.workorder.component'

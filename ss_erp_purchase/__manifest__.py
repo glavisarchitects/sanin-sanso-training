@@ -6,7 +6,7 @@
     """,
     "depends": [
         "purchase", "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
-        "ss_erp_responsible_dept", "ss_erp_res_company", "ss_erp_res_users", "account", "stock_dropshipping"
+        "ss_erp_responsible_dept", "ss_erp_res_company", "ss_erp_res_users", "account",
     ],
     "data": [
         # SECURITY

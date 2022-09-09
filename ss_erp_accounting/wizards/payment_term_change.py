@@ -2,13 +2,11 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
-
-
 class PaymentTermChangeWizard(models.TransientModel):
     _name = 'payment.term.change.wizard'
     _description = 'Payment Term Change'
 
-    invoice_payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms')
+    invoice_payment_term_id = fields.Many2one('account.payment.term', string='支払サイト')
 
     def payment_term_change(self):
         if self._context.get('active_model') == 'account.move':
@@ -16,6 +14,7 @@ class PaymentTermChangeWizard(models.TransientModel):
             for line in lines:
                 if line.invoice_payment_term_id and line.state == 'draft':
                     line.invoice_payment_term_id = self.invoice_payment_term_id
+                    line._recompute_payment_terms_lines()
                 else:
                     raise UserError(_('State Invoice must be Draft!'))
 

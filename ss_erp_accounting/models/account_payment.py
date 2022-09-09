@@ -8,9 +8,10 @@ class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
     # add name of rel table
-    reconciled_invoice_ids = fields.Many2many('account.move', relation="ss_erp_account_payment_reconciled_invoice_rel", string="Reconciled Invoices",
-        compute='_compute_stat_buttons_from_reconciliation',
-        help="Invoices whose journal items have been reconciled with these payments.")
+    reconciled_invoice_ids = fields.Many2many('account.move', relation="ss_erp_account_payment_reconciled_invoice_rel",
+                                              string="Reconciled Invoices",
+                                              compute='_compute_stat_buttons_from_reconciliation',
+                                              help="Invoices whose journal items have been reconciled with these payments.")
 
     x_is_fb_created = fields.Boolean(string='FB作成済みフラグ', required=True, default=False)
 
@@ -24,13 +25,13 @@ class AccountPayment(models.Model):
     x_receipt_type = fields.Selection(
         string='入金手段',
         selection=[
-                   ('bank', '振込'),
-                   ('transfer', '振替'),
-                   ('bills', '手形'),
-                   ('cash', '現金'),
-                   ('paycheck', '小切手'),
-                   ('branch_receipt', '他店入金'),
-                   ('offset', '相殺'), ],
+            ('bank', '振込'),
+            ('transfer', '振替'),
+            ('bills', '手形'),
+            ('cash', '現金'),
+            ('paycheck', '小切手'),
+            ('branch_receipt', '他店入金'),
+            ('offset', '相殺'), ],
         required=False, )
 
     x_is_not_create_fb = fields.Boolean(
@@ -43,25 +44,25 @@ class AccountPayment(models.Model):
         required=False)
 
     x_organization_id = fields.Many2one(
-        comodel_name='ss_erp.organization',
-        string='組織情報',
-        required=False)
-
+        'ss_erp.organization', string="担当組織", index=True,
+        default=lambda self: self._get_default_x_organization_id())
     x_responsible_dept_id = fields.Many2one(
-        comodel_name='ss_erp.responsible.department',
-        string='管轄部門',
-        required=False)
-    # is_fb_created = fields.Boolean(string='FB作成済みフラグ', required=True, default=False)=======
-    # is_fb_created = fields.Boolean(string='FB作成済みフラグ', required=True, default=False)
+        'ss_erp.responsible.department', string="管轄部門", index=True,
+        default=lambda self: self._get_default_x_responsible_dept_id())
 
-    #
-    # @api.model_create_multi
-    # def create(self, vals_list):
-    #     # OVERRIDE
-    #
-    #     payments = super().create(vals_list)
-    #     return payments
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
 
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id and employee_id.department_jurisdiction_first:
+            return employee_id.department_jurisdiction_first[0]
+        else:
+            return False
 
     def _prepare_move_line_default_vals(self, write_off_line_vals=None):
         ''' Prepare the dictionary to create the default account.move.lines for the current payment.
@@ -111,7 +112,7 @@ class AccountPayment(models.Model):
         if self.is_internal_transfer:
             if self.payment_type == 'inbound':
                 liquidity_line_name = _('Transfer to %s', self.journal_id.name)
-            else: # payment.payment_type == 'outbound':
+            else:  # payment.payment_type == 'outbound':
                 liquidity_line_name = _('Transfer from %s', self.journal_id.name)
         else:
             liquidity_line_name = self.payment_reference
@@ -121,7 +122,8 @@ class AccountPayment(models.Model):
         payment_display_name = self._prepare_payment_display_name()
 
         default_line_name = self.env['account.move.line']._get_default_line_name(
-            _("Internal Transfer") if self.is_internal_transfer else payment_display_name['%s-%s' % (self.payment_type, self.partner_type)],
+            _("Internal Transfer") if self.is_internal_transfer else payment_display_name[
+                '%s-%s' % (self.payment_type, self.partner_type)],
             self.amount,
             self.currency_id,
             self.date,
