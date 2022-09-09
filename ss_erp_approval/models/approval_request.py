@@ -15,7 +15,8 @@ class ApprovalRequest(models.Model):
         'ss_erp.responsible.department', string='申請部署',
         default=lambda self: self._get_default_x_responsible_dept_id())
 
-    x_organization_id = fields.Many2one('ss_erp.organization', string='申請組織', default=lambda self: self._get_default_x_organization_id())
+    x_organization_id = fields.Many2one('ss_erp.organization', string='申請組織',
+                                        default=lambda self: self._get_default_x_organization_id())
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
@@ -131,6 +132,7 @@ class ApprovalRequest(models.Model):
             return employee_id.department_jurisdiction_first[0]
         else:
             return False
+
     def _compute_current_sequence(self):
         for rec in self:
             rec.x_current_sequence = False
@@ -409,13 +411,13 @@ class ApprovalRequest(models.Model):
                     status = 'new'
 
             request.request_status = status
+            request._validate_request()
+
             users = request.multi_approvers_ids.mapped('x_related_user_ids')
             users |= request.request_owner_id
             self.notify_approval(users=users, approver=request.last_approver)
 
-    def write(self, vals):
-        res = super(ApprovalRequest, self).write(vals)
-
+    def _validate_request(self):
         # LPガス棚卸伝票
         if self.x_lpgas_inventory_ids:
             if self.request_status == 'pending':
@@ -468,8 +470,6 @@ class ApprovalRequest(models.Model):
         if self.x_account_move_ids:
             if self.request_status == 'approved':
                 self.x_account_move_ids.sudo().write({'state': 'posted'})
-
-        return res
 
     def notify_approval(self, users, approver=None):
         # message_subscribe
