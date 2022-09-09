@@ -7,8 +7,8 @@ class ConstructionComponent(models.Model):
 
     product_id = fields.Many2one(comodel_name='product.product', string='プロダクト', tracking=True)
     product_uom_qty = fields.Float(string='数量', tracking=True)
-    qty_done = fields.Float(string='消費済み', compute='_compute_quantity', store=True)
-    qty_invoiced = fields.Float(string='請求済み', compute='_compute_quantity', store=True)
+    qty_done = fields.Float(string='消費済み', store=True)
+    qty_invoiced = fields.Float(string='請求済み', store=True)
     product_uom_id = fields.Many2one(comodel_name='uom.uom', string='単位', tracking=True,
                                      domain="[('category_id', '=', product_uom_category_id)]")
     product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string='単位カテゴリ')
