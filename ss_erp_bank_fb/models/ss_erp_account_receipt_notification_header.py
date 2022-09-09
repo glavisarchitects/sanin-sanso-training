@@ -25,7 +25,7 @@ class AccountReceiptNotificationHeader(models.Model):
     acc_to_date = fields.Char(string='勘定日（至）')
     bank_id = fields.Char(string='金融機関番号')
     bank_branch_number = fields.Char(string='取引支店番号')
-    acc_type = fields.Char(string='預金種別')
+    acc_type = fields.Selection([("1", "普通"), ("2", "当座"), ("4", "貯蓄預金")], string='預金種目')
     acc_number = fields.Char(string='口座番号')
     acc_name = fields.Char(string='口座名')
     account_receipt_notification_header_ids = fields.One2many(
@@ -127,6 +127,20 @@ class AccountReceiptNotificationLine(models.Model):
         if total_amount != int(self.transfer_amount):
             raise UserError('選択したすべての請求書の送金金額と合計金額が等しくありません。再度確認してください。')
 
+        # if self.account_receipt_notification_header_id.acc_type not in ['1', '2']:
+        #     raise UserError('預金種目は普通と当座だけ受け入れられます。')
+
+        account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
+        journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)], limit=1)
+
+        account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
+        journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)], limit=1)
+
+        if self.account_receipt_notification_header_id.acc_type == '1':
+            journal_id = journal_account_1122
+        else:
+            journal_id = journal_account_1121
+
         # Register multi payment
         register_payment = self.env['account.payment.register'].with_context(
             active_model='account.move',
@@ -135,57 +149,59 @@ class AccountReceiptNotificationLine(models.Model):
             {
                 # 'active_model': 'account.move',
                 # 'active_ids': partner_invoice.id,
-                # 'journal_id': journal_id.id,
+                'journal_id': journal_id.id,
                 # 'amount': partner_invoice.amount_total,
                 # 'payment_date': fields.Date.context_today,
                 # 'company_id': partner_invoice.company_id.id,
             })
         register_payment.sudo().action_create_payments()
         # assign payment_id
-        ref_invoice = self.result_account_move_ids.mapped('name')
-        created_payment = self.env['account.payment'].search([('ref', 'in', ref_invoice)],).ids
-        # created_payment.move_id.write(
-        #     {
-        #         'x_receipt_type': partner_invoice.x_receipt_type,
-        #         'x_payment_type': partner_invoice.x_payment_type,
-        #         'x_organization_id': partner_invoice.x_organization_id,
-        #         'x_responsible_dept_id': partner_invoice.x_responsible_dept_id,
-        #         'x_is_not_create_fb': True,
-        #         'date': self.upload_date,
-        #         # 'journal_id': self.env['account.journal'].browse(int(a005_account_transfer_result_journal_id)),
-        #         'x_responsible_user_id': partner_invoice.x_responsible_user_id,
-        #         'x_mkt_user_id': partner_invoice.x_mkt_user_id,
-        #         'x_is_fb_created': False,
-        #     })
-        #
-        # debit_line = created_payment.move_id.line_ids.filtered(lambda l: l.debit > 0)
-        # debit_line.date_maturity = self.upload_date
-        #
-        # credit_line = created_payment.move_id.line_ids.filtered(lambda l: l.credit > 0)
-        #
-        # # if tl.deposit_type == '1':
-        # #     deposit_account = account_1122
-        # # else:
-        # #     deposit_account = account_1121
-        # #
-        # # debit_line.account_id = deposit_account.id
-        #
-        # in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
-        # receivable_line = partner_invoice.line_ids.filtered(
-        #     lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
-        # if not in_accounts_receivable:
-        #     raise UserError('アカウント 1150 が見つかりません。設定してください。')
-        # # credit_line.account_id = in_accounts_receivable.id
-        # # credit_line.x_sub_account_id = receivable_line.x_sub_account_id
-        # # credit_line.date_maturity = self.upload_date
-        #
-        # credit_line.with_context({
-        #     'zengin_aoo5': True,
-        # }).write({
-        #     'account_id': in_accounts_receivable.id,
-        #     'x_sub_account_id': receivable_line.x_sub_account_id,
-        #     'date_maturity': self.upload_date,
-        # })
+        # ref_invoice = self.result_account_move_ids.mapped('name')
+        # created_payment = self.env['account.payment'].search([('ref', 'in', ref_invoice)],).ids
+        created_payment_ids = []
+        for invoice in self.result_account_move_ids:
+            created_payment = self.env['account.payment'].search([('ref', '=', invoice.name)], )
+            created_payment.move_id.write(
+                {
+                    'x_receipt_type': invoice.x_receipt_type,
+                    'x_payment_type': invoice.x_payment_type,
+                    'x_organization_id': invoice.x_organization_id,
+                    'x_responsible_dept_id': invoice.x_responsible_dept_id,
+                    'x_is_not_create_fb': True,
+                    'date': self.account_receipt_notification_header_id.upload_date,
+                    'x_responsible_user_id': invoice.x_responsible_user_id,
+                    'x_mkt_user_id': invoice.x_mkt_user_id,
+                    'x_is_fb_created': False,
+                })
 
-        self.payment_ids = created_payment
+            debit_line = created_payment.move_id.line_ids.filtered(lambda l: l.debit > 0)
+            debit_line.date_maturity = self.account_receipt_notification_header_id.upload_date
+
+            credit_line = created_payment.move_id.line_ids.filtered(lambda l: l.credit > 0)
+
+            # if tl.deposit_type == '1':
+            #     deposit_account = account_1122
+            # else:
+            #     deposit_account = account_1121
+            #
+            # debit_line.account_id = deposit_account.id
+
+            in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
+            receivable_line = invoice.line_ids.filtered(
+                lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
+            if not in_accounts_receivable:
+                raise UserError('アカウント 1150 が見つかりません。設定してください。')
+            # credit_line.account_id = in_accounts_receivable.id
+            # credit_line.x_sub_account_id = receivable_line.x_sub_account_id
+            # credit_line.date_maturity = self.upload_date
+
+            credit_line.with_context({
+                'from_zengin_create': True,
+            }).write({
+                'account_id': in_accounts_receivable.id,
+                'x_sub_account_id': receivable_line.x_sub_account_id,
+                'date_maturity': self.account_receipt_notification_header_id.upload_date,
+            })
+            created_payment_ids.append(created_payment.id)
+        self.payment_ids = created_payment_ids
         self.status = 'success'

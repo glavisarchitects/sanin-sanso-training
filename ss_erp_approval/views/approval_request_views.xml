@@ -206,7 +206,7 @@
                         'invisible': [('has_x_purchase_order_ids', '=', 'no')],
                         'required': [('has_x_purchase_order_ids', '=', 'required')],
                         'readonly':[('request_status','!=','new')]
-                    }">
+                    }" domain="[('state', '=', 'draft')]">
                         <tree>
                             <field name="name" string="伝票No."/>
                             <field name="x_bis_categ_id" string="取引区分"/>

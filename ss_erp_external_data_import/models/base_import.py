@@ -382,20 +382,18 @@ class Import(models.TransientModel):
             # acc_type_number = 'normal' if data_header[95:96] == '1' else 'checking'
             header_rec.acc_type = data_header[95:96]
             header_rec.acc_number = data_header[96:103]
-        elif self.import_file_header_id and self.res_model == 'ss_erp.account.receipt.notification.header':
+        elif self.import_file_header_id and self.res_model == 'ss_erp.account.receipt.notification.line':
             header_rec = self.env['ss_erp.account.receipt.notification.header'].browse(self.import_file_header_id)
             data_header = self.x_header_account_zengin
             header_rec.data_class = data_header[:1]
             header_rec.type_code = data_header[1:3]
-            header_rec.create_date = data_header[4:14]
-            header_rec.acc_from_date = data_header[14:54]
-            header_rec.acc_to_date = data_header[54:58]
-            header_rec.bank_id = data_header[58:62]
-            header_rec.bank_branch_number = data_header[77:80]
-            acc_type_number = 'normal' if data_header[95:96] == '1' else 'checking'
-            header_rec.acc_type = acc_type_number
-            header_rec.acc_number = data_header[96:103]
-            header_rec.acc_name = data_header[103:110]
+            header_rec.acc_from_date = data_header[10:16]
+            header_rec.acc_to_date = data_header[16:22]
+            header_rec.bank_id = data_header[22:26]
+            header_rec.bank_branch_number = data_header[26:45]
+            header_rec.acc_type = data_header[60:61]
+            header_rec.acc_number = data_header[61:68]
+            header_rec.acc_name = data_header[68:108]
 
         return super(Import, self).do(fields, columns, options, dryrun=dryrun)
 
