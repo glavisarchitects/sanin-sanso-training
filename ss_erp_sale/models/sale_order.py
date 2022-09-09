@@ -137,12 +137,19 @@ class SaleOrder(models.Model):
                     approval.message_post(body=_('承認申請の見積が見積操作で取消されたため、承認申請を取消しました。'))
         return res
 
+    def _prepare_invoice(self):
+        invoice_vals = super(SaleOrder, self)._prepare_invoice()
+        invoice_vals.update({
+            'x_organization_id': self.x_organization_id.id,
+            'x_responsible_dept_id': self.x_responsible_dept_id.id,
+            'x_responsible_user_id': self.user_id.id,
+            'x_mkt_user_id': self.user_id.id,
+        })
+        return invoice_vals
+
     # svf region
     def send_data_svf_cloud(self):
         self.env['svf.cloud.config'].sudo().get_access_token()
-
-    #
-
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'

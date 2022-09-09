@@ -11,9 +11,6 @@ class AccountSubAccount(models.Model):
     name = fields.Char(string='補助科目名', index=True, required=True)
     code = fields.Char(string='コード', index=True, required=True)
     display_name = fields.Char(string='表示名', compute='_compute_display_name', store=True)
-    account_account_id = fields.Many2one(
-        comodel_name='account.account',
-        required=False)
 
     @api.depends('name', 'code')
     def _compute_display_name(self):

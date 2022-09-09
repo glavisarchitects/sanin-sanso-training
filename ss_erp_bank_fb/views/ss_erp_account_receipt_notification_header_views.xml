@@ -31,30 +31,35 @@
                         </group>
                         <notebook>
                             <page name="data_records" string="データレコード">
-                                <field name="account_receipt_notification_header_ids">
-                                    <tree create="0" editable="bottom">
-                                        <field name="status" readonly="1"
-                                               widget="badge"
-                                               decoration-info="status=='success'"
-                                               decoration-warning="status=='wait'"
-                                               decoration-danger="status=='error'"/>
-                                        <field name="processing_date" readonly="1"/>
-<!--                                        <field name="id" string="外部ID"/>-->
-                                        <field name="account_date" readonly="1"/>
-                                        <field name="starting_date" readonly="1"/>
-                                        <field name="transfer_client_name" readonly="1"/>
-                                        <field name="transfer_amount" readonly="1"/>
-                                    </tree>
-                                    <form>
-                                        <field name="name"/>
-                                        <group>
-                                            <group>
-                                                <field name="account_date" readonly="1"/>
-                                            </group>
-                                            <group></group>
-                                        </group>
-                                    </form>
-                                </field>
+                                <field name="account_receipt_notification_header_ids" action="action_account_receipt_notification_line"/>
+<!--                                    <tree create="0">-->
+<!--                                        <field name="status" readonly="1"-->
+<!--                                               widget="badge"-->
+<!--                                               decoration-info="status=='success'"-->
+<!--                                               decoration-warning="status=='wait'"-->
+<!--                                               decoration-danger="status=='error'"/>-->
+<!--                                        <field name="processing_date" readonly="1"/>-->
+<!--&lt;!&ndash;                                        <field name="id" string="外部ID"/>&ndash;&gt;-->
+<!--                                        <field name="account_date" readonly="1"/>-->
+<!--                                        <field name="starting_date" readonly="1"/>-->
+<!--                                        <field name="transfer_client_name" readonly="1"/>-->
+<!--                                        <field name="transfer_amount" readonly="1"/>-->
+<!--                                    </tree>-->
+<!--                                    <form>-->
+<!--                                        <field name="name"/>-->
+<!--                                        <group>-->
+<!--                                            <group>-->
+<!--                                                <field name="account_date" readonly="1"/>-->
+<!--                                                <field name="starting_date" readonly="1"/>-->
+<!--                                                <field name="status" readonly="1"/>-->
+<!--                                                <field name="transfer_client_name" readonly="1"/>-->
+<!--                                            </group>-->
+<!--                                            <group>-->
+<!--                                                <field name="transfer_amount" readonly="1"/>-->
+<!--                                            </group>-->
+<!--                                        </group>-->
+<!--                                    </form>-->
+<!--                                </field>-->
                             </page>
                         </notebook>
                     </sheet>

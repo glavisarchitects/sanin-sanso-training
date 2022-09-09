@@ -50,7 +50,7 @@
         <field name="inherit_id" ref="account.view_account_form"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='options_group']" position="inside">
-                <field name="x_sub_account_ids" widget="one2many">
+                <field name="x_sub_account_ids" widget="many2many_tags">
                     <tree editable="bottom">
                         <field name="code"/>
                         <field name="name"/>

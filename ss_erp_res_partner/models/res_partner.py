@@ -199,9 +199,13 @@ class ResPartner(models.Model):
         related='x_contact_categ.has_x_receipts_term',
         store=True)
     # TuyenTN 08/18/2022 update F004
-    x_payment_type = fields.Selection(string='支払手段', selection=[('bank', '振込'),
-                                                                ('cash', '現金'),
-                                                                ('check', '本社手形')])
+    x_payment_type = fields.Selection(
+        string='支払手段',
+        selection=[('bank', '振込'),
+                   ('cash', '現金'),
+                   ('bills', '手形'), ],
+        required=False, index=True, store=True)
+    
     has_x_payment_type = fields.Selection(related='x_contact_categ.has_x_payment_type', store=True)
     x_fee_burden_paid = fields.Selection([('other_side_paid', '先方負担'),
                                           ('our_side_paid', '当社負担')], string='支払手数料負担')
