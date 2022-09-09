@@ -3,11 +3,19 @@ from odoo import models, fields, api,_
 from odoo.exceptions import UserError
 
 
+# class AccountMove(models.Model):
+#     _inherit = 'account.move'
+#
+#     # relation field to filter in ss_erp.account.receipt.notification.line
+#     x_receipt_notification_line_id = fields.Many2one('ss_erp.account.receipt.notification.line')
+#     x_is_reconcile_receipt_notification = fields.Boolean()
+
+
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     def _check_reconciliation(self):
-        if self._context.get('zengin_aoo5'):
+        if self._context.get('from_zengin_create'):
             return
         for line in self:
             if line.matched_debit_ids or line.matched_credit_ids:

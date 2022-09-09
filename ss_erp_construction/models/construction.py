@@ -21,6 +21,20 @@ class Construction(models.Model):
         default=lambda self: self._get_default_x_responsible_dept_id()
     )
 
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
+
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id and employee_id.department_jurisdiction_first:
+            return employee_id.department_jurisdiction_first[0]
+        else:
+            return False
+
     company_id = fields.Many2one('res.company', string='会社', default=lambda self: self.env.user.company_id.id)
 
     currency_id = fields.Many2one('res.currency', '通貨', required=True,
@@ -170,53 +184,13 @@ class Construction(models.Model):
         return super(Construction, self).create(values)
 
     def _prepare_stock_picking(self):
-        for workorder in self.construction_workorder_ids:
-            picking = {
-                'partner_id': workorder.partner_id.id,
-                'x_organization_id': workorder.organization_id.id,
-                'x_responsible_dept_id': workorder.responsible_dept_id.id,
-                'picking_type_id': workorder.picking_type_id.id,
-                'location_id': workorder.location_id.id,
-                'location_dest_id': workorder.location_dest_id.id,
-                'scheduled_date': workorder.date_planned_start,
-                'x_construction_order_id': self.id,
-                'x_workorder_id': workorder.id
-            }
-            move_live = []
-            for component in workorder.workorder_component_ids:
-                if component.product_id.type == 'product':
-                    move_live.append((0, 0, {
-                        'name': component.product_id.name or '/',
-                        'product_id': component.product_id.id,
-                        'product_uom': component.product_uom_id.id,
-                        'product_uom_qty': component.product_uom_qty,
-                        'location_id': workorder.location_id.id,
-                        'location_dest_id': workorder.location_dest_id.id,
-                        'date': workorder.date_planned_start or datetime.now(),
-                        'picking_type_id': workorder.picking_type_id.id,
-                    }))
-
-            picking['move_ids_without_package'] = move_live
-            construction_picking = self.env['stock.picking'].create(picking)
-            construction_picking.action_assign()
+        if self.construction_workorder_ids:
+            for workorder in self.construction_workorder_ids:
+                workorder._prepare_stock_picking()
 
     def write(self, values):
         res = super(Construction, self).write(values)
         return res
-
-    def _get_default_x_organization_id(self):
-        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
-        if employee_id:
-            return employee_id.organization_first
-        else:
-            return False
-
-    def _get_default_x_responsible_dept_id(self):
-        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
-        if employee_id and employee_id.department_jurisdiction_first:
-            return employee_id.department_jurisdiction_first[0]
-        else:
-            return False
 
     plan_date = fields.Date(string='予定日')
     user_id = fields.Many2one(comodel_name='res.users', string='担当者', default=lambda self: self.env.user)

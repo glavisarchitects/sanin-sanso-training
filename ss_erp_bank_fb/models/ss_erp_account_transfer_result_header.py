@@ -176,7 +176,7 @@ class AccountTransferResultHeader(models.Model):
             # credit_line.date_maturity = self.upload_date
 
             credit_line.with_context({
-                'zengin_aoo5': True,
+                'from_zengin_create': True,
             }).write({
                 'account_id': in_accounts_receivable.id,
                 'x_sub_account_id': receivable_line.x_sub_account_id,

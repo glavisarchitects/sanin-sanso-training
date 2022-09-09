@@ -196,7 +196,7 @@
                 <field name="x_responsible_dept_id" options="{'no_create': True}" required="1" readonly="0"/>
                 <field name="x_mkt_user_id" options="{'no_create': True}" required="1" readonly="0"/>
                 <field name="x_is_construction" invisible="1"/>
-                <field name="is_dropshipping" invisible="1"/>
+<!--                <field name="is_dropshipping" invisible="1"/>-->
             </field>
 
             <page name="purchase_delivery_invoice" position="after">

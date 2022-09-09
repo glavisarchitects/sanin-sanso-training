@@ -44,6 +44,7 @@
                     <field name="x_responsible_dept_id"/>
                 </xpath>
                 <xpath expr="//field[@name='invoice_date_due']" position="after">
+                    <field name="invoice_payment_term_id" string="支払サイト"/>
                     <field name="x_payment_type"
                            invisible="context.get('default_move_type') in ('out_invoice', 'out_refund','out_receipt')"/>
                     <field name="x_receipt_type"

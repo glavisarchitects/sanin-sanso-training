@@ -12,9 +12,26 @@ class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
 
     x_department_id = fields.Many2one(
-        'ss_erp.responsible.department', string='申請部署', )
-    x_organization_id = fields.Many2one(
-        'ss_erp.organization', string='申請組織')
+        'ss_erp.responsible.department', string='申請部署',
+        default=lambda self: self._get_default_x_responsible_dept_id())
+
+    x_organization_id = fields.Many2one('ss_erp.organization', string='申請組織',
+                                        default=lambda self: self._get_default_x_organization_id())
+
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
+
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id and employee_id.department_jurisdiction_first:
+            return employee_id.department_jurisdiction_first[0]
+        else:
+            return False
+
     x_contact_form_id = fields.Many2one(
         'ss_erp.res.partner.form', string='連絡先申請フォーム')
     x_product_template_form_id = fields.Many2one(
@@ -102,14 +119,29 @@ class ApprovalRequest(models.Model):
     x_current_sequence = fields.Integer(compute='_compute_current_sequence', store=True)
     x_user_sequence = fields.Integer(compute='_compute_current_sequence')
 
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
+
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id and employee_id.department_jurisdiction_first:
+            return employee_id.department_jurisdiction_first[0]
+        else:
+            return False
+
     def _compute_current_sequence(self):
         for rec in self:
             rec.x_current_sequence = False
             if rec.request_status == 'pending':
                 set_approvers = set(rec.multi_approvers_ids.filtered(lambda r: r.x_user_status == 'pending').mapped(
-                        'x_approval_seq'))
+                    'x_approval_seq'))
                 rec.x_current_sequence = min(set_approvers) if set_approvers else 0
-            rec.x_user_sequence = rec.multi_approvers_ids.filtered(lambda r: self.env.user in r.x_approval_user_ids).x_approval_seq
+            rec.x_user_sequence = rec.multi_approvers_ids.filtered(
+                lambda r: self.env.user in r.x_approval_user_ids).x_approval_seq
 
     @api.constrains('x_approval_date')
     def _check_x_approval_date(self):
@@ -379,13 +411,13 @@ class ApprovalRequest(models.Model):
                     status = 'new'
 
             request.request_status = status
+            request._validate_request()
+
             users = request.multi_approvers_ids.mapped('x_related_user_ids')
             users |= request.request_owner_id
             self.notify_approval(users=users, approver=request.last_approver)
 
-    def write(self, vals):
-        res = super(ApprovalRequest, self).write(vals)
-
+    def _validate_request(self):
         # LPガス棚卸伝票
         if self.x_lpgas_inventory_ids:
             if self.request_status == 'pending':
@@ -434,7 +466,10 @@ class ApprovalRequest(models.Model):
             elif self.request_status == 'pending':
                 self.x_sale_order_ids.sudo().write({'approval_status': 'in_process'})
 
-        return res
+        # 仕入請求伝票
+        if self.x_account_move_ids:
+            if self.request_status == 'approved':
+                self.x_account_move_ids.sudo().write({'state': 'posted'})
 
     def notify_approval(self, users, approver=None):
         # message_subscribe

@@ -13,6 +13,13 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    x_organization_id = fields.Many2one(
+        'ss_erp.organization', string="担当組織", index=True,
+        default=lambda self: self._get_default_x_organization_id())
+    x_responsible_dept_id = fields.Many2one(
+        'ss_erp.responsible.department', string="管轄部門", index=True,
+        default=lambda self: self._get_default_x_responsible_dept_id())
+
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
@@ -37,10 +44,7 @@ class PurchaseOrder(models.Model):
     ], string="希望納品", default='full', copy=True)
     x_dest_address_info = fields.Html("直送先情報")
     x_truck_number = fields.Char("車番")
-    x_organization_id = fields.Many2one(
-        'ss_erp.organization', string="担当組織", index=True, default=lambda self: self._get_default_x_organization_id())
-    x_responsible_dept_id = fields.Many2one(
-        'ss_erp.responsible.department', string="管轄部門", index=True, default=lambda self: self._get_default_x_responsible_dept_id())
+
     x_mkt_user_id = fields.Many2one(
         'res.users', string="営業担当者", index=True, default=lambda self: self.env.user)
     x_is_construction = fields.Boolean(
@@ -69,11 +73,9 @@ class PurchaseOrder(models.Model):
     x_construction_payment_cash = fields.Float("現金")
     x_construction_payment_bill = fields.Float("手形")
     x_construction_contract_notice = fields.Html(
-        "工事契約における注記事項", copy=True, related='company_id.x_construction_contract_notice',store=True)
+        "工事契約における注記事項", copy=True, related='company_id.x_construction_contract_notice', store=True)
     x_construction_subcontract = fields.Html("下請工事の予定価格と見積期間",
-                                             copy=True, related='company_id.x_construction_subcontract',store=True)
-    is_dropshipping = fields.Boolean(
-        '直送であるか', compute='_compute_is_dropshipping',)
+                                             copy=True, related='company_id.x_construction_subcontract', store=True)
 
     @api.onchange('x_organization_id')
     def _onchange_x_organization_id(self):
@@ -86,16 +88,6 @@ class PurchaseOrder(models.Model):
             "ss_erp_purchase.ss_erp_bis_category_data_0", raise_if_not_found=False)
         for rec in self:
             rec.x_is_construction = True if rec_construction_id and self.x_bis_categ_id and self.x_bis_categ_id.id == rec_construction_id.id else False
-
-    @api.depends('order_line', 'order_line.product_id')
-    def _compute_is_dropshipping(self):
-        for record in self:
-            record.is_dropshipping = False
-            if record.order_line:
-                route_id = self.env.ref(
-                    'stock_dropshipping.route_drop_shipping', raise_if_not_found=False)
-                record.is_dropshipping = True if route_id in record.mapped(
-                    'product_id').mapped('route_ids') else False
 
     def action_rfq_send(self):
         res = super(PurchaseOrder, self).action_rfq_send()
@@ -138,7 +130,7 @@ class PurchaseOrder(models.Model):
         """ also cancel approval related"""
         res = super(PurchaseOrder, self).button_cancel()
         approval_purchase = self.env['approval.request'].search([('x_purchase_order_ids', 'in', self.id),
-                                                             ('request_status', 'not in', ['cancel', 'refuse'])])
+                                                                 ('request_status', 'not in', ['cancel', 'refuse'])])
         if approval_purchase:
             for approval in approval_purchase:
                 if len(approval.x_purchase_order_ids) > 1:
@@ -152,6 +144,19 @@ class PurchaseOrder(models.Model):
                     approval.message_post(body=_('承認申請の見積依頼伝票が見積依頼操作で取消されたため、承認申請を取消しました。'))
         return res
 
+    # 07092022 , x_payment_type related partner and x_responsible_user_id related user_id of po
+    def _prepare_invoice(self):
+        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '00000')],
+                                                                          limit=1)
+        business_department = self.env['ss_erp.responsible.department'].search([('name', '=', '業務')], limit=1)
+        invoice_vals = super(PurchaseOrder, self)._prepare_invoice()
+        invoice_vals.update({
+            'x_responsible_user_id': self.user_id or False,
+            'x_payment_type': self.partner_id.x_payment_type,
+            'x_organization_id': head_office_organization.id,
+            'x_responsible_dept_id': business_department.id,
+        })
+        return invoice_vals
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
@@ -178,11 +183,11 @@ class PurchaseOrderLine(models.Model):
 
         # C001_ガス換算
         if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.id in [
-                    self.env.ref('ss_erp_product_template.product_medium_classification_propane').id,
-                    self.env.ref('ss_erp_product_template.product_medium_classification_butan1').id,
-                    self.env.ref('ss_erp_product_template.product_medium_classification_butan2').id,
-                    self.env.ref('ss_erp_product_template.product_medium_classification_industry_propane').id,
-                    self.env.ref('ss_erp_product_template.product_medium_classification_industry_butan').id]:
+            self.env.ref('ss_erp_product_template.product_medium_classification_propane').id,
+            self.env.ref('ss_erp_product_template.product_medium_classification_butan1').id,
+            self.env.ref('ss_erp_product_template.product_medium_classification_butan2').id,
+            self.env.ref('ss_erp_product_template.product_medium_classification_industry_propane').id,
+            self.env.ref('ss_erp_product_template.product_medium_classification_industry_butan').id]:
             conversion_quantity = float_round(conversion_quantity, precision_digits=2)
         else:
             if self.x_alternative_unit_id.id == self.env.ref('uom.product_uom_kgm').id:
