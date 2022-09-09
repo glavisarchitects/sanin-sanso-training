@@ -244,7 +244,7 @@
                         'invisible': [('has_x_account_move_ids', '=', 'no')],
                         'required': [('has_x_account_move_ids', '=', 'required')],
                         'readonly':[('request_status','!=','new')]
-                    }">
+                    }" domain="[('move_type', 'in', ['in_invoice','in_refund']), ('state','=','draft')]">
                         <tree>
                             <field name="name"/>
                             <field name="invoice_partner_display_name" string="取引先"/>
