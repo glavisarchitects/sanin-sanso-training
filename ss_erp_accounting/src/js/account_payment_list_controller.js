@@ -52,6 +52,12 @@ odoo.define('ss_erp.account_payment_list', function (require) {
                     this.$buttons.find('.o_list_button_account_transfer_request_fb').hide();
                 }
 
+                if (this.renderer.state.context.default_payment_type === 'outbound'){
+                    this.$buttons.find('.o_list_button_fb_general_transfer').show();
+                } else {
+                    this.$buttons.find('.o_list_button_fb_general_transfer').hide();
+                }
+
             }
         },
 

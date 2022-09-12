@@ -73,17 +73,18 @@ class SvfCloudConfig(models.Model):
             "timeZone": 'Asia/Tokyo',
             "locale": 'ja',
         }
-        request_header = base64.b64encode((param['client_id'] + ':' + param['cloud_secret']).encode('utf-8'))
-        x = base64.b64encode('.'.encode('utf-8'))
-        headers_64 = base64.b64encode(ujson.dumps(headers).encode('utf-8'))
-        payload_64 = base64.b64encode(ujson.dumps(payload).encode('utf-8'))
-        sign_data = headers_64 + base64.b64encode('.'.encode('utf-8')) + payload_64
-        # private_key = rsa.PrivateKey(param['cloud_private_key'])
-        secret_key = base64.b64encode(param['cloud_private_key'].encode('utf-8'))
-        # signature = base64.b64encode(rsa.sign(sign_data, param['cloud_private_key'], 'SHA-256'))
-        signature = hmac.new(secret_key, sign_data, hashlib.sha256).hexdigest()
-        # signature = base64.b64encode(rsa.sign(sign_data, param['cloud_private_key'], 'SHA-256'))
-        # beatoken = headers_64 + payload_64 + signature
-        _logger.info("signatureSS: ", signature)
+        # request_header = base64.b64encode((param['client_id'] + ':' + param['cloud_secret']).encode('utf-8'))
+        # x = base64.b64encode('.'.encode('utf-8'))
+        # headers_64 = base64.b64encode(ujson.dumps(headers).encode('utf-8'))
+        # payload_64 = base64.b64encode(ujson.dumps(payload).encode('utf-8'))
+        # sign_data = headers_64 + base64.b64encode('.'.encode('utf-8')) + payload_64
+        # # private_key = rsa.PrivateKey(param['cloud_private_key'])
+        # secret_key = base64.b64encode(param['cloud_private_key'].encode('utf-8'))
+        # # signature = base64.b64encode(rsa.sign(sign_data, param['cloud_private_key'], 'SHA-256'))
+        # signature = hmac.new(secret_key, sign_data, hashlib.sha256).hexdigest()
+        # # signature = base64.b64encode(rsa.sign(sign_data, param['cloud_private_key'], 'SHA-256'))
+        # # beatoken = headers_64 + payload_64 + signature
+        # _logger.info("signatureSS: ", signature)
+        token = jwt.encode(payload=payload, key=param['cloud_private_key'], headers=headers)
         # TODO: Wait for SVF config infor
-        return signature
+        return token
