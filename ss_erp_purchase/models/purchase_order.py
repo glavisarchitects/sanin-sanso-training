@@ -34,8 +34,14 @@ class PurchaseOrder(models.Model):
         else:
             return False
 
-    x_bis_categ_id = fields.Many2one(
-        'ss_erp.bis.category', string="取引区分", copy=True, index=True)
+    # x_bis_categ_id = fields.Many2one(
+    #     'ss_erp.bis.category', string="取引区分", copy=True, index=True)
+    x_bis_categ_id = fields.Selection(
+        string='取引区分',
+        selection=[('gas_material', 'ガス・器材'),
+                   ('construction', '工事'), ],
+        required=False, )
+
     x_rfq_issue_date = fields.Date("見積依頼日")
     x_po_issue_date = fields.Date("発注送付日")
     x_desired_delivery = fields.Selection([
@@ -84,10 +90,12 @@ class PurchaseOrder(models.Model):
 
     @api.depends('x_bis_categ_id')
     def _compute_show_construction(self):
-        rec_construction_id = self.env.ref(
-            "ss_erp_purchase.ss_erp_bis_category_data_0", raise_if_not_found=False)
+        # rec_construction_id = self.env.ref(
+        #     "ss_erp_purchase.ss_erp_bis_category_data_0", raise_if_not_found=False)
+        # for rec in self:
+        #     rec.x_is_construction = True if rec_construction_id and self.x_bis_categ_id and self.x_bis_categ_id.id == rec_construction_id.id else False
         for rec in self:
-            rec.x_is_construction = True if rec_construction_id and self.x_bis_categ_id and self.x_bis_categ_id.id == rec_construction_id.id else False
+            rec.x_is_construction = True if self.x_bis_categ_id == 'construction' else False
 
     def action_rfq_send(self):
         res = super(PurchaseOrder, self).action_rfq_send()
