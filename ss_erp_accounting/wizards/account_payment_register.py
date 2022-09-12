@@ -13,6 +13,8 @@ class AccountPaymentRegister(models.TransientModel):
     x_line_ids = fields.One2many('ss_erp.post.difference.account', 'acc_payment_register_id',
                                  string="Journal items")
 
+    x_journal_sub_account = fields.Many2many('ss_erp.account.subaccount', compute='_compute_x_journal_sub_account')
+
     # -------------------------------------------------------------------------
     # BUSINESS METHODS
     # -------------------------------------------------------------------------
@@ -28,9 +30,24 @@ class AccountPaymentRegister(models.TransientModel):
             # line_payment.append((0, 0, values))
             line_payment.append(values)
         payment_vals['write_off_line_vals'] = line_payment
+        payment_vals['x_sub_account_id'] = self.x_sub_account_id.id
 
-        # print('###########',dict)
         return payment_vals
+
+    @api.depends('journal_id')
+    def _compute_x_journal_sub_account(self):
+        for rec in self:
+            rec.x_journal_sub_account = False
+            if rec.journal_id and rec.journal_id.default_account_id:
+                if rec.journal_id.default_account_id.x_sub_account_ids:
+                    rec.x_journal_sub_account = rec.journal_id.default_account_id.x_sub_account_ids
+
+    @api.onchange('journal_id')
+    def _get_default_x_sub_account(self):
+        self.x_sub_account_id = False
+        if self.journal_id and self.journal_id.default_account_id:
+            if self.journal_id.default_account_id.x_sub_account_ids:
+                self.x_sub_account_id = self.journal_id.default_account_id.x_sub_account_ids[0]
 
     @api.onchange('x_line_ids')
     def _compute_total_fraction(self):

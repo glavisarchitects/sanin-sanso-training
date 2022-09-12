@@ -9,9 +9,11 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string="担当組織", index=True, default=lambda self: self._get_default_x_organization_id())
+        'ss_erp.organization', string="担当組織", index=True,
+        default=lambda self: self._get_default_x_organization_id())
     x_responsible_dept_id = fields.Many2one(
-        'ss_erp.responsible.department', string="管轄部門", index=True, default=lambda self: self._get_default_x_responsible_dept_id())
+        'ss_erp.responsible.department', string="管轄部門", index=True,
+        default=lambda self: self._get_default_x_responsible_dept_id())
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
@@ -50,48 +52,6 @@ class AccountMove(models.Model):
                    ('cash', '現金'),
                    ('bills', '手形'), ],
         required=False, index=True, store=True)
-
-    # @api.model
-    # def create(self, vals):
-    #     if 'move_type' in vals:
-    #         if vals['move_type'] in ['in_invoice', 'in_refund']:
-    #             head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '000')])
-    #             organization = self.env['ss_erp.organization'].search([('organization_code', 'like', '00000')])
-    #             if head_office_organization:
-    #                 vals['x_organization_id'] = head_office_organization.id
-    #                 business_department = self.env['ss_erp.responsible.department'].search([('name', '=', '業務')])
-    #                 vals['x_responsible_dept_id'] = business_department.id
-    #             elif organization:
-    #                 vals['x_organization_id'] = organization.id
-    #         elif vals.get('invoice_origin') and vals['move_type'] in ['out_invoice', 'out_refund']:
-    #             sale_doc_reference = vals['invoice_origin'].split(', ')
-    #             sale_reference = self.env['sale.order'].search([('name', 'in', sale_doc_reference)], limit=1)
-    #             vals['x_organization_id'] = sale_reference.x_organization_id.id
-    #             vals['x_responsible_dept_id'] = sale_reference.x_responsible_dept_id.id
-    #
-    #             # Todo reconfirm
-    #             vals['x_responsible_user_id'] = sale_reference.user_id.id
-    #             vals['x_mkt_user_id'] = sale_reference.user_id.id
-    #         # vals['x_payment_method'] = self.x_payment_method
-    #     res = super(AccountMove, self).create(vals)
-    #     return res
-
-    # @api.onchange('move_type')
-    # def _onchange_type(self):
-    #     ''' Onchange made to filter the partners depending of the type. '''
-    #     res = super()._onchange_type()
-    #     if self.move_type in ['in_invoice', 'in_refund']:
-    #         head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '000')])
-    #         self.x_organization_id = head_office_organization.id
-    #         business_department = self.env['ss_erp.responsible.department'].search([('name', '=', '業務')])
-    #         self.x_responsible_dept_id = business_department.id
-    #     elif self.invoice_origin and self.move_type in ['out_invoice', 'out_refund']:
-    #         sale_doc_reference = self.invoice_origin.split(', ')
-    #         sale_reference = self.env['sale.order'].search([('name', 'in', sale_doc_reference)], limit=1)
-    #         self.x_organization_id = sale_reference.x_organization_id.id
-    #         self.x_responsible_dept_id = sale_reference.x_organization_id.id
-    #
-    #     return res
 
     def _move_autocomplete_invoice_lines_values(self):
         ''' This method recomputes dynamic lines on the current journal entry that include taxes, cash rounding
@@ -138,6 +98,7 @@ class AccountMove(models.Model):
         values = self._convert_to_write(self._cache)
         values.pop('invoice_line_ids', None)
         return values
+
     def button_cancel(self):
         res = super(AccountMove, self).button_cancel()
         approval_account_move_in = self.env['approval.request'].search([('x_account_move_ids', 'in', self.id),
@@ -175,10 +136,12 @@ class AccountMove(models.Model):
             raise UserError('画像パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
 
     def svf_template_export(self):
+        token = self.env['svf.cloud.config'].sudo().get_access_token()
+
         self.check_param_r002_config()
         # TODO: Recheck token return from svf.cloud.config
         # this is just sample code, need to redo when official information about SVF API is available
-        token = self.env['svf.cloud.config'].sudo().get_access_token()
+
 
         # Prepare data sent to SVF
         sale_doc_reference = self.invoice_origin.split(', ')
@@ -193,7 +156,6 @@ class AccountMove(models.Model):
             raise UserError('対応する Payment レコードが見つかりません。')
         if len(payment_record) > 1:
             raise UserError('複数の Payment . レコードが見つかりました。')
-
 
         # Todo: wait for account_move_line, sale_order_line data confirmation
         data = {
