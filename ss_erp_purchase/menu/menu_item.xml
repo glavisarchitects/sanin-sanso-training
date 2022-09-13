@@ -8,8 +8,8 @@
                   action="ss_erp_partner_rebate_action" parent="account.menu_finance_payables" sequence="400"/>
 
         <!--    取引区分-->
-        <menuitem id="transaction_classification_menu" name="取引区分" action="ss_erp_bis_category_action"
-                  parent="contacts.res_partner_menu_config" sequence="7"/>
+<!--        <menuitem id="transaction_classification_menu" name="取引区分" action="ss_erp_bis_category_action"-->
+<!--                  parent="contacts.res_partner_menu_config" sequence="7"/>-->
 
 
         <!--  PURCHASE PRODUCT CONFIG  -->

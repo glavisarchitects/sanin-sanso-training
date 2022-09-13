@@ -1,5 +1,6 @@
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from datetime import datetime
+from odoo.exceptions import UserError, AccessError
 
 
 class Construction(models.Model):
@@ -64,11 +65,19 @@ class Construction(models.Model):
     picking_ids = fields.One2many('stock.picking', 'x_construction_order_id', string='配送')
 
     delivery_count = fields.Integer(string='工事出荷', compute='_compute_picking_ids')
+    delivery_purchase_order_count = fields.Integer(string='購買', compute='_compute_purchase_order_count')
+
+    client_order_ref = fields.Char(string='顧客参照', copy=False)
 
     @api.depends('picking_ids')
     def _compute_picking_ids(self):
         for rec in self:
             rec.delivery_count = len(rec.picking_ids)
+
+    def _compute_purchase_order_count(self):
+        for rec in self:
+            rec.delivery_purchase_order_count = len(
+                self.env['purchase.order'].search([('x_construction_order_id', '=', rec.id)]))
 
     def action_view_delivery(self):
         '''
@@ -88,15 +97,7 @@ class Construction(models.Model):
             else:
                 action['views'] = form_view
             action['res_id'] = pickings.id
-        # Prepare the context.
-        action['context'] = dict(self._context, default_partner_id=self.partner_id.id,
-                                 default_picking_type_id=self.picking_type_id.id,
-                                 default_origin=self.name,
-                                 default_location_id=self.location_id.id,
-                                 default_location_dest_id=self.location_dest_id.id,
-                                 default_organization_id=self.organization_id.id,
-                                 default_responsible_dept_id=self.organization_id.id
-                                 )
+
         return action
 
     def _prepare_construction_component_data(self):
@@ -111,6 +112,7 @@ class Construction(models.Model):
                     'product_uom_qty': component.product_uom_qty,
                     'product_id': component.product_id.id,
                     'product_uom_id': component.product_uom_id.id,
+                    'name': component.product_id.name,
                 }
             else:
                 data[key]['product_uom_qty'] += component.product_uom_qty
@@ -201,6 +203,11 @@ class Construction(models.Model):
     construction_workorder_ids = fields.One2many(comodel_name='ss.erp.construction.workorder', ondelete="cascade",
                                                  inverse_name='construction_id', string='作業オーダー',
                                                  tracking=True)
+
+    fiscal_position_id = fields.Many2one('account.fiscal.position', string='会計ポジション')
+
+    payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件', tracking=True)
+
     state = fields.Selection(
         string='ステータス',
         selection=[('draft', 'ドラフト'),
@@ -239,6 +246,161 @@ class Construction(models.Model):
     def action_start(self):
         self.write({'state': 'progress'})
 
+    def action_view_purchase_order(self):
+        purchase_order_ids = self.env['purchase.order'].search([('x_construction_order_id', '=', self.id)]).ids
+        action = self.env['ir.actions.act_window']._for_xml_id('purchase.purchase_rfq')
+        action['domain'] = [('id', 'in', purchase_order_ids)]
+        action['view_mode'] = 'tree'
+        return action
+
     def action_purchase(self):
-        self.picking_ids.filtered(lambda r: r.picking_type_id.code == 'outgoing')
-        return
+        if self.construction_component_ids:
+            new_po = []
+            for rec in self.construction_component_ids:
+                po = rec._run_buy()
+                if po:
+                    new_po.append(po.id)
+            if new_po:
+                action = self.env['ir.actions.act_window']._for_xml_id('purchase.purchase_rfq')
+                action['domain'] = [('id', 'in', new_po)]
+                action['view_mode'] = 'tree'
+                return action
+            else:
+                raise UserError("購買対象のプロダクトはありません。")
+        else:
+            raise UserError("購買対象のプロダクトはありません。")
+
+    def action_view_invoice(self):
+        invoices = self.env['account.move'].search([('x_construction_order_id','=',self.id)])
+        action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_out_invoice_type")
+        if len(invoices) > 1:
+            action['domain'] = [('id', 'in', invoices.ids)]
+        elif len(invoices) == 1:
+            form_view = [(self.env.ref('account.view_move_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = invoices.id
+        else:
+            action = {'type': 'ir.actions.act_window_close'}
+
+        context = {
+            'default_move_type': 'out_invoice',
+        }
+        action['context'] = context
+        return action
+
+    @api.model
+    def _nothing_to_invoice_error(self):
+        msg = _("""請求するものは何もありません！""")
+        return UserError(msg)
+
+    def _prepare_invoice(self):
+        """
+        Prepare the dict of values to create the new invoice for a sales order. This method may be
+        overridden to implement custom invoice generation (making sure to call super() to establish
+        a clean extension chain).
+        """
+        self.ensure_one()
+        journal = self.env['account.move'].with_context(default_move_type='out_invoice')._get_default_journal()
+        if not journal:
+            raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (self.company_id.name, self.company_id.id))
+
+        invoice_vals = {
+            'ref': self.client_order_ref,
+            'move_type': 'out_invoice',
+            'invoice_origin': self.name,
+            'x_organization_id': self.organization_id.id,
+            'x_responsible_dept_id': self.responsible_dept_id.id,
+            'x_construction_order_id': self.id,
+            'invoice_user_id': self.user_id.id,
+            'partner_id': self.partner_id.id,
+            'fiscal_position_id': (self.fiscal_position_id or self.fiscal_position_id.get_fiscal_position(
+                self.partner_id.id)).id,
+            'partner_shipping_id': self.partner_id.id,
+            'currency_id': self.currency_id.id,
+            'invoice_payment_term_id': self.payment_term_id.id,
+            'partner_bank_id': self.partner_id.bank_ids[:1].id,
+            'invoice_line_ids': [],
+            'company_id': self.company_id.id,
+        }
+        return invoice_vals
+
+    def _get_invoiceable_lines(self):
+        return self.construction_component_ids
+
+
+    @api.model
+    def _prepare_down_payment_section_line(self, **optional_values):
+        """
+        Prepare the dict of values to create a new down payment section for a construction order line.
+
+        :param optional_values: any parameter that should be added to the returned down payment section
+        """
+        context = {'lang': self.partner_id.lang}
+        down_payments_section_line = {
+            'display_type': 'line_section',
+            'name': _('前受金'),
+            'product_id': False,
+            'product_uom_id': False,
+            'quantity': 0,
+            'discount': 0,
+            'price_unit': 0,
+            'account_id': False
+        }
+        del context
+        if optional_values:
+            down_payments_section_line.update(optional_values)
+        return down_payments_section_line
+
+    def _create_invoices(self, final=False, date=None):
+        """
+        Create the invoice associated to the Construction Order.
+        :param final: if True, refunds will be generated if necessary
+        :returns: list of created invoices
+        """
+        if not self.env['account.move'].check_access_rights('create', False):
+            try:
+                self.check_access_rights('write')
+                self.check_access_rule('write')
+            except AccessError:
+                return self.env['account.move']
+
+        invoice_vals_list = []
+        invoice_item_sequence = 0  # Incremental sequencing to keep the lines order on the invoice.
+
+        invoice_vals = self._prepare_invoice()
+        invoiceable_lines = self._get_invoiceable_lines()
+
+        invoice_line_vals = []
+        down_payment_section_added = False
+        for line in invoiceable_lines:
+            if not down_payment_section_added and line.is_downpayment:
+                # Create a dedicated section for the down payments
+                # (put at the end of the invoiceable_lines)
+                invoice_line_vals.append(
+                    (0, 0, self._prepare_down_payment_section_line(
+                        sequence=invoice_item_sequence,
+                    )),
+                )
+                down_payment_section_added = True
+                invoice_item_sequence += 1
+            invoice_line_vals.append(
+                (0, 0, line._prepare_invoice_line(
+                    sequence=invoice_item_sequence,
+                )),
+            )
+            invoice_item_sequence += 1
+
+        invoice_vals['invoice_line_ids'] += invoice_line_vals
+        invoice_vals_list.append(invoice_vals)
+
+        if not invoice_vals_list:
+            raise self._nothing_to_invoice_error()
+
+        moves = self.env['account.move'].sudo().with_context(default_move_type='out_invoice').create(invoice_vals_list)
+
+        if final:
+            moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
+        return moves

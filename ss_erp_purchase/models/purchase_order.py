@@ -90,10 +90,6 @@ class PurchaseOrder(models.Model):
 
     @api.depends('x_bis_categ_id')
     def _compute_show_construction(self):
-        # rec_construction_id = self.env.ref(
-        #     "ss_erp_purchase.ss_erp_bis_category_data_0", raise_if_not_found=False)
-        # for rec in self:
-        #     rec.x_is_construction = True if rec_construction_id and self.x_bis_categ_id and self.x_bis_categ_id.id == rec_construction_id.id else False
         for rec in self:
             rec.x_is_construction = True if self.x_bis_categ_id == 'construction' else False
 
@@ -165,6 +161,7 @@ class PurchaseOrder(models.Model):
             'x_responsible_dept_id': business_department.id,
         })
         return invoice_vals
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'

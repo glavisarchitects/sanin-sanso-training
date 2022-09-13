@@ -62,7 +62,7 @@ class SvfCloudConfig(models.Model):
             seconds=int(param['cloud_access_token_exp_sec']))).timetuple())
 
         headers = {
-            "alg": "RS256",
+            "alg": "HS256",
         }
         payload = {
             "iss": param['client_id'],
@@ -86,5 +86,6 @@ class SvfCloudConfig(models.Model):
         # # beatoken = headers_64 + payload_64 + signature
         # _logger.info("signatureSS: ", signature)
         token = jwt.encode(payload=payload, key=param['cloud_private_key'], headers=headers)
+        print('##########################', token)
         # TODO: Wait for SVF config infor
         return token
