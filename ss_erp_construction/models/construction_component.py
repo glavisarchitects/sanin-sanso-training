@@ -1,14 +1,17 @@
-from odoo import fields, models, api
+from odoo import fields, models, api, SUPERUSER_ID, _
+from datetime import datetime
+from itertools import groupby
 
 
 class ConstructionComponent(models.Model):
     _name = 'ss.erp.construction.component'
     _description = '構成品'
 
+    name = fields.Text(string='説明')
     product_id = fields.Many2one(comodel_name='product.product', string='プロダクト', tracking=True)
     product_uom_qty = fields.Float(string='数量', tracking=True)
     qty_done = fields.Float(string='消費済み', store=True)
-    qty_invoiced = fields.Float(string='請求済み', store=True)
+    qty_to_invoice = fields.Float(string='To Invoice', compute='_compute_qty_to_invoice')
     product_uom_id = fields.Many2one(comodel_name='uom.uom', string='単位', tracking=True,
                                      domain="[('category_id', '=', product_uom_category_id)]")
     product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string='単位カテゴリ')
@@ -45,6 +48,113 @@ class ConstructionComponent(models.Model):
             rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
             rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
 
+    def _compute_qty_to_invoice(self):
+        for line in self:
+            qty_invoiced = 0.0
+            invoice_lines = self.env['account.move.line'].search(
+                [('move_id.x_construction_order_id', '=', line.construction_id.id),
+                 ('product_id', '=', line.product_id.id), ('product_uom_id', '=', line.product_uom_id.id)])
+            for invoice_line in invoice_lines:
+                if invoice_line.move_id.state != 'cancel':
+                    if invoice_line.move_id.move_type == 'out_invoice':
+                        qty_invoiced += invoice_line.quantity
+                    elif invoice_line.move_id.move_type == 'out_refund':
+                        qty_invoiced -= invoice_line.quantity
+            line.qty_to_invoice = line.product_uom_qty - qty_invoiced
 
+    def _prepare_purchase_order(self):
+        company_id = self.env.user.company_id
+        picking_type_id = self.env['stock.picking.type'].search(
+            [('default_location_src_id.usage', '=', 'supplier'), ('default_location_dest_id.usage', '=', 'customer')],
+            limit=1)
+        return {
+            'partner_id': self.partner_id.id,
+            'user_id': False,
+            'x_construction_order_id': self.construction_id.id,
+            'picking_type_id': picking_type_id.id,
+            'company_id': company_id.id,
+            'currency_id': self.partner_id.with_company(
+                company_id).property_purchase_currency_id.id or company_id.currency_id.id,
+            'payment_term_id': self.payment_term_id.id,
+            'date_order': datetime.today(),
+            'x_bis_categ_id': 'construction',
+            'dest_address_id': self.construction_id.partner_id.id,
+            'x_organization_id': self.construction_id.organization_id.id,
+            'x_responsible_dept_id': self.construction_id.responsible_dept_id.id,
+        }
 
+    def _prepare_quantity_to_buy(self):
+        quantity = 0
 
+        # 在庫出荷の量の計算
+        domain_out = [('picking_id.x_construction_order_id', '=', self.construction_id.id),
+                      ('picking_id.picking_type_id.code', '=', 'outgoing')
+                      ]
+        move_ids = self.env['stock.move.line'].search(domain_out)
+        quantity += sum(move_ids.mapped('product_uom_qty')) + sum(move_ids.mapped('qty_done'))
+
+        picking_type_id = self.env['stock.picking.type'].search(
+            [('default_location_src_id.usage', '=', 'supplier'), ('default_location_dest_id.usage', '=', 'customer')],
+            limit=1)
+
+        # 直送数量の計算
+        domain_dropship = [('picking_id.x_construction_order_id', '=', self.construction_id.id),
+                           ('picking_id.picking_type_id', '=', picking_type_id.id)]
+        move_dropship_ids = self.env['stock.move'].search(domain_dropship)
+        quantity += sum(move_dropship_ids.mapped('product_uom_qty'))
+
+        return self.product_uom_qty - quantity
+
+    @api.model
+    def _run_buy(self):
+
+        quantity_to_buy = self._prepare_quantity_to_buy()
+        if quantity_to_buy != 0:
+
+            domain = [
+                ('partner_id', '=', self.partner_id.id),
+                ('state', '=', 'draft'),
+                ('x_construction_order_id', '=', self.construction_id.id),
+            ]
+            po = self.env['purchase.order'].sudo().search(domain, limit=1)
+            if not po:
+                vals = self._prepare_purchase_order()
+                po = self.env['purchase.order'].with_user(SUPERUSER_ID).create(vals)
+
+            po_line = po.order_line.filtered(
+                lambda
+                    l: not l.display_type and l.product_uom == self.product_uom_id and l.product_id == self.product_id)
+
+            if po_line:
+                vals = {'product_qty': po_line.product_qty + quantity_to_buy}
+                po_line[0].write(vals)
+            else:
+                po_line_values = {
+                    'order_id': po.id,
+                    'product_id': self.product_id.id,
+                    'product_qty': quantity_to_buy,
+                    'product_uom': self.product_uom_id.id
+                }
+                self.env['purchase.order.line'].sudo().create(po_line_values)
+            return po
+        else:
+            return False
+
+    def _prepare_invoice_line(self, **optional_values):
+        """
+        Prepare the dict of values to create the new invoice line for a construction order line.
+
+        :param qty: float quantity to invoice
+        :param optional_values: any parameter that should be added to the returned invoice line
+        """
+        self.ensure_one()
+        res = {
+            'product_id': self.product_id.id,
+            'product_uom_id': self.product_uom_id.id,
+            'quantity': self.qty_to_invoice,
+            'price_unit': self.sale_price,
+            'tax_ids': [(6, 0, [self.tax_id.id])] if self.tax_id else False,
+        }
+        if optional_values:
+            res.update(optional_values)
+        return res

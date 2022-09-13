@@ -117,6 +117,12 @@ class AccountMove(models.Model):
                     approval.message_post(body=_('承認申請の仕入請求伝票が仕入請求操作で取消されたため、承認申請を取消しました。'))
         return res
 
+    def action_register_payment(self):
+        res = super().action_register_payment()
+        res['context']['default_x_organization_id'] = self.x_organization_id.id
+        res['context']['default_x_responsible_dept_id'] = self.x_responsible_dept_id.id
+        return res
+
     # SVF Region
     def check_param_r002_config(self):
         r002_form_format_path = self.env['ir.config_parameter'].sudo().get_param('R002_form_format_path')

@@ -12,8 +12,9 @@ class AccountPaymentWizard(models.TransientModel):
     _description = 'Comprehensive Create Zengin FB Wizard'
 
     from_date = fields.Date(string="有効開始日", copy=False)
-    to_date = fields.Date(string="有効終了日", copy=False,)
+    to_date = fields.Date(string="有効終了日", copy=False, )
     transfer_date = fields.Date(string='振込日')
+    property_supplier_payment_term_id = fields.Many2one('account.payment.term', string='連絡先の仕入先支払条件')
 
     @api.onchange('from_date', 'to_date')
     def _onchange_from_to__date(self):
@@ -23,8 +24,11 @@ class AccountPaymentWizard(models.TransientModel):
 
     def zengin_general_transfer_fb(self):
         # account_journal = self.env['account.journal']
+        partner_match_payment_term = self.env['res.partner'].search(
+            [('property_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
         domain = [('payment_type', '=', 'outbound'), ('x_is_fb_created', '=', False),
                   ('date', '<=', self.to_date), ('date', '>=', self.from_date),
+                  ('partner_id', 'in', partner_match_payment_term.ids),
                   ('journal_id.type', '=', 'bank')]
         payment_zengin_data = self.env['account.payment'].search(domain)
         if not payment_zengin_data:
@@ -47,27 +51,28 @@ class AccountPaymentWizard(models.TransientModel):
         if not head_office_organization:
             raise UserError('本社支店情報設定してください')
 
-        partner_bank = head_office_organization.bank_ids[0]
-        if not partner_bank:
+        organization_bank = head_office_organization.bank_ids[0]
+        if not organization_bank:
             raise UserError('本社支店の銀行を設定してください')
 
-        bic_bank_organization = partner_bank.bank_id.bic
+        bic_bank_organization = organization_bank.bank_id.bic
         if len(bic_bank_organization) != 4:
             raise UserError('振込先金融機関コード長が一致しません')
 
-        branch_number = partner_bank.x_bank_branch_number
+        branch_number = organization_bank.x_bank_branch_number
         if len(branch_number) != 3:
             raise UserError('支店番号長が一致しません')
 
-        acc_type = '1' if partner_bank.acc_type == 'bank' else '2'
-        acc_number = partner_bank.acc_number  # 7 number from res.partner.bank
+        acc_type = '1' if organization_bank.acc_type == 'bank' else '2'
+        acc_number = organization_bank.acc_number  # 7 number from res.partner.bank
         if len(acc_number) != 7:
             raise UserError('口座番号致しません')
 
         # header
         file_data = "1210" + transfer_requester_code + company_name + get_multi_character(40 - len(company_name)) + \
                     transfer_date_month + bic_bank_organization + get_multi_character(15) + branch_number + \
-                    get_multi_character(15) + acc_type + acc_number + get_multi_character(17) + '\r\n'  # '\n\r' = CRLF ?
+                    get_multi_character(15) + acc_type + acc_number + get_multi_character(
+            17) + '\r\n'  # '\n\r' = CRLF ?
         # data
         total_sum_amount = 0
         for pay in payment_zengin_data:
@@ -88,22 +93,52 @@ class AccountPaymentWizard(models.TransientModel):
                 raise UserError('口座番号長が一致しません')
 
             partner_acc_holder_furigana = pay.partner_bank_id.x_acc_holder_furigana
-            partner_bank_amount = str(int(pay.amount))
-            total_sum_amount += int(pay.amount)
+
+            total_amount_line = int(pay.amount)
+
+
+            # new design total amount = total amount - fee in bank.commission
+            if pay.partner_id.x_fee_burden_paid == 'other_side_paid':
+                bank_commission = self.env['ss_erp.bank.commission'].search(
+                    [('bank_id', '=', organization_bank.bank_id.id)])
+                suitable_bank = False
+                if bank_commission:
+                    for bc in bank_commission:
+                        if bc.range == 'up' and total_amount_line > bc.paid_amount:
+                            suitable_bank = bc
+                            break
+                        elif bc.range == 'down' and total_amount_line < bc.paid_amount:
+                            suitable_bank = bc
+                            break
+                        elif bc.range == 'equal' and total_amount_line == bc.paid_amount:
+                            suitable_bank = bc
+                            break
+                if not bank_commission or not suitable_bank:
+                    raise UserError('一致する手数料銀行が見つかりません')
+                if bic_bank_organization == pay.partner_bank_id.bank_id.bic:
+                    total_amount_line = total_amount_line - int(suitable_bank.our_bank)
+                else:
+                    total_amount_line = total_amount_line - int(suitable_bank.other_bank)
+
+            partner_bank_amount = str(total_amount_line)
+            total_sum_amount += int(total_amount_line)
             file_data += '2' + partner_bic_number + get_multi_character(15) + partner_branch_number + \
                          get_multi_character(15) + get_multi_character(4, '0') + partner_bank_acc_type + \
                          partner_acc_number + partner_acc_holder_furigana + \
                          get_multi_character(30 - len(partner_acc_holder_furigana)) + \
                          get_multi_character(10 - len(partner_bank_amount), '0') + partner_bank_amount + '0' + \
-                         get_multi_character(10, '0') + get_multi_character(10, '0') + '7' + get_multi_character(8) + '\r\n'
+                         get_multi_character(10, '0') + get_multi_character(10, '0') + '7' + get_multi_character(
+                8) + '\r\n'
 
             # Todo: Now comment this line to test data
             pay.x_is_fb_created = True
         # trailer record
         len_line_record = str(len(payment_zengin_data))
+
         len_total_amount = len(str(total_sum_amount))
         file_data += '8' + get_multi_character(6 - len(len_line_record), '0') + len_line_record + \
-                     get_multi_character(12 - len_total_amount, '0') + str(total_sum_amount) + get_multi_character(101) + '\r\n'
+                     get_multi_character(12 - len_total_amount, '0') + str(total_sum_amount) + get_multi_character(
+            101) + '\r\n'
 
         # end record
         file_data += '9' + get_multi_character(119)
