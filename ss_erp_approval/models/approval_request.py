@@ -368,9 +368,11 @@ class ApprovalRequest(models.Model):
         if self.x_is_multiple_approval:
             self.action_approve()
 
+            curren_multi_approvers = self.multi_approvers_ids.filtered(lambda p: self.env.user in p.x_approval_user_ids)
+
             # 前のステップのステータスを承認に変更
-            previous_user_ids = self.multi_approvers_ids.filtered(
-                lambda r: r.x_approval_seq < self.x_user_sequence).sudo().write({'x_user_status': 'approved'})
+            self.multi_approvers_ids.filtered(
+                lambda p: p.x_approval_seq < curren_multi_approvers.x_approval_seq and p.x_user_status == 'pending').sudo().write({'x_user_status': 'approved'})
 
     @api.depends('x_is_multiple_approval', 'multi_approvers_ids.x_user_status', 'approver_ids.status')
     def _compute_request_status(self):
