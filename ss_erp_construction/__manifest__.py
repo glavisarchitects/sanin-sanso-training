@@ -22,6 +22,8 @@
         'views/construction_workorder_view.xml',
         'views/approval_category_views.xml',
         'views/approval_request_view.xml',
+        'views/stock_picking_views.xml',
+        'views/construction_category_view.xml',
         'menu/menu_item.xml',
 
         # DATA

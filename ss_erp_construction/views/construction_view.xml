@@ -51,7 +51,8 @@
                             <button type="object"
                                     name="action_view_invoice"
                                     class="oe_stat_button"
-                                    icon="fa-truck">
+                                     icon="fa-pencil-square-o">
+                                <field name="invoice_count" widget="statinfo" string="請求書" modifiers="{'readonly':true}" id="invoice_count"/>
                             </button>
                         </div>
 
@@ -64,11 +65,12 @@
                             <group>
                                 <field name="construction_name" required="1"/>
                                 <field name="partner_id" required="1"/>
-                                <field name="organization_id" required="1"/>
-                                <field name="responsible_dept_id" required="1"/>
-                                <field name="template_id" attrs="{'readonly':[('state','!=','draft')],}"/>
+                                <field name="category_id" required="1"/>
+                                <field name="template_id" attrs="{'readonly':[('state','!=','draft')],}" domain="[('state', '=', 'approved')]"/>
                             </group>
                             <group>
+                                <field name="organization_id" required="1"/>
+                                <field name="responsible_dept_id" required="1"/>
                                 <field name="plan_date"/>
                                 <field name="payment_term_id"/>
                                 <field name="user_id" required="1"/>
@@ -87,8 +89,6 @@
                                         <field name="payment_term_id"/>
                                         <field name="product_uom_qty"/>
                                         <field name="product_uom_id"/>
-<!--                                        <field name="qty_reserved"/>-->
-<!--                                        <field name="qty_done"/>-->
                                         <field name="product_uom_category_id" attrs="{'column_invisible':1}"/>
                                         <field name="standard_price"/>
                                         <field name="currency_id" attrs="{'column_invisible':1}"/>

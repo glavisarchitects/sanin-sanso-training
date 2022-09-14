@@ -68,11 +68,6 @@
                                 'invisible' :[('has_lot_ids', '=', False)]}"/>
             </field>
 
-             <field name="origin" position="after">
-                 <field name="x_construction_order_id" attrs="{'invisible' :[('x_construction_order_id', '=', False)]}"/>
-                 <field name="x_workorder_id" attrs="{'invisible' :[('x_workorder_id', '=', False)]}"/>
-            </field>
-
             <field name="move_type" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>

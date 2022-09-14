@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ss_erp_product_medium_class_for_convert" model="ir.config_parameter">
+            <field name="key">ss_erp_product_medium_class_for_convert</field>
+            <field name="value"></field>
+        </record>
+    </data>
+</odoo>
