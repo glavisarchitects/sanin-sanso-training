@@ -90,10 +90,6 @@ class PurchaseOrder(models.Model):
 
     @api.depends('x_bis_categ_id')
     def _compute_show_construction(self):
-        # rec_construction_id = self.env.ref(
-        #     "ss_erp_purchase.ss_erp_bis_category_data_0", raise_if_not_found=False)
-        # for rec in self:
-        #     rec.x_is_construction = True if rec_construction_id and self.x_bis_categ_id and self.x_bis_categ_id.id == rec_construction_id.id else False
         for rec in self:
             rec.x_is_construction = True if self.x_bis_categ_id == 'construction' else False
 
@@ -166,6 +162,7 @@ class PurchaseOrder(models.Model):
         })
         return invoice_vals
 
+
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
@@ -190,12 +187,11 @@ class PurchaseOrderLine(models.Model):
         conversion_quantity = product_uom_alternative.converted_value * self.product_uom_qty
 
         # C001_ガス換算
-        if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.id in [
-            self.env.ref('ss_erp_product_template.product_medium_classification_propane').id,
-            self.env.ref('ss_erp_product_template.product_medium_classification_butan1').id,
-            self.env.ref('ss_erp_product_template.product_medium_classification_butan2').id,
-            self.env.ref('ss_erp_product_template.product_medium_classification_industry_propane').id,
-            self.env.ref('ss_erp_product_template.product_medium_classification_industry_butan').id]:
+        medium_classification_code = self.env['ir.config_parameter'].sudo().get_param(
+            'ss_erp_product_medium_class_for_convert').split(",")
+        if len(medium_classification_code) == 0:
+            raise UserError("プロダクト中分類の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_product_medium_class_for_convert）")
+        if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.medium_classification_code in medium_classification_code:
             conversion_quantity = float_round(conversion_quantity, precision_digits=2)
         else:
             if self.x_alternative_unit_id.id == self.env.ref('uom.product_uom_kgm').id:

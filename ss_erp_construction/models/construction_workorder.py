@@ -62,8 +62,6 @@ class ConstructionWorkorder(models.Model):
         string='構成品',
         required=False)
 
-    picking_ids = fields.One2many('stock.picking', 'x_workorder_id', string='配送')
-
     def _prepare_stock_picking(self):
         picking = {
             'partner_id': self.partner_id.id,

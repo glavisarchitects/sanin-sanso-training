@@ -15,6 +15,11 @@ class AccountPaymentRegister(models.TransientModel):
 
     x_journal_sub_account = fields.Many2many('ss_erp.account.subaccount', compute='_compute_x_journal_sub_account')
 
+    x_organization_id = fields.Many2one(
+        'ss_erp.organization', string="担当組織", index=True)
+    x_responsible_dept_id = fields.Many2one(
+        'ss_erp.responsible.department', string="管轄部門", index=True)
+
     # -------------------------------------------------------------------------
     # BUSINESS METHODS
     # -------------------------------------------------------------------------
@@ -31,6 +36,8 @@ class AccountPaymentRegister(models.TransientModel):
             line_payment.append(values)
         payment_vals['write_off_line_vals'] = line_payment
         payment_vals['x_sub_account_id'] = self.x_sub_account_id.id
+        payment_vals['x_organization_id'] = self.x_organization_id.id
+        payment_vals['x_responsible_dept_id'] = self.x_responsible_dept_id.id
 
         return payment_vals
 

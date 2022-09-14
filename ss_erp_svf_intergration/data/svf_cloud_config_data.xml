@@ -15,7 +15,8 @@
 
         <record id="svf_cloud_private_key" model="ir.config_parameter">
             <field name="key">svf_cloud_private_key</field>
-            <field name="value">MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCePJCcv3gzbt5m
+            <field name="value">-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCePJCcv3gzbt5m
 cFTC48nyJf3dbea/3NzCJtrk4Ic22Hm2WwGTJJo4PidLQGTvYkKctTF5CFq7/KdA
 PGQ++JTnz5Ltz+BHbGpMzBI5BhXH1iZ7NEb7gQlVX/vwVjYlpLhoS+Eh4nfXNTj5
 kuenM0B6wJ4ss8oRGb4KcCHx77GqZE3agu8H5TOFkkB8ldWtr4V+EslU+n5j/j32
@@ -40,7 +41,8 @@ gTUXqCx9Y211EcfxEs49fpGCFsv2EZEqzv9v23aQ8amNbhJuBvhO4zMr/yueLiQP
 zjaM31/3HgHxiJnt9HJHFXOs7LHugRPoi4i2OC8CgYEAuH2h5mh+GLI33oPp/GvH
 t0haAI+leUa6xspqOoPX6BEIIfaPg5J6CvKU25RJOIvVnTVSDZfu68kz6knftAVz
 FV7FOI7CbGnJBx/8bG1s89I+i/V0BJlWGiKQwFHs/7JitIcIKDSPA3w5Mv5vxwWK
-RyWfUHb5pHQ159c4ndQcXuk=</field>
+RyWfUHb5pHQ159c4ndQcXuk=
+-----END PRIVATE KEY-----</field>
         </record>
 
         <record id="svf_cloud_user_id" model="ir.config_parameter">
@@ -55,7 +57,12 @@ RyWfUHb5pHQ159c4ndQcXuk=</field>
 
         <record id="svf_cloud_access_token_req_url" model="ir.config_parameter">
             <field name="key">svf_cloud_access_token_req_url</field>
-            <field name="value">https://api.svfcloud.com/</field>
+            <field name="value">https://api.svfcloud.com/oauth2/token</field>
+        </record>
+
+        <record id="svf_cloud_access_token_revoke_req_url" model="ir.config_parameter">
+            <field name="key">svf_cloud_access_token_revoke_req_url</field>
+            <field name="value">https://api.svfcloud.com/oauth2/revoke</field>
         </record>
 
         <!--    R003_売掛金残高確認書     -->

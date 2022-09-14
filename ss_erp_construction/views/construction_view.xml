@@ -25,6 +25,9 @@
                                 attrs="{'invisible':[('state','!=','order_received')],}"/>
                         <button name="action_purchase" string="購買発注" class="oe_highlight" type="object"
                                 attrs="{'invisible':[('state','!=','progress')],}"/>
+                        <button name="%(action_view_construction_advance_payment_inv)d" string="請求書作成"
+                            type="action" class="btn-primary"
+                            attrs="{'invisible': [('state', 'not in', ['order_received','progress','done'])]}"/>
                         <field name="state" widget="statusbar" nolabel="1"
                                statusbar_visible="draft,request_approve,confirmed,sent,order_received,progress,done"/>
                     </header>
@@ -38,6 +41,19 @@
                                     attrs="{'invisible': [('delivery_count', '=', 0)]}" groups="base.group_user">
                                 <field name="delivery_count" widget="statinfo" string="工事出荷"/>
                             </button>
+                            <button type="object"
+                                    name="action_view_purchase_order"
+                                    class="oe_stat_button"
+                                    icon="fa-truck"
+                                    attrs="{'invisible': [('delivery_purchase_order_count', '=', 0)]}" groups="base.group_user">
+                                <field name="delivery_purchase_order_count" widget="statinfo" string="購買発注"/>
+                            </button>
+                            <button type="object"
+                                    name="action_view_invoice"
+                                    class="oe_stat_button"
+                                     icon="fa-pencil-square-o">
+                                <field name="invoice_count" widget="statinfo" string="請求書" modifiers="{'readonly':true}" id="invoice_count"/>
+                            </button>
                         </div>
 
                         <div class="oe_title">
@@ -49,14 +65,17 @@
                             <group>
                                 <field name="construction_name" required="1"/>
                                 <field name="partner_id" required="1"/>
-                                <field name="organization_id" required="1"/>
-                                <field name="responsible_dept_id" required="1"/>
-                                <field name="template_id" attrs="{'readonly':[('state','!=','draft')],}"/>
+                                <field name="category_id" required="1"/>
+                                <field name="template_id" attrs="{'readonly':[('state','!=','draft')],}" domain="[('state', '=', 'approved')]"/>
                             </group>
                             <group>
+                                <field name="organization_id" required="1"/>
+                                <field name="responsible_dept_id" required="1"/>
                                 <field name="plan_date"/>
+                                <field name="payment_term_id"/>
                                 <field name="user_id" required="1"/>
                                 <field name="company_id" readonly="1"/>
+                                <field name="client_order_ref"/>
                                 <field name="all_margin_rate" widget="percentage"/>
                             </group>
                         </group>
@@ -65,12 +84,11 @@
                                 <field name="construction_component_ids" widget="one2many" nolabel="1">
                                     <tree editable="bottom">
                                         <field name="product_id"/>
+                                        <field name="name"/>
                                         <field name="partner_id"/>
                                         <field name="payment_term_id"/>
                                         <field name="product_uom_qty"/>
                                         <field name="product_uom_id"/>
-<!--                                        <field name="qty_reserved"/>-->
-<!--                                        <field name="qty_done"/>-->
                                         <field name="product_uom_category_id" attrs="{'column_invisible':1}"/>
                                         <field name="standard_price"/>
                                         <field name="currency_id" attrs="{'column_invisible':1}"/>
@@ -136,6 +154,9 @@
                                     </tree>
                                 </field>
 
+                            </page>
+                            <page name="other_info" string="その他情報">
+                                <field name="fiscal_position_id"/>
                             </page>
                         </notebook>
                     </sheet>

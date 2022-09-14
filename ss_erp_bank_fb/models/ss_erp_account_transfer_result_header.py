@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 from odoo.exceptions import UserError
-
+import datetime
+from odoo.tools import format_date
 
 class AccountTransferResultHeader(models.Model):
     _name = 'ss_erp.account.transfer.result.header'
@@ -141,7 +142,13 @@ class AccountTransferResultHeader(models.Model):
             register_payment.sudo().action_create_payments()
             # assign payment_id
             created_payment = self.env['account.payment'].search([('ref', '=', partner_invoice.name)], limit=1)
-            created_payment.move_id.write(
+            # 09/13/2022
+            # Year + Withdrawal date in account transfer result header (yyyy/mm/dd)
+            # year_current = datetime.datetime.today().year
+            # withdrawal_date = (str(self.withdrawal_date) + str(year_current)) if self.withdrawal_date else False
+            # e = datetime.datetime.strptime(withdrawal_date,'%m%d%Y')
+
+            created_payment.move_id.sudo().write(
                 {
                     'x_receipt_type': partner_invoice.x_receipt_type,
                     'x_payment_type': partner_invoice.x_payment_type,
@@ -149,6 +156,7 @@ class AccountTransferResultHeader(models.Model):
                     'x_responsible_dept_id': partner_invoice.x_responsible_dept_id,
                     'x_is_not_create_fb': True,
                     'date': self.upload_date,
+                    # 'date': format_date(self.env, e),
                     # 'journal_id': self.env['account.journal'].browse(int(a005_account_transfer_result_journal_id)),
                     'x_responsible_user_id': partner_invoice.x_responsible_user_id,
                     'x_mkt_user_id': partner_invoice.x_mkt_user_id,

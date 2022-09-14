@@ -10,6 +10,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='request_owner_id']" position="after">
                     <field name="has_construction_order_id" invisible="1"/>
+                    <field name="has_construction_template_id" invisible="1"/>
                 </xpath>
                 <xpath expr="//group[@name='request_details']" position="inside">
                     <field name="x_construction_order_id" attrs="{
@@ -19,6 +20,14 @@
                 }" options="{'no_quick_create': True}"
                            context="{'request_id': active_id}"
                            domain="[('state', '=', 'draft')]"
+                    />
+                    <field name="x_construction_template_id" attrs="{
+                    'invisible': [('has_construction_template_id', '=', 'no')],
+                    'required': [('has_construction_template_id', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }" options="{'no_quick_create': True}"
+                           context="{'request_id': active_id}"
+                           domain="[('state', '=', 'new')]"
                     />
                 </xpath>
             </field>

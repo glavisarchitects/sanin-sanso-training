@@ -16,6 +16,7 @@
         'data/product_pricelist_class_data.xml',
         'data/uom_data.xml',
         'data/down_payment_product_data.xml',
+        'data/parameter_config_data.xml',
 
         # VIEW
         'views/product_product_views.xml',

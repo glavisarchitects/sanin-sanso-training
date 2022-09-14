@@ -119,30 +119,6 @@ class ApprovalRequest(models.Model):
     x_current_sequence = fields.Integer(compute='_compute_current_sequence', store=True)
     x_user_sequence = fields.Integer(compute='_compute_current_sequence')
 
-    def _get_default_x_organization_id(self):
-        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
-        if employee_id:
-            return employee_id.organization_first
-        else:
-            return False
-
-    def _get_default_x_responsible_dept_id(self):
-        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
-        if employee_id and employee_id.department_jurisdiction_first:
-            return employee_id.department_jurisdiction_first[0]
-        else:
-            return False
-
-    def _compute_current_sequence(self):
-        for rec in self:
-            rec.x_current_sequence = False
-            if rec.request_status == 'pending':
-                set_approvers = set(rec.multi_approvers_ids.filtered(lambda r: r.x_user_status == 'pending').mapped(
-                    'x_approval_seq'))
-                rec.x_current_sequence = min(set_approvers) if set_approvers else 0
-            rec.x_user_sequence = rec.multi_approvers_ids.filtered(
-                lambda r: self.env.user in r.x_approval_user_ids).x_approval_seq
-
     @api.constrains('x_approval_date')
     def _check_x_approval_date(self):
         for request in self:
@@ -159,25 +135,36 @@ class ApprovalRequest(models.Model):
             request.show_btn_draft = True if request.request_owner_id == self.env.user and request.request_status in [
                 'refused', 'cancel'] else False
 
+    def _calculate_current_sequence(self):
+        set_approvers = set(self.multi_approvers_ids.filtered(lambda r: r.x_user_status == 'pending').mapped(
+            'x_approval_seq'))
+        if set_approvers:
+            return min(set_approvers)
+        else:
+            return 0
+
     def _compute_show_btn_temporary_approve(self):
         for request in self:
             request.show_btn_temporary_approve = False
-            existing_approver = request.multi_approvers_ids.filtered(
-                lambda r: r.x_approval_seq > request.x_current_sequence).mapped('x_approval_user_ids')
-            if self.env.user in existing_approver and request.user_status == 'pending':
-                request.show_btn_temporary_approve = True
+            if request.category_id.x_is_multiple_approval:
+                x_current_sequence = request._calculate_current_sequence()
+                existing_approver = request.multi_approvers_ids.filtered(
+                    lambda r: r.x_approval_seq > x_current_sequence).mapped('x_approval_user_ids')
+                if request.request_status == 'pending' and self.env.user in existing_approver and request.user_status == 'pending':
+                    request.show_btn_temporary_approve = True
 
     def _compute_show_btn_refuse(self):
         for request in self:
             request.show_btn_refuse = False
             if request.request_status == 'pending' and request.user_status == 'pending':
                 if request.category_id.x_is_multiple_approval:
+                    x_current_sequence = request._calculate_current_sequence()
                     existing_approver = list(set(request.multi_approvers_ids.filtered(
-                        lambda r: r.x_approval_seq >= request.x_current_sequence).mapped('x_approval_user_ids')))
+                        lambda r: r.x_approval_seq >= x_current_sequence).mapped('x_approval_user_ids')))
                     if self.env.user in existing_approver:
                         request.show_btn_refuse = True
                 else:
-                    if self.env.user in request.approver_ids.mapped('user_id'):
+                    if self.env.user.id in request.approver_ids.mapped('user_id').ids:
                         request.show_btn_refuse = True
 
     def _compute_show_btn_approve(self):
@@ -185,13 +172,14 @@ class ApprovalRequest(models.Model):
             request.show_btn_approve = False
             if request.request_status == 'pending' and request.user_status == 'pending':
                 if request.category_id.x_is_multiple_approval:
+                    x_current_sequence = request._calculate_current_sequence()
                     current_step_approvers = request.multi_approvers_ids.filtered(
-                        lambda r: r.x_approval_seq == request.x_current_sequence).x_approval_user_ids
+                        lambda r: r.x_approval_seq == x_current_sequence).x_approval_user_ids
                     if self.env.user in current_step_approvers:
                         request.show_btn_approve = True
                 else:
-                    if self.env.user in request.approver_ids.mapped('user_id'):
-                        request.show_btn_approve = False
+                    if self.env.user.id in request.approver_ids.mapped('user_id').ids:
+                        request.show_btn_approve = True
 
     @api.onchange('category_id', 'request_owner_id')
     def _onchange_category_id(self):
@@ -249,8 +237,9 @@ class ApprovalRequest(models.Model):
                 line_related_ids += group.users.ids
             line.write({'x_related_user_ids': [(6, 0, line_related_ids)]})
 
-        self.write({'approver_ids': [(5, 0, 0)] + [(0, 0, {'user_id': user_id, 'request_id': self.id, 'status': 'new'})
-                                                   for user_id in new_users]})
+        self.write(
+            {'approver_ids': [(5, 0, 0)] + [(0, 0, {'user_id': user_id, 'request_id': self.id, 'status': 'pending'})
+                                            for user_id in new_users]})
 
     def _validate_before_confirm(self):
         if not self.x_is_multiple_approval and len(self.approver_ids) < self.approval_minimum:
@@ -261,11 +250,14 @@ class ApprovalRequest(models.Model):
         if self.requirer_document == 'required' and not self.attachment_number:
             raise UserError(_("少なくとも１つのドキュメントを添付する必要はあります。"))
         self.write({'date_confirmed': fields.Datetime.now()})
+        if self.x_is_multiple_approval and len(self.multi_approvers_ids) == 0:
+            raise UserError(
+                _("承認者を設定してください"))
 
     def _create_activity_for_approver(self):
         approvers = self.mapped('approver_ids').filtered(lambda approver: approver.status == 'new')
         approvers.write({'status': 'pending'})
-        approvers.filtered(lambda x: x.status == 'pending')._create_activity()
+        # approvers._create_activity()
 
     def _change_request_state(self):
         if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
@@ -294,11 +286,22 @@ class ApprovalRequest(models.Model):
             self._generate_approver_ids()
             self.multi_approvers_ids.write({'x_user_status': 'pending'})
 
-        self._create_activity_for_approver()
-        self._change_request_state()
+        # self._create_activity_for_approver()
+            self._change_request_state()
 
-        user = self.multi_approvers_ids.mapped('x_related_group_ids').mapped('users')
-        self.notify_approval(users=user)
+            # Send email to all member
+            notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
+                "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
+            notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+            self.notify_new_request(partner_ids=notify_parner_ids)
+
+            # Send approve request to first step
+            notify_parner_ids = self.multi_approvers_ids[0].x_approval_user_ids.mapped(
+                "partner_id").ids
+            notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+            self.notify_approve_request(partner_ids=notify_parner_ids)
+        else:
+            super().action_confirm()
 
     def _approve_multi_approvers(self, user):
         curren_multi_approvers = self.multi_approvers_ids.filtered(lambda p: user in p.x_approval_user_ids)
@@ -311,16 +314,31 @@ class ApprovalRequest(models.Model):
                     and len(current_approved_users) > 0:
                 curren_multi_approvers.write({'x_user_status': 'approved'})
 
-            users = curren_multi_approvers.mapped('x_approval_user_ids') - current_approved_users.mapped('user_id')
-            self.notify_approval(users=users, approver=self.env.user)
+                # 現ステップの承認者及び関係者に進捗通知
+                notify_parner_ids = curren_multi_approvers.x_approval_user_ids.mapped(
+                    "partner_id").ids + curren_multi_approvers.x_related_user_ids.mapped("partner_id").ids
+                notify_parner_ids.append(self.request_owner_id.id)
+                notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+                self.notify_request_progress(partner_ids=notify_parner_ids)
 
-            # 次のステップはある場合、そのステップの承認者たちに通知
-            if curren_multi_approvers.x_user_status == 'approved':
+                # 次承認者があった場合、承認依頼を送信
                 next_multi_approvers = self.multi_approvers_ids.filtered(
                     lambda p: p.x_approval_seq == curren_multi_approvers.x_approval_seq + 1)
+
                 if next_multi_approvers:
-                    users = next_multi_approvers.mapped('x_approval_user_ids')
-                    self.notify_approval(users=users, approver=self.env.user)
+                    approve_partner_ids = []
+                    if next_multi_approvers.x_approval_user_ids:
+                        approve_partner_ids = next_multi_approvers.x_approval_user_ids.mapped("partner_id").ids
+                    # Remove duplicate user
+                    user_ids = list(dict.fromkeys(approve_partner_ids))
+                    self.notify_approve_request(partner_ids=approve_partner_ids)
+                # 最終ステップである場合、申請者及び関係者を全員に最終通知する
+                else:
+                    notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
+                        "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
+                    notify_parner_ids.append(self.request_owner_id.id)
+                    notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+                    self.notify_final(partner_ids=notify_parner_ids)
 
     def action_approve(self, approver=None):
         super(ApprovalRequest, self).action_approve(approver=approver)
@@ -339,11 +357,12 @@ class ApprovalRequest(models.Model):
         if self.x_is_multiple_approval:
             self._refuse_multi_approvers()
 
-        users = self.request_owner_id
-        users |= self.multi_approvers_ids.mapped('x_related_user_ids')
-        self.notify_approval(users=users, approver=self.env.user)
-        self.sudo().write({'last_approver': self.env.user.id})
-        self.activity_ids.sudo().unlink()
+            notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
+                "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped(
+                "partner_id").ids
+            notify_parner_ids.append(self.request_owner_id.id)
+            notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+            self.notify_final(partner_ids=notify_parner_ids)
 
     def action_draft(self):
         if self.request_owner_id != self.env.user:
@@ -351,6 +370,7 @@ class ApprovalRequest(models.Model):
         super(ApprovalRequest, self).action_draft()
         if self.x_is_multiple_approval:
             self.multi_approvers_ids.write({'x_user_status': 'new'})
+            self.approver_ids.write({'status': 'new'})
         self.activity_ids.sudo().unlink()
 
     def _cancel_multi_approvers(self):
@@ -358,6 +378,8 @@ class ApprovalRequest(models.Model):
         self.activity_ids.sudo().unlink()
 
     def action_cancel(self):
+        if self.request_owner_id != self.env.user:
+            raise UserError(_("申請者以外は取消することができません。"))
         self.sudo()._get_user_approval_activities(user=self.env.user).unlink()
         super(ApprovalRequest, self).action_cancel()
         if self.x_is_multiple_approval:
@@ -367,12 +389,13 @@ class ApprovalRequest(models.Model):
     def action_temporary_approve(self):
         if self.x_is_multiple_approval:
             self.action_approve()
-
             curren_multi_approvers = self.multi_approvers_ids.filtered(lambda p: self.env.user in p.x_approval_user_ids)
 
             # 前のステップのステータスを承認に変更
             self.multi_approvers_ids.filtered(
-                lambda p: p.x_approval_seq < curren_multi_approvers.x_approval_seq and p.x_user_status == 'pending').sudo().write({'x_user_status': 'approved'})
+                lambda
+                    p: p.x_approval_seq < curren_multi_approvers.x_approval_seq and p.x_user_status == 'pending').sudo().write(
+                {'x_user_status': 'approved'})
 
     @api.depends('x_is_multiple_approval', 'multi_approvers_ids.x_user_status', 'approver_ids.status')
     def _compute_request_status(self):
@@ -414,10 +437,6 @@ class ApprovalRequest(models.Model):
 
             request.request_status = status
             request._validate_request()
-
-            users = request.multi_approvers_ids.mapped('x_related_user_ids')
-            users |= request.request_owner_id
-            self.notify_approval(users=users, approver=request.last_approver)
 
     def _validate_request(self):
         # LPガス棚卸伝票
@@ -473,44 +492,108 @@ class ApprovalRequest(models.Model):
             if self.request_status == 'approved':
                 self.x_account_move_ids.sudo().write({'state': 'posted'})
 
-    def notify_approval(self, users, approver=None):
-        # message_subscribe
-
-        partner_ids = users.mapped('partner_id').ids
-        body_template = self.env.ref('ss_erp_approval.message_multi_approver_assigned')
+    # 新規承認通知
+    def notify_new_request(self, partner_ids):
+        body_template = self.env.ref('ss_erp_approval.message_multi_approver_new_request')
         self = self.with_context(lang=self.env.user.lang)
         body_template = body_template.with_context(lang=self.env.user.lang)
         model_description = self.env['ir.model']._get('approval.request').display_name
-        if self.request_status == 'approved' and self.x_contact_form_id and self.x_contact_form_id.res_partner_id:
-            partner = self.env['res.partner'].browse(int(self.x_contact_form_id.res_partner_id))
-        else:
-            partner = False
+        subject = _('【新販売基幹システムOdoo】%(name)s 新規承認依頼登録', name=self.name)
         body = body_template._render(
             dict(
                 request=self,
                 model_description=model_description,
-                approver=approver,
-                approver_date=fields.Date.context_today(self),
-                reject_date=fields.Date.context_today(self),
-                partner=partner,
                 access_link=self.env['mail.thread']._notify_get_action_link(
                     'view', model=self._name, res_id=self.id),
             ),
             engine='ir.qweb',
             minimal_qcontext=True
         )
-        subject = _('%(name)s: %(summary)s assigned to you',
-                    name=self.name, summary=self._description)
-        if approver and self.request_status != 'approved':
-            subject = _('%(name)s: %(summary)s is approve by %(approver)s',
-                        name=self.name, summary=self._description, approver=approver.name)
 
-        if approver and self.request_status == 'approved':
-            subject = _('%(name)s: %(summary)s is approved',
-                        name=self.name, summary=self._description)
-        if self.request_status == 'refused':
-            subject = _('%(name)s: %(summary)s is rejected',
-                        name=self.name, summary=self._description)
+        self.message_notify(
+            partner_ids=partner_ids,
+            body=body,
+            subject=subject,
+            record_name=self.name,
+            model_description=model_description,
+            email_layout_xmlid='mail.mail_notification_light',
+        )
+
+    # 進捗通知
+    def notify_request_progress(self, partner_ids):
+        body_template = self.env.ref('ss_erp_approval.message_multi_approver_request_progress')
+        self = self.with_context(lang=self.env.user.lang)
+        body_template = body_template.with_context(lang=self.env.user.lang)
+        model_description = self.env['ir.model']._get('approval.request').display_name
+        subject = _('【新販売基幹システムOdoo】%(name)s 承認ステータス進捗', name=self.name)
+        body = body_template._render(
+            dict(
+                request=self,
+                model_description=model_description,
+                access_link=self.env['mail.thread']._notify_get_action_link(
+                    'view', model=self._name, res_id=self.id),
+            ),
+            engine='ir.qweb',
+            minimal_qcontext=True
+        )
+
+        self.message_notify(
+            partner_ids=partner_ids,
+            body=body,
+            subject=subject,
+            record_name=self.name,
+            model_description=model_description,
+            email_layout_xmlid='mail.mail_notification_light',
+        )
+
+    # 承認依頼
+    def notify_approve_request(self, partner_ids):
+        body_template = self.env.ref('ss_erp_approval.message_multi_approver_approve_request')
+        self = self.with_context(lang=self.env.user.lang)
+        body_template = body_template.with_context(lang=self.env.user.lang)
+        model_description = self.env['ir.model']._get('approval.request').display_name
+
+        subject = _('【新販売基幹システムOdoo】%(name)s承認依頼', name=self.name)
+
+        body = body_template._render(
+            dict(
+                request=self,
+                model_description=model_description,
+                approver_date=fields.Date.context_today(self),
+                reject_date=fields.Date.context_today(self),
+                access_link=self.env['mail.thread']._notify_get_action_link(
+                    'view', model=self._name, res_id=self.id),
+            ),
+            engine='ir.qweb',
+            minimal_qcontext=True
+        )
+
+        self.message_notify(
+            partner_ids=partner_ids,
+            body=body,
+            subject=subject,
+            record_name=self.name,
+            model_description=model_description,
+            email_layout_xmlid='mail.mail_notification_light',
+        )
+
+    # 最終通知
+    def notify_final(self, partner_ids):
+        body_template = self.env.ref('ss_erp_approval.message_multi_approver_final')
+        self = self.with_context(lang=self.env.user.lang)
+        body_template = body_template.with_context(lang=self.env.user.lang)
+        model_description = self.env['ir.model']._get('approval.request').display_name
+        subject = _('【新販売基幹システムOdoo】%(name)s承認結果通知', name=self.name)
+        body = body_template._render(
+            dict(
+                request=self,
+                model_description=model_description,
+                access_link=self.env['mail.thread']._notify_get_action_link(
+                    'view', model=self._name, res_id=self.id),
+            ),
+            engine='ir.qweb',
+            minimal_qcontext=True
+        )
 
         self.message_notify(
             partner_ids=partner_ids,

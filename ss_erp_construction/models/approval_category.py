@@ -13,4 +13,6 @@ class ApprovalCategory(models.Model):
 
     has_construction_order_id = fields.Selection(
         CATEGORY_SELECTION, string="工事オーダー", default="no", )
+    has_construction_template_id = fields.Selection(
+        CATEGORY_SELECTION, string="工事テンプレート", default="no", )
 
