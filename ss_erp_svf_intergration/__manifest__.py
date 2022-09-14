@@ -14,6 +14,8 @@
         "security/ir.model.access.csv",
 
         # VIEWS
+        'views/account_move_views.xml',
+
         'menu/menu_item.xml',
 
         # DATA

@@ -69,6 +69,16 @@ class Construction(models.Model):
 
     client_order_ref = fields.Char(string='顧客参照', copy=False)
 
+    invoice_count = fields.Integer(compute='_compute_invoice_count')
+
+    category_id = fields.Many2one("ss_erp.construction.category",string="工事種別")
+
+    def _compute_invoice_count(self):
+        Invoice = self.env['account.move']
+        can_read = Invoice.check_access_rights('read', raise_exception=False)
+        for rec in self:
+            rec.invoice_count = can_read and Invoice.search_count([('x_construction_order_id', '=', rec.id)]) or 0
+
     @api.depends('picking_ids')
     def _compute_picking_ids(self):
         for rec in self:

@@ -164,7 +164,7 @@ class ApprovalRequest(models.Model):
                     if self.env.user in existing_approver:
                         request.show_btn_refuse = True
                 else:
-                    if self.env.user in request.approver_ids.mapped('user_id'):
+                    if self.env.user.id in request.approver_ids.mapped('user_id').ids:
                         request.show_btn_refuse = True
 
     def _compute_show_btn_approve(self):
@@ -178,8 +178,8 @@ class ApprovalRequest(models.Model):
                     if self.env.user in current_step_approvers:
                         request.show_btn_approve = True
                 else:
-                    if self.env.user in request.approver_ids.mapped('user_id'):
-                        request.show_btn_approve = False
+                    if self.env.user.id in request.approver_ids.mapped('user_id').ids:
+                        request.show_btn_approve = True
 
     @api.onchange('category_id', 'request_owner_id')
     def _onchange_category_id(self):
@@ -287,19 +287,21 @@ class ApprovalRequest(models.Model):
             self.multi_approvers_ids.write({'x_user_status': 'pending'})
 
         # self._create_activity_for_approver()
-        self._change_request_state()
+            self._change_request_state()
 
-        # Send email to all member
-        notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
-            "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
-        notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-        self.notify_new_request(partner_ids=notify_parner_ids)
+            # Send email to all member
+            notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
+                "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
+            notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+            self.notify_new_request(partner_ids=notify_parner_ids)
 
-        # Send approve request to first step
-        notify_parner_ids = self.multi_approvers_ids[0].x_approval_user_ids.mapped(
-            "partner_id").ids
-        notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-        self.notify_approve_request(partner_ids=notify_parner_ids)
+            # Send approve request to first step
+            notify_parner_ids = self.multi_approvers_ids[0].x_approval_user_ids.mapped(
+                "partner_id").ids
+            notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+            self.notify_approve_request(partner_ids=notify_parner_ids)
+        else:
+            super().action_confirm()
 
     def _approve_multi_approvers(self, user):
         curren_multi_approvers = self.multi_approvers_ids.filtered(lambda p: user in p.x_approval_user_ids)
@@ -355,12 +357,12 @@ class ApprovalRequest(models.Model):
         if self.x_is_multiple_approval:
             self._refuse_multi_approvers()
 
-        notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
-            "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped(
-            "partner_id").ids
-        notify_parner_ids.append(self.request_owner_id.id)
-        notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-        self.notify_final(partner_ids=notify_parner_ids)
+            notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
+                "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped(
+                "partner_id").ids
+            notify_parner_ids.append(self.request_owner_id.id)
+            notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+            self.notify_final(partner_ids=notify_parner_ids)
 
     def action_draft(self):
         if self.request_owner_id != self.env.user:
