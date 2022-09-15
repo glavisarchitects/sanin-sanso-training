@@ -181,9 +181,12 @@ class SaleOrderLine(models.Model):
 
         # C001_ガス換算
         medium_classification_code = self.env['ir.config_parameter'].sudo().get_param(
-            'ss_erp_product_medium_class_for_convert').split(",")
-        if len(medium_classification_code) == 0:
-            raise UserError("プロダクト中分類の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_product_medium_class_for_convert）")
+            'ss_erp_product_medium_class_for_convert')
+
+        if not medium_classification_code:
+            raise UserError(
+                "プロダクト中分類の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_product_medium_class_for_convert）")
+        medium_classification_code.split(",")
         if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.medium_classification_code in medium_classification_code:
             conversion_quantity = float_round(conversion_quantity, precision_digits=2)
         else:
