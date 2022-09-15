@@ -53,51 +53,12 @@ class AccountMove(models.Model):
                    ('bills', '手形'), ],
         required=False, index=True, store=True)
 
-    def _move_autocomplete_invoice_lines_values(self):
-        ''' This method recomputes dynamic lines on the current journal entry that include taxes, cash rounding
-        and payment terms lines.
-        '''
-        self.ensure_one()
+    def _recompute_payment_terms_lines(self):
+        super()._recompute_payment_terms_lines()
 
-        for line in self.line_ids.filtered(lambda l: not l.display_type):
-            analytic_account = line._cache.get('analytic_account_id')
-
-            # Do something only on invoice lines.
-            if line.exclude_from_invoice_tab:
-                continue
-
-            # Shortcut to load the demo data.
-            # Doing line.account_id triggers a default_get(['account_id']) that could returns a result.
-            # A section / note must not have an account_id set.
-            if not line._cache.get('account_id') and not line._origin:
-                line.account_id = line._get_computed_account() or self.journal_id.default_account_id
-
-            line.x_sub_account_id = line.account_id.x_sub_account_ids[0] if line.account_id.x_sub_account_ids else False
-
-            if line.product_id and not line._cache.get('name'):
-                line.name = line._get_computed_name()
-
-            # Compute the account before the partner_id
-            # In case account_followup is installed
-            # Setting the partner will get the account_id in cache
-            # If the account_id is not in cache, it will trigger the default value
-            # Which is wrong in some case
-            # It's better to set the account_id before the partner_id
-            # Ensure related fields are well copied.
-            if line.partner_id != self.partner_id.commercial_partner_id:
-                line.partner_id = self.partner_id.commercial_partner_id
-            line.date = self.date
-            line.recompute_tax_line = True
-            line.currency_id = self.currency_id
-            if analytic_account:
-                line.analytic_account_id = analytic_account
-
-        self.line_ids._onchange_price_subtotal()
-        self._recompute_dynamic_lines(recompute_all_taxes=True)
-
-        values = self._convert_to_write(self._cache)
-        values.pop('invoice_line_ids', None)
-        return values
+        for line in self.line_ids:
+            if line.account_id.x_sub_account_ids and line.account_id.user_type_id.type in ('receivable', 'payable'):
+                line.x_sub_account_id = line.account_id.x_sub_account_ids[0]
 
     def button_cancel(self):
         res = super(AccountMove, self).button_cancel()
@@ -127,23 +88,8 @@ class AccountMove(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    @api.model
-    def default_x_sub_account_id(self):
-        if self.account_id and self.account_id.x_sub_account_ids and self.move_id.journal_id.default_account_id == self.account_id:
-            return self.account_id.x_sub_account_ids[0]
-
-    x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', string='補助科目', default=default_x_sub_account_id)
+    x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', string='補助科目')
     x_sub_account_ids = fields.Many2many('ss_erp.account.subaccount', related='account_id.x_sub_account_ids')
 
     x_organization_id = fields.Many2one('ss_erp.organization', related='move_id.x_organization_id')
     x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', related='move_id.x_responsible_dept_id')
-
-    @api.onchange('account_id')
-    def _onchange_get_x_sub_account(self):
-        journal_item_match = self.move_id.line_ids.filtered(lambda l: l.account_id == self.account_id.id)
-        if self.account_id and self.account_id.x_sub_account_ids and self.move_id.journal_id.default_account_id == self.account_id:
-            self.x_sub_account_id = self.account_id.x_sub_account_ids[0]
-            journal_item_match.x_sub_account_id = self.account_id.x_sub_account_ids[0]
-        else:
-            self.x_sub_account_id = False
-            journal_item_match.x_sub_account_id = False
