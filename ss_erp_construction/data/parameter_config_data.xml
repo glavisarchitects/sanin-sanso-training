@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ss_erp_construction_estimate_report" model="ir.config_parameter">
+            <field name="key">ss_erp_construction_estimate_report</field>
+            <field name="value">10000</field>
+        </record>
+    </data>
+</odoo>

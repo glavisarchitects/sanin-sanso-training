@@ -1,7 +1,7 @@
 from odoo import fields, models, api, SUPERUSER_ID, _
 from datetime import datetime
 from itertools import groupby
-
+from odoo.exceptions import UserError
 
 class ConstructionComponent(models.Model):
     _name = 'ss.erp.construction.component'
@@ -12,6 +12,7 @@ class ConstructionComponent(models.Model):
     product_uom_qty = fields.Float(string='数量', tracking=True)
     qty_done = fields.Float(string='消費済み', store=True)
     qty_to_invoice = fields.Float(string='To Invoice', compute='_compute_qty_to_invoice')
+    qty_to_buy = fields.Float(string='To Buy', compute='_compute_qty_to_buy')
     product_uom_id = fields.Many2one(comodel_name='uom.uom', string='単位', tracking=True,
                                      domain="[('category_id', '=', product_uom_category_id)]")
     product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string='単位カテゴリ')
@@ -77,39 +78,47 @@ class ConstructionComponent(models.Model):
                 company_id).property_purchase_currency_id.id or company_id.currency_id.id,
             'payment_term_id': self.payment_term_id.id,
             'date_order': datetime.today(),
+            'x_rfq_issue_date': datetime.today(),
             'x_bis_categ_id': 'construction',
+            'x_desired_delivery': 'full',
             'dest_address_id': self.construction_id.partner_id.id,
             'x_organization_id': self.construction_id.organization_id.id,
             'x_responsible_dept_id': self.construction_id.responsible_dept_id.id,
         }
 
-    def _prepare_quantity_to_buy(self):
-        quantity = 0
+    @api.depends("construction_id.picking_ids")
+    def _compute_qty_to_buy(self):
+        for rec in self:
+            rec.qty_to_buy = 0
+            if rec.product_id.type == "product":
+                for picking in rec.construction_id.picking_ids:
+                    quantity = 0
 
-        # 在庫出荷の量の計算
-        domain_out = [('picking_id.x_construction_order_id', '=', self.construction_id.id),
-                      ('picking_id.picking_type_id.code', '=', 'outgoing')
-                      ]
-        move_ids = self.env['stock.move.line'].search(domain_out)
-        quantity += sum(move_ids.mapped('product_uom_qty')) + sum(move_ids.mapped('qty_done'))
+                    # 在庫出荷の量の計算
+                    if picking.picking_type_id.code == 'outgoing':
+                        quantity +=sum(picking.move_line_ids_without_package.filtered(lambda l: l.product_id == rec.product_id and l.product_uom_id == rec.product_uom_id).mapped('product_uom_qty')) \
+                                   + sum(picking.move_line_ids_without_package.filtered(lambda l: l.product_id == rec.product_id and l.product_uom_id == rec.product_uom_id).mapped('qty_done'))
 
-        picking_type_id = self.env['stock.picking.type'].search(
-            [('default_location_src_id.usage', '=', 'supplier'), ('default_location_dest_id.usage', '=', 'customer')],
-            limit=1)
+                    picking_type_id = self.env['stock.picking.type'].search(
+                        [('default_location_src_id.usage', '=', 'supplier'), ('default_location_dest_id.usage', '=', 'customer')],
+                        limit=1)
 
-        # 直送数量の計算
-        domain_dropship = [('picking_id.x_construction_order_id', '=', self.construction_id.id),
-                           ('picking_id.picking_type_id', '=', picking_type_id.id)]
-        move_dropship_ids = self.env['stock.move'].search(domain_dropship)
-        quantity += sum(move_dropship_ids.mapped('product_uom_qty'))
+                    # 直送数量の計算
+                    if picking.picking_type_id == picking_type_id:
+                        domain_dropship = [('picking_id.x_construction_order_id', '=', self.construction_id.id),
+                                           ('picking_id.picking_type_id', '=', picking_type_id.id)]
+                        move_dropship_ids = self.env['stock.move'].search(domain_dropship)
+                        quantity += sum(picking.move_ids_without_package.filtered(lambda l: l.product_id == rec.product_id and l.product_uom_id == rec.product_uom_id).mapped('product_uom_qty'))
+                        # quantity += sum(move_dropship_ids.mapped('product_uom_qty'))
 
-        return self.product_uom_qty - quantity
+                    rec.qty_to_buy = rec.product_uom_qty - quantity
 
     @api.model
     def _run_buy(self):
 
-        quantity_to_buy = self._prepare_quantity_to_buy()
-        if quantity_to_buy != 0:
+        if self.qty_to_buy != 0 and self.product_id.type == "product":
+            if not self.partner_id:
+                raise UserError("%sのプロダクトに対して、仕入先は設定してください。" % self.product_id.name)
 
             domain = [
                 ('partner_id', '=', self.partner_id.id),
@@ -126,13 +135,13 @@ class ConstructionComponent(models.Model):
                     l: not l.display_type and l.product_uom == self.product_uom_id and l.product_id == self.product_id)
 
             if po_line:
-                vals = {'product_qty': po_line.product_qty + quantity_to_buy}
+                vals = {'product_qty': po_line.product_qty + self.qty_to_buy}
                 po_line[0].write(vals)
             else:
                 po_line_values = {
                     'order_id': po.id,
                     'product_id': self.product_id.id,
-                    'product_qty': quantity_to_buy,
+                    'product_qty': self.qty_to_buy,
                     'product_uom': self.product_uom_id.id
                 }
                 self.env['purchase.order.line'].sudo().create(po_line_values)

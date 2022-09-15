@@ -8,28 +8,30 @@
             <field name="arch" type="xml">
                 <form string="工事">
                     <header>
+                        <field name="show_confirmation_button" invisible="1"/>
+                        <button name="action_print_estimation" type="object" string="工事見積書" attrs="{'invisible':[('state','in',['draft','lost'])],}"/>
+                        <button name="action_confirm" type="object" string="確認" attrs="{'invisible':[('show_confirmation_button','=',False)],}"/>
                         <button name="action_pending" string="保留" type="object"
                                 attrs="{'invisible':[('state','!=','confirmed')],}"/>
-                        <button name="action_sent" string="提出済としてマーク" type="object"
-                                attrs="{'invisible':[('state','!=','confirmed')],}"/>
                         <button name="action_receive_order" string="受注" class="oe_highlight" type="object"
-                                attrs="{'invisible':[('state','!=','sent')],}"/>
+                                attrs="{'invisible':[('state','not in',['sent','pending'])],}"/>
                         <button name="action_mark_lost" string="失注" type="object"
-                                attrs="{'invisible':[('state','in',('order_received','progress','done','lost'))],}"/>
-                        <!--                        <button name="action_request_approve" string="申請" type="object" attrs="{'invisible':[('state','!=','draft')],}"/>-->
+                                attrs="{'invisible':[('state','not in',['sent','pending'])],}"/>
                         <button name="action_back_to_draft" string="ドラフトへ戻す" type="object"
                                 attrs="{'invisible':[('state','!=','lost')],}"/>
                         <button name="action_cancel" string="取消" type="object"
                                 attrs="{'invisible':[('state','!=','draft')],}"/>
                         <button name="action_start" string="開始" class="oe_highlight" type="object"
-                                attrs="{'invisible':[('state','!=','order_received')],}"/>
+                                attrs="{'invisible':[('state','not in',['order_received'])],}"/>
                         <button name="action_purchase" string="購買発注" class="oe_highlight" type="object"
-                                attrs="{'invisible':[('state','!=','progress')],}"/>
+                                attrs="{'invisible':[('state','not in',['order_received','progress'])],}"/>
                         <button name="%(action_view_construction_advance_payment_inv)d" string="請求書作成"
-                            type="action" class="btn-primary"
-                            attrs="{'invisible': [('state', 'not in', ['order_received','progress','done'])]}"/>
-                        <field name="state" widget="statusbar" nolabel="1"
-                               statusbar_visible="draft,request_approve,confirmed,sent,order_received,progress,done"/>
+                                type="action" class="btn-primary"
+                                attrs="{'invisible': [('state', 'not in', ['confirmed','order_received','progress','done'])]}"/>
+                        <field name="state" widget="statusbar" nolabel="1" attrs="{'invisible':[('show_confirmation_button','=',False)],}"
+                               statusbar_visible="draft,request_approve,confirmed,pending,order_received,progress,done"/>
+                        <field name="state" widget="statusbar" nolabel="1" attrs="{'invisible':[('show_confirmation_button','=',True)],}"
+                               statusbar_visible="draft,confirmed,pending,order_received,progress,done"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
@@ -45,14 +47,17 @@
                                     name="action_view_purchase_order"
                                     class="oe_stat_button"
                                     icon="fa-truck"
-                                    attrs="{'invisible': [('delivery_purchase_order_count', '=', 0)]}" groups="base.group_user">
+                                    attrs="{'invisible': [('delivery_purchase_order_count', '=', 0)]}"
+                                    groups="base.group_user">
                                 <field name="delivery_purchase_order_count" widget="statinfo" string="購買発注"/>
                             </button>
                             <button type="object"
                                     name="action_view_invoice"
                                     class="oe_stat_button"
-                                     icon="fa-pencil-square-o">
-                                <field name="invoice_count" widget="statinfo" string="請求書" modifiers="{'readonly':true}" id="invoice_count"/>
+                                    attrs="{'invisible': [('invoice_count', '=', 0)]}"
+                                    icon="fa-pencil-square-o">
+                                <field name="invoice_count" widget="statinfo" string="請求書"
+                                       modifiers="{'readonly':true}" id="invoice_count"/>
                             </button>
                         </div>
 
@@ -65,18 +70,17 @@
                             <group>
                                 <field name="construction_name" required="1"/>
                                 <field name="partner_id" required="1"/>
+                                <field name="template_id" attrs="{'readonly':[('state','!=','draft')],}"
+                                       domain="[('state', '=', 'approved')]"/>
                                 <field name="category_id" required="1"/>
-                                <field name="template_id" attrs="{'readonly':[('state','!=','draft')],}" domain="[('state', '=', 'approved')]"/>
                             </group>
                             <group>
                                 <field name="organization_id" required="1"/>
                                 <field name="responsible_dept_id" required="1"/>
                                 <field name="plan_date"/>
-                                <field name="payment_term_id"/>
                                 <field name="user_id" required="1"/>
-                                <field name="company_id" readonly="1"/>
-                                <field name="client_order_ref"/>
                                 <field name="all_margin_rate" widget="percentage"/>
+                                <field name="payment_term_id"/>
                             </group>
                         </group>
                         <notebook>
@@ -156,7 +160,16 @@
 
                             </page>
                             <page name="other_info" string="その他情報">
-                                <field name="fiscal_position_id"/>
+                                <group>
+                                    <group string="その他">
+                                        <field name="client_order_ref"/>
+                                        <field name="fiscal_position_id"/>
+                                        <field name="company_id" readonly="1"/>
+                                    </group>
+                                    <group>
+
+                                    </group>
+                                </group>
                             </page>
                         </notebook>
                     </sheet>

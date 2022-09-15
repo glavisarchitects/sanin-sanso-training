@@ -28,6 +28,7 @@
 
         # DATA
         'data/ir_sequence_data.xml',
+        'data/parameter_config_data.xml',
     ],
     "application": False,
     "installable": True,
