@@ -71,7 +71,20 @@ class Construction(models.Model):
 
     invoice_count = fields.Integer(compute='_compute_invoice_count')
 
-    category_id = fields.Many2one("ss_erp.construction.category",string="工事種別")
+    category_id = fields.Many2one("ss_erp.construction.category", string="工事種別")
+
+    show_confirmation_button = fields.Boolean(compute='_compute_show_confirmation_button')
+
+    @api.depends('amount_total')
+    def _compute_show_confirmation_button(self):
+
+        for rec in self:
+            minium_value = self.env['ir.config_parameter'].get_param('ss_erp_construction_estimate_report')
+            if not minium_value:
+                raise UserError(
+                    "承認金額の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_estimate_report)")
+            minium_value = float(minium_value)
+            rec.show_confirmation_button = True if 0 < rec.amount_total < minium_value else False
 
     def _compute_invoice_count(self):
         Invoice = self.env['account.move']
@@ -223,7 +236,6 @@ class Construction(models.Model):
         selection=[('draft', 'ドラフト'),
                    ('request_approve', '申請中'),
                    ('confirmed', '確認済'),
-                   ('sent', '提出済'),
                    ('pending', '保留'),
                    ('order_received', '受注'),
                    ('progress', '進行中'),
@@ -241,20 +253,23 @@ class Construction(models.Model):
         self._prepare_stock_picking()
         self.write({'state': 'order_received'})
 
+    def action_print_estimation(self):
+        print("estimation")
+
     def action_mark_lost(self):
         self.write({'state': 'lost'})
 
-    def action_sent(self):
-        self.write({'state': 'sent'})
+    def action_start(self):
+        self.write({'state': 'progress'})
+
+    def action_confirm(self):
+        self.write({'state': 'confirmed'})
 
     def action_back_to_draft(self):
         self.write({'state': 'draft'})
 
     def action_cancel(self):
         self.write({'state': 'cancel'})
-
-    def action_start(self):
-        self.write({'state': 'progress'})
 
     def action_view_purchase_order(self):
         purchase_order_ids = self.env['purchase.order'].search([('x_construction_order_id', '=', self.id)]).ids
@@ -281,7 +296,7 @@ class Construction(models.Model):
             raise UserError("購買対象のプロダクトはありません。")
 
     def action_view_invoice(self):
-        invoices = self.env['account.move'].search([('x_construction_order_id','=',self.id)])
+        invoices = self.env['account.move'].search([('x_construction_order_id', '=', self.id)])
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_out_invoice_type")
         if len(invoices) > 1:
             action['domain'] = [('id', 'in', invoices.ids)]
@@ -315,7 +330,8 @@ class Construction(models.Model):
         self.ensure_one()
         journal = self.env['account.move'].with_context(default_move_type='out_invoice')._get_default_journal()
         if not journal:
-            raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (self.company_id.name, self.company_id.id))
+            raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
+                self.company_id.name, self.company_id.id))
 
         invoice_vals = {
             'ref': self.client_order_ref,
@@ -339,7 +355,6 @@ class Construction(models.Model):
 
     def _get_invoiceable_lines(self):
         return self.construction_component_ids
-
 
     @api.model
     def _prepare_down_payment_section_line(self, **optional_values):

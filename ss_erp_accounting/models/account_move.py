@@ -127,7 +127,23 @@ class AccountMove(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', string='補助科目')
+    @api.model
+    def default_x_sub_account_id(self):
+        if self.account_id and self.account_id.x_sub_account_ids and self.move_id.journal_id.default_account_id == self.account_id:
+            return self.account_id.x_sub_account_ids[0]
+
+    x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', string='補助科目', default=default_x_sub_account_id)
+    x_sub_account_ids = fields.Many2many('ss_erp.account.subaccount', related='account_id.x_sub_account_ids')
 
     x_organization_id = fields.Many2one('ss_erp.organization', related='move_id.x_organization_id')
     x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', related='move_id.x_responsible_dept_id')
+
+    @api.onchange('account_id')
+    def _onchange_get_x_sub_account(self):
+        journal_item_match = self.move_id.line_ids.filtered(lambda l: l.account_id == self.account_id.id)
+        if self.account_id and self.account_id.x_sub_account_ids and self.move_id.journal_id.default_account_id == self.account_id:
+            self.x_sub_account_id = self.account_id.x_sub_account_ids[0]
+            journal_item_match.x_sub_account_id = self.account_id.x_sub_account_ids[0]
+        else:
+            self.x_sub_account_id = False
+            journal_item_match.x_sub_account_id = False
