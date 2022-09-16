@@ -200,7 +200,7 @@ class PurchaseOrderLine(models.Model):
             if self.x_alternative_unit_id.id == self.env.ref('uom.product_uom_kgm').id:
                 conversion_quantity = int(conversion_quantity)
             else:
-                conversion_quantity = math.floor(conversion_quantity, 2)
+                conversion_quantity = math.floor(conversion_quantity * 100)/100
 
         self.x_conversion_quantity = conversion_quantity
 
