@@ -161,6 +161,36 @@ class SaleOrderLine(models.Model):
     price_unit = fields.Float('単価', required=True, digits='Product Price', default=0.0, store=True)
 
     x_is_required_x_pricelist = fields.Boolean(default=True)
+    x_pricelist_list = fields.Many2many('ss_erp.product.price', compute='_compute_x_pricelist_list')
+
+    @api.depends('product_id', 'product_uom_qty', 'product_uom', 'x_alternative_unit_id', 'x_conversion_quantity')
+    def _compute_x_pricelist_list(self):
+        organization_id = self.order_id.x_organization_id.id
+        partner_id = self.order_id.partner_id.id
+        company_id = self.order_id.company_id.id
+        date_order = self.order_id.date_order
+
+        product_pricelist = self.env['ss_erp.product.price'].search(
+            ['&', '&', '&', '&', '&',
+             '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
+             '|', ('uom_id', '=', self.product_uom.id), ('uom_id', '=', False),
+             '|', ('product_uom_qty_min', '<=', self.product_uom_qty), ('product_uom_qty_min', '=', 0),
+             '|', ('product_uom_qty_max', '>=', self.product_uom_qty), ('product_uom_qty_max', '=', 0),
+             '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
+             ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
+             ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
+
+        product_pricelist2 = self.env['ss_erp.product.price'].search(
+            ['&', '&', '&', '&', '&',
+             '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
+             '|', ('uom_id', '=', self.x_alternative_unit_id.id), ('uom_id', '=', False),
+             '|', ('product_uom_qty_min', '<=', self.x_conversion_quantity), ('product_uom_qty_min', '=', 0),
+             '|', ('product_uom_qty_max', '>=', self.x_conversion_quantity), ('product_uom_qty_max', '=', 0),
+             '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
+             ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
+             ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
+
+        self.x_pricelist_list = product_pricelist+product_pricelist2
 
     # DUNK-F-001_開発設計書_C001_ガス換算
     x_conversion_quantity = fields.Float('換算数量', store=True)
@@ -216,18 +246,6 @@ class SaleOrderLine(models.Model):
              '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
              ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
              ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-
-        product_pricelist2 = self.env['ss_erp.product.price'].search(
-            ['&', '&', '&', '&', '&',
-             '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
-             '|', ('uom_id', '=', self.x_alternative_unit_id.id), ('uom_id', '=', False),
-             '|', ('product_uom_qty_min', '<=', self.x_conversion_quantity), ('product_uom_qty_min', '=', 0),
-             '|', ('product_uom_qty_max', '>=', self.x_conversion_quantity), ('product_uom_qty_max', '=', 0),
-             '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
-             ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
-             ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-
-        product_pricelist+=product_pricelist2
 
         # set False for pricelist core
         self.order_id.pricelist_id = False

@@ -150,16 +150,18 @@
             <xpath expr="//field[@name='order_line']//tree//field[@name='tax_id']" position="after">
                 <field name="x_is_required_x_pricelist" invisible="1"/>
                 <field name="x_approval_status" invisible="1"/>
-                <field name="x_pricelist"
-                       domain="['&amp;', '&amp;', '&amp;', '&amp;', '&amp;',
-                                     '|', ('organization_id', '=', parent.x_organization_id), ('organization_id', '=', False),
-                                     '|', ('uom_id', '=', product_uom), ('uom_id', '=', False),
-                                     '|', ('product_uom_qty_min', '&lt;=', product_uom_qty), ('product_uom_qty_min', '=', 0),
-                                     '|', ('product_uom_qty_max', '&gt;=', product_uom_qty), ('product_uom_qty_max', '=', 0),
-                                     '|', ('partner_id', '=', parent.partner_id), ('partner_id', '=', False),
-                                     ('company_id', '=', parent.company_id), ('product_id', '=', product_id),
-                                     ('start_date', '&lt;=', parent.date_order), ('end_date', '&gt;=', parent.date_order)]"
-                       attrs="{'readonly':['|',('state','in',('done','cancel','sale')),('x_approval_status', 'in', ['in_process', 'approved'])],'required':[ ('x_is_required_x_pricelist', '=', True)], }"/>
+                <field name="x_pricelist_list" invisible="1"/>
+                <field name="x_pricelist" domain="[('id', 'in', x_pricelist_list)]"/>
+<!--                <field name="x_pricelist"-->
+<!--                       domain="['&amp;', '&amp;', '&amp;', '&amp;', '&amp;',-->
+<!--                                     '|', ('organization_id', '=', parent.x_organization_id), ('organization_id', '=', False),-->
+<!--                                     '|', ('uom_id', '=', product_uom), ('uom_id', '=', False),-->
+<!--                                     '|', ('product_uom_qty_min', '&lt;=', product_uom_qty), ('product_uom_qty_min', '=', 0),-->
+<!--                                     '|', ('product_uom_qty_max', '&gt;=', product_uom_qty), ('product_uom_qty_max', '=', 0),-->
+<!--                                     '|', ('partner_id', '=', parent.partner_id), ('partner_id', '=', False),-->
+<!--                                     ('company_id', '=', parent.company_id), ('product_id', '=', product_id),-->
+<!--                                     ('start_date', '&lt;=', parent.date_order), ('end_date', '&gt;=', parent.date_order)]"-->
+<!--                       attrs="{'readonly':['|',('state','in',('done','cancel','sale')),('x_approval_status', 'in', ['in_process', 'approved'])],'required':[ ('x_is_required_x_pricelist', '=', True)], }"/>-->
                 <!--                            <field name="x_pricelist" attrs="{'required':[ ('x_is_required_x_pricelist', '=', True)], }"/>-->
                 <field name="x_expected_delivery_date" context="{'edit': True}"/>
             </xpath>
