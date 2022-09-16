@@ -166,32 +166,33 @@ class SaleOrderLine(models.Model):
 
     @api.depends('product_id', 'product_uom_qty', 'product_uom', 'x_alternative_unit_id', 'x_conversion_quantity')
     def _compute_x_pricelist_list(self):
-        organization_id = self.order_id.x_organization_id.id
-        partner_id = self.order_id.partner_id.id
-        company_id = self.order_id.company_id.id
-        date_order = self.order_id.date_order
+        for rec in self:
+            organization_id = rec.order_id.x_organization_id.id
+            partner_id = rec.order_id.partner_id.id
+            company_id = rec.order_id.company_id.id
+            date_order = rec.order_id.date_order
 
-        product_pricelist = self.env['ss_erp.product.price'].search(
-            ['&', '&', '&', '&', '&',
-             '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
-             '|', ('uom_id', '=', self.product_uom.id), ('uom_id', '=', False),
-             '|', ('product_uom_qty_min', '<=', self.product_uom_qty), ('product_uom_qty_min', '=', 0),
-             '|', ('product_uom_qty_max', '>=', self.product_uom_qty), ('product_uom_qty_max', '=', 0),
-             '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
-             ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
-             ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
+            product_pricelist = self.env['ss_erp.product.price'].search(
+                ['&', '&', '&', '&', '&',
+                 '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
+                 '|', ('uom_id', '=', rec.product_uom.id), ('uom_id', '=', False),
+                 '|', ('product_uom_qty_min', '<=', rec.product_uom_qty), ('product_uom_qty_min', '=', 0),
+                 '|', ('product_uom_qty_max', '>=', rec.product_uom_qty), ('product_uom_qty_max', '=', 0),
+                 '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
+                 ('company_id', '=', company_id), ('product_id', '=', rec.product_id.id),
+                 ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
 
-        product_pricelist2 = self.env['ss_erp.product.price'].search(
-            ['&', '&', '&', '&', '&',
-             '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
-             '|', ('uom_id', '=', self.x_alternative_unit_id.id), ('uom_id', '=', False),
-             '|', ('product_uom_qty_min', '<=', self.x_conversion_quantity), ('product_uom_qty_min', '=', 0),
-             '|', ('product_uom_qty_max', '>=', self.x_conversion_quantity), ('product_uom_qty_max', '=', 0),
-             '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
-             ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
-             ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
+            product_pricelist2 = self.env['ss_erp.product.price'].search(
+                ['&', '&', '&', '&', '&',
+                 '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
+                 '|', ('uom_id', '=', rec.x_alternative_unit_id.id), ('uom_id', '=', False),
+                 '|', ('product_uom_qty_min', '<=', rec.x_conversion_quantity), ('product_uom_qty_min', '=', 0),
+                 '|', ('product_uom_qty_max', '>=', rec.x_conversion_quantity), ('product_uom_qty_max', '=', 0),
+                 '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
+                 ('company_id', '=', company_id), ('product_id', '=', rec.product_id.id),
+                 ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
 
-        self.x_pricelist_list = product_pricelist + product_pricelist2
+            rec.x_pricelist_list = product_pricelist + product_pricelist2
 
     # onchange auto caculate price unit from pricelist
     @api.onchange('product_id', 'product_uom_qty', 'product_uom', 'x_alternative_unit_id', 'x_conversion_quantity')
