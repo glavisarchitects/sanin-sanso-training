@@ -46,7 +46,6 @@ class AccountMove(models.Model):
         if len(payment_record) > 1:
             raise UserError('複数の Payment . レコードが見つかりました。')
 
-
         # Todo: wait for account_move_line, sale_order_line data confirmation
         data = {
             # '請求書': self.name,
@@ -73,14 +72,25 @@ class AccountMove(models.Model):
             'price': payment_record.amount,
             'summary': payment_record.x_remarks,
         }
+
+        title_pdf = 'xsxsxsx'
+        files = [('file', ('test.csv', b'test', 'text/csv'))]
+
         res = requests.post(
-            url='',
-            headers='',
-            data=json.dumps(data)
+            url='https://api.svfcloud.com/v1/artifacts',
+            headers={'Content-Type': 'multipart/form-data',
+                     'Authorization': ('Bearer %s' % token)},
+            data={
+                'printer': 'PDF', 'source': 'CSV',
+                'defaultForm': 'form/Sample/その他/受け入れテスト/R003_売掛金残高確認書.xml',
+                'data/' + title_pdf: '',
+            },
+            files=files
         )
         # sale_doc_reference = self.invoice_origin.split(', ')
 
         response = res.json()
+        print('#############################', response)
         if response == 200:
             pass
             if response == '400 Bad Request':

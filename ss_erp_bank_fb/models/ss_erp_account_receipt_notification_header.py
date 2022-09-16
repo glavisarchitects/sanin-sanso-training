@@ -78,7 +78,7 @@ class AccountReceiptNotificationLine(models.Model):
         ('success', '成功'),
         ('error', 'エラー')
     ], string='ステータス', default='wait', index=True)
-    processing_date = fields.Datetime('処理日時', index=True)
+    processing_date = fields.Datetime('処理日時', default=lambda self: fields.Datetime.now(), index=True)
 
     reference_number = fields.Char(string='照会番号')
     account_date = fields.Char(string='勘定日')

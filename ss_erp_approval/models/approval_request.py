@@ -317,7 +317,7 @@ class ApprovalRequest(models.Model):
                 # 現ステップの承認者及び関係者に進捗通知
                 notify_parner_ids = curren_multi_approvers.x_approval_user_ids.mapped(
                     "partner_id").ids + curren_multi_approvers.x_related_user_ids.mapped("partner_id").ids
-                notify_parner_ids.append(self.request_owner_id.id)
+                notify_parner_ids.append(self.request_owner_id.partner_id.id)
                 notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
                 self.notify_request_progress(partner_ids=notify_parner_ids)
 
@@ -336,7 +336,7 @@ class ApprovalRequest(models.Model):
                 else:
                     notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
                         "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
-                    notify_parner_ids.append(self.request_owner_id.id)
+                    notify_parner_ids.append(self.request_owner_id.partner_id.id)
                     notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
                     self.notify_final(partner_ids=notify_parner_ids)
 
@@ -360,7 +360,7 @@ class ApprovalRequest(models.Model):
             notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
                 "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped(
                 "partner_id").ids
-            notify_parner_ids.append(self.request_owner_id.id)
+            notify_parner_ids.append(self.request_owner_id.partner_id.id)
             notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
             self.notify_final(partner_ids=notify_parner_ids)
 

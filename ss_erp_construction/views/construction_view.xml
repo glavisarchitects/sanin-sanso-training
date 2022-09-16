@@ -14,7 +14,7 @@
                         <button name="action_pending" string="保留" type="object"
                                 attrs="{'invisible':[('state','!=','confirmed')],}"/>
                         <button name="action_receive_order" string="受注" class="oe_highlight" type="object"
-                                attrs="{'invisible':[('state','not in',['sent','pending'])],}"/>
+                                attrs="{'invisible':[('state','not in',['confirmed','pending'])],}"/>
                         <button name="action_mark_lost" string="失注" type="object"
                                 attrs="{'invisible':[('state','not in',['sent','pending'])],}"/>
                         <button name="action_back_to_draft" string="ドラフトへ戻す" type="object"
