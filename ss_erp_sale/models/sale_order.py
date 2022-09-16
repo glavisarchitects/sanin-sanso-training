@@ -5,7 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 from datetime import datetime, date
 from lxml import etree
 from odoo.tools.float_utils import float_round
-
+import math
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -194,13 +194,13 @@ class SaleOrderLine(models.Model):
                 conversion_quantity = int(conversion_quantity)
                 # self.product_uom_qty = float_round(self.product_uom_qty, precision_digits=0)
             else:
-                conversion_quantity = round(conversion_quantity, 2)
+                conversion_quantity = math.floor(conversion_quantity, 2)
 
         self.x_conversion_quantity = conversion_quantity
 
 
     # onchange auto caculate price unit from pricelist
-    @api.onchange('product_id', 'product_uom_qty', 'product_uom')
+    @api.onchange('product_id', 'product_uom_qty', 'product_uom', 'x_alternative_unit_id','x_conversion_quantity')
     def _onchange_get_product_price_list(self):
         organization_id = self.order_id.x_organization_id.id
         partner_id = self.order_id.partner_id.id
@@ -217,6 +217,17 @@ class SaleOrderLine(models.Model):
              ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
              ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
 
+        product_pricelist2 = self.env['ss_erp.product.price'].search(
+            ['&', '&', '&', '&', '&',
+             '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
+             '|', ('uom_id', '=', self.x_alternative_unit_id.id), ('uom_id', '=', False),
+             '|', ('product_uom_qty_min', '<=', self.x_conversion_quantity), ('product_uom_qty_min', '=', 0),
+             '|', ('product_uom_qty_max', '>=', self.x_conversion_quantity), ('product_uom_qty_max', '=', 0),
+             '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
+             ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
+             ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
+
+        product_pricelist+=product_pricelist2
 
         # set False for pricelist core
         self.order_id.pricelist_id = False
