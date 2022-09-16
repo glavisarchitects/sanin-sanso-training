@@ -4,6 +4,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.translate import html_translate
 from odoo.tools.float_utils import float_round
+import math
 
 import logging
 
@@ -199,7 +200,7 @@ class PurchaseOrderLine(models.Model):
             if self.x_alternative_unit_id.id == self.env.ref('uom.product_uom_kgm').id:
                 conversion_quantity = int(conversion_quantity)
             else:
-                conversion_quantity = round(conversion_quantity, 2)
+                conversion_quantity = math.floor(conversion_quantity * 100)/100
 
         self.x_conversion_quantity = conversion_quantity
 
