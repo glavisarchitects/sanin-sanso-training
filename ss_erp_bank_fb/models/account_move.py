@@ -9,6 +9,7 @@ from odoo.exceptions import UserError
 #     # relation field to filter in ss_erp.account.receipt.notification.line
 #     x_receipt_notification_line_id = fields.Many2one('ss_erp.account.receipt.notification.line')
 #     x_is_reconcile_receipt_notification = fields.Boolean()
+#     partner_name = fields.Char('顧客', related='partner_id.name')
 
 
 class AccountMoveLine(models.Model):

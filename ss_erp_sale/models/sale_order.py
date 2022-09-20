@@ -273,7 +273,7 @@ class SaleOrderLine(models.Model):
                 conversion_quantity = int(conversion_quantity)
                 # self.product_uom_qty = float_round(self.product_uom_qty, precision_digits=0)
             else:
-                conversion_quantity = math.floor(conversion_quantity * 100) / 100
+                conversion_quantity = math.floor(conversion_quantity * 10) / 10
 
         self.x_conversion_quantity = conversion_quantity
 

@@ -34,6 +34,20 @@ class AccountReceiptNotificationHeader(models.Model):
         string='全銀振込入金通知結果ヘッダ'
     )
 
+    @api.model
+    def create(self, vals):
+        exist_name = self.env['ss_erp.account.receipt.notification.header'].search([]).mapped('name')
+        if vals.get("name") in exist_name:
+            raise UserError('名称は既に存在します。別の名前を付けてください')
+        result = super(AccountReceiptNotificationHeader, self).create(vals)
+        return result
+
+    def write(self, vals):
+        exist_name = self.env['ss_erp.account.receipt.notification.header'].search([]).mapped('name')
+        if vals.get('name') in exist_name:
+            raise UserError('名称は既に存在します。別の名前を付けてください')
+        return super(AccountReceiptNotificationHeader, self).write(vals)
+
     @api.depends('account_receipt_notification_header_ids.status')
     def _compute_status(self):
         for rec in self:
@@ -67,11 +81,13 @@ class AccountReceiptNotificationLine(models.Model):
 
     account_receipt_notification_header_id = fields.Many2one('ss_erp.account.receipt.notification.header',
                                                              string='全銀振込入金通知結果ヘッダ')
-
     name = fields.Char('名称')
     user_id = fields.Many2one('res.users', related='account_receipt_notification_header_id.user_id')
     branch_id = fields.Many2one('ss_erp.organization', related='account_receipt_notification_header_id.branch_id',
                                 string='支店')
+
+    partner_name_search = fields.Char('顧客')
+    total_amount_search = fields.Integer('金額')
 
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
@@ -99,14 +115,17 @@ class AccountReceiptNotificationLine(models.Model):
                                                string='支払参照')
 
     def search_account_move(self):
-        str_customer_name = self.transfer_client_name
+        # update according to border in design
+        # str_customer_name = self.transfer_client_name
+        str_customer_name = self.partner_name_search
+
         partner_rec = self.env['res.partner']
         receipt_notification_partner = partner_rec.search([('name', 'like', str_customer_name), ], limit=1)
-        if not receipt_notification_partner:
-            for pa in partner_rec.search([]):
-                if pa.name in str_customer_name:
-                    receipt_notification_partner = pa
-                    break
+        # if not receipt_notification_partner:
+        #     for pa in partner_rec.search([]):
+        #         if pa.name in str_customer_name:
+        #             receipt_notification_partner = pa
+        #             break
         if not receipt_notification_partner:
             raise UserError('対象の顧客情報が見つかりませんでした。')
 
@@ -131,10 +150,12 @@ class AccountReceiptNotificationLine(models.Model):
         #     raise UserError('預金種目は普通と当座だけ受け入れられます。')
 
         account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
-        journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)], limit=1)
+        journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)],
+                                                                  limit=1)
 
         account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
-        journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)], limit=1)
+        journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)],
+                                                                  limit=1)
 
         if self.account_receipt_notification_header_id.acc_type == '1':
             journal_id = journal_account_1122
@@ -205,3 +226,11 @@ class AccountReceiptNotificationLine(models.Model):
             created_payment_ids.append(created_payment.id)
         self.payment_ids = created_payment_ids
         self.status = 'success'
+
+    @api.onchange('partner_name_search')
+    def _onchange_partner_name_search(self):
+        if self.partner_name_search != '':
+            return {'domain': {
+                'result_account_move_ids': [('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),
+                                            ('invoice_partner_display_name', 'like', self.partner_name_search), ]
+            }}

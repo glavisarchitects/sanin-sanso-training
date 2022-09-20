@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, SUPERUSER_ID
 from odoo.exceptions import UserError
 from datetime import datetime
 
@@ -293,13 +293,13 @@ class ApprovalRequest(models.Model):
             notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
                 "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
             notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-            self.notify_new_request(partner_ids=notify_parner_ids)
+            self.with_user(SUPERUSER_ID).sudo().notify_new_request(partner_ids=notify_parner_ids)
 
             # Send approve request to first step
             notify_parner_ids = self.multi_approvers_ids[0].x_approval_user_ids.mapped(
                 "partner_id").ids
             notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-            self.notify_approve_request(partner_ids=notify_parner_ids)
+            self.with_user(SUPERUSER_ID).sudo().notify_approve_request(partner_ids=notify_parner_ids)
         else:
             super().action_confirm()
 
@@ -319,7 +319,7 @@ class ApprovalRequest(models.Model):
                     "partner_id").ids + curren_multi_approvers.x_related_user_ids.mapped("partner_id").ids
                 notify_parner_ids.append(self.request_owner_id.partner_id.id)
                 notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-                self.notify_request_progress(partner_ids=notify_parner_ids)
+                self.with_user(SUPERUSER_ID).sudo().notify_request_progress(partner_ids=notify_parner_ids)
 
                 # 次承認者があった場合、承認依頼を送信
                 next_multi_approvers = self.multi_approvers_ids.filtered(
@@ -331,14 +331,14 @@ class ApprovalRequest(models.Model):
                         approve_partner_ids = next_multi_approvers.x_approval_user_ids.mapped("partner_id").ids
                     # Remove duplicate user
                     user_ids = list(dict.fromkeys(approve_partner_ids))
-                    self.notify_approve_request(partner_ids=approve_partner_ids)
+                    self.with_user(SUPERUSER_ID).sudo().notify_approve_request(partner_ids=approve_partner_ids)
                 # 最終ステップである場合、申請者及び関係者を全員に最終通知する
                 else:
                     notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
                         "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
                     notify_parner_ids.append(self.request_owner_id.partner_id.id)
                     notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-                    self.notify_final(partner_ids=notify_parner_ids)
+                    self.with_user(SUPERUSER_ID).sudo().notify_final(partner_ids=notify_parner_ids)
 
     def action_approve(self, approver=None):
         super(ApprovalRequest, self).action_approve(approver=approver)
@@ -362,7 +362,7 @@ class ApprovalRequest(models.Model):
                 "partner_id").ids
             notify_parner_ids.append(self.request_owner_id.partner_id.id)
             notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-            self.notify_final(partner_ids=notify_parner_ids)
+            self.with_user(SUPERUSER_ID).sudo().notify_final(partner_ids=notify_parner_ids)
 
     def action_draft(self):
         if self.request_owner_id != self.env.user:

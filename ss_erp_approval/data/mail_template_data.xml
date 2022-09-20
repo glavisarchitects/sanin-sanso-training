@@ -3,6 +3,7 @@
     <data>
         <template id="message_multi_approver_new_request">
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                <t t-set="request" t-value="request.with_context(lang=request.user_id.sudo().lang)"/>
                 <div t-if="request">
                     各位
                     <br/>
@@ -24,6 +25,7 @@
         </template>
         <template id="message_multi_approver_request_progress">
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                <t t-set="request" t-value="request.with_context(lang=request.user_id.sudo().lang)"/>
                 <div t-if="request">
                     各位
                     <br/>
@@ -43,6 +45,7 @@
         </template>
         <template id="message_multi_approver_approve_request">
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                <t t-set="request" t-value="request.with_context(lang=request.user_id.sudo().lang)"/>
                 <div t-if="request">
                     各位
                     <br/>
@@ -60,6 +63,7 @@
         </template>
         <template id="message_multi_approver_final">
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                <t t-set="request" t-value="request.with_context(lang=request.user_id.sudo().lang)"/>
                 <div t-if="request">
                     各位
                     <br/>
