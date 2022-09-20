@@ -319,7 +319,7 @@ class ApprovalRequest(models.Model):
                     "partner_id").ids + curren_multi_approvers.x_related_user_ids.mapped("partner_id").ids
                 notify_parner_ids.append(self.request_owner_id.partner_id.id)
                 notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-                self.notify_request_progress(partner_ids=notify_parner_ids)
+                self.sudo().notify_request_progress(partner_ids=notify_parner_ids)
 
                 # 次承認者があった場合、承認依頼を送信
                 next_multi_approvers = self.multi_approvers_ids.filtered(
@@ -338,7 +338,7 @@ class ApprovalRequest(models.Model):
                         "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
                     notify_parner_ids.append(self.request_owner_id.partner_id.id)
                     notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-                    self.notify_final(partner_ids=notify_parner_ids)
+                    self.sudo().notify_final(partner_ids=notify_parner_ids)
 
     def action_approve(self, approver=None):
         super(ApprovalRequest, self).action_approve(approver=approver)
