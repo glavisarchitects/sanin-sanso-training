@@ -42,7 +42,7 @@ class AccountMoveWizard(models.TransientModel):
         transfer_date_month = self.transfer_date.strftime('%m%d')
         #
         # # TODO: Re confirm Bic bank of which branch?
-        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '000')], limit=1)
+        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '00000')], limit=1)
         if not head_office_organization:
             raise UserError('本社支店情報設定してください')
 
