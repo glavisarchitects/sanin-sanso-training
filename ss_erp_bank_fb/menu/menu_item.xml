@@ -24,5 +24,10 @@
                 action="action_account_receipt_notification_result_header"
                 parent="ss_erp_invoices"
                 sequence="4"/>
+        <menuitem
+                id="ss_erp_comprehensive_create_zengin_fb_menu"
+                action="action_comprehensive_create_zengin_fb_wizard"
+                parent="account.menu_finance_payables"
+                sequence="21"/>
     </data>
 </odoo>

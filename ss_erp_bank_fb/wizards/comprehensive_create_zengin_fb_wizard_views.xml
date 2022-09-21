@@ -6,13 +6,17 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="from_date" required="1"/>
-                    <field name="to_date"  required="1"/>
-                    <field name="transfer_date" required="1"/>
                     <field name="property_supplier_payment_term_id" required="1"/>
+                    <label for="from_date" string="日付"/>
+                    <div name="filter_period" class="o_row">
+                        <field name="from_date" required="1"/>
+                        <h2>~</h2>
+                        <field name="to_date" required="1"/>
+                    </div>
+                    <field name="transfer_date" required="1"/>
                 </group>
                 <footer>
-                    <button name="zengin_general_transfer_fb" string="作成" type="object" class="oe_highlight" />
+                    <button name="zengin_general_transfer_fb" string="作成" type="object" class="oe_highlight"/>
                     <button string="取消" class="oe_link" special="cancel"/>
                 </footer>
             </form>
@@ -22,7 +26,7 @@
         <field name="name">全銀総合振込FB作成</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">comprehensive.create.zengin.fb</field>
-        <field name="view_id" ref="comprehensive_create_zengin_fb_wizard" />
+        <field name="view_id" ref="comprehensive_create_zengin_fb_wizard"/>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
