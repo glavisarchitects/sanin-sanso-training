@@ -77,6 +77,7 @@ class StockPicking(models.Model):
         for rec in self:
             rec.required_responsible_dept_id = True
             if rec.x_organization_id.name == '安来ガスセンター':
+
                 rec.required_responsible_dept_id = False
 
     @api.onchange('x_organization_id')
