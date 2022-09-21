@@ -16,22 +16,57 @@ class InventoryOrder(models.Model):
 
     company_id = fields.Many2one('res.company', string='会社', copy=False)
     name = fields.Char('番号', copy=False)
-    organization_id = fields.Many2one('ss_erp.organization', '移動元組織', tracking=True)
-    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動元管轄部門', tracking=True)
+    organization_id = fields.Many2one('ss_erp.organization', '移動元組織', tracking=True, default=lambda self: self._get_default_x_organization_id())
+    responsible_dept_id = fields.Many2one(
+        'ss_erp.responsible.department', string="移動元管轄部門",
+                                            default=lambda self: self._get_default_x_responsible_dept_id())
+    required_responsible_dept_id = fields.Boolean(compute='_compute_responsible_dept_id')
+
+    @api.depends('organization_id')
+    def _compute_responsible_dept_id(self):
+        for rec in self:
+            rec.required_responsible_dept_id = True
+            if rec.organization_id.name == '安来ガスセンター':
+                rec.required_responsible_dept_id = False
+
     location_id = fields.Many2one('stock.location', '移動元ロケーション', tracking=True)
     user_id = fields.Many2one('res.users', '担当者', tracking=True)
     scheduled_date = fields.Date('予定日', copy=False, tracking=True)
-    shipping_method = fields.Selection([('transport', '配車（移動元）'), ('pick_up', '配車（移動先）'), ('outsourcing', '宅配')],
-                                       default='transport', string='配送方法', tracking=True)
+    shipping_method = fields.Selection(
+        [('transport', '配車（移動元）'), ('pick_up', '配車（移動先）'), ('outsourcing', '宅配')],
+        default='transport', string='配送方法', tracking=True)
     state = fields.Selection([('draft', 'ドラフト'), ('waiting', '出荷待ち'), ('shipping', '積送中'),
-                              ('done', '移動完了'), ('cancel', '取消済')], 'ステータス', default='draft', compute='_compute_state', tracking=True,
+                              ('done', '移動完了'), ('cancel', '取消済')], 'ステータス', default='draft',
+                             compute='_compute_state', tracking=True,
                              copy=False)
-    inventory_order_line_ids = fields.One2many('ss_erp.inventory.order.line', 'order_id', string="オーダ明細", copy=True, required=True, tracking=True)
+    inventory_order_line_ids = fields.One2many('ss_erp.inventory.order.line', 'order_id', string="オーダ明細", copy=True,
+                                               required=True, tracking=True)
     note = fields.Text('ノート')
+
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
+
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id and employee_id.department_jurisdiction_first:
+            return employee_id.department_jurisdiction_first
+        else:
+            return False
 
     has_confirm = fields.Boolean(default=False, copy=False)
     has_cancel = fields.Boolean(default=False, copy=False)
     picking_count = fields.Integer(compute='_compute_picking_count')
+
+    login_user_organization_ids = fields.Many2many('ss_erp.organization',
+                                                   compute='_compute_login_user_organization_ids')
+
+    def _compute_login_user_organization_ids(self):
+        for rec in self:
+            rec.login_user_organization_ids = self.env.user.organization_ids.ids
 
     @api.onchange('organization_id')
     def onchange_organization_id(self):
@@ -39,7 +74,10 @@ class InventoryOrder(models.Model):
         if self.organization_id:
             warehouse_location_id = self.organization_id.warehouse_id.view_location_id.id
             self.location_id = self.organization_id.warehouse_id.lot_stock_id.id
-            return {'domain': {'location_id': [('id', 'child_of', warehouse_location_id), ('usage', '!=', 'view')]
+            # self.responsible_dept_id = False
+            users = self.env['res.users'].search([]).filtered(lambda x: self.organization_id in x.organization_ids).ids
+            return {'domain': {'location_id': [('id', 'child_of', warehouse_location_id), ('usage', '!=', 'view')],
+                               'user_id': [('id', 'in', users)]
                                }}
 
     #
@@ -113,7 +151,7 @@ class InventoryOrder(models.Model):
                     else:
                         if len(stp_state_all) == 1 and 'done' in stp_state_all:
                             rec.state = 'done'
-                #    If all picking out are assign then all picking in -> assign
+                    #    If all picking out are assign then all picking in -> assign
                     if picking_out and picking_in:
                         if all(sto == 'assigned' for sto in picking_out_state):
                             for pi in picking_in:
@@ -143,21 +181,21 @@ class InventoryOrder(models.Model):
                 key = str(line.location_dest_id) + '_' + str(line.organization_id.id) + '_' + str(
                     line.responsible_dept_id.id)
                 move_in = {
-                            'x_inventory_order_line_id': line.id,
-                            'product_id': line.product_id.id,
-                            'product_uom_qty': line.product_uom_qty,
-                            'product_uom': line.product_uom,
-                            'name': self.name,
-                            'state': 'waiting',
-                        }
+                    'x_inventory_order_line_id': line.id,
+                    'product_id': line.product_id.id,
+                    'product_uom_qty': line.product_uom_qty,
+                    'product_uom': line.product_uom,
+                    'name': self.name,
+                    'state': 'waiting',
+                }
                 move_out = {
-                            'x_inventory_order_line_id': line.id,
-                            'product_id': line.product_id.id,
-                            'product_uom_qty': line.product_uom_qty,
-                            'product_uom': line.product_uom,
-                            'name': self.name,
-                            'state': 'confirmed',
-                        }
+                    'x_inventory_order_line_id': line.id,
+                    'product_id': line.product_id.id,
+                    'product_uom_qty': line.product_uom_qty,
+                    'product_uom': line.product_uom,
+                    'name': self.name,
+                    'state': 'confirmed',
+                }
                 if source_in.get(key):
                     source_in[key]['move_ids_without_package'].append((0, 0, move_in))
                 else:
@@ -167,9 +205,9 @@ class InventoryOrder(models.Model):
                         'picking_type_id': line.organization_id.warehouse_id.in_type_id.id,
                         'user_id': None,
                         'x_organization_id': self.organization_id.id,
-                        'x_responsible_dept_id':self.responsible_dept_id.id,
-                        'x_organization_dest_id':line.organization_id.id,
-                        'x_responsible_dept_dest_id':line.responsible_dept_id.id,
+                        'x_responsible_dept_id': self.responsible_dept_id.id,
+                        'x_organization_dest_id': line.organization_id.id,
+                        'x_responsible_dept_dest_id': line.responsible_dept_id.id,
                         'scheduled_date': self.scheduled_date,
                         'x_inventory_order_id': self.id,
                         'move_ids_without_package': [(0, 0, move_in)]
@@ -195,10 +233,10 @@ class InventoryOrder(models.Model):
                     }
                     source_out[key] = from_source_move
 
-            for key,value in source_in.items():
+            for key, value in source_in.items():
                 self.env['stock.picking'].create(value)
 
-            for key,value in source_out.items():
+            for key, value in source_out.items():
                 self.env['stock.picking'].create(value)
 
             self.has_confirm = True
@@ -214,10 +252,12 @@ class InventoryOrderLine(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     company_id = fields.Many2one('res.company', string='会社', )
-    order_id = fields.Many2one('ss_erp.inventory.order', 'オーダ参照',)
+    order_id = fields.Many2one('ss_erp.inventory.order', 'オーダ参照', )
     move_ids = fields.One2many('stock.move', 'x_inventory_order_line_id')
     organization_id = fields.Many2one('ss_erp.organization', '移動先組織', required=True, tracking=True)
-    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動先管轄部門', required=True, tracking=True)
+    order_id_organization_id = fields.Many2one('ss_erp.organization', related='order_id.organization_id')
+    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動先管轄部門', required=True,
+                                          tracking=True)
     location_dest_id = fields.Many2one('stock.location', '移動先ロケーション', required=True, tracking=True)
     product_id = fields.Many2one('product.product', 'プロダクト', required=True, tracking=True)
 
@@ -233,6 +273,7 @@ class InventoryOrderLine(models.Model):
         if self.organization_id:
             self.location_dest_id = self.organization_id.warehouse_id.lot_stock_id.id
             warehouse_location_id = self.organization_id.warehouse_id.view_location_id.id
+            self.responsible_dept_id = False
             return {'domain': {'location_dest_id': [('id', 'child_of', warehouse_location_id), ('usage', '!=', 'view')]
                                }}
 

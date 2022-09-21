@@ -81,7 +81,7 @@ class AccountReceiptNotificationLine(models.Model):
 
     account_receipt_notification_header_id = fields.Many2one('ss_erp.account.receipt.notification.header',
                                                              string='全銀振込入金通知結果ヘッダ')
-    name = fields.Char('名称')
+    name = fields.Char('名称', realated='account_receipt_notification_header_id.name')
     user_id = fields.Many2one('res.users', related='account_receipt_notification_header_id.user_id')
     branch_id = fields.Many2one('ss_erp.organization', related='account_receipt_notification_header_id.branch_id',
                                 string='支店')
@@ -111,7 +111,8 @@ class AccountReceiptNotificationLine(models.Model):
     error_message = fields.Char(string='エラーメッセージ')
     payment_ids = fields.Many2many('account.payment', string='支払参照')
     result_account_move_ids = fields.Many2many('account.move',
-                                               domain="[('state', '=', 'posted'), ('payment_state', '=', 'not_paid')]",
+                                               domain="[('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),"
+                                                      "('invoice_partner_display_name', 'like', partner_name_search)]",
                                                string='支払参照')
 
     def search_account_move(self):
@@ -227,10 +228,10 @@ class AccountReceiptNotificationLine(models.Model):
         self.payment_ids = created_payment_ids
         self.status = 'success'
 
-    @api.onchange('partner_name_search')
-    def _onchange_partner_name_search(self):
-        if self.partner_name_search != '':
-            return {'domain': {
-                'result_account_move_ids': [('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),
-                                            ('invoice_partner_display_name', 'like', self.partner_name_search), ]
-            }}
+    # @api.onchange('partner_name_search', 'result_account_move_ids')
+    # def _onchange_partner_name_search(self):
+    #     if self.partner_name_search != '':
+    #         return {'domain': {
+    #             'result_account_move_ids': [('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),
+    #                                         ('invoice_partner_display_name', 'like', self.partner_name_search), ]
+    #         }}

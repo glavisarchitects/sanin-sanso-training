@@ -15,11 +15,13 @@
         'data/param_data.xml',
 
         # VIEWS
+        "views/web_assets.xml",
         'views/ss_erp_account_transfer_result_header_views.xml',
         'views/ss_erp_account_transfer_result_line_views.xml',
         'views/ss_erp_account_receipt_notification_header_views.xml',
         'views/ss_erp_account_receipt_notification_line_views.xml',
         'menu/menu_item.xml',
+
 
         # WIZARD
         'wizards/comprehensive_create_zengin_fb_wizard_views.xml',
