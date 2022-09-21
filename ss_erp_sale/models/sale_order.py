@@ -71,18 +71,19 @@ class SaleOrder(models.Model):
         super(SaleOrder, self).action_quotation_sent()
 
     @api.onchange('partner_id')
-    def _onchange_partner_id(self):
+    def onchange_partner_id(self):
+        super(SaleOrder, self).onchange_partner_id()
         if self.partner_id:
             invoice_categ = self.env.ref("ss_erp_res_partner.ss_erp_contact_category_data_3").id
             delivery_categ = self.env.ref("ss_erp_res_partner.ss_erp_contact_category_data_4").id
-            partner_invoice_id = self.env['res.partner'].search(
-                [('parent_id', '=', self.partner_id.id), ('x_contact_categ', '=', invoice_categ)], limit=1)
-            partner_delivery_id = self.env['res.partner'].search(
-                [('parent_id', '=', self.partner_id.id), ('x_contact_categ', '=', delivery_categ)], limit=1)
-            self.partner_invoice_id = partner_invoice_id.id if partner_invoice_id else self.partner_id.id
-            self.partner_shipping_id = partner_delivery_id.id if partner_delivery_id else self.partner_id.id
+            partner_invoice_id = self.partner_id.child_ids.filtered(lambda x: x.x_contact_categ.id == invoice_categ)
+            partner_delivery_id = self.partner_id.child_ids.filtered(lambda x: x.x_contact_categ.id == delivery_categ)
+            values = {
+                'partner_invoice_id': partner_invoice_id[0].id if partner_invoice_id else self.partner_id.id,
+                'partner_shipping_id': partner_delivery_id[0].id if partner_delivery_id else self.partner_id.id,
+            }
+            self.update(values)
 
-    #
     @api.onchange('date_order', 'partner_id', 'company_id', 'x_organization_id')
     def _onchange_get_line_product_price_list_from_date_order(self):
         if self.order_line:
