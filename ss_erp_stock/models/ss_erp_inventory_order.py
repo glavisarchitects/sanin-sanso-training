@@ -22,11 +22,11 @@ class InventoryOrder(models.Model):
                                             default=lambda self: self._get_default_x_responsible_dept_id())
     required_responsible_dept_id = fields.Boolean(compute='_compute_responsible_dept_id')
 
-    @api.depends('organization_id')
+    @api.depends('x_organization_id')
     def _compute_responsible_dept_id(self):
         for rec in self:
             rec.required_responsible_dept_id = True
-            if rec.organization_id.name == '安来ガスセンター':
+            if rec.x_organization_id.organization_code == '00120':
                 rec.required_responsible_dept_id = False
 
     location_id = fields.Many2one('stock.location', '移動元ロケーション', tracking=True)
