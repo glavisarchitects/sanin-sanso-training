@@ -8,6 +8,7 @@ class StockInventory(models.Model):
 
     organization_id = fields.Many2one('ss_erp.organization', string='担当組織', states={'draft': [('readonly', False)]},
                                       readonly=True)
+
     instruction_order_id = fields.Many2one('ss_erp.instruction.order', string='棚卸指示伝票')
     state = fields.Selection(string='Status', selection=[
         ('draft', 'ドラフト'),
