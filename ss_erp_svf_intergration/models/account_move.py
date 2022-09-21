@@ -33,45 +33,45 @@ class AccountMove(models.Model):
         token = self.env['svf.cloud.config'].sudo().get_access_token()
 
         # Prepare data sent to SVF
-        sale_doc_reference = self.invoice_origin.split(', ')
+        sale_doc_reference = self.invoice_origin.split(', ') if self.invoice_origin else False
         so_record = self.env['sale.order'].search([('name', 'in', sale_doc_reference)])
-        if not so_record:
-            raise UserError('対応する SO レコードが見つかりません。')
-        if len(so_record) > 1:
-            raise UserError('複数の SO . レコードが見つかりました。')
+        # if not so_record:
+        #     raise UserError('対応する SO レコードが見つかりません。')
+        # if len(so_record) > 1:
+        #     raise UserError('複数の SO . レコードが見つかりました。')
 
-        payment_record = self.env['account.payment'].search([('ref', 'in', self.name)])
-        if not payment_record:
-            raise UserError('対応する Payment レコードが見つかりません。')
-        if len(payment_record) > 1:
-            raise UserError('複数の Payment . レコードが見つかりました。')
+        # payment_record = self.env['account.payment'].search([('ref', 'in', self.name)])
+        # if not payment_record:
+        #     raise UserError('対応する Payment レコードが見つかりません。')
+        # if len(payment_record) > 1:
+        #     raise UserError('複数の Payment . レコードが見つかりました。')
 
         # Todo: wait for account_move_line, sale_order_line data confirmation
-        data = {
-            # '請求書': self.name,
-            'invoice_no': self.partner_invoice_id.name,
-            'registration_number': self.env['ir.config_parameter'].sudo().get_param(
-                'invoice_report.registration_number'),
-            'name': self.x_organization_id.name,
-            'responsible_person': self.x_organization_id.responsible_person,
-            'zip': so_record.partner_invoice_id.zip,
-            'state': so_record.partner_invoice_id.state_id.name,
-            'city': so_record.partner_invoice_id.city,
-            'organization_zip': self.x_organization_id.organization_zip,
-            'organization_address': self.x_organization_id.organization_state_id.name + '' + self.x_organization_id.organization_city + '' + self.x_organization_id.organization_street + '' + self.x_organization_id.organization_street2 + '',
-            'organization_phone': self.x_organization_id.organization_phone,
-            'organization_fax': self.x_organization_id.organization_fax,
-            'invoice_date_due': self.invoice_date_due,
-            'amount_total': self.amount_total,
-            'debit': self.debit,
-            'date_done': self.date_done,
-            #  Payment
-            'date': payment_record.date,
-            'slip_number': payment_record.name,
-            'product_name': payment_record.x_receipt_type,
-            'price': payment_record.amount,
-            'summary': payment_record.x_remarks,
-        }
+        # data = {
+        #     # '請求書': self.name,
+        #     'invoice_no': self.partner_invoice_id.name,
+        #     'registration_number': self.env['ir.config_parameter'].sudo().get_param(
+        #         'invoice_report.registration_number'),
+        #     'name': self.x_organization_id.name,
+        #     'responsible_person': self.x_organization_id.responsible_person,
+        #     'zip': so_record.partner_invoice_id.zip,
+        #     'state': so_record.partner_invoice_id.state_id.name,
+        #     'city': so_record.partner_invoice_id.city,
+        #     'organization_zip': self.x_organization_id.organization_zip,
+        #     'organization_address': self.x_organization_id.organization_state_id.name + '' + self.x_organization_id.organization_city + '' + self.x_organization_id.organization_street + '' + self.x_organization_id.organization_street2 + '',
+        #     'organization_phone': self.x_organization_id.organization_phone,
+        #     'organization_fax': self.x_organization_id.organization_fax,
+        #     'invoice_date_due': self.invoice_date_due,
+        #     'amount_total': self.amount_total,
+        #     'debit': self.debit,
+        #     'date_done': self.date_done,
+        #     #  Payment
+        #     'date': payment_record.date,
+        #     'slip_number': payment_record.name,
+        #     'product_name': payment_record.x_receipt_type,
+        #     'price': payment_record.amount,
+        #     'summary': payment_record.x_remarks,
+        # }
 
         title_pdf = 'xsxsxsx'
         files = [('file', ('test.csv', b'test', 'text/csv'))]

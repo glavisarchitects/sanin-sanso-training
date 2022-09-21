@@ -13,9 +13,33 @@ class StockPicking(models.Model):
         "在庫仕訳訂正", index=True)
     x_dest_address_info = fields.Html("直送先住所")
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string="移動元組織", domain="[('warehouse_id','!=',False)]")
+        'ss_erp.organization', string="移動元組織", domain="[('warehouse_id','!=',False)]",
+                                        default=lambda self: self._get_default_x_organization_id())
     x_responsible_dept_id = fields.Many2one(
-        'ss_erp.responsible.department', string="移動元管轄部門")
+        'ss_erp.responsible.department', string="移動元管轄部門",
+                                            default=lambda self: self._get_default_x_responsible_dept_id())
+
+    def _get_default_x_organization_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id:
+            return employee_id.organization_first
+        else:
+            return False
+
+    def _get_default_x_responsible_dept_id(self):
+        employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
+        if employee_id and employee_id.department_jurisdiction_first:
+            return employee_id.department_jurisdiction_first
+        else:
+            return False
+
+    login_user_organization_ids = fields.Many2many('ss_erp.organization',
+                                                   compute='_compute_login_user_organization_ids')
+
+    def _compute_login_user_organization_ids(self):
+        for rec in self:
+            rec.login_user_organization_ids = self.env.user.organization_ids.ids
+
     x_responsible_dept_dest_id = fields.Many2one('ss_erp.responsible.department', string='移動先管轄部門', store=True)
     x_organization_dest_id = fields.Many2one('ss_erp.organization', string='移動先組織', store=True)
     x_mkt_user_id = fields.Many2one(
@@ -46,12 +70,40 @@ class StockPicking(models.Model):
             else:
                 r.has_lot_ids = False
 
+    required_responsible_dept_id = fields.Boolean(compute='_compute_responsible_dept_id')
+
+    @api.depends('organization_id')
+    def _compute_responsible_dept_id(self):
+        for rec in self:
+            rec.required_responsible_dept_id = True
+            if rec.organization_id.name == '安来ガスセンター':
+                rec.required_responsible_dept_id = False
+
     @api.onchange('x_organization_id')
     def onchange_organization_id(self):
         if self.x_organization_id:
+            self.update({
+                'picking_type_id': False,
+                'location_id': False,
+                'location_dest_id': False,
+                'x_responsible_dept_id': False
+            })
             return {'domain': {'picking_type_id': ['|', ('warehouse_id', '=', False),
                                                    ('warehouse_id', '=', self.x_organization_id.warehouse_id.id)],
                                }}
+
+    @api.onchange('picking_type_id')
+    def _onchange_picking_type_id(self):
+        if self.picking_type_code == 'incoming':
+            return {'domain': {'location_dest_id': [('usage','=','internal'),('id','child_of',self.picking_type_id.warehouse_id.view_location_id.id)]}}
+        elif self.picking_type_code == 'outgoing':
+            return {'domain': {'location_id': [('usage','=','internal'),('id','child_of',self.picking_type_id.warehouse_id.view_location_id.id)]}}
+        elif self.picking_type_code == 'internal':
+            return {'domain': {'location_dest_id': [('usage','=','internal'),('id','child_of',self.picking_type_id.warehouse_id.view_location_id.id)],
+                               'location_id': [('usage','=','internal'),('id','child_of',self.picking_type_id.warehouse_id.view_location_id.id)]}}
+        elif self.picking_type_code == 'mrp_operation':
+            return {'domain': {'location_id': [('usage','=','internal'),('id','child_of',self.picking_type_id.warehouse_id.view_location_id.id)]}
+                               }
 
 
 class StockMove(models.Model):

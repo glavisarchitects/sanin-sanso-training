@@ -25,6 +25,11 @@
                     <field name="x_sub_account_ids" invisible="1"/>
                     <field name="x_sub_account_id" domain="[('id', 'in', x_sub_account_ids)]"/>
                 </xpath>
+
+                <xpath expr="//button[@name='action_post'][2]" position="attributes">
+                    <attribute name="context">{'pypass_confirm': True}</attribute>
+                </xpath>
+
             </field>
         </record>
 

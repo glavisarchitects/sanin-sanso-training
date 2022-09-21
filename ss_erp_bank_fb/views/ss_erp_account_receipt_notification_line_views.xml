@@ -76,7 +76,7 @@
                             <field name="name" required="1"/>
                         </group>
                         <group>
-                            <div style="border: 1px solid black;">
+                            <div style="padding:3px;border: 1px solid black;">
                                 <p>検索項目</p>
                                 <label for="partner_name_search" string="顧客"/>
                                 <field name="partner_name_search"/>
@@ -107,7 +107,9 @@
                                    context="{'default_move_type': 'out_invoice',}"
                                    domain="[('state', '=', 'posted'), ('payment_state', '=', 'not_paid')]">
                                 <tree>
-                                    <field name="name" string="番号"/>
+                                    <field name="invoice_partner_display_name" string="番号"/>
+                                    <field name="state"/>
+                                    <field name="payment_state"/>
                                     <field name="partner_id" string="顧客"/>
                                     <field name="invoice_date" string="請求日"/>
                                     <field name="invoice_date_due" string="期日"/>
