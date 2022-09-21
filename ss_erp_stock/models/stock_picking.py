@@ -72,11 +72,12 @@ class StockPicking(models.Model):
 
     required_responsible_dept_id = fields.Boolean(compute='_compute_responsible_dept_id')
 
-    @api.depends('organization_id')
+    @api.depends('x_organization_id')
     def _compute_responsible_dept_id(self):
         for rec in self:
             rec.required_responsible_dept_id = True
-            if rec.organization_id.name == '安来ガスセンター':
+            if rec.x_organization_id.name == '安来ガスセンター':
+
                 rec.required_responsible_dept_id = False
 
     @api.onchange('x_organization_id')
