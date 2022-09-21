@@ -16,10 +16,17 @@ class InventoryOrder(models.Model):
 
     company_id = fields.Many2one('res.company', string='会社', copy=False)
     name = fields.Char('番号', copy=False)
-    organization_id = fields.Many2one('ss_erp.organization', '移動元組織', tracking=True, default=lambda self: self._get_default_x_organization_id())
+    organization_id = fields.Many2one('ss_erp.organization', '移動元組織', tracking=True,
+                                      domain=lambda self: [('id', 'in', self._login_user_organization_id())],
+                                      default=lambda self: self._get_default_x_organization_id())
+
+    def _login_user_organization_id(self):
+        organization_ids = self.env.user.organization_ids.filtered(lambda x: x.warehouse_id != False)
+        return organization_ids.ids if organization_ids else False
+
     responsible_dept_id = fields.Many2one(
         'ss_erp.responsible.department', string="移動元管轄部門",
-                                            default=lambda self: self._get_default_x_responsible_dept_id())
+        default=lambda self: self._get_default_x_responsible_dept_id())
     required_responsible_dept_id = fields.Boolean(compute='_compute_responsible_dept_id')
 
     @api.depends('organization_id')
@@ -60,13 +67,6 @@ class InventoryOrder(models.Model):
     has_confirm = fields.Boolean(default=False, copy=False)
     has_cancel = fields.Boolean(default=False, copy=False)
     picking_count = fields.Integer(compute='_compute_picking_count')
-
-    login_user_organization_ids = fields.Many2many('ss_erp.organization',
-                                                   compute='_compute_login_user_organization_ids')
-
-    def _compute_login_user_organization_ids(self):
-        for rec in self:
-            rec.login_user_organization_ids = self.env.user.organization_ids.ids
 
     @api.onchange('organization_id')
     def onchange_organization_id(self):
