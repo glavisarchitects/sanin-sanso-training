@@ -70,10 +70,24 @@ class StockPicking(models.Model):
             else:
                 r.has_lot_ids = False
 
+    required_responsible_dept_id = fields.Boolean(compute='_compute_responsible_dept_id')
+
+    @api.depends('organization_id')
+    def _compute_responsible_dept_id(self):
+        for rec in self:
+            rec.required_responsible_dept_id = True
+            if rec.organization_id.name == '安来ガスセンター':
+                rec.required_responsible_dept_id = False
+
     @api.onchange('x_organization_id')
     def onchange_organization_id(self):
         if self.x_organization_id:
-            self.picking_type_id = False
+            self.update({
+                'picking_type_id': False,
+                'location_id': False,
+                'location_dest_id': False,
+                'x_responsible_dept_id': False
+            })
             return {'domain': {'picking_type_id': ['|', ('warehouse_id', '=', False),
                                                    ('warehouse_id', '=', self.x_organization_id.warehouse_id.id)],
                                }}
