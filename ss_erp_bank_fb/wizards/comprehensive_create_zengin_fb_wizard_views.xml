@@ -23,7 +23,7 @@
         </field>
     </record>
     <record id="action_comprehensive_create_zengin_fb_wizard" model="ir.actions.act_window">
-        <field name="name">全銀総合振込FB作成</field>
+        <field name="name">   全銀総合振込FB作成</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">comprehensive.create.zengin.fb</field>
         <field name="view_id" ref="comprehensive_create_zengin_fb_wizard"/>

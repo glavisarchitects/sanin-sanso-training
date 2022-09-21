@@ -7,11 +7,11 @@
 <!--            </button>-->
 <!--        </t>-->
 <!--    </t>-->
-    <t t-extend="BillsListView.buttons">
-        <t t-jquery="button.o_list_export_xlsx" t-operation="after">
-             <button t-if="widget.modelName=='account.move'"  type="button" class="btn btn-primary o_list_button_account_transfer_request_fb">
-                全銀口座振替依頼FB作成
-            </button>
-        </t>
-    </t>
+<!--    <t t-extend="BillsListView.buttons">-->
+<!--        <t t-jquery="button.o_list_export_xlsx" t-operation="after">-->
+<!--             <button t-if="widget.modelName=='account.move'"  type="button" class="btn btn-primary o_list_button_account_transfer_request_fb">-->
+<!--                全銀口座振替依頼FB作成-->
+<!--            </button>-->
+<!--        </t>-->
+<!--    </t>-->
 </templates>
