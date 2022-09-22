@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 import jwt
 import datetime
 import calendar
-from base64 import urlsafe_b64encode, urlsafe_b64decode
 import base64
-import json
-import ujson
-import rsa
 
-import hashlib
-import hmac
 import requests
 from urllib.parse import urljoin
 
@@ -52,6 +46,11 @@ class SvfCloudConfig(models.Model):
         if not svf_cloud_access_token_revoke_req_url:
             raise UserError('SVF Cloud アクセストークン破棄リクエストURLの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
 
+        svf_cloud_access_form_output_req_url = self.env['ir.config_parameter'].sudo().get_param(
+            'svf_cloud_access_form_output_req_url')
+        if not svf_cloud_access_form_output_req_url:
+            raise UserError('SVF Cloud 帳票出力リクエストURLの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+
         result = {
             'client_id': client_id,
             'cloud_secret': cloud_secret,
@@ -59,8 +58,38 @@ class SvfCloudConfig(models.Model):
             'cloud_user_id': cloud_user_id,
             'cloud_access_token_exp_sec': cloud_access_token_exp_sec,
             'cloud_access_token_req_url': cloud_access_token_req_url,
+            'svf_cloud_access_form_output_req_url': svf_cloud_access_form_output_req_url,
         }
         return result
+
+    def check_specific_param_config(self, type_report):
+        """type_report eg R002,R003... """
+        config = {}
+        key_config_form_format_path = type_report + '_form_format_path'
+        form_format_path = self.env['ir.config_parameter'].sudo().get_param(key_config_form_format_path)
+        if not form_format_path:
+            raise UserError('帳票レイアウトパスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+        config['form_format_path'] = form_format_path
+
+        key_config_form_title = type_report + '_form_title'
+        form_title = self.env['ir.config_parameter'].sudo().get_param(key_config_form_title)
+        if not form_title:
+            raise UserError('帳票タイトルの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+        config['form_title'] = form_title
+
+        key_config_form_storage_dest_path = type_report + '_form_storage_dest_path'
+        form_storage_dest_path = self.env['ir.config_parameter'].sudo().get_param(key_config_form_storage_dest_path)
+        if not form_storage_dest_path:
+            raise UserError('帳票格納先パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+        config['form_storage_dest_path'] = form_storage_dest_path
+
+        key_config_form_img_resource_path = type_report + '_form_img_resource_path'
+        form_img_resource_path = self.env['ir.config_parameter'].sudo().get_param(key_config_form_img_resource_path)
+        if not form_img_resource_path:
+            raise UserError('画像パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+        config['form_storage_dest_path'] = form_img_resource_path
+
+        return config
 
     def get_access_token(self):
         param = self.get_svf_param()
@@ -83,7 +112,6 @@ class SvfCloudConfig(models.Model):
 
         private_key = param['cloud_private_key'].encode('utf-8')
         gen_jwt_token = jwt.encode(payload=payload, key=private_key, headers=headers, algorithm="RS256")
-        print('##########################', gen_jwt_token)
 
         bearer_token_64 = base64.b64encode(
             ("%s:%s" % (param['client_id'], param['cloud_secret'])).encode('UTF-8')).decode('UTF-8')
@@ -96,10 +124,79 @@ class SvfCloudConfig(models.Model):
             raise UserError(_(str(response.status_code) + ': ' + str(response.text)))
         try:
             token = response.json().get('token')
+            _logger.info("Created SVF access token!")
         except requests.exceptions.HTTPError:
-            raise UserError(_('The SVF authentication failed. Please check your API key and secret.'))
-        print('**************************', token)
+            raise UserError(_('SVF認証に失敗しました。 API キーとシークレットを確認してください。'))
         return token
+
+    def svf_template_export_common(self, data, type_report):
+        params = self.get_svf_param()
+        specific_params = self.check_specific_param_config(type_report)
+        token = self.get_access_token()
+
+        # Hmm title japanese work in postman, but here not work
+        #  oh postman can send with 202 response, but get somthing like è«æ±æ¸ 2022å¹´09æ22æ¥ in svfcloud :))
+        # title_pdf = fields.Datetime.now().strftime("%Y年%m月%d日")
+        # if type_report == 'R002':
+        #     title_pdf = '請求書_' + title_pdf
+
+        title_pdf = fields.Datetime.now().strftime("%Y%m%d")
+        if type_report == 'R002':
+            title_pdf = 'invoice_' + title_pdf
+
+        data_key = 'data%2F' + title_pdf
+        res = requests.post(
+            url=params['svf_cloud_access_form_output_req_url'],
+            headers={'Authorization': ('Bearer %s' % token)},
+            files={
+                # 'name': 'System Gear Test',
+                'printer': 'PDF',
+                'source': 'CSV',
+                'defaultForm': specific_params['form_format_path'],
+                data_key: ('test.csv', data.encode(), 'text/csv'),
+                'redirect': 'false',
+            }
+        )
+
+        if res.status_code == 202:
+            # download pdf
+            url_download = res.headers['Location']
+            res_download = requests.get(
+                url=url_download,
+                headers={'Accept': 'application/octet-stream',
+                         'Authorization': ('Bearer %s' % token)}, )
+            self.cancel_access_token(token)
+            if res_download.status_code != 200:
+                raise UserError(res_download.text)
+            content_file_pdf = res_download.content
+            vals = {
+                'name': title_pdf + '.pdf',
+                'datas': base64.b64encode(content_file_pdf).decode('utf-8'),
+                'type': 'binary',
+                'res_model': 'account.move',
+                'res_id': self.id,
+                'x_no_need_save': True,
+            }
+            file_pdf = self.env['ir.attachment'].create(vals)
+
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/web/content/' + str(file_pdf.id) + '?download=true',
+                'target': 'new',
+            }
+
+        elif res.status_code == 400:
+            raise UserError('SVF Cloudへの	リクエスト内容が不正です。')
+        if res.status_code == 401:
+            raise UserError('SVF Cloudの認証情報が不正なです。')
+        if res.status_code == 403:
+            raise UserError('SVF Cloudの実行権限がないか、必要なポイントが足りていません。')
+        if res.status_code == 429:
+            raise UserError('SVF CloudのAPIコール数が閾値を超えました。')
+        if res.status_code == 503:
+            raise UserError('SVF Cloudの同時に処理できる数の制限を超過しました。しばらく時間を置いてから再度実行してください。')
+
+        # End Region
 
     def cancel_access_token(self, token=False):
         param = self.get_svf_param()
@@ -108,5 +205,6 @@ class SvfCloudConfig(models.Model):
                                      headers={'Content-Type': 'application/x-www-form-urlencoded',
                                               'Authorization': ('Bearer %s' % token)},
                                      data={'token': token}, )
+            _logger.info("Canceled svf access token!")
         except requests.exceptions.HTTPError:
-            raise UserError(_('An error occurred when canceling the access token. %s') % response.text)
+            raise UserError(_('アクセストークンのキャンセルでエラーが発生しました。 %s') % response.text)

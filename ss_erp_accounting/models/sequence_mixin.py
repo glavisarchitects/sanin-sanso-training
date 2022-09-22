@@ -34,3 +34,27 @@ class SequenceMixin(models.AbstractModel):
                         date_field=record._fields[record._sequence_date_field]._description_string(self.env),
                         sequence_field=record._fields[record._sequence_field]._description_string(self.env),
                     ))
+
+
+    def _set_next_sequence(self):
+        if self._context.get('pypass_confirm'):
+            return super(SequenceMixin,self)._set_next_sequence()
+        payment = self.env['account.move'].search([('move_type','=','entry')],order='id desc')
+
+        if payment:
+            highest_name = payment[1].name
+            last_sequence = highest_name
+            new = not last_sequence
+            if new:
+                last_sequence = highest_name
+            format, format_values = self._get_sequence_format_param(last_sequence)
+            if new:
+                format_values['seq'] = 0
+                format_values['year'] = self[self._sequence_date_field].year % (10 ** format_values['year_length'])
+                format_values['month'] = self[self._sequence_date_field].month
+            format_values['seq'] = format_values['seq'] + 1
+
+        self[self._sequence_field] = format.format(**format_values)
+        self._compute_split_sequence()
+
+

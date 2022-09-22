@@ -2,51 +2,62 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import requests
+import base64
 import json
 
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    # SVF Region
-    def check_param_r002_config(self):
-        r002_form_format_path = self.env['ir.config_parameter'].sudo().get_param('R002_form_format_path')
-        if not r002_form_format_path:
-            raise UserError('帳票レイアウトパスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
-
-        r002_form_title = self.env['ir.config_parameter'].sudo().get_param('R002_form_title')
-        if not r002_form_title:
-            raise UserError('帳票タイトルの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
-
-        r002_form_storage_dest_path = self.env['ir.config_parameter'].sudo().get_param('R002_form_storage_dest_path')
-        if not r002_form_storage_dest_path:
-            raise UserError('帳票格納先パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
-
-        r002_form_img_resource_path = self.env['ir.config_parameter'].sudo().get_param('R002_form_img_resource_path')
-        if not r002_form_img_resource_path:
-            raise UserError('画像パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
-
     def svf_template_export(self):
-        self.check_param_r002_config()
-        # TODO: Recheck token return from svf.cloud.config
-        # this is just sample code, need to redo when official information about SVF API is available
-        token = self.env['svf.cloud.config'].sudo().get_access_token()
 
         # Prepare data sent to SVF
-        sale_doc_reference = self.invoice_origin.split(', ') if self.invoice_origin else False
-        so_record = self.env['sale.order'].search([('name', 'in', sale_doc_reference)])
-        # if not so_record:
-        #     raise UserError('対応する SO レコードが見つかりません。')
-        # if len(so_record) > 1:
-        #     raise UserError('複数の SO . レコードが見つかりました。')
+        customer_so_recs = self.env['sale.order'].search([('state', 'not in', ['draft', 'cancel'])])
+        so_records = customer_so_recs.filtered(lambda csr: self.id in csr.invoice_ids.ids)
+        if not so_records:
+            raise UserError('対応する SO レコードが見つかりません。')
 
-        # payment_record = self.env['account.payment'].search([('ref', 'in', self.name)])
-        # if not payment_record:
-        #     raise UserError('対応する Payment レコードが見つかりません。')
-        # if len(payment_record) > 1:
-        #     raise UserError('複数の Payment . レコードが見つかりました。')
-
+        customer_payment_recs = self.env['account.payment'].search(
+            [('state', '=', 'posted'), ('reconciled_invoice_ids', '!=', []), ])
+        payment_record = customer_payment_recs.filtered(lambda cpr: self.id in cpr.reconciled_invoice_ids.ids)
+        if not payment_record:
+            raise UserError('対応する Payment レコードが見つかりません。')
         # Todo: wait for account_move_line, sale_order_line data confirmation
+        #             '--->                                                                                         Name Invoice,Organization,....  DATA Header (Synthetic Invoice)                                                                                                                                                                                        <---''--->                                                                                         Name Invoice,Organization,....  DATA Header (Synthetic Invoice)                                                                                                                                                                                      <---'
+        data_header = '''"invoice_no","zip","address","customer_name","output_date","registration_number","name","responsible_person","organization_zip","organization_address","organization_phone","organization_fax","this_month_amount","invoice_date_due","previous_month_amount","deposit_amount","previous_month_balance","this_month_purchase","consumption_tax","date","slip_number","detail_number","product_name","quantity","unit","unit_price","price","tax_rate","summary","price_total_tax_rate10","price_total_tax_rate8","price_total_reduced_tax_rate8","price_total_no_tax","tax_amount_rate10","tax_amount_rate8","tax_amount_reduced_tax_rate8","tax_amount_no_tax","price_total","price_total_tax","payee_info"'''
+
+        # data_file = '''"invoice_no","zip","address","customer_name","output_date","registration_number","name","responsible_person","organization_zip","organization_address","organization_phone","organization_fax","this_month_amount","invoice_date_due","previous_month_amount","deposit_amount","previous_month_balance","this_month_purchase","consumption_tax","date","slip_number","detail_number","product_name","quantity","unit","unit_price","price","tax_rate","summary","price_total_tax_rate10","price_total_tax_rate8","price_total_reduced_tax_rate8","price_total_no_tax","tax_amount_rate10","tax_amount_rate8","tax_amount_reduced_tax_rate8","tax_amount_no_tax","price_total","price_total_tax","payee_info"
+        # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/31","000001","00001","振込","","","","100,000","","","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
+        # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/31","000001","00001","現金","","","","200,000","","","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
+        # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","","","","*** 入　金　計 ***","","","","300,000","","","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
+        # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/3","000002","00002","プロパン／サプライ","9,992.10","Kg","112.80","1,127,109","課税10%","配送センター991","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
+        # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/8","000003","00003","プロパン／サプライ","2,295.00","ｍ3","225.60","517,752","課税10%","配送センター991","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
+        # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/10","000004","00004","プロパン／サプライ","345.60","Kg","112.80","38,984","課税10%","配送センター991","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
+        # '''
+
+        # 詳細（入金）Payment Data
+        payment_data = ['"' + payment_record.date, payment_record.name, "", payment_record.x_receipt_type, "", "", "",
+                        "{:,}".format(int(payment_record.amount)), "", "", 'x' + '"']
+        r002_svf_registration_number = self.env['ir.config_parameter'].sudo().get_param(
+            'invoice_report.registration_number')
+        for so in so_records:
+            customer_address = so.partner_invoice_id.street + '' if so.partner_invoice_id.street else ''
+            customer_address += so.partner_invoice_id.street2 + '' if so.partner_invoice_id.street2 else ''
+            customer_address += so.partner_invoice_id.city + '' if so.partner_invoice_id.city else ''
+            customer_address += so.partner_invoice_id.state_id.name + '' if so.partner_invoice_id.state_id.name else ''
+            customer_address += so.partner_invoice_id.country_id.name + '' if so.partner_invoice_id.country_id.name else ''
+
+            organization_address = self.x_organization_id.organization_state_id.name + '' if self.x_organization_id.organization_state_id.name else ''
+            organization_address += self.x_organization_id.city + '' if self.x_organization_id.city else ''
+            organization_address += self.x_organization_id.street + '' if self.x_organization_id.street else ''
+            organization_address += self.x_organization_id.street2 + '' if self.x_organization_id.street2 else ''
+
+            output_date = fields.Datetime.now().strftime("%Y年%-m月%-d日")
+            invoice_data = ['"' + self.name, so.partner_invoice_id.zip, customer_address,
+                            so.partner_invoice_id.name + '様', output_date, r002_svf_registration_number,
+                            self.x_organization_id.name, self.x_organization_id.organization_zip, organization_address,
+                            self.x_organization_id.organization_fax, '下記の通りご請求申し上げます。', 'x' + '"']
+
         # data = {
         #     # '請求書': self.name,
         #     'invoice_no': self.partner_invoice_id.name,
@@ -72,36 +83,6 @@ class AccountMove(models.Model):
         #     'price': payment_record.amount,
         #     'summary': payment_record.x_remarks,
         # }
-
-        title_pdf = 'xsxsxsx'
-        files = [('file', ('test.csv', b'test', 'text/csv'))]
-
-        res = requests.post(
-            url='https://api.svfcloud.com/v1/artifacts',
-            headers={'Content-Type': 'multipart/form-data',
-                     'Authorization': ('Bearer %s' % token)},
-            data={
-                'printer': 'PDF', 'source': 'CSV',
-                'defaultForm': 'form/Sample/その他/受け入れテスト/R003_売掛金残高確認書.xml',
-                'data/' + title_pdf: '',
-            },
-            files=files
-        )
-        # sale_doc_reference = self.invoice_origin.split(', ')
-
-        response = res.json()
-        print('#############################', response)
-        if response == 200:
-            pass
-            if response == '400 Bad Request':
-                raise UserError('SVF Cloudへの	リクエスト内容が不正です。')
-            if response == '401 Unauthorized':
-                raise UserError('SVF Cloudの認証情報が不正なです。')
-            if response == '403 Forbidden':
-                raise UserError('SVF Cloudの実行権限がないか、必要なポイントが足りていません。')
-            if response == '429 Too many Requests':
-                raise UserError('SVF CloudのAPIコール数が閾値を超えました。')
-            if response == '503 Service Unavailable':
-                raise UserError('SVF Cloudの同時に処理できる数の制限を超過しました。しばらく時間を置いてから再度実行してください。')
+        # self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_file, type_report='R002')
 
     # End Region
