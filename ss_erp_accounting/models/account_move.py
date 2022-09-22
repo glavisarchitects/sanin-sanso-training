@@ -91,5 +91,6 @@ class AccountMoveLine(models.Model):
     x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', string='補助科目')
     x_sub_account_ids = fields.Many2many('ss_erp.account.subaccount', related='account_id.x_sub_account_ids')
 
-    x_organization_id = fields.Many2one('ss_erp.organization', related='move_id.x_organization_id')
-    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', related='move_id.x_responsible_dept_id')
+    x_organization_id = fields.Many2one('ss_erp.organization', related='move_id.x_organization_id', store=True)
+    x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', related='move_id.x_responsible_dept_id',
+                                            store=True)
