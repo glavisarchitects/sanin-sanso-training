@@ -14,11 +14,11 @@ class AccountReceivableList(models.TransientModel):
     def svf_template_export(self):
         data_file = self._prepare_data_file()
         print(data_file)
-        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_file, type_report='R006')
+        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_file, type_report='R005')
 
     # 売掛金一覧表作成。
     def create_list_of_accounts_receivable(self):
-        self.svf_template_export()
+        return self.svf_template_export()
 
     def _get_invoice_history(self):
         branch = self._get_branch_of_login_user()
@@ -119,8 +119,8 @@ class AccountReceivableList(models.TransientModel):
         # ヘッダ
         new_data = [
             '"branch_code","branch_name","target_date","output_date","customer_code","customer_name",' + \
-            "previous_month_balance", "correction", "receipts", "carried_forward", "earnings", "consumption_tax", + \
-            "this_month_balance", "payment", "conditions", "closing_date"]
+            '"previous_month_balance", "correction", "receipts", "carried_forward", "earnings", "consumption_tax",' + \
+            '"this_month_balance", "payment", "conditions", "closing_date"']
 
         branch = self._get_branch_of_login_user()
         target_date = "%s ~ %s" % (self.due_date_start, self.due_date_end)
@@ -209,3 +209,4 @@ class AccountReceivableList(models.TransientModel):
 
         new_data.append(total_total_line)
         return "\n".join(new_data)
+
