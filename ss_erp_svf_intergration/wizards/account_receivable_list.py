@@ -144,13 +144,13 @@ class AccountReceivableList(models.TransientModel):
                 output_date,  # 出力日付
                 "" if row['ref'] is None else row['ref'],  # 取引先コード
                 row['display_name'],  # 取引先名称
-                0 if row['previous_month_balance'] is None else row['previous_month_balance'],
+                0 if row['previous_month_balance'] is None else "{:,}".format(row['previous_month_balance']),
                 0, # correction
-                0 if row['receipts'] is None else row['receipts'],
-                0 if row['carried_forward'] is None else row['carried_forward'],
-                0 if row['earnings'] is None else row['earnings'],
-                0 if row['consumption_tax'] is None else row['consumption_tax'],
-                0 if row['this_month_balance'] is None else row['this_month_balance'],
+                0 if row['receipts'] is None else "{:,}".format(row['receipts']),
+                0 if row['carried_forward'] is None else "{:,}".format(row['carried_forward']),
+                0 if row['earnings'] is None else "{:,}".format(row['earnings']),
+                0 if row['consumption_tax'] is None else "{:,}".format(row['consumption_tax']),
+                0 if row['this_month_balance'] is None else "{:,}".format(row['this_month_balance']),
                 '',
                 '',
                 '',
@@ -175,13 +175,13 @@ class AccountReceivableList(models.TransientModel):
             output_date,  # 出力日付
             '',  # 取引先コード
             '**  合　計　**',  # 取引先名称
-            total_previous_month_balance,
-            total_correction,
-            total_receipts,
-            total_carried_forward,
-            total_earnings,
-            total_consumption_tax,
-            total_this_month_balance,
+            0 if total_previous_month_balance is None else "{:,}".format(total_previous_month_balance),
+            0 if total_correction is None else "{:,}".format(total_correction),
+            0 if total_receipts is None else "{:,}".format(total_receipts),
+            0 if total_carried_forward is None else "{:,}".format(total_carried_forward),
+            0 if total_earnings is None else "{:,}".format(total_earnings),
+            0 if total_consumption_tax is None else "{:,}".format(total_consumption_tax),
+            0 if total_this_month_balance is None else "{:,}".format(total_this_month_balance),
             '',
             '',
             '',
@@ -195,13 +195,13 @@ class AccountReceivableList(models.TransientModel):
             output_date,  # 出力日付
             '',  # 取引先コード
             '**  総合計　**',
-            total_previous_month_balance,
-            total_correction,
-            total_receipts,
-            total_carried_forward,
-            total_earnings,
-            total_consumption_tax,
-            total_this_month_balance,
+            0 if total_previous_month_balance is None else "{:,}".format(total_previous_month_balance),
+            0 if total_correction is None else "{:,}".format(total_correction),
+            0 if total_receipts is None else "{:,}".format(total_receipts),
+            0 if total_carried_forward is None else "{:,}".format(total_carried_forward),
+            0 if total_earnings is None else "{:,}".format(total_earnings),
+            0 if total_consumption_tax is None else "{:,}".format(total_consumption_tax),
+            0 if total_this_month_balance is None else "{:,}".format(total_this_month_balance),
             '',
             '',
             '',

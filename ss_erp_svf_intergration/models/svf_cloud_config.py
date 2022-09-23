@@ -83,11 +83,11 @@ class SvfCloudConfig(models.Model):
             raise UserError('帳票格納先パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
         config['form_storage_dest_path'] = form_storage_dest_path
 
-        key_config_form_img_resource_path = type_report + '_form_img_resource_path'
-        form_img_resource_path = self.env['ir.config_parameter'].sudo().get_param(key_config_form_img_resource_path)
-        if not form_img_resource_path:
-            raise UserError('画像パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
-        config['form_storage_dest_path'] = form_img_resource_path
+        # key_config_form_img_resource_path = type_report + '_form_img_resource_path'
+        # form_img_resource_path = self.env['ir.config_parameter'].sudo().get_param(key_config_form_img_resource_path)
+        # if not form_img_resource_path:
+        #     raise UserError('画像パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+        # config['form_storage_dest_path'] = form_img_resource_path
 
         return config
 
@@ -167,7 +167,7 @@ class SvfCloudConfig(models.Model):
                          'Authorization': ('Bearer %s' % token)}, )
             self.cancel_access_token(token)
             if res_download.status_code != 200:
-                raise UserError(res_download.text)
+                raise UserError(str(res_download.status_code) + " : " + res_download.text)
             content_file_pdf = res_download.content
             vals = {
                 'name': title_pdf + '.pdf',
