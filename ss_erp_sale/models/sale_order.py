@@ -5,7 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 from datetime import datetime, date
 from lxml import etree
 from odoo.tools.float_utils import float_round
-
+import math
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -19,7 +19,7 @@ class SaleOrder(models.Model):
         string='承認済み区分',
         selection=[('out_of_process', '未承認'),
                    ('in_process', '承認中'),
-                   ('approved', '承認済み')],copy=False,
+                   ('approved', '承認済み')], copy=False,
         required=False, default='out_of_process')
 
     def _get_default_x_organization_id(self):
@@ -32,7 +32,7 @@ class SaleOrder(models.Model):
     def _get_default_x_responsible_dept_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id and employee_id.department_jurisdiction_first:
-            return employee_id.department_jurisdiction_first[0]
+            return employee_id.department_jurisdiction_first
         else:
             return False
 
@@ -45,7 +45,7 @@ class SaleOrder(models.Model):
             self.picking_ids.update({
                 'user_id': self.user_id and self.user_id.id or False,
                 'x_organization_id': self.x_organization_id and self.x_organization_id.id or False,
-                'x_responsible_dept_id': self.x_responsible_dept_id and self.x_responsible_dept_id.id or False,}
+                'x_responsible_dept_id': self.x_responsible_dept_id and self.x_responsible_dept_id.id or False, }
             )
         return res
 
@@ -70,7 +70,20 @@ class SaleOrder(models.Model):
             raise UserError(_('未承認のため、見積を送信済みとしてマークすることができません。'))
         super(SaleOrder, self).action_quotation_sent()
 
-    #
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        super(SaleOrder, self).onchange_partner_id()
+        if self.partner_id:
+            invoice_categ = self.env.ref("ss_erp_res_partner.ss_erp_contact_category_data_3").id
+            delivery_categ = self.env.ref("ss_erp_res_partner.ss_erp_contact_category_data_4").id
+            partner_invoice_id = self.partner_id.child_ids.filtered(lambda x: x.x_contact_categ.id == invoice_categ)
+            partner_delivery_id = self.partner_id.child_ids.filtered(lambda x: x.x_contact_categ.id == delivery_categ)
+            values = {
+                'partner_invoice_id': partner_invoice_id[0].id if partner_invoice_id else self.partner_id.id,
+                'partner_shipping_id': partner_delivery_id[0].id if partner_delivery_id else self.partner_id.id,
+            }
+            self.update(values)
+
     @api.onchange('date_order', 'partner_id', 'company_id', 'x_organization_id')
     def _onchange_get_line_product_price_list_from_date_order(self):
         if self.order_line:
@@ -123,7 +136,7 @@ class SaleOrder(models.Model):
     def action_cancel(self):
         res = super(SaleOrder, self).action_cancel()
         approval_sale = self.env['approval.request'].search([('x_sale_order_ids', 'in', self.id),
-                                                             ('request_status', 'not in',['cancel', 'refuse'])])
+                                                             ('request_status', 'not in', ['cancel', 'refuse'])])
         if approval_sale:
             for approval in approval_sale:
                 if len(approval.x_sale_order_ids) > 1:
@@ -151,6 +164,7 @@ class SaleOrder(models.Model):
     def send_data_svf_cloud(self):
         self.env['svf.cloud.config'].sudo().get_access_token()
 
+
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
@@ -161,6 +175,84 @@ class SaleOrderLine(models.Model):
     price_unit = fields.Float('単価', required=True, digits='Product Price', default=0.0, store=True)
 
     x_is_required_x_pricelist = fields.Boolean(default=True)
+    x_pricelist_list = fields.Many2many('ss_erp.product.price', compute='_compute_x_pricelist_list')
+
+    @api.depends('product_id', 'product_uom_qty', 'product_uom', 'x_alternative_unit_id', 'x_conversion_quantity')
+    def _compute_x_pricelist_list(self):
+        for rec in self:
+            organization_id = rec.order_id.x_organization_id.id
+            partner_id = rec.order_id.partner_id.id
+            company_id = rec.order_id.company_id.id
+            date_order = rec.order_id.date_order
+
+            product_pricelist = self.env['ss_erp.product.price'].search(
+                ['&', '&', '&', '&', '&',
+                 '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
+                 '|', ('uom_id', '=', rec.product_uom.id), ('uom_id', '=', False),
+                 '|', ('product_uom_qty_min', '<=', rec.product_uom_qty), ('product_uom_qty_min', '=', 0),
+                 '|', ('product_uom_qty_max', '>=', rec.product_uom_qty), ('product_uom_qty_max', '=', 0),
+                 '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
+                 ('company_id', '=', company_id), ('product_id', '=', rec.product_id.id),
+                 ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
+
+            product_pricelist2 = self.env['ss_erp.product.price'].search(
+                ['&', '&', '&', '&', '&',
+                 '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
+                 '|', ('uom_id', '=', rec.x_alternative_unit_id.id), ('uom_id', '=', False),
+                 '|', ('product_uom_qty_min', '<=', rec.x_conversion_quantity), ('product_uom_qty_min', '=', 0),
+                 '|', ('product_uom_qty_max', '>=', rec.x_conversion_quantity), ('product_uom_qty_max', '=', 0),
+                 '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
+                 ('company_id', '=', company_id), ('product_id', '=', rec.product_id.id),
+                 ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
+
+            rec.x_pricelist_list = product_pricelist + product_pricelist2
+
+    # onchange auto caculate price unit from pricelist
+    @api.onchange('product_id', 'product_uom_qty', 'product_uom', 'x_alternative_unit_id', 'x_conversion_quantity')
+    def _onchange_get_product_price_list(self):
+        organization_id = self.order_id.x_organization_id.id
+        partner_id = self.order_id.partner_id.id
+        company_id = self.order_id.company_id.id
+        date_order = self.order_id.date_order
+
+        product_pricelist = self.env['ss_erp.product.price'].search(
+            ['&', '&', '&', '&', '&',
+             '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
+             '|', ('uom_id', '=', self.product_uom.id), ('uom_id', '=', False),
+             '|', ('product_uom_qty_min', '<=', self.product_uom_qty), ('product_uom_qty_min', '=', 0),
+             '|', ('product_uom_qty_max', '>=', self.product_uom_qty), ('product_uom_qty_max', '=', 0),
+             '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
+             ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
+             ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
+
+        product_pricelist2 = self.env['ss_erp.product.price'].search(
+            ['&', '&', '&', '&', '&',
+             '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
+             '|', ('uom_id', '=', self.x_alternative_unit_id.id), ('uom_id', '=', False),
+             '|', ('product_uom_qty_min', '<=', self.x_conversion_quantity), ('product_uom_qty_min', '=', 0),
+             '|', ('product_uom_qty_max', '>=', self.x_conversion_quantity), ('product_uom_qty_max', '=', 0),
+             '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
+             ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
+             ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
+
+        product_pricelist = product_pricelist + product_pricelist2
+
+        # set False for pricelist core
+        self.order_id.pricelist_id = False
+        if len(product_pricelist) == 0:
+            # Can't find ss_erp_pricelist match with input condition
+            self.update({
+                'x_pricelist': False,
+                'price_unit': self.product_id.list_price,
+                'x_is_required_x_pricelist': False
+            })
+
+        elif len(product_pricelist) == 1:
+            self.price_unit = product_pricelist.price_unit
+            self.x_pricelist = product_pricelist
+        else:
+            self.x_pricelist = False
+            self.x_is_required_x_pricelist = True
 
     # DUNK-F-001_開発設計書_C001_ガス換算
     x_conversion_quantity = fields.Float('換算数量', store=True)
@@ -180,61 +272,23 @@ class SaleOrderLine(models.Model):
         conversion_quantity = product_uom_alternative.converted_value * self.product_uom_qty
 
         # C001_ガス換算
-        if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.id in [
-                    self.env.ref('ss_erp_product_template.product_medium_classification_propane').id,
-                    self.env.ref('ss_erp_product_template.product_medium_classification_butan1').id,
-                    self.env.ref('ss_erp_product_template.product_medium_classification_butan2').id,
-                    self.env.ref('ss_erp_product_template.product_medium_classification_industry_propane').id,
-                    self.env.ref('ss_erp_product_template.product_medium_classification_industry_butan').id]:
+        medium_classification_code = self.env['ir.config_parameter'].sudo().get_param(
+            'ss_erp_product_medium_class_for_convert')
+
+        if not medium_classification_code:
+            raise UserError(
+                "プロダクト中分類の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_product_medium_class_for_convert）")
+        medium_classification_code.split(",")
+        if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.medium_classification_code in medium_classification_code:
             conversion_quantity = float_round(conversion_quantity, precision_digits=2)
         else:
             if self.x_alternative_unit_id.id == self.env.ref('uom.product_uom_kgm').id:
                 conversion_quantity = int(conversion_quantity)
                 # self.product_uom_qty = float_round(self.product_uom_qty, precision_digits=0)
             else:
-                conversion_quantity = round(conversion_quantity, 2)
+                conversion_quantity = math.floor(conversion_quantity * 10) / 10
 
         self.x_conversion_quantity = conversion_quantity
-
-
-    # onchange auto caculate price unit from pricelist
-    @api.onchange('product_id', 'product_uom_qty', 'product_uom')
-    def _onchange_get_product_price_list(self):
-        organization_id = self.order_id.x_organization_id.id
-        partner_id = self.order_id.partner_id.id
-        company_id = self.order_id.company_id.id
-        date_order = self.order_id.date_order
-
-        product_pricelist = self.env['ss_erp.product.price'].search(
-            ['&', '&', '&', '&', '&',
-             '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
-             '|', ('uom_id', '=', self.product_uom.id), ('uom_id', '=', False),
-             '|', ('product_uom_qty_min', '<=', self.product_uom_qty), ('product_uom_qty_min', '=', 0),
-             '|', ('product_uom_qty_max', '>=', self.product_uom_qty), ('product_uom_qty_max', '=', 0),
-             '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
-             ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
-             ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-
-
-        # set False for pricelist core
-        self.order_id.pricelist_id = False
-        if len(product_pricelist) == 0:
-            # Can't find ss_erp_pricelist match with input condition
-            self.update({
-                'x_pricelist': False,
-                'price_unit': self.product_id.list_price,
-                'x_is_required_x_pricelist': False
-            })
-
-        elif len(product_pricelist) == 1:
-            self.price_unit = product_pricelist.price_unit
-            self.x_pricelist = product_pricelist
-        else:
-            self.x_pricelist = False
-            self.x_is_required_x_pricelist = True
-
-            # return {'domain': {'x_pricelist': [('id', 'in', product_pricelist.ids)]
-            #                    }}
 
     @api.onchange('x_pricelist')
     def _compute_price_unit(self):

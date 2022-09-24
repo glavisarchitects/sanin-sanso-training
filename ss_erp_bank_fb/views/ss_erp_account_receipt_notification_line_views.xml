@@ -3,27 +3,42 @@
     <data>
         <!--    View is used to display receipt notification search results    -->
 
-        <!--        <record id="ss_erp_receipt_notification_search_account_move_list" model="ir.ui.view">-->
-        <!--            <field name="name">ss_erp.receipt.notification.search.account.move.list</field>-->
-        <!--            <field name="model">account.move</field>-->
-        <!--                        <field name="priority" eval="1000"/>-->
-        <!--            <field name="inherit_id" ref="account.view_invoice_tree"/>-->
-        <!--                        <field name="mode">primary</field>-->
-        <!--            <field name="arch" type="xml">-->
-        <!--                <field name="state" position="before">-->
-        <!--                    <field name="x_is_reconcile_receipt_notification" widget="radio"/>-->
-        <!--                </field>-->
-        <!--            </field>-->
-        <!--        </record>-->
+<!--        <record id="ss_erp_receipt_notification_search_account_move_list" model="ir.ui.view">-->
+<!--            <field name="name">ss_erp.receipt.notification.search.account.move.list</field>-->
+<!--            <field name="model">account.move</field>-->
+<!--            <field name="priority" eval="1000"/>-->
+<!--            <field name="inherit_id" ref="account.view_invoice_tree"/>-->
+<!--            &lt;!&ndash;            <field name="mode">primary</field>&ndash;&gt;-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='name']" position="after">-->
+<!--                    <field name="partner_id"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+<!--        &lt;!&ndash;        <record id="ss_erp_view_account_invoice_filter_receipt_notification" model="ir.ui.view">&ndash;&gt;-->
+<!--        &lt;!&ndash;            <field name="name">account.move.filter.receipt.notification</field>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <field name="model">account.move</field>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <field name="inherit_id" ref="account.view_account_invoice_filter"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <field name="arch" type="xml">&ndash;&gt;-->
+<!--        &lt;!&ndash;                <field name="name" position="after">&ndash;&gt;-->
+<!--        &lt;!&ndash;&lt;!&ndash;                    <field name="l10n_id_tax_number"/>&ndash;&gt;&ndash;&gt;-->
+<!--        &lt;!&ndash;&lt;!&ndash;                    <field name="l10n_id_attachment_id"/>&ndash;&gt;&ndash;&gt;-->
+<!--        &lt;!&ndash;                    <group>&ndash;&gt;-->
+<!--        &lt;!&ndash;                        <filter string="Match Customer Receipt Notification" name="account_receipt_notification" domain="[('partner_name', '=', 'partner_name_search')]"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;                    </group>&ndash;&gt;-->
+<!--        &lt;!&ndash;                </field>&ndash;&gt;-->
+<!--        &lt;!&ndash;            </field>&ndash;&gt;-->
+<!--        &lt;!&ndash;        </record>&ndash;&gt;-->
 
-        <record id="ss_erp_receipt_notification_search_account_move_action" model="ir.actions.act_window">
-            <field name="name">請求書検索結果</field>
-            <field name="res_model">account.move</field>
-            <field name="view_mode">tree</field>
-            <field name="search_view_id" ref="account.view_account_invoice_filter"/>
-            <field name="context">{"search_default_unpaid":1}</field>
-            <!--            <field name="view_id" ref="ss_erp_receipt_notification_search_account_move_list"/>-->
-        </record>
+<!--        <record id="ss_erp_receipt_notification_search_account_move_action" model="ir.actions.act_window">-->
+<!--            <field name="name">請求書検索結果</field>-->
+<!--            <field name="res_model">account.move</field>-->
+<!--            <field name="view_mode">tree</field>-->
+<!--            <field name="view_id" ref="ss_erp_receipt_notification_search_account_move_list"/>-->
+<!--            &lt;!&ndash;            <field name="search_view_id" ref="ss_erp_view_account_invoice_filter_receipt_notification"/>&ndash;&gt;-->
+<!--            <field name="context">{'default_move_type': 'out_invoice'}</field>-->
+<!--            &lt;!&ndash;            <field name="view_id" ref="ss_erp_receipt_notification_search_account_move_list"/>&ndash;&gt;-->
+<!--        </record>-->
 
         <record id="ss_erp_account_receipt_notification_line_tree_view" model="ir.ui.view">
             <field name="name">ss_erp.account.receipt.notification.line.tree</field>
@@ -56,7 +71,20 @@
                         <button name="search_account_move" string="検索" type="object"
                                 class="oe_highlight"/>
                     </header>
-                    <field name="name"/>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>
+                        <group>
+                            <div style="padding:3px;border: 1px solid black;">
+                                <p>検索項目</p>
+                                <label for="partner_name_search" string="顧客"/>
+                                <field name="partner_name_search"/>
+                                <label for="total_amount_search" string="金額"/>
+                                <field name="total_amount_search"/>
+                            </div>
+                        </group>
+                    </group>
                     <group>
                         <group>
                             <field name="account_date" readonly="1"/>
@@ -68,14 +96,36 @@
                             <field name="branch_id" readonly="1"/>
                             <field name="user_id" readonly="1"/>
                             <field name="transfer_amount" readonly="1"/>
-                            <field name="payment_ids" widget="many2many_tags" readonly="1" attrs="{'invisible': [('payment_ids', '=', [])]}"/>
+                            <field name="payment_ids" widget="many2many_tags" readonly="1"
+                                   attrs="{'invisible': [('payment_ids', '=', [])]}"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="請求書検索結果">
-                            <field name="result_account_move_ids" attrs="{'readonly': [('status', '!=', 'wait')]}" options="{'no_open':True, 'no_create':True}"
-                                   domain="[('state', '=', 'posted'), ('payment_state', '=', 'not_paid')]"
-                                   action="ss_erp_receipt_notification_search_account_move_action"/>
+                            <field name="result_account_move_ids" attrs="{'readonly': [('status', '!=', 'wait')]}"
+                                   options="{'no_open':True, 'no_create':True}"
+                                   context="{'default_move_type': 'out_invoice',}"
+                                   domain="[('state', '=', 'posted'), ('payment_state', '=', 'not_paid')]">
+                                <tree>
+                                    <field name="invoice_partner_display_name" string="番号"/>
+                                    <field name="state"/>
+                                    <field name="payment_state"/>
+                                    <field name="partner_id" string="顧客"/>
+                                    <field name="invoice_date" string="請求日"/>
+                                    <field name="invoice_date_due" string="期日"/>
+                                    <field name="activity_ids" string="次の活動"/>
+                                    <field name="activity_ids" string="次の活動"/>
+                                    <field name="company_id" string="会社"/>
+
+                                    <field name="amount_untaxed_signed" string="Tax Excluded" sum="Total"
+                                           optional="show"/>
+                                    <field name="amount_tax_signed" string="Tax" sum="Total" optional="hide"/>
+                                    <field name="amount_total_signed" string="Total" sum="Total" decoration-bf="1"
+                                           optional="show"/>
+                                    <field name="amount_residual_signed" string="Amount Due" sum="Amount Due"
+                                           optional="hide"/>
+                                </tree>
+                            </field>
 
                         </page>
                     </notebook>

@@ -9,7 +9,10 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='partner_bank_id']" position="before">
-                        <field name="x_sub_account_id"/>
+                        <field name="x_journal_sub_account" invisible="1"/>
+                        <field name="x_organization_id" readonly="1"/>
+                        <field name="x_responsible_dept_id" readonly="1"/>
+                        <field name="x_sub_account_id" domain="[('id','in',x_journal_sub_account)]"/>
                     </xpath>
                     <xpath expr="//group[@name='group3']" position="replace">
 

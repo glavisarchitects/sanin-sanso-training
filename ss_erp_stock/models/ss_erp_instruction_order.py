@@ -126,9 +126,9 @@ class InstructionOrder(models.Model):
         domain = [
             ('order_id', '=', self.id),
         ]
-        view_id = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree').id
+        view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree').id
         if self.stock_inventory_id and self.stock_inventory_id.state != 'draft':
-            view_id = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree_non_edit').id
+            view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree_non_edit').id
         action['view_id'] = view_id
         action['context'] = context
         action['domain'] = domain
@@ -151,9 +151,9 @@ class InstructionOrder(models.Model):
             ('order_id', '=', self.id),
             ('organization_id', '=', self.organization_id.id)
         ]
-        view_id = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree').id
+        view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree').id
         if self.stock_inventory_id and self.stock_inventory_id.state != 'draft':
-            view_id = self.env.ref('ss_erp.ss_erp_instruction_order_line_tree_non_edit').id
+            view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree_non_edit').id
         action['view_id'] = view_id
         action['context'] = context
         action['domain'] = domain

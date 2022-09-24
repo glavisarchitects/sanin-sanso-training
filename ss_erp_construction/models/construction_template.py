@@ -15,7 +15,7 @@ class ConstructionTemplate(models.Model):
                    ('approved', '承認済み'),
                    ('refused', '却下済み'),
                    ('cancel', '取消'),
-                   ],
+                   ],default='new',
         required=False, )
     code = fields.Char(string='コード')
 

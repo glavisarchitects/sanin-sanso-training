@@ -62,8 +62,6 @@ class ConstructionWorkorder(models.Model):
         string='構成品',
         required=False)
 
-    picking_ids = fields.One2many('stock.picking', 'x_workorder_id', string='配送')
-
     def _prepare_stock_picking(self):
         picking = {
             'partner_id': self.partner_id.id,
@@ -74,7 +72,6 @@ class ConstructionWorkorder(models.Model):
             'location_dest_id': self.location_dest_id.id,
             'scheduled_date': self.date_planned_start,
             'x_construction_order_id': self.id,
-            'x_workorder_id': self.id
         }
         move_live = []
         for component in self.workorder_component_ids:

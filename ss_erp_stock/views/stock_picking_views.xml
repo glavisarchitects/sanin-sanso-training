@@ -40,10 +40,12 @@
             </field>
 
             <field name="picking_type_id" position="before">
-                <field name="x_organization_id" string="組織名"
+                <field name="login_user_organization_ids" invisible="1"/>
+                <field name="required_responsible_dept_id" invisible="1"/>
+                <field name="x_organization_id" string="組織名" domain="[('warehouse_id','!=', False),('id','in',login_user_organization_ids)]"
                        attrs="{'invisible' :[('x_inventory_order_id', '!=', False)]}" required="1"/>
                 <field name="x_responsible_dept_id" string="管轄部門"
-                       attrs="{'invisible' :[('x_inventory_order_id', '!=', False)]}" required="1"/>
+                       attrs="{'invisible' :[('x_inventory_order_id', '!=', False)], 'required':[('required_responsible_dept_id', '!=', False)]}"/>
             </field>
             <field name="location_dest_id" position="after">
                 <field name="x_inventory_order_id" invisible="1"/>
@@ -66,11 +68,6 @@
                 <field name="x_account_modify"/>
                 <field name="x_inspection_exist" attrs="{'required':[('has_lot_ids', '=', True)],
                                 'invisible' :[('has_lot_ids', '=', False)]}"/>
-            </field>
-
-             <field name="origin" position="after">
-                 <field name="x_construction_order_id" attrs="{'invisible' :[('x_construction_order_id', '=', False)]}"/>
-                 <field name="x_workorder_id" attrs="{'invisible' :[('x_workorder_id', '=', False)]}"/>
             </field>
 
             <field name="move_type" position="attributes">

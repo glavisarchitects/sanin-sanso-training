@@ -9,6 +9,7 @@
                     <field name="from_date" required="1"/>
                     <field name="to_date"  required="1"/>
                     <field name="transfer_date" required="1"/>
+                    <field name="property_supplier_payment_term_id" required="1"/>
                 </group>
                 <footer>
                     <button name="zengin_general_transfer_fb" string="作成" type="object" class="oe_highlight" />

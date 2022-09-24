@@ -5,16 +5,14 @@
         <field name="model">ss_erp.organization</field>
         <field name="inherit_id" ref="ss_erp_organization.organization_view_form"/>
         <field name="arch" type="xml">
-            <form>
-                <xpath expr="//group[@name='organization_contact_info']" position="after">
+            <xpath expr="//group[@name='organization_contact_info']" position="after">
+                <group>
                     <group>
-                        <group>
-                            <field name="warehouse_id"/>
-                        </group>
+                        <field name="warehouse_id"/>
                     </group>
-                </xpath>
+                </group>
+            </xpath>
 
-            </form>
         </field>
     </record>
 

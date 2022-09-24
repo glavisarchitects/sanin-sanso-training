@@ -4,6 +4,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.translate import html_translate
 from odoo.tools.float_utils import float_round
+import math
 
 import logging
 
@@ -30,12 +31,18 @@ class PurchaseOrder(models.Model):
     def _get_default_x_responsible_dept_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id and employee_id.department_jurisdiction_first:
-            return employee_id.department_jurisdiction_first[0]
+            return employee_id.department_jurisdiction_first
         else:
             return False
 
-    x_bis_categ_id = fields.Many2one(
-        'ss_erp.bis.category', string="取引区分", copy=True, index=True)
+    # x_bis_categ_id = fields.Many2one(
+    #     'ss_erp.bis.category', string="取引区分", copy=True, index=True)
+    x_bis_categ_id = fields.Selection(
+        string='取引区分',
+        selection=[('gas_material', 'ガス・器材'),
+                   ('construction', '工事'), ],
+        required=False, )
+
     x_rfq_issue_date = fields.Date("見積依頼日")
     x_po_issue_date = fields.Date("発注送付日")
     x_desired_delivery = fields.Selection([
@@ -84,10 +91,8 @@ class PurchaseOrder(models.Model):
 
     @api.depends('x_bis_categ_id')
     def _compute_show_construction(self):
-        rec_construction_id = self.env.ref(
-            "ss_erp_purchase.ss_erp_bis_category_data_0", raise_if_not_found=False)
         for rec in self:
-            rec.x_is_construction = True if rec_construction_id and self.x_bis_categ_id and self.x_bis_categ_id.id == rec_construction_id.id else False
+            rec.x_is_construction = True if self.x_bis_categ_id == 'construction' else False
 
     def action_rfq_send(self):
         res = super(PurchaseOrder, self).action_rfq_send()
@@ -158,6 +163,7 @@ class PurchaseOrder(models.Model):
         })
         return invoice_vals
 
+
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
@@ -182,18 +188,19 @@ class PurchaseOrderLine(models.Model):
         conversion_quantity = product_uom_alternative.converted_value * self.product_uom_qty
 
         # C001_ガス換算
-        if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.id in [
-            self.env.ref('ss_erp_product_template.product_medium_classification_propane').id,
-            self.env.ref('ss_erp_product_template.product_medium_classification_butan1').id,
-            self.env.ref('ss_erp_product_template.product_medium_classification_butan2').id,
-            self.env.ref('ss_erp_product_template.product_medium_classification_industry_propane').id,
-            self.env.ref('ss_erp_product_template.product_medium_classification_industry_butan').id]:
+        medium_classification_code = self.env['ir.config_parameter'].sudo().get_param(
+            'ss_erp_product_medium_class_for_convert')
+
+        if not medium_classification_code:
+            raise UserError("プロダクト中分類の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_product_medium_class_for_convert）")
+        medium_classification_code.split(",")
+        if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.medium_classification_code in medium_classification_code:
             conversion_quantity = float_round(conversion_quantity, precision_digits=2)
         else:
             if self.x_alternative_unit_id.id == self.env.ref('uom.product_uom_kgm').id:
                 conversion_quantity = int(conversion_quantity)
             else:
-                conversion_quantity = round(conversion_quantity, 2)
+                conversion_quantity = math.floor(conversion_quantity * 10)/10
 
         self.x_conversion_quantity = conversion_quantity
 

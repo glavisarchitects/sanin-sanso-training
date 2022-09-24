@@ -60,10 +60,11 @@ class AccountPayment(models.Model):
     def _get_default_x_responsible_dept_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id and employee_id.department_jurisdiction_first:
-            return employee_id.department_jurisdiction_first[0]
+            return employee_id.department_jurisdiction_first
         else:
             return False
 
+    # Re write use for multi write off
     def _prepare_move_line_default_vals(self, write_off_line_vals=None):
         ''' Prepare the dictionary to create the default account.move.lines for the current payment.
         :param write_off_line_vals: Optional dictionary to create a write-off account.move.line easily containing:
@@ -135,6 +136,7 @@ class AccountPayment(models.Model):
             {
                 'name': liquidity_line_name or default_line_name,
                 'date_maturity': self.date,
+                'x_sub_account_id': self.x_sub_account_id.id,
                 'amount_currency': liquidity_amount_currency,
                 'currency_id': currency_id,
                 'debit': liquidity_balance if liquidity_balance > 0.0 else 0.0,

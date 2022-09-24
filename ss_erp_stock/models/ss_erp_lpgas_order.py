@@ -365,7 +365,7 @@ class LPGasOrder(models.Model):
             'name': _('集計結果'),
             'type': 'ir.actions.act_window',
             'res_model': 'ss_erp.lpgas.order.line',
-            'views': [[self.env.ref('ss_erp.ss_erp_lpgas_order_line_view_tree').id, 'tree']],
+            'views': [[self.env.ref('ss_erp_stock.ss_erp_lpgas_order_line_view_tree').id, 'tree']],
             'domain': [('lpgas_order_id', '=', self.id)],
             # 'target': 'new',
         }

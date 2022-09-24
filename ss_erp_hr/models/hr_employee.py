@@ -52,6 +52,7 @@ class HrEmployee(models.Model):
     def create(self, vals):
         employee = super(HrEmployee, self).create(vals)
         employee._update_user_organizations()
+        employee._update_user_dept()
         return employee
 
     def _update_user_organizations(self):
@@ -62,6 +63,16 @@ class HrEmployee(models.Model):
             return
         return self.user_id.write({
             "organization_ids": [(6, 0, organization_ids)]
+        })
+
+    def _update_user_dept(self):
+        self.ensure_one()
+        dept = self.department_jurisdiction_first | self.department_jurisdiction_second | self.department_jurisdiction_third
+        dept_ids = dept.ids
+        if not dept_ids or not self.user_id:
+            return
+        return self.user_id.write({
+            "dep_ids": [(6, 0, dept_ids)]
         })
 
     def write(self, vals):

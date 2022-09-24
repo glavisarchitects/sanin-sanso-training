@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 import jwt
 import datetime
@@ -12,8 +12,11 @@ import rsa
 
 import hashlib
 import hmac
+import requests
+from urllib.parse import urljoin
 
 import logging
+
 _logger = logging.getLogger(__name__)
 
 
@@ -45,6 +48,10 @@ class SvfCloudConfig(models.Model):
         if not cloud_access_token_req_url:
             raise UserError('SVF Cloud アクセストークン取得リクエストURLの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
 
+        svf_cloud_access_token_revoke_req_url = self.env['ir.config_parameter'].sudo().get_param('svf_cloud_access_token_revoke_req_url')
+        if not svf_cloud_access_token_revoke_req_url:
+            raise UserError('SVF Cloud アクセストークン破棄リクエストURLの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+
         result = {
             'client_id': client_id,
             'cloud_secret': cloud_secret,
@@ -73,17 +80,33 @@ class SvfCloudConfig(models.Model):
             "timeZone": 'Asia/Tokyo',
             "locale": 'ja',
         }
-        request_header = base64.b64encode((param['client_id'] + ':' + param['cloud_secret']).encode('utf-8'))
-        x = base64.b64encode('.'.encode('utf-8'))
-        headers_64 = base64.b64encode(ujson.dumps(headers).encode('utf-8'))
-        payload_64 = base64.b64encode(ujson.dumps(payload).encode('utf-8'))
-        sign_data = headers_64 + base64.b64encode('.'.encode('utf-8')) + payload_64
-        # private_key = rsa.PrivateKey(param['cloud_private_key'])
-        secret_key = base64.b64encode(param['cloud_private_key'].encode('utf-8'))
-        # signature = base64.b64encode(rsa.sign(sign_data, param['cloud_private_key'], 'SHA-256'))
-        signature = hmac.new(secret_key, sign_data, hashlib.sha256).hexdigest()
-        # signature = base64.b64encode(rsa.sign(sign_data, param['cloud_private_key'], 'SHA-256'))
-        # beatoken = headers_64 + payload_64 + signature
-        _logger.info("signatureSS: ", signature)
-        # TODO: Wait for SVF config infor
-        return signature
+
+        private_key = param['cloud_private_key'].encode('utf-8')
+        gen_jwt_token = jwt.encode(payload=payload, key=private_key, headers=headers, algorithm="RS256")
+        print('##########################', gen_jwt_token)
+
+        bearer_token_64 = base64.b64encode(
+            ("%s:%s" % (param['client_id'], param['cloud_secret'])).encode('UTF-8')).decode('UTF-8')
+        response = requests.post(url=param['cloud_access_token_req_url'],
+                                 headers={'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                                          'Authorization': ('Basic %s' % bearer_token_64)},
+                                 data={'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                                       'assertion': gen_jwt_token, }, )
+        if response.status_code != 200:
+            raise UserError(_(str(response.status_code) + ': ' + str(response.text)))
+        try:
+            token = response.json().get('token')
+        except requests.exceptions.HTTPError:
+            raise UserError(_('The SVF authentication failed. Please check your API key and secret.'))
+        print('**************************', token)
+        return token
+
+    def cancel_access_token(self, token=False):
+        param = self.get_svf_param()
+        try:
+            response = requests.post(url=urljoin(param['cloud_access_token_req_url'], 'oauth2/revoke'),
+                                     headers={'Content-Type': 'application/x-www-form-urlencoded',
+                                              'Authorization': ('Bearer %s' % token)},
+                                     data={'token': token}, )
+        except requests.exceptions.HTTPError:
+            raise UserError(_('An error occurred when canceling the access token. %s') % response.text)
