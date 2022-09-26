@@ -266,6 +266,8 @@ class AccountReceivableCustomerLedger(models.TransientModel):
         branch = self._get_branch_of_login_user()
 
         total_amount = 0
+        customer_code = False
+        customer_name = False
         account_receivable_balance = self._get_account_receivable_balance()
         if account_receivable_balance is not None:
             for row in account_receivable_balance:
@@ -294,6 +296,8 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 )
                 if row['order_sequence'] == 6:
                     total_amount += int(row['amount'])
+                customer_code = row['customer_code']
+                customer_name = row['customer_name']
                 new_data.append(data_line)
 
             last_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
@@ -302,8 +306,8 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 self.due_date_start,
                 self.due_date_end,
                 branch.name,
-                new_data[-1]['customer_code'],
-                new_data[-1]['customer_name'],
+                customer_code,
+                customer_name,
                 '',
                 '',
                 '',
