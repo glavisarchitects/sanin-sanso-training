@@ -42,7 +42,8 @@ class AccountMoveWizard(models.TransientModel):
         transfer_date_month = self.transfer_date.strftime('%m%d')
         #
         # # TODO: Re confirm Bic bank of which branch?
-        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '00000')], limit=1)
+        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '00000')],
+                                                                          limit=1)
         if not head_office_organization:
             raise UserError('本社支店情報設定してください')
 
@@ -71,7 +72,7 @@ class AccountMoveWizard(models.TransientModel):
         total_sum_amount = 0
         for inv in invoice_zengin_data:
             if not inv.partner_id.bank_ids:
-                raise UserError('取引先の銀行を設定してください')
+                raise UserError('取引先%sの銀行を設定してください' % inv.partner_id.name)
             partner_bic_number = inv.partner_id.bank_ids[0].bank_id.bic
             if len(partner_bic_number) != 4:
                 raise UserError('振込先金融機関コード長が一致しません')
