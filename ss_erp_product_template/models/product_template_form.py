@@ -55,7 +55,8 @@ class ProductTemplateForm(models.Model):
                                          "e.g. for computers: warranty, software, etc.).", check_company=True)
     # change o2m to m2m
     x_product_unit_measure_ids = fields.Many2many('ss_erp.product.units.measure', string='代替単位', tracking=True)
-
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
     # rewrite some compute function
     @api.depends_context('company', 'location', 'warehouse')
     def _compute_quantities(self):
