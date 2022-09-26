@@ -12,94 +12,199 @@ class AccountMove(models.Model):
 
     def _get_data_svf_r002(self):
 
-        query = f''' select 						
-                         a.name as 請求書NO						
-                         , to_char(now(), 'YYYY年MM月DD日')  as 発行日						
-                         , o.zip as 顧客／郵便番号						
-                         , p.name as 顧客／都道府県						
-                         , o.city as 顧客／市区町村						
-                         , o.street as 顧客／町名番地						
-                         , o.street2 as 顧客／町名番地２						
-                         , o.name as 顧客名						
-                         , l.complete_name as 支店名						
-                         , n.name as 責任者						
-                         , l.organization_zip as 支店郵便番号						
-                         , m.name as 支店住所／都道府県						
-                         , l.organization_city as 支店住所／市区町村						
-                         , l.organization_street as 支店住所／町名番地						
-                         , l.organization_street2 as 支店住所／町名番地２						
-                         , l.organization_phone as 支店TEL						
-                         , l.organization_fax as 支店FAX						
-                         , r.name as 銀行名						
-                         , q.x_bank_branch as 銀行支店名						
-                         , q.acc_number as 口座番号						
-                         ,  to_char(e.date_done, 'MM/DD') as 日付						
-                         , k.name as 伝票番号						
-                         , g.name as 商品名						
-                         , null as 規格・商品名						
-                         , d.product_uom_qty as 数量						
-                         , h.name as 単位						
-                         , d.price_unit as 単価						
-                         , d.price_subtotal as 本体価格						
-                         , j.name as 税率						
-                         , d.x_remarks as 適用						
-                        from						
-                            account_move a  /* 仕訳 */						
-                            inner join						
-                            account_move_line b /* 仕訳項目 */						
-                            on a.id = b.move_id						
-                            inner join						
-                            sale_order_line_invoice_rel c /* 販売明細と請求の関連 */						
-                            on b.id = c.invoice_line_id						
-                            inner join						
-                            sale_order_line d /* 販売オーダ明細 */						
-                            on c.order_line_id = d.id						
-                            inner join						
-                            stock_picking e /* 運送 */						
-                            on d.order_id = e.sale_id						
-                            inner join						
-                            product_template g /* プロダクトテンプレート */						
-                            on d.product_id = g.id						
-                            inner join						
-                            uom_uom h  /* 単位 */						
-                            on d.product_uom = h.id						
-                            inner join						
-                            account_tax_sale_order_line_rel i  /* 販売オーダ明細と税の関連 */						
-                            on d.id = i.sale_order_line_id						
-                            inner join						
-                            account_tax j  /* 税 */						
-                            on i.account_tax_id = j.id						
-                            inner join						
-                            sale_order k /* 販売オーダ */						
-                            on d.order_id = k.id						
-                            inner join  						
-                            ss_erp_organization l  /* 組織 */						
-                            on k.x_organization_id = l.id						
-                            inner join						
-                            res_country_state m /* 都道府県（組織） */						
-                            on l.organization_state_id = m.id						
-                            inner join						
-                            hr_employee n /* 従業員 */						
-                            on l.responsible_person = n.id						
-                            inner join						
-                            res_partner o /* 連絡先 */						
-                            on k.partner_id = o.id						
-                            inner join						
-                            res_country_state p /* 都道府県（得意先） */						
-                            on o.state_id = p.id						
-                            inner join						
-                            res_partner_bank q /* 銀行口座 */						
-                            on l.id = q.organization_id						
-                            inner join						
-                            res_bank r /* 銀行 */						
-                            on q.bank_id = r.id						
-                        where						
-                            a.id = '{self.id}'					
-                        order by						
-                            d.product_id 						
-                            , to_char(e.date_done, 'MM/DD') 						
-                            , k.name						
-                        ;'''
+        # query = f''' select
+        #                  a.name as 請求書NO
+        #                  , to_char(now(), 'YYYY年MM月DD日')  as 発行日
+        #                  , o.zip as 顧客／郵便番号
+        #                  , p.name as 顧客／都道府県
+        #                  , o.city as 顧客／市区町村
+        #                  , o.street as 顧客／町名番地
+        #                  , o.street2 as 顧客／町名番地２
+        #                  , o.name as 顧客名
+        #                  , l.complete_name as 支店名
+        #                  , n.name as 責任者
+        #                  , l.organization_zip as 支店郵便番号
+        #                  , m.name as 支店住所／都道府県
+        #                  , l.organization_city as 支店住所／市区町村
+        #                  , l.organization_street as 支店住所／町名番地
+        #                  , l.organization_street2 as 支店住所／町名番地２
+        #                  , l.organization_phone as 支店TEL
+        #                  , l.organization_fax as 支店FAX
+        #                  , r.name as 銀行名
+        #                  , q.x_bank_branch as 銀行支店名
+        #                  , q.acc_number as 口座番号
+        #                  ,  to_char(e.date_done, 'MM/DD') as 日付
+        #                  , k.name as 伝票番号
+        #                  , g.name as 商品名
+        #                  , null as 規格・商品名
+        #                  , d.product_uom_qty as 数量
+        #                  , h.name as 単位
+        #                  , d.price_unit as 単価
+        #                  , d.price_subtotal as 本体価格
+        #                  , j.name as 税率
+        #                  , d.x_remarks as 適用
+        #                 from
+        #                     account_move a  /* 仕訳 */
+        #                     inner join
+        #                     account_move_line b /* 仕訳項目 */
+        #                     on a.id = b.move_id
+        #                     inner join
+        #                     sale_order_line_invoice_rel c /* 販売明細と請求の関連 */
+        #                     on b.id = c.invoice_line_id
+        #                     inner join
+        #                     sale_order_line d /* 販売オーダ明細 */
+        #                     on c.order_line_id = d.id
+        #                     inner join
+        #                     stock_picking e /* 運送 */
+        #                     on d.order_id = e.sale_id
+        #                     inner join
+        #                     product_template g /* プロダクトテンプレート */
+        #                     on d.product_id = g.id
+        #                     inner join
+        #                     uom_uom h  /* 単位 */
+        #                     on d.product_uom = h.id
+        #                     inner join
+        #                     account_tax_sale_order_line_rel i  /* 販売オーダ明細と税の関連 */
+        #                     on d.id = i.sale_order_line_id
+        #                     inner join
+        #                     account_tax j  /* 税 */
+        #                     on i.account_tax_id = j.id
+        #                     inner join
+        #                     sale_order k /* 販売オーダ */
+        #                     on d.order_id = k.id
+        #                     inner join
+        #                     ss_erp_organization l  /* 組織 */
+        #                     on k.x_organization_id = l.id
+        #                     inner join
+        #                     res_country_state m /* 都道府県（組織） */
+        #                     on l.organization_state_id = m.id
+        #                     inner join
+        #                     hr_employee n /* 従業員 */
+        #                     on l.responsible_person = n.id
+        #                     inner join
+        #                     res_partner o /* 連絡先 */
+        #                     on k.partner_id = o.id
+        #                     inner join
+        #                     res_country_state p /* 都道府県（得意先） */
+        #                     on o.state_id = p.id
+        #                     inner join
+        #                     res_partner_bank q /* 銀行口座 */
+        #                     on l.id = q.organization_id
+        #                     inner join
+        #                     res_bank r /* 銀行 */
+        #                     on q.bank_id = r.id
+        #                 where
+        #                     a.id = '{self.id}'
+        #                 order by
+        #                     d.product_id
+        #                     , to_char(e.date_done, 'MM/DD')
+        #                     , k.name
+        #                 ;'''
+        query = '''
+        with org_bank as (
+        select 
+            rpb.organization_id,
+            concat(rb.name,rpb.x_bank_branch,rpb.x_bank_branch_number) as payee_info	
+        -- 	'(',CASE When acc_type = 'bank' then '通常' ELSE '当座' END,')', rpb.acc_number）　as payee_info	
+        from res_partner_bank rpb
+        left join res_bank rb on rpb.bank_id = rb.id
+        where rpb.organization_id is not null
+        )
+        select
+         am.name as invoice_no
+         , rp.zip as zip
+         , concat(rcs.name,rp.city,rp.street,rp.street2) as address
+         , concat(rp.name,'様') as customer_name
+         , to_char(now(), 'YYYY年MM月DD日')  as output_date
+         , NULL as registration_number
+         , seo.name
+         , concat(he.job_title,':',he.name) as responsible_person
+         , seo.organization_zip as organization_zip
+         , concat(rcs2.name,seo.organization_city,seo.organization_street,seo.organization_street2) as organization_address
+         , concat('TEL:', seo.organization_phone) as organization_phone
+         , concat('FAX:', seo.organization_fax) as organization_fax
+         , NULL as this_month_amount -- TODO
+         , am.invoice_date_due 
+         , NULL as previous_month_amount
+         , NULL as deposit_amount
+         , NULL as previous_month_balance
+         , NULL as this_month_purchase
+         , NULL as consumption_tax
+         ,  to_char(sp.date_done, 'MM/DD') as date
+         , so.name as slip_number 
+         , so.name as detail_number 
+         , pt.name as product_name	
+         , null as 規格・商品名	
+         , sol.product_uom_qty as quantity	
+         , uu.name as unit	
+         , sol.price_unit as unit_price	
+         , sol.price_subtotal as price	
+         , at.name as tax_rate	
+         , sol.x_remarks as summary
+         , NULL as price_total_tax_rate10
+         , NULL as price_total_tax_rate8
+         , NULL as price_total_reduced_tax_rate8
+         , NULL as price_total_no_tax
+         , NULL as tax_amount_rate10
+         , NULL as tax_amount_rate8
+         , NULL as tax_amount_reduced_tax_rate8
+         , NULL as tax_amount_no_tax
+         , NULL as tax_amount_no_tax
+         , NULL as price_total
+         , NULL as price_total_tax
+         , ob.payee_info
+         from
+            account_move am  /* 仕訳 */	
+            left join	
+            account_move_line aml /* 仕訳項目 */	
+            on am.id = aml.move_id	
+            left join	
+            sale_order_line_invoice_rel solir /* 販売明細と請求の関連 */	
+            on aml.id = solir.invoice_line_id	
+            left join	
+            sale_order_line sol /* 販売オーダ明細 */	
+            on solir.order_line_id = sol.id	
+            left join	
+            stock_picking sp /* 運送 */	
+            on sol.order_id = sp.sale_id	
+            left join	
+            product_template pt /* プロダクトテンプレート */	
+            on sol.product_id = pt.id	
+            left join	
+            uom_uom uu  /* 単位 */	
+            on sol.product_uom = uu.id	
+            left join	
+            account_tax_sale_order_line_rel atsol  /* 販売オーダ明細と税の関連 */	
+            on sol.id = atsol.sale_order_line_id	
+            left join	
+            account_tax at  /* 税 */	
+            on atsol.account_tax_id = at.id	
+            left join	
+            sale_order so /* 販売オーダ */	
+            on sol.order_id = so.id	
+            left join	
+            res_partner rp /* 連絡先 */	
+            on am.partner_id = rp.id	
+                left join 
+                res_country_state rcs
+                on rp.state_id = rcs.id
+                left join 
+                ss_erp_organization seo
+                on am.x_organization_id = seo.id
+                left join 
+                hr_employee he
+                on seo.responsible_person = he.id
+                left join res_country_state rcs2
+                on seo.organization_state_id = rcs2.id
+                left join org_bank ob 
+                on ob.organization_id = am.x_organization_id
+        where sp.state = 'done' and am.id = '%s'
+        order by
+                am.name,
+            sol.product_id 	
+            , to_char(sp.date_done, 'MM/DD') 	
+            , so.name	
+        ''' % (self.id)
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 
@@ -186,7 +291,10 @@ class AccountMove(models.Model):
         for daq in data_query:
             one_line_data = ""
             for da in daq.values():
-                one_line_data += '"' + str(da) + '",'
+                if da is not None:
+                    one_line_data += '"' + str(da) + '",'
+                else:
+                    one_line_data += '"",'
             data_send.append(one_line_data)
         data_file = "\n".join(data_send)
         data_file = data_file[0:-1]

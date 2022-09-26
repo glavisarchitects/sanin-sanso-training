@@ -106,14 +106,13 @@ class AccountReceivableBalanceConfirm(models.TransientModel):
                 ) AS tb1 
             GROUP BY
                 tb1.partner_id 
-                ) SELECT
+                ) 
+            SELECT
                 ba.partner_id,
-                rp.display_name as customer_name,
+                concat(rp.name,'様') as customer_name,
                 rp.zip,
                 rp.ref as customer_code,
-                rcs.NAME as state,
-                rp.street,
-                rp.street2,
+                concat(rcs.name,rp.city,rp.street,rp.street2) as address
                 ba.total 
             FROM
                 balance ba
@@ -176,17 +175,17 @@ class AccountReceivableBalanceConfirm(models.TransientModel):
 
         branch = self._get_branch_of_login_user()
 
-        close_date = '%s年%s月%s日 現在'% (self.close_date.year,self.close_date.month,self.close_date.day)
-
+        close_date = '%s年%s月%s日 現在' % (self.close_date.year, self.close_date.month, self.close_date.day)
         phone = "TEL：%s" % (branch.organization_phone if branch.organization_phone else '')
 
         rec = self._get_accounts_receivable()
         if len(rec) > 0:
             data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
                 rec[0]['zip'],
-                '%s%s%s' % (rec[0]['state'], rec[0]['street'], rec[0]['street2']),
-                rec[0]['customer_name'] + '様',
-                rec[0]['zip'] + '-' + self._convert_customer_barcode(street=rec[0]['street'], street2=rec[0]['street2']),
+                rec[0]['address'],
+                rec[0]['customer_name'],
+                rec[0]['zip'] + '-' + self._convert_customer_barcode(street=rec[0]['street'],
+                                                                     street2=rec[0]['street2']),
                 close_date,
                 "￥" + "{:,}".format(int(rec[0]['total'])),
                 self.return_date,
