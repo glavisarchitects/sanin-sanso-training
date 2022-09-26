@@ -112,7 +112,7 @@ class AccountReceivableBalanceConfirm(models.TransientModel):
                 concat(rp.name,'様') as customer_name,
                 rp.zip,
                 rp.ref as customer_code,
-                concat(rcs.name,rp.city,rp.street,rp.street2) as address
+                concat(rcs.name,rp.city,rp.street,rp.street2) as address,
                 ba.total 
             FROM
                 balance ba
