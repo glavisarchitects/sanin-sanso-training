@@ -165,7 +165,7 @@
 
         <record id="r006_form_title" model="ir.config_parameter">
             <field name="key">R006_form_title</field>
-            <<field name="value">aa</field>
+            <field name="value">aa</field>
         </record>
 
         <record id="r006_form_storage_dest_path" model="ir.config_parameter">
