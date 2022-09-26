@@ -81,7 +81,7 @@ class AccountReceiptNotificationLine(models.Model):
 
     account_receipt_notification_header_id = fields.Many2one('ss_erp.account.receipt.notification.header',
                                                              string='全銀振込入金通知結果ヘッダ')
-    name = fields.Char('名称', realated='account_receipt_notification_header_id.name')
+    name = fields.Char('名称', realated='account_receipt_notification_header_id.name',store=True)
     user_id = fields.Many2one('res.users', related='account_receipt_notification_header_id.user_id')
     branch_id = fields.Many2one('ss_erp.organization', related='account_receipt_notification_header_id.branch_id',
                                 string='支店')
@@ -172,6 +172,7 @@ class AccountReceiptNotificationLine(models.Model):
                 # 'active_model': 'account.move',
                 # 'active_ids': partner_invoice.id,
                 'journal_id': journal_id.id,
+                'payment_type': 'inbound'
                 # 'amount': partner_invoice.amount_total,
                 # 'payment_date': fields.Date.context_today,
                 # 'company_id': partner_invoice.company_id.id,
