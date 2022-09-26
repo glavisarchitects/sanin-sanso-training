@@ -31,7 +31,7 @@ class AccountInvoiceListHistory(models.TransientModel):
 
         query = ''' SELECT
                 rp.ref,
-                rp.display_name,
+                rp.name,
                 tb1.previous_month_amount,
                 tb3.receipts,
                 tb1.previous_month_balance,
@@ -78,7 +78,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                     ) tb3 ON tb3.partner_id = rp.id
                 ORDER BY
                     rp.ref,
-                    rp.display_name ''' % (
+                    rp.name ''' % (
                     Date.to_date(self.due_date_end), Date.to_date(self.due_date_start), branch.id,
                     Date.to_date(self.due_date_start), Date.to_date(start_day_of_prev_month), branch.id,
                     Date.to_date(self.due_date_end), Date.to_date(self.due_date_start), branch.id)
@@ -119,7 +119,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 target_date,  # 対象年月
                 str(datetime_now),  # 出力日付
                 "" if row['ref'] is None else row['ref'],  # 取引先コード
-                row['display_name'],  # 取引先名称
+                row['name'],  # 取引先名称
                 0 if row['previous_month_amount'] is None else "{:,}".format(int(row['previous_month_amount'])),
                 0 if row['receipts'] is None else "{:,}".format(int(row['receipts'])),
                 0 if row['previous_month_balance'] is None else "{:,}".format(int(row['previous_month_balance'])),
