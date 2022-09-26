@@ -46,9 +46,10 @@ class AccountMoveWizard(models.TransientModel):
         if not head_office_organization:
             raise UserError('本社支店情報設定してください')
 
-        partner_bank = head_office_organization.bank_ids[0]
-        if not partner_bank:
+        if not head_office_organization.bank_ids:
             raise UserError('本社支店の銀行を設定してください')
+
+        partner_bank = head_office_organization.bank_ids[0]
 
         bic_bank_organization = partner_bank.bank_id.bic
         if len(bic_bank_organization) != 4:
@@ -69,6 +70,8 @@ class AccountMoveWizard(models.TransientModel):
         # # data
         total_sum_amount = 0
         for inv in invoice_zengin_data:
+            if not inv.partner_id.bank_ids:
+                raise UserError('取引先の銀行を設定してください')
             partner_bic_number = inv.partner_id.bank_ids[0].bank_id.bic
             if len(partner_bic_number) != 4:
                 raise UserError('振込先金融機関コード長が一致しません')

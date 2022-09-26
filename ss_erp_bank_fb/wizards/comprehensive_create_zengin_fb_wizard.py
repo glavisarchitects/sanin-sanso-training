@@ -51,9 +51,10 @@ class AccountPaymentWizard(models.TransientModel):
         if not head_office_organization:
             raise UserError('本社支店情報設定してください')
 
-        organization_bank = head_office_organization.bank_ids[0]
-        if not organization_bank:
+        if not head_office_organization.bank_ids:
             raise UserError('本社支店の銀行を設定してください')
+
+        organization_bank = head_office_organization.bank_ids[0]
 
         bic_bank_organization = organization_bank.bank_id.bic
         if len(bic_bank_organization) != 4:
