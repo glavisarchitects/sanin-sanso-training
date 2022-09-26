@@ -25,7 +25,7 @@ class AccountPaymentWizard(models.TransientModel):
     def zengin_general_transfer_fb(self):
         # account_journal = self.env['account.journal']
         partner_match_payment_term = self.env['res.partner'].search(
-            [('property_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
+            [('property_supplier_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
         domain = [('payment_type', '=', 'outbound'), ('x_is_fb_created', '=', False),
                   ('date', '<=', self.to_date), ('date', '>=', self.from_date),
                   ('partner_id', 'in', partner_match_payment_term.ids),
