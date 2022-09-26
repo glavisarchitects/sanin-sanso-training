@@ -69,10 +69,18 @@ class AccountMoveWizard(models.TransientModel):
                     get_multi_character(15) + acc_type + acc_number + get_multi_character(
             17) + '\r\n'  # '\n\r' = CRLF ?
         # # data
-        total_sum_amount = 0
+
+        not_setting_bank_partner = []
         for inv in invoice_zengin_data:
             if not inv.partner_id.bank_ids:
-                raise UserError('取引先%sの銀行を設定してください' % inv.partner_id.name)
+                if not inv.partner_id.bank_ids:
+                    not_setting_bank_partner.append(inv.partner_id.name)
+
+        if not not_setting_bank_partner:
+            raise UserError('取引先%sの銀行を設定してください' % ','.join(not_setting_bank_partner))
+
+        total_sum_amount = 0
+        for inv in invoice_zengin_data:
             partner_bic_number = inv.partner_id.bank_ids[0].bank_id.bic
             if len(partner_bic_number) != 4:
                 raise UserError('振込先金融機関コード長が一致しません')
