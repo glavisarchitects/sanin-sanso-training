@@ -76,7 +76,7 @@ class AccountMoveWizard(models.TransientModel):
                 not_setting_bank_partner.append(inv.partner_id.name)
 
         if len(not_setting_bank_partner) > 0:
-            raise UserError('取引先%sの銀行を設定してください' % '、'.join(not_setting_bank_partner))
+            raise UserError('取引先【%s】の銀行を設定してください' % '、'.join(not_setting_bank_partner))
 
         total_sum_amount = 0
         for inv in invoice_zengin_data:
