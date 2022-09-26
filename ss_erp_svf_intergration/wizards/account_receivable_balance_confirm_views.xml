@@ -8,9 +8,9 @@
                 <form string="売掛金残高確認書">
                     <sheet>
                         <group>
-                            <field name="return_date"/>
-                            <field name="close_date"/>
-                            <field name="partner_id"/>
+                            <field name="return_date" required="1"/>
+                            <field name="close_date" required="1"/>
+                            <field name="partner_id" required="1"/>
                         </group>
                     </sheet>
                     <footer>

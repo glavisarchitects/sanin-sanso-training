@@ -21,10 +21,6 @@
         'views/ss_erp_petty_cash_note_view.xml',
 
         # WIZARD
-        'wizards/account_invoice_list_history_views.xml',
-        'wizards/account_list_receivable_views.xml',
-        'wizards/account_receivable_balance_confirm_views.xml',
-        'wizards/account_receivable_customer_ledger_views.xml',
         'wizards/account_register_payment_views.xml',
         'wizards/payment_term_change_views.xml',
 

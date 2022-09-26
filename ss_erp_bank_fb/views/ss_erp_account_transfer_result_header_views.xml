@@ -90,19 +90,19 @@
         </record>
 
         <record id="action_account_transfer_result_header" model="ir.actions.act_window">
-            <field name="name">全銀口座振替依頼FB作成</field>
+            <field name="name">全銀口座振替結果FB取込</field>
             <field name="res_model">ss_erp.account.transfer.result.header</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="ss_erp_account_transfer_result_header_tree_view"/>
             <field name="domain"></field>
             <field name="context">{}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    全銀口座振替依頼FB作成
-                </p><p>
-                全銀口座振替依頼FB作成
-            </p>
-            </field>
+<!--            <field name="help" type="html">-->
+<!--                <p class="o_view_nocontent_smiling_face">-->
+<!--                    全銀口座振替依頼FB作成-->
+<!--                </p><p>-->
+<!--                全銀口座振替依頼FB作成-->
+<!--            </p>-->
+<!--            </field>-->
         </record>
     </data>
 </odoo>
