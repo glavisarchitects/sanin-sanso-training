@@ -94,7 +94,7 @@
                             <field name="result_account_move_ids" attrs="{'readonly': [('status', '!=', 'wait')]}"
                                    options="{'no_open':True, 'no_create':True}"
                                    context="{'default_move_type': 'out_invoice',}"
-                                   domain="[('state', '=', 'posted'), ('payment_state', 'in', ('not_paid','partial'))]">
+                                   domain="[('state', '=', 'posted'), ('payment_state', 'in', ['not_paid','partial'])]">
                                 <tree>
                                     <field name="invoice_partner_display_name" string="番号"/>
                                     <field name="state"/>

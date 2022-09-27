@@ -81,7 +81,7 @@ class AccountReceiptNotificationLine(models.Model):
 
     account_receipt_notification_header_id = fields.Many2one('ss_erp.account.receipt.notification.header',
                                                              string='全銀振込入金通知結果ヘッダ')
-    name = fields.Char('名称', realated='account_receipt_notification_header_id.name',store=True)
+    name = fields.Char('名称', realated='account_receipt_notification_header_id.name', store=True)
     user_id = fields.Many2one('res.users', related='account_receipt_notification_header_id.user_id')
     branch_id = fields.Many2one('ss_erp.organization', related='account_receipt_notification_header_id.branch_id',
                                 string='支店')
@@ -108,7 +108,7 @@ class AccountReceiptNotificationLine(models.Model):
     error_message = fields.Char(string='エラーメッセージ')
     payment_ids = fields.Many2many('account.payment', string='支払参照')
     result_account_move_ids = fields.Many2many('account.move',
-                                               domain="[('state', '=', 'posted'),  'in', ('not_paid','partial'),",
+                                               domain="[('state', '=', 'posted'), ('payment_state', 'in', ('not_paid','partial'))]",
                                                string='支払参照')
 
     def processing_execution(self):
@@ -131,7 +131,6 @@ class AccountReceiptNotificationLine(models.Model):
         journal_account_1121 = journal_ids[0]
         # 普通預金
         journal_account_1122 = journal_ids[1]
-
 
         # account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
         # journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)],
@@ -210,5 +209,3 @@ class AccountReceiptNotificationLine(models.Model):
             created_payment_ids.append(created_payment.id)
         self.payment_ids = created_payment_ids
         self.status = 'success'
-
-
