@@ -143,20 +143,34 @@ class AccountReceiptNotificationLine(models.Model):
         self.result_account_move_ids = [(6, 0, customer_invoice_rec.ids)]
 
     def processing_execution(self):
-        total_amount = sum(self.result_account_move_ids.mapped('amount_total_signed'))
+        total_amount = sum(self.result_account_move_ids.mapped('amount_residual'))
         if total_amount != int(self.transfer_amount):
             raise UserError('選択したすべての請求書の送金金額と合計金額が等しくありません。再度確認してください。')
 
         # if self.account_receipt_notification_header_id.acc_type not in ['1', '2']:
         #     raise UserError('預金種目は普通と当座だけ受け入れられます。')
 
-        account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
-        journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)],
-                                                                  limit=1)
+        a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
+            'A005_account_transfer_result_journal_id')
+        if not a005_account_transfer_result_journal_id:
+            raise UserError('仕訳帳情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
 
-        account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
-        journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)],
-                                                                  limit=1)
+        journal_ids = a005_account_transfer_result_journal_id.split(",")
+        if len(journal_ids) != 2:
+            raise UserError('仕訳帳情報の設定は間違っています。もう一度ご確認してください。')
+        # 当座預金
+        journal_account_1121 = journal_ids[0]
+        # 普通預金
+        journal_account_1122 = journal_ids[1]
+
+
+        # account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
+        # journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)],
+        #                                                           limit=1)
+        #
+        # account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
+        # journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)],
+        #                                                           limit=1)
 
         if self.account_receipt_notification_header_id.acc_type == '1':
             journal_id = journal_account_1122
@@ -172,7 +186,6 @@ class AccountReceiptNotificationLine(models.Model):
                 # 'active_model': 'account.move',
                 # 'active_ids': partner_invoice.id,
                 'journal_id': journal_id.id,
-                'payment_type': 'inbound'
                 # 'amount': partner_invoice.amount_total,
                 # 'payment_date': fields.Date.context_today,
                 # 'company_id': partner_invoice.company_id.id,

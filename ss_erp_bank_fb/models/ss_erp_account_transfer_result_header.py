@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 from datetime import datetime
 from odoo.tools import format_date
 
+
 class AccountTransferResultHeader(models.Model):
     _name = 'ss_erp.account.transfer.result.header'
     _description = '全銀口座振替結果FBファイル取込/新規'
@@ -77,21 +78,30 @@ class AccountTransferResultHeader(models.Model):
 
     def processing_execution(self):
         # Todo: journal will be created with data
-        # a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
-        #     'A005_account_transfer_result_journal_id')
-        # if not a005_account_transfer_result_journal_id:
-        #     raise UserError('仕訳帳情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
-        account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
-        journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)], limit=1)
+        a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
+            'A005_account_transfer_result_journal_id')
+        if not a005_account_transfer_result_journal_id:
+            raise UserError('仕訳帳情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
 
-        account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
-        journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)], limit=1)
+        journal_ids = a005_account_transfer_result_journal_id.split(",")
+        if len(journal_ids) != 2:
+            raise UserError('仕訳帳情報の設定は間違っています。もう一度ご確認してください。')
+        # 当座預金
+        journal_account_1121 = journal_ids[0]
+        # 普通預金
+        journal_account_1122 = journal_ids[1]
 
-        if not account_1121 or not account_1122:
-            raise UserError('アカウント1122とか1121が見つかりません。設定してください。')
-
-        if not journal_account_1121 or not journal_account_1122:
-            raise UserError('ジャーナル 1121 または 1122 が見つかりません。')
+        # account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
+        # journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)], limit=1)
+        #
+        # account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
+        # journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)], limit=1)
+        #
+        # if not account_1121 or not account_1122:
+        #     raise UserError('アカウント1122とか1121が見つかりません。設定してください。')
+        #
+        # if not journal_account_1121 or not journal_account_1122:
+        #     raise UserError('ジャーナル 1121 または 1122 が見つかりません。')
 
         transfer_line = self.account_transfer_result_record_ids.search([('status', '=', 'wait')])
         for tl in transfer_line:
@@ -146,21 +156,21 @@ class AccountTransferResultHeader(models.Model):
             # Year + Withdrawal date in account transfer result header (yyyy/mm/dd)
             year_current = datetime.today().year
             withdrawal_date = (str(self.withdrawal_date) + str(year_current)) if self.withdrawal_date else False
-            date_acc_payment = datetime.strptime(withdrawal_date,'%m%d%Y')
+            date_acc_payment = datetime.strptime(withdrawal_date, '%m%d%Y')
             created_payment.write({
-                    'x_receipt_type': partner_invoice.x_receipt_type,
-                    'x_payment_type': partner_invoice.x_payment_type,
-                    'x_organization_id': partner_invoice.x_organization_id,
-                    'x_responsible_dept_id': partner_invoice.x_responsible_dept_id,
-                    'x_is_not_create_fb': True,
-                    # 'date': self.upload_date,
-                    'date': date_acc_payment,
-                    # 'journal_id': self.env['account.journal'].browse(int(a005_account_transfer_result_journal_id)),
-                    'x_responsible_user_id': partner_invoice.x_responsible_user_id,
-                    'x_mkt_user_id': partner_invoice.x_mkt_user_id,
-                    'x_is_fb_created': False,
+                'x_receipt_type': partner_invoice.x_receipt_type,
+                'x_payment_type': partner_invoice.x_payment_type,
+                'x_organization_id': partner_invoice.x_organization_id,
+                'x_responsible_dept_id': partner_invoice.x_responsible_dept_id,
+                'x_is_not_create_fb': True,
+                # 'date': self.upload_date,
+                'date': date_acc_payment,
+                # 'journal_id': self.env['account.journal'].browse(int(a005_account_transfer_result_journal_id)),
+                'x_responsible_user_id': partner_invoice.x_responsible_user_id,
+                'x_mkt_user_id': partner_invoice.x_mkt_user_id,
+                'x_is_fb_created': False,
 
-                })
+            })
 
             debit_line = created_payment.move_id.line_ids.filtered(lambda l: l.debit > 0)
             debit_line.date_maturity = self.upload_date
@@ -175,7 +185,8 @@ class AccountTransferResultHeader(models.Model):
             # debit_line.account_id = deposit_account.id
 
             in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
-            receivable_line = partner_invoice.line_ids.filtered(lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
+            receivable_line = partner_invoice.line_ids.filtered(
+                lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
             if not in_accounts_receivable:
                 raise UserError('アカウント 1150 が見つかりません。設定してください。')
             # credit_line.account_id = in_accounts_receivable.id
@@ -198,7 +209,8 @@ class AccountTransferResultLine(models.Model):
     _name = 'ss_erp.account.transfer.result.line'
     _description = '全銀口座振替実績FBインポートデータ'
 
-    account_transfer_result_header_id = fields.Many2one('ss_erp.account.transfer.result.header', string='全銀口座振替結果ヘッダ')
+    account_transfer_result_header_id = fields.Many2one('ss_erp.account.transfer.result.header',
+                                                        string='全銀口座振替結果ヘッダ')
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
         ('success', '成功'),
