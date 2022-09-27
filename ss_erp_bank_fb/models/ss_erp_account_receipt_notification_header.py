@@ -86,9 +86,6 @@ class AccountReceiptNotificationLine(models.Model):
     branch_id = fields.Many2one('ss_erp.organization', related='account_receipt_notification_header_id.branch_id',
                                 string='支店')
 
-    partner_name_search = fields.Char('顧客')
-    total_amount_search = fields.Integer('金額')
-
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
         ('success', '成功'),
@@ -111,36 +108,8 @@ class AccountReceiptNotificationLine(models.Model):
     error_message = fields.Char(string='エラーメッセージ')
     payment_ids = fields.Many2many('account.payment', string='支払参照')
     result_account_move_ids = fields.Many2many('account.move',
-                                               domain="[('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),"
-                                                      "('invoice_partner_display_name', 'like', partner_name_search)]",
+                                               domain="[('state', '=', 'posted'),  'in', ('not_paid','partial'),",
                                                string='支払参照')
-
-    def search_account_move(self):
-        # update according to border in design
-        # str_customer_name = self.transfer_client_name
-        str_customer_name = self.partner_name_search
-
-        partner_rec = self.env['res.partner']
-        receipt_notification_partner = partner_rec.search([('name', 'like', str_customer_name), ], limit=1)
-        # if not receipt_notification_partner:
-        #     for pa in partner_rec.search([]):
-        #         if pa.name in str_customer_name:
-        #             receipt_notification_partner = pa
-        #             break
-        if not receipt_notification_partner:
-            raise UserError('対象の顧客情報が見つかりませんでした。')
-
-        current_employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
-        cur_employee_organization = current_employee_id.organization_first
-        customer_invoice_rec = self.env['account.move'].search(
-            [('partner_id', '=', receipt_notification_partner.id), ('move_type', '=', 'out_invoice'),
-             ('x_organization_id', '=', cur_employee_organization.id), ('x_receipt_type', '=', 'bank'),
-             ('x_is_fb_created', '=', True), ('x_is_not_create_fb', '=', False), ('state', '=', 'posted'),
-             ('payment_state', '=', 'not_paid'), ])
-
-        # ('amount_total', '=', int(self.transfer_amount)),
-
-        self.result_account_move_ids = [(6, 0, customer_invoice_rec.ids)]
 
     def processing_execution(self):
         total_amount = sum(self.result_account_move_ids.mapped('amount_residual'))
@@ -242,10 +211,4 @@ class AccountReceiptNotificationLine(models.Model):
         self.payment_ids = created_payment_ids
         self.status = 'success'
 
-    # @api.onchange('partner_name_search', 'result_account_move_ids')
-    # def _onchange_partner_name_search(self):
-    #     if self.partner_name_search != '':
-    #         return {'domain': {
-    #             'result_account_move_ids': [('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),
-    #                                         ('invoice_partner_display_name', 'like', self.partner_name_search), ]
-    #         }}
+
