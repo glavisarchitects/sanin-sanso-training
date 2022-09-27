@@ -153,7 +153,7 @@ class AccountReceiptNotificationLine(models.Model):
             {
                 # 'active_model': 'account.move',
                 # 'active_ids': partner_invoice.id,
-                'journal_id': journal_id,
+                'journal_id': int(journal_id),
                 # 'amount': partner_invoice.amount_total,
                 # 'payment_date': fields.Date.context_today,
                 # 'company_id': partner_invoice.company_id.id,
