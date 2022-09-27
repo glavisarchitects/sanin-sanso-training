@@ -168,7 +168,7 @@ class AccountReceiptNotificationLine(models.Model):
 
             in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
             receivable_line = invoice.line_ids.filtered(
-                lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
+                lambda l: l.account_id.user_type_id.type == 'receivable')
             if not in_accounts_receivable:
                 raise UserError('アカウント 1150 が見つかりません。設定してください。')
 
