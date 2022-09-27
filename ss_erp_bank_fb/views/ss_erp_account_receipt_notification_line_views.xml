@@ -94,7 +94,7 @@
                             <field name="result_account_move_ids" attrs="{'readonly': [('status', '!=', 'wait')]}"
                                    options="{'no_open':True, 'no_create':True}"
                                    context="{'default_move_type': 'out_invoice',}"
-                                   domain="[('state', '=', 'posted'), ('payment_state', 'in', ['not_paid','partial'])]">
+                                   domain="[('state', '=', 'posted'), ('payment_state', 'in', ('not_paid','partial'))]">
                                 <tree>
                                     <field name="invoice_partner_display_name" string="番号"/>
                                     <field name="state"/>
@@ -102,8 +102,10 @@
                                     <field name="partner_id" string="顧客"/>
                                     <field name="invoice_date" string="請求日"/>
                                     <field name="invoice_date_due" string="期日"/>
+                                    <field name="amount_total_signed" sum="合計"
+                                           optional="show"/>
                                     <field name="amount_residual" sum="未消込合計金額"
-                                           optional="hide"/>
+                                           optional="show"/>
                                 </tree>
                             </field>
 
