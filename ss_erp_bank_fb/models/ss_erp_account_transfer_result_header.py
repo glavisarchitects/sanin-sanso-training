@@ -157,7 +157,14 @@ class AccountTransferResultHeader(models.Model):
             year_current = datetime.today().year
             withdrawal_date = (str(self.withdrawal_date) + str(year_current)) if self.withdrawal_date else False
             date_acc_payment = datetime.strptime(withdrawal_date, '%m%d%Y')
-            created_payment.write({
+
+            in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
+            receivable_line = partner_invoice.line_ids.filtered(
+                lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
+            if not in_accounts_receivable:
+                raise UserError('アカウント 1150 が見つかりません。設定してください。')
+
+            created_payment.move_id.sudo().write({
                 'x_receipt_type': partner_invoice.x_receipt_type,
                 'x_payment_type': partner_invoice.x_payment_type,
                 'x_organization_id': partner_invoice.x_organization_id,
@@ -172,6 +179,17 @@ class AccountTransferResultHeader(models.Model):
 
             })
 
+            created_payment.sudo().write(
+                {
+                    'x_receipt_type': partner_invoice.x_receipt_type,
+                    'x_payment_type': partner_invoice.x_payment_type,
+                    'x_sub_account_id': receivable_line.x_sub_account_id,
+                    'x_organization_id': partner_invoice.x_organization_id,
+                    'x_responsible_dept_id': partner_invoice.x_responsible_dept_id,
+                    'x_is_not_create_fb': True,
+                    'x_is_fb_created': False,
+                })
+
             debit_line = created_payment.move_id.line_ids.filtered(lambda l: l.debit > 0)
             debit_line.date_maturity = self.upload_date
 
@@ -184,11 +202,11 @@ class AccountTransferResultHeader(models.Model):
             #
             # debit_line.account_id = deposit_account.id
 
-            in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
-            receivable_line = partner_invoice.line_ids.filtered(
-                lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
-            if not in_accounts_receivable:
-                raise UserError('アカウント 1150 が見つかりません。設定してください。')
+            # in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
+            # receivable_line = partner_invoice.line_ids.filtered(
+            #     lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
+            # if not in_accounts_receivable:
+            #     raise UserError('アカウント 1150 が見つかりません。設定してください。')
             # credit_line.account_id = in_accounts_receivable.id
             # credit_line.x_sub_account_id = receivable_line.x_sub_account_id
             # credit_line.date_maturity = self.upload_date
