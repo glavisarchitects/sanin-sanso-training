@@ -76,7 +76,11 @@ class AccountPaymentWizard(models.TransientModel):
             17) + '\r\n'  # '\n\r' = CRLF ?
         # data
         total_sum_amount = 0
+        bank_list = []
+        # group_bic_number, group_acc_number = payment_zengin_data.mapped('partner_bank_id.bank_id.bic')
         for pay in payment_zengin_data:
+
+
             partner_bic_number = pay.partner_bank_id.bank_id.bic
             if len(partner_bic_number) != 4:
                 raise UserError('振込先金融機関コード長が一致しません')
@@ -93,9 +97,19 @@ class AccountPaymentWizard(models.TransientModel):
             if len(partner_acc_number) != 7:
                 raise UserError('口座番号長が一致しません')
 
+            if (pay.partner_bank_id.bank_id.bic, pay.partner_bank_id.x_bank_branch_number, pay.partner_bank_id.acc_number) not in bank_list:
+                bank_list.append((pay.partner_bank_id.bank_id.bic, pay.partner_bank_id.x_bank_branch_number, pay.partner_bank_id.acc_number))
+            else:
+                continue
+
             partner_acc_holder_furigana = pay.partner_bank_id.x_acc_holder_furigana
 
-            total_amount_line = int(pay.amount)
+            # total_amount_line = int(pay.amount)
+            total_amount_line = int(sum(payment_zengin_data.filtered(lambda line: line.partner_bank_id.bank_id.bic == pay.partner_bank_id.bank_id.bic and
+                                                                          line.partner_bank_id.x_bank_branch_number == pay.partner_bank_id.x_bank_branch_number and
+                                                                          line.partner_bank_id.acc_number == pay.partner_bank_id.acc_number
+                                                             ).mapped('amount')))
+
 
 
             # new design total amount = total amount - fee in bank.commission
@@ -132,7 +146,8 @@ class AccountPaymentWizard(models.TransientModel):
                 8) + '\r\n'
 
             # Todo: Now comment this line to test data
-            pay.x_is_fb_created = True
+
+        payment_zengin_data.update({'x_is_fb_created':True})
         # trailer record
         len_line_record = str(len(payment_zengin_data))
 
