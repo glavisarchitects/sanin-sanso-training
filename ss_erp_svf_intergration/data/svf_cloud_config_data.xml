@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <odoo>
-<!--    <data noupdate="0">-->
-    <data>
+    <data noupdate="1">
+        <!--    <data>-->
 
         <record id="svf_cloud_client_id" model="ir.config_parameter">
             <field name="key">svf_cloud_client_id</field>
@@ -16,33 +16,34 @@
         <record id="svf_cloud_private_key" model="ir.config_parameter">
             <field name="key">svf_cloud_private_key</field>
             <field name="value">-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCePJCcv3gzbt5m
-cFTC48nyJf3dbea/3NzCJtrk4Ic22Hm2WwGTJJo4PidLQGTvYkKctTF5CFq7/KdA
-PGQ++JTnz5Ltz+BHbGpMzBI5BhXH1iZ7NEb7gQlVX/vwVjYlpLhoS+Eh4nfXNTj5
-kuenM0B6wJ4ss8oRGb4KcCHx77GqZE3agu8H5TOFkkB8ldWtr4V+EslU+n5j/j32
-ej1TeL/Pd8Q1YSqY4tvtwRCPyYXhLdCq15oowLFG2+4AKRaJCYB377Vht9tEoDus
-3/PmVaz7KE3pvkGFrPv9uvGp459fh9G40fAD2d3jYzY3zpbdILSYnxNcGTUoyGiu
-TePcslGXAgMBAAECggEAZ4ZeYn8OaDAIB2NEwUEAtZFPlxg5GJuqPsfm/Ek9jY9x
-ifHehOM0lslrMduObeOOizIsjO//VPBGiEs6lsxRt5vhl/8hz/jJTzdQUMh/ZX/h
-K0gXjKJuddHXZfUxdc1f7LSANYgSOdWTUg1fy89HR0hP9BUohame4Ptd6giU51Gu
-EXMRl6FQS2dxgNNTQqnEzvBScTk5RydR1UO+IYgqQicw+hflz6ALQxV1oSI08y8p
-/GeJICUOjej36erLKJ0bvaWvU/WyUv5LiNfTZwbpH9t8wMXzcFSj/WPjUR9XhRs6
-gvDmoS8bz/Ab3ke144/nthpNoMmZGA48MqBxKaRg8QKBgQD0k/6sp+kvQL/6bNrD
-pfPwBqjEV8pizZhWK53vDH+vrDi/M5DnwZBnK+0VxwSHWr5HYJ1WFscnaP+QZW4C
-61nzQ6DqEPOD86s06ugxM9Q+J/7Xoe4ltE1y/Dkv0yKUdwm4NnvXIOkvAmjyzNsP
-8UVRksmfCZrpdnK2LKeQyWz7KQKBgQCloFTAUFwqyWGoSyglbbvWeELcu3Eo+iss
-TRrkkps0/HJdm80Y5pVvQGNH6hqqWAIEZMgU5Igci7bxdEm8pXCeo8yzoFxFvBnq
-VkM6HxcmYqYhOm2+B8/1g8kNsFwBPTju0xRt9GG61/NYOQ7JooKB32aztIpnmukG
-hmweY/c+vwKBgHlW2yjJfTTGSPhy/O3H7YgNpbkTXQM7wPIvXYF1j/uV0+l4KdHx
-BDVLY6pEPIjyiihbVHObhV6WBwSabcPhA5Ve3fyCQG4ce7obOOsALbJQoWxVmBL4
-qtv7KlwBwcwqapYL4dDPMSDzbyHWZHA6YQuhaYoPd92PuEWNTezVIc5RAoGADmrz
-lb4pF8xqBOVt/DweMuBLKb3jbubAJV4c7jLY8fbb2cw7QWSpM4MOYW8+nP+GRW2k
-gTUXqCx9Y211EcfxEs49fpGCFsv2EZEqzv9v23aQ8amNbhJuBvhO4zMr/yueLiQP
-zjaM31/3HgHxiJnt9HJHFXOs7LHugRPoi4i2OC8CgYEAuH2h5mh+GLI33oPp/GvH
-t0haAI+leUa6xspqOoPX6BEIIfaPg5J6CvKU25RJOIvVnTVSDZfu68kz6knftAVz
-FV7FOI7CbGnJBx/8bG1s89I+i/V0BJlWGiKQwFHs/7JitIcIKDSPA3w5Mv5vxwWK
-RyWfUHb5pHQ159c4ndQcXuk=
------END PRIVATE KEY-----</field>
+            MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCePJCcv3gzbt5m
+            cFTC48nyJf3dbea/3NzCJtrk4Ic22Hm2WwGTJJo4PidLQGTvYkKctTF5CFq7/KdA
+            PGQ++JTnz5Ltz+BHbGpMzBI5BhXH1iZ7NEb7gQlVX/vwVjYlpLhoS+Eh4nfXNTj5
+            kuenM0B6wJ4ss8oRGb4KcCHx77GqZE3agu8H5TOFkkB8ldWtr4V+EslU+n5j/j32
+            ej1TeL/Pd8Q1YSqY4tvtwRCPyYXhLdCq15oowLFG2+4AKRaJCYB377Vht9tEoDus
+            3/PmVaz7KE3pvkGFrPv9uvGp459fh9G40fAD2d3jYzY3zpbdILSYnxNcGTUoyGiu
+            TePcslGXAgMBAAECggEAZ4ZeYn8OaDAIB2NEwUEAtZFPlxg5GJuqPsfm/Ek9jY9x
+            ifHehOM0lslrMduObeOOizIsjO//VPBGiEs6lsxRt5vhl/8hz/jJTzdQUMh/ZX/h
+            K0gXjKJuddHXZfUxdc1f7LSANYgSOdWTUg1fy89HR0hP9BUohame4Ptd6giU51Gu
+            EXMRl6FQS2dxgNNTQqnEzvBScTk5RydR1UO+IYgqQicw+hflz6ALQxV1oSI08y8p
+            /GeJICUOjej36erLKJ0bvaWvU/WyUv5LiNfTZwbpH9t8wMXzcFSj/WPjUR9XhRs6
+            gvDmoS8bz/Ab3ke144/nthpNoMmZGA48MqBxKaRg8QKBgQD0k/6sp+kvQL/6bNrD
+            pfPwBqjEV8pizZhWK53vDH+vrDi/M5DnwZBnK+0VxwSHWr5HYJ1WFscnaP+QZW4C
+            61nzQ6DqEPOD86s06ugxM9Q+J/7Xoe4ltE1y/Dkv0yKUdwm4NnvXIOkvAmjyzNsP
+            8UVRksmfCZrpdnK2LKeQyWz7KQKBgQCloFTAUFwqyWGoSyglbbvWeELcu3Eo+iss
+            TRrkkps0/HJdm80Y5pVvQGNH6hqqWAIEZMgU5Igci7bxdEm8pXCeo8yzoFxFvBnq
+            VkM6HxcmYqYhOm2+B8/1g8kNsFwBPTju0xRt9GG61/NYOQ7JooKB32aztIpnmukG
+            hmweY/c+vwKBgHlW2yjJfTTGSPhy/O3H7YgNpbkTXQM7wPIvXYF1j/uV0+l4KdHx
+            BDVLY6pEPIjyiihbVHObhV6WBwSabcPhA5Ve3fyCQG4ce7obOOsALbJQoWxVmBL4
+            qtv7KlwBwcwqapYL4dDPMSDzbyHWZHA6YQuhaYoPd92PuEWNTezVIc5RAoGADmrz
+            lb4pF8xqBOVt/DweMuBLKb3jbubAJV4c7jLY8fbb2cw7QWSpM4MOYW8+nP+GRW2k
+            gTUXqCx9Y211EcfxEs49fpGCFsv2EZEqzv9v23aQ8amNbhJuBvhO4zMr/yueLiQP
+            zjaM31/3HgHxiJnt9HJHFXOs7LHugRPoi4i2OC8CgYEAuH2h5mh+GLI33oPp/GvH
+            t0haAI+leUa6xspqOoPX6BEIIfaPg5J6CvKU25RJOIvVnTVSDZfu68kz6knftAVz
+            FV7FOI7CbGnJBx/8bG1s89I+i/V0BJlWGiKQwFHs/7JitIcIKDSPA3w5Mv5vxwWK
+            RyWfUHb5pHQ159c4ndQcXuk=
+                -----END PRIVATE KEY-----
+            </field>
         </record>
 
         <record id="svf_cloud_user_id" model="ir.config_parameter">
@@ -53,6 +54,11 @@ RyWfUHb5pHQ159c4ndQcXuk=
         <record id="svf_cloud_access_token_exp_sec" model="ir.config_parameter">
             <field name="key">svf_cloud_access_token_exp_sec</field>
             <field name="value">1333685628</field>
+        </record>
+
+        <record id="svf_cloud_access_form_output_req_url" model="ir.config_parameter">
+            <field name="key">svf_cloud_access_form_output_req_url</field>
+            <field name="value">https://api.svfcloud.com/v1/artifacts</field>
         </record>
 
         <record id="svf_cloud_access_token_req_url" model="ir.config_parameter">
@@ -68,82 +74,107 @@ RyWfUHb5pHQ159c4ndQcXuk=
         <!--    R003_売掛金残高確認書     -->
         <record id="r003_form_format_path" model="ir.config_parameter">
             <field name="key">R003_form_format_path</field>
-            <field name="value"></field>
+            <field name="value">form/Sample/ga_test/R003_accounts_receivable_balance_confirmation.xml</field>
         </record>
 
         <record id="r003_form_title" model="ir.config_parameter">
             <field name="key">R003_form_title</field>
-            <field name="value"></field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r003_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R003_form_img_resource_path</field>
+            <field name="value">aa</field>
         </record>
 
         <record id="r003_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R003_form_storage_dest_path</field>
-            <field name="value"></field>
+            <field name="value">aa</field>
         </record>
 
         <record id="r002_form_format_path" model="ir.config_parameter">
             <field name="key">R002_form_format_path</field>
-            <field name="value"/>
+            <field name="value">form/Sample/ga_test/R002_invocie.xml</field>
         </record>
 
         <record id="r002_form_title" model="ir.config_parameter">
             <field name="key">R002_form_title</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r002_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R002_form_storage_dest_path</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r002_form_img_resource_path" model="ir.config_parameter">
             <field name="key">R002_form_img_resource_path</field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r002_svf_registration_number" model="ir.config_parameter">
+            <field name="key">invoice_report.registration_number</field>
             <field name="value"/>
         </record>
 
         <record id="r004_form_format_path" model="ir.config_parameter">
             <field name="key">R004_form_format_path</field>
-            <field name="value"/>
+            <field name="value">form/Sample/ga_test/R004_accounts_receivable_ledger.xml</field>
         </record>
 
         <record id="r004_form_title" model="ir.config_parameter">
             <field name="key">R004_form_title</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r004_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R004_form_storage_dest_path</field>
-            <field name="value"/>
+            <field name="value">aa</field>
+        </record>
+
+
+        <record id="r004_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R004_form_img_resource_path</field>
+            <field name="value">aa</field>
         </record>
 
         <record id="r005_form_format_path" model="ir.config_parameter">
             <field name="key">R005_form_format_path</field>
-            <field name="value"/>
+            <field name="value">form/Sample/ga_test/R005_accounts_receivable_list.xml</field>
         </record>
 
         <record id="r005_form_title" model="ir.config_parameter">
             <field name="key">R005_form_title</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r005_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R005_form_storage_dest_path</field>
-            <field name="value"/>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r005_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R005_form_img_resource_path</field>
+            <field name="value">aa</field>
         </record>
 
         <record id="r006_form_format_path" model="ir.config_parameter">
             <field name="key">R006_form_format_path</field>
-            <field name="value"/>
+            <field name="value">form/Sample/ga_test/R006_invoice_list.xml</field>
         </record>
 
         <record id="r006_form_title" model="ir.config_parameter">
             <field name="key">R006_form_title</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r006_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R006_form_storage_dest_path</field>
-            <field name="value"/>
+            <field name="value">aa</field>
+        </record>
+        <record id="r006_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R006_form_img_resource_path</field>
+            <field name="value">aa</field>
         </record>
     </data>
 </odoo>

@@ -11,10 +11,10 @@ class AccountPaymentWizard(models.TransientModel):
     _name = 'comprehensive.create.zengin.fb'
     _description = 'Comprehensive Create Zengin FB Wizard'
 
-    from_date = fields.Date(string="有効開始日", copy=False)
-    to_date = fields.Date(string="有効終了日", copy=False, )
+    from_date = fields.Date(copy=False)
+    to_date = fields.Date(copy=False)
     transfer_date = fields.Date(string='振込日')
-    property_supplier_payment_term_id = fields.Many2one('account.payment.term', string='連絡先の仕入先支払条件')
+    property_supplier_payment_term_id = fields.Many2one('account.payment.term', string='支払条件')
 
     @api.onchange('from_date', 'to_date')
     def _onchange_from_to__date(self):
@@ -25,11 +25,11 @@ class AccountPaymentWizard(models.TransientModel):
     def zengin_general_transfer_fb(self):
         # account_journal = self.env['account.journal']
         partner_match_payment_term = self.env['res.partner'].search(
-            [('property_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
+            [('property_supplier_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
         domain = [('payment_type', '=', 'outbound'), ('x_is_fb_created', '=', False),
                   ('date', '<=', self.to_date), ('date', '>=', self.from_date),
                   ('partner_id', 'in', partner_match_payment_term.ids),
-                  ('journal_id.type', '=', 'bank')]
+                  ('x_payment_type', '=', 'bank')]
         payment_zengin_data = self.env['account.payment'].search(domain)
         if not payment_zengin_data:
             raise UserError('有効なデータが見つかりません。')
@@ -47,13 +47,14 @@ class AccountPaymentWizard(models.TransientModel):
         transfer_date_month = self.transfer_date.strftime('%m%d')
 
         # TODO: Re confirm Bic bank of head office branch
-        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '000')], limit=1)
+        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '00000')], limit=1)
         if not head_office_organization:
             raise UserError('本社支店情報設定してください')
 
-        organization_bank = head_office_organization.bank_ids[0]
-        if not organization_bank:
+        if not head_office_organization.bank_ids:
             raise UserError('本社支店の銀行を設定してください')
+
+        organization_bank = head_office_organization.bank_ids[0]
 
         bic_bank_organization = organization_bank.bank_id.bic
         if len(bic_bank_organization) != 4:

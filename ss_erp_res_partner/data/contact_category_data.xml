@@ -157,7 +157,7 @@
         <record id="ss_erp_contact_category_data_4" model="ss_erp.contact.category">
             <field name="name">配送先</field>
             <field name="company_type">company</field>
-            <field name="type">invoice</field>
+            <field name="type">delivery</field>
             <field name="description"></field>
             <field name="has_parent_id">required</field>
             <field name="has_ref">no</field>
@@ -208,7 +208,7 @@
         <record id="ss_erp_contact_category_data_3" model="ss_erp.contact.category">
             <field name="name">請求先</field>
             <field name="company_type">company</field>
-            <field name="type">delivery</field>
+            <field name="type">invoice</field>
             <field name="description"></field>
             <field name="has_parent_id">required</field>
             <field name="has_ref">no</field>

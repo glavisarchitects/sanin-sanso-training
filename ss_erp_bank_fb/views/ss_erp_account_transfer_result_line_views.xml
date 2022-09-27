@@ -23,19 +23,11 @@
         </record>
 
         <record id="action_account_transfer_result_line" model="ir.actions.act_window">
-            <field name="name">全銀口座振替結果FB取込</field>
+            <field name="name">全銀口座振替結果FB取込データ</field>
             <field name="res_model">ss_erp.account.transfer.result.line</field>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="ss_erp_account_transfer_result_line_tree_view"/>
-            <field name="domain"></field>
             <field name="context">{}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    全銀口座振替結果FB取込
-                </p><p>
-                全銀口座振替結果FB取込
-            </p>
-            </field>
         </record>
 
     </data>
