@@ -89,6 +89,12 @@ class PurchaseOrder(models.Model):
         if self.x_organization_id:
             self.picking_type_id = self.x_organization_id.warehouse_id.in_type_id.id
 
+    @api.onchange('partner_id', 'company_id')
+    def onchange_partner_id(self):
+        res = super(PurchaseOrder, self).onchange_partner_id()
+        if self.partner_id:
+            self.x_bis_categ_id = self.partner_id.x_transaction_categ
+
     @api.depends('x_bis_categ_id')
     def _compute_show_construction(self):
         for rec in self:
@@ -192,7 +198,8 @@ class PurchaseOrderLine(models.Model):
             'ss_erp_product_medium_class_for_convert')
 
         if not medium_classification_code:
-            raise UserError("プロダクト中分類の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_product_medium_class_for_convert）")
+            raise UserError(
+                "プロダクト中分類の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_product_medium_class_for_convert）")
         medium_classification_code.split(",")
         if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.medium_classification_code in medium_classification_code:
             conversion_quantity = float_round(conversion_quantity, precision_digits=2)
@@ -200,7 +207,7 @@ class PurchaseOrderLine(models.Model):
             if self.x_alternative_unit_id.id == self.env.ref('uom.product_uom_kgm').id:
                 conversion_quantity = int(conversion_quantity)
             else:
-                conversion_quantity = math.floor(conversion_quantity * 10)/10
+                conversion_quantity = math.floor(conversion_quantity * 10) / 10
 
         self.x_conversion_quantity = conversion_quantity
 
