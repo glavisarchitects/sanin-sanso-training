@@ -67,23 +67,12 @@
                     <header>
                         <button name="processing_execution" string="消込実行" type="object"
                                 class="oe_highlight"/>
-
-                        <button name="search_account_move" string="検索" type="object"
-                                class="oe_highlight"/>
                     </header>
                     <group>
                         <group>
-                            <field name="name" required="1"/>
+                            <field name="name" readonly="1"/>
                         </group>
-                        <group>
-                            <div style="padding:3px;border: 1px solid black;">
-                                <p>検索項目</p>
-                                <label for="partner_name_search" string="顧客"/>
-                                <field name="partner_name_search"/>
-                                <label for="total_amount_search" string="金額"/>
-                                <field name="total_amount_search"/>
-                            </div>
-                        </group>
+
                     </group>
                     <group>
                         <group>
@@ -105,7 +94,7 @@
                             <field name="result_account_move_ids" attrs="{'readonly': [('status', '!=', 'wait')]}"
                                    options="{'no_open':True, 'no_create':True}"
                                    context="{'default_move_type': 'out_invoice',}"
-                                   domain="[('state', '=', 'posted'), ('payment_state', '=', 'not_paid')]">
+                                   domain="[('state', '=', 'posted'), ('payment_state', 'in', ('not_paid','partial'))]">
                                 <tree>
                                     <field name="invoice_partner_display_name" string="番号"/>
                                     <field name="state"/>
@@ -113,17 +102,10 @@
                                     <field name="partner_id" string="顧客"/>
                                     <field name="invoice_date" string="請求日"/>
                                     <field name="invoice_date_due" string="期日"/>
-                                    <field name="activity_ids" string="次の活動"/>
-                                    <field name="activity_ids" string="次の活動"/>
-                                    <field name="company_id" string="会社"/>
-
-                                    <field name="amount_untaxed_signed" string="Tax Excluded" sum="Total"
+                                    <field name="amount_total_signed" sum="合計"
                                            optional="show"/>
-                                    <field name="amount_tax_signed" string="Tax" sum="Total" optional="hide"/>
-                                    <field name="amount_total_signed" string="Total" sum="Total" decoration-bf="1"
+                                    <field name="amount_residual" sum="未消込合計金額"
                                            optional="show"/>
-                                    <field name="amount_residual_signed" string="Amount Due" sum="Amount Due"
-                                           optional="hide"/>
                                 </tree>
                             </field>
 

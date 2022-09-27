@@ -292,7 +292,7 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('x_pricelist')
     def _compute_price_unit(self):
-        if self.x_pricelist:
+        if not self.x_pricelist:
             self.write({
                 'price_unit': self.product_id.list_price,
             })
