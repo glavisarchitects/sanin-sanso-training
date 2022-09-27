@@ -108,7 +108,7 @@ class AccountReceiptNotificationLine(models.Model):
     error_message = fields.Char(string='エラーメッセージ')
     payment_ids = fields.Many2many('account.payment', string='支払参照')
     result_account_move_ids = fields.Many2many('account.move',
-                                               domain="[('state', '=', 'posted'), ('payment_state', 'in', ('not_paid','partial'))]",
+                                               domain="[('state', '=', 'posted'), ('move_type', '=', 'out_invoice'), ('payment_state', 'in', ('not_paid','partial'))]",
                                                string='支払参照')
 
     def processing_execution(self):
