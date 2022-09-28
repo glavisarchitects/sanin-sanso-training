@@ -123,7 +123,7 @@ class AccountTransferResultHeader(models.Model):
                 continue
             partner_invoice = self.env['account.move'].search(
                 [('move_type', '=', 'out_invoice'), ('x_organization_id', '=', self.branch_id.id),
-                 ('x_receipt_type', '=', 'bank'), ('x_is_fb_created', '=', True),
+                 ('x_receipt_type', '=', 'transfer'), ('x_is_fb_created', '=', True),
                  ('x_is_not_create_fb', '=', False),
                  ('state', '=', 'posted'), ('payment_state', '=', 'not_paid'), ('partner_id', '=', partner.id),
                  ('amount_total', '=', int(tl.withdrawal_amount)), ])
