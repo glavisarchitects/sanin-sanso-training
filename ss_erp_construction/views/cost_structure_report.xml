@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="construction_cost_structure">
+        <t t-call="web.basic_layout">
+            <div class="page o_construction_report_page">
+                <span class="text-left">
+                    <h1 class="o_construction_header o_construction_header1">原価分析</h1>
+                </span>
+                <t t-foreach="docs" t-as="o">
+                    <h3 class="o_construction_header o_construction_table_header">コスト構造</h3>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

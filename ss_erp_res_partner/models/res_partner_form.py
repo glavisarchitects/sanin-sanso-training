@@ -47,6 +47,8 @@ class ResPartnerForm(models.Model):
         domain="['|', ('company_id', '=', False), ('company_id', '=', allowed_company_ids[0])]",
         help="The stock location used as source when receiving goods from this contact.",
         default=lambda self: self.env.ref('stock.stock_location_suppliers', raise_if_not_found=False))
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
     @api.model
     def _default_property_account_payable_id(self):

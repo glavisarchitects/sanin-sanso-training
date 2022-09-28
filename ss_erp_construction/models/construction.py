@@ -79,7 +79,7 @@ class Construction(models.Model):
     def _compute_show_confirmation_button(self):
 
         for rec in self:
-            minium_value = self.env['ir.config_parameter'].get_param('ss_erp_construction_estimate_report')
+            minium_value = self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_estimate_report')
             if not minium_value:
                 raise UserError(
                     "承認金額の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_estimate_report)")
@@ -245,6 +245,34 @@ class Construction(models.Model):
                    ],
         default='draft',
         required=False, )
+
+    # Estiamtion Tab 2022/09/28
+    print_type = fields.Selection(string='帳票タイプ',
+                                  selection=[('housing', 'ハウジング'),
+                                             ('equipment', '設備'),
+                                             ], )
+
+    is_tax_exclude = fields.Selection(string='消費税',
+                                      selection=[('included', '税込'),
+                                                 ('exclude', '税抜'),
+                                                 ], )
+
+    printed_user = fields.Many2one('res.users', string='作成者')
+    sequence_number = fields.Char(string='文書番号')
+    output_date = fields.Date(string='出力日付')
+    expire_date = fields.Date(string='有効期限')
+    estimation_note = fields.Char(string='備考')
+
+    @api.onchange('is_tax_exclude')
+    def _onchange_is_tax_exclude(self):
+        if self.is_tax_exclude == 'exclude':
+            remarks = self.env['ir.config_parameter'].get_param('ss_erp_construction_estimate_remarks')
+            if remarks:
+                self.estimation_note = remarks
+        else:
+            self.estimation_note = ''
+
+    red_notice = fields.Html("注記欄")
 
     def action_pending(self):
         self.write({'state': 'pending'})

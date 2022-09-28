@@ -20,6 +20,8 @@ class ConstructionTemplate(models.Model):
     code = fields.Char(string='コード')
 
     display_name = fields.Char(string='名称', compute='_compute_display_name', store=True)
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
     @api.depends('code', 'name')
     def _compute_display_name(self):

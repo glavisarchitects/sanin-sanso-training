@@ -5,6 +5,12 @@ from odoo.exceptions import UserError, ValidationError
 class ResPartnerBank(models.Model):
     _inherit = 'res.partner.bank'
 
+    @api.model
+    def get_supported_account_types(self):
+        rslt = super(ResPartnerBank, self)._get_supported_account_types()
+        rslt.append(('checking', _('当座')))
+        return rslt
+
     acc_type = fields.Selection(selection=lambda x: x.env['res.partner.bank'].get_supported_account_types(),
                                 string='預金種目', default='bank', index=True)
     x_bank_branch = fields.Char(string='支店', index=True)

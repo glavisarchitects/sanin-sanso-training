@@ -24,10 +24,12 @@
         'views/approval_request_view.xml',
         'views/stock_picking_views.xml',
         'views/construction_category_view.xml',
+        'views/cost_structure_report.xml',
         'menu/menu_item.xml',
 
         # DATA
         'data/ir_sequence_data.xml',
+        'data/construction_product_data.xml',
         # 'data/parameter_config_data.xml',
     ],
     "application": False,
