@@ -261,6 +261,14 @@ class ResPartner(models.Model):
         if self.x_contact_categ and self.x_contact_categ.type:
             self.type = self.x_contact_categ.type
 
+    @api.onchange('parent_id')
+    def onchange_parent_id(self):
+        kyoten = self.env.ref('ss_erp_res_partner.ss_erp_contact_category_data_2').id
+        if self.x_contact_categ and self.x_contact_categ.id != kyoten:
+            return False
+        else:
+            super().onchange_parent_id()
+
     def write(self, vals):
         update_partner_form = True
         if vals.get('source'):
