@@ -39,6 +39,7 @@ class ConstructionWorkorder(models.Model):
     result_labor_costs = fields.Monetary(string='[実績] 労務費')
     planned_expenses = fields.Monetary(string='[予定] 経費')
     result_expenses = fields.Monetary(string='[実績] 経費')
+    costs_hour = fields.Float(string='時間毎の費用')
     construction_work_notes = fields.Text(string='備考')
     date_planned_start = fields.Datetime(string='計画開始日')
     date_planned_finished = fields.Datetime(string='計画終了日')
