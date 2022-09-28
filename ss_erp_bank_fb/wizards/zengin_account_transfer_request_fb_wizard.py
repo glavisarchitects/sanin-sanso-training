@@ -80,6 +80,7 @@ class AccountMoveWizard(models.TransientModel):
 
         total_sum_amount = 0
         bank_list = []
+        count=0
         for inv in invoice_zengin_data:
             partner_bic_number = inv.partner_id.bank_ids[0].bank_id.bic
             if len(partner_bic_number) != 4:
@@ -125,11 +126,12 @@ class AccountMoveWizard(models.TransientModel):
                          '0' + get_multi_character(20) + '0' + get_multi_character(8) + '\r\n'
             #
             #     # Todo: Now comment this line to test data
+            count+=1
 
         invoice_zengin_data.update({'x_is_fb_created':True})
 
         # trailer record
-        len_line_record = str(len(invoice_zengin_data))
+        len_line_record = str(len(count))
         len_total_amount = len(str(total_sum_amount))
         file_data += '8' + get_multi_character(6 - len(len_line_record), '0') + len_line_record + \
                      get_multi_character(12 - len_total_amount, '0') + str(total_sum_amount) + \
