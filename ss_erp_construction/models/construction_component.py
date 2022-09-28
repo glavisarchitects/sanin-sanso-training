@@ -3,13 +3,14 @@ from datetime import datetime
 from itertools import groupby
 from odoo.exceptions import UserError
 
+
 class ConstructionComponent(models.Model):
     _name = 'ss.erp.construction.component'
     _description = '構成品'
 
     name = fields.Text(string='説明')
     product_id = fields.Many2one(comodel_name='product.product', string='プロダクト', tracking=True)
-    product_uom_qty = fields.Float(string='数量', tracking=True)
+    product_uom_qty = fields.Float(string='数量', tracking=True, default=1.0)
     qty_done = fields.Float(string='消費済み', store=True)
     qty_to_invoice = fields.Float(string='To Invoice', compute='_compute_qty_to_invoice')
     qty_to_buy = fields.Float(string='To Buy', compute='_compute_qty_to_buy')
@@ -36,7 +37,7 @@ class ConstructionComponent(models.Model):
     state = fields.Selection(
         related='construction_id.state', string='工事ステータス', readonly=True, copy=False, store=True, default='draft')
 
-    @api.depends('sale_price', 'construction_id.all_margin_rate', 'tax_id')
+    @api.depends('sale_price', 'construction_id.all_margin_rate', 'tax_id', 'standard_price', 'product_uom_qty')
     def _compute_margin(self):
         for rec in self:
             if rec.construction_id.all_margin_rate != 0:
@@ -86,6 +87,39 @@ class ConstructionComponent(models.Model):
             'x_responsible_dept_id': self.construction_id.responsible_dept_id.id,
         }
 
+    @api.onchange('product_id')
+    def _onchange_component_product_id(self):
+        direct_expense_fee_product = self.env.ref('ss_erp_construction.direct_expense_fee_product_data')
+        direct_labo_fee_product = self.env.ref('ss_erp_construction.direct_labo_fee_product_data')
+        direct_outsource_fee_product = self.env.ref('ss_erp_construction.direct_outsource_fee_product_data')
+        indirect_expense_fee_product = self.env.ref('ss_erp_construction.indirect_expense_fee_product_data')
+        indirect_material_fee_product = self.env.ref('ss_erp_construction.indirect_material_fee_product_data')
+        indirect_labo_fee_product = self.env.ref('ss_erp_construction.indirect_labo_fee_product_data')
+        indirect_outsource_fee_product = self.env.ref('ss_erp_construction.indirect_outsource_fee_product_data')
+
+        # 間接経費計算
+        if self.product_id.id == indirect_expense_fee_product.id:
+            self.product_uom_qty = 1
+            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
+
+        # 間接材料費計算
+        if self.product_id.id == indirect_material_fee_product.id:
+            self.product_uom_qty = 1
+            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                lambda line: line.product_id.type == 'product')) * 0.00
+
+        # 間接労務費計算
+        if self.product_id.id == indirect_labo_fee_product.id:
+            self.product_uom_qty = 1
+            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
+
+        if self.product_id.id == indirect_outsource_fee_product.id:
+            self.product_uom_qty = 1
+            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
+
     @api.depends("construction_id.picking_ids")
     def _compute_qty_to_buy(self):
         for rec in self:
@@ -96,11 +130,16 @@ class ConstructionComponent(models.Model):
 
                     # 在庫出荷の量の計算
                     if picking.picking_type_id.code == 'outgoing':
-                        quantity +=sum(picking.move_line_ids_without_package.filtered(lambda l: l.product_id == rec.product_id and l.product_uom_id == rec.product_uom_id).mapped('product_uom_qty')) \
-                                   + sum(picking.move_line_ids_without_package.filtered(lambda l: l.product_id == rec.product_id and l.product_uom_id == rec.product_uom_id).mapped('qty_done'))
+                        quantity += sum(picking.move_line_ids_without_package.filtered(
+                            lambda l: l.product_id == rec.product_id and l.product_uom_id == rec.product_uom_id).mapped(
+                            'product_uom_qty')) \
+                                    + sum(picking.move_line_ids_without_package.filtered(
+                            lambda l: l.product_id == rec.product_id and l.product_uom_id == rec.product_uom_id).mapped(
+                            'qty_done'))
 
                     picking_type_id = self.env['stock.picking.type'].search(
-                        [('default_location_src_id.usage', '=', 'supplier'), ('default_location_dest_id.usage', '=', 'customer')],
+                        [('default_location_src_id.usage', '=', 'supplier'),
+                         ('default_location_dest_id.usage', '=', 'customer')],
                         limit=1)
 
                     # 直送数量の計算
@@ -108,7 +147,9 @@ class ConstructionComponent(models.Model):
                         domain_dropship = [('picking_id.x_construction_order_id', '=', self.construction_id.id),
                                            ('picking_id.picking_type_id', '=', picking_type_id.id)]
                         move_dropship_ids = self.env['stock.move'].search(domain_dropship)
-                        quantity += sum(picking.move_ids_without_package.filtered(lambda l: l.product_id == rec.product_id and l.product_uom_id == rec.product_uom_id).mapped('product_uom_qty'))
+                        quantity += sum(picking.move_ids_without_package.filtered(
+                            lambda l: l.product_id == rec.product_id and l.product_uom_id == rec.product_uom_id).mapped(
+                            'product_uom_qty'))
                         # quantity += sum(move_dropship_ids.mapped('product_uom_qty'))
 
                     rec.qty_to_buy = rec.product_uom_qty - quantity

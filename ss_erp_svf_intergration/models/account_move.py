@@ -2,6 +2,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import requests
 import base64
 import json
@@ -100,6 +101,13 @@ class AccountMove(models.Model):
         #                     , to_char(e.date_done, 'MM/DD')
         #                     , k.name
         #                 ;'''
+
+        registration_number = self.env['ir.config_parameter'].sudo().get_param('invoice_report.registration_number'),
+        current_date_last_month = fields.Datetime.now() + relativedelta(months=-1)
+        first_day_last_month = datetime.combine(current_date_last_month.replace(day=1), datetime.min.time())
+        last_day_last_month = datetime.combine(current_date_last_month.replace(day=31), datetime.max.time())
+
+
         query = '''
         with org_bank as (
         select 
@@ -116,7 +124,7 @@ class AccountMove(models.Model):
          , concat(rcs.name,rp.city,rp.street,rp.street2) as address
          , concat(rp.name,'様') as customer_name
          , to_char(now(), 'YYYY年MM月DD日')  as output_date
-         , NULL as registration_number
+         , '%s' as registration_number
          , seo.name
          , concat(he.job_title,':',he.name) as responsible_person
          , seo.organization_zip as organization_zip
@@ -204,7 +212,7 @@ class AccountMove(models.Model):
             sol.product_id 	
             , to_char(sp.date_done, 'MM/DD') 	
             , so.name	
-        ''' % (self.id)
+        ''' % (registration_number, self.id)
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 

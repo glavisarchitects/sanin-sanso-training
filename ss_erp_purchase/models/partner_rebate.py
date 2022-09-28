@@ -94,6 +94,8 @@ class PartnerRebate(models.Model):
         '添付数', compute='_compute_attachment_number')
 
     register_id = fields.Many2one('res.users', "登録者", )
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
     def _compute_attachment_number(self):
         attachment_data = self.env['ir.attachment'].read_group([

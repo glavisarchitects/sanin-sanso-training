@@ -17,6 +17,8 @@ class ConstructionWorkcenter(models.Model):
     active = fields.Boolean(default=True)
     component_ids = fields.One2many('construction.workcenter.component', 'workcenter_id')
     template_id = fields.Many2one('construction.template')
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
 
 class ConstructionWorkcenterComponent(models.Model):

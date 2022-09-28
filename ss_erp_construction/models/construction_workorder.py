@@ -61,6 +61,8 @@ class ConstructionWorkorder(models.Model):
         inverse_name='workorder_id',
         string='構成品',
         required=False)
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
     def _prepare_stock_picking(self):
         picking = {
@@ -87,8 +89,10 @@ class ConstructionWorkorder(models.Model):
                     'picking_type_id': self.picking_type_id.id,
                 }))
 
-        picking['move_ids_without_package'] = move_live
-        self.env['stock.picking'].create(picking).action_assign()
+        if move_live:
+            picking['move_ids_without_package'] = move_live
+
+            self.env['stock.picking'].create(picking).action_assign()
 
 
 class ConstructionWorkorderComponent(models.Model):
