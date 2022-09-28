@@ -12,7 +12,7 @@ class ResPartnerBank(models.Model):
         return rslt
 
     acc_type = fields.Selection(selection=lambda x: x.env['res.partner.bank'].get_supported_account_types(),
-                                string='預金種目', default='bank', index=True)
+                                string='預金種目', default='bank', index=True,store=True)
     x_bank_branch = fields.Char(string='支店', index=True)
     x_acc_holder_furigana = fields.Char(string='フリガナ', index=True)
 

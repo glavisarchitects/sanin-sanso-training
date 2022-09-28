@@ -20,17 +20,18 @@ class AccountPayment(models.Model):
         journal_account_1121 = journal_ids[0]
         # 普通預金
         journal_account_1122 = journal_ids[1]
-        
+
         for pay in self:
             if pay.payment_type == 'inbound':
                 pay.available_partner_bank_ids = pay.journal_id.bank_account_id
             else:
                 if pay.journal_id.id == int(journal_ids[0]):
-                    pay.available_partner_bank_ids = pay.partner_id.bank_ids.filtered(
-                        lambda x: x.acc_type == 'checking')
+                    available_partner_bank_ids = pay.partner_id.bank_ids.filtered(
+                        lambda x: x.acc_type == 'checking')._origin
+                    pay.available_partner_bank_ids = available_partner_bank_ids
                 elif pay.journal_id.id == int(journal_ids[1]):
                     pay.available_partner_bank_ids = pay.partner_id.bank_ids.filtered(
-                        lambda x: x.acc_type == 'bank')
+                        lambda x: x.acc_type == 'bank')._origin
                 else:
                     pay.available_partner_bank_ids = pay.partner_id.bank_ids \
                         .filtered(lambda x: x.company_id.id in (False, pay.company_id.id))._origin
