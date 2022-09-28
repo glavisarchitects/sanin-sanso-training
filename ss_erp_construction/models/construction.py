@@ -164,6 +164,8 @@ class Construction(models.Model):
             workorder_lines = self.env['ss.erp.construction.workorder'].create({
                 'construction_id': self.id,
                 'name': workcenter_line.workcenter_id.name,
+                'duration_expected':workcenter_line.spend_time,
+                'costs_hour': workcenter_line.costs_hour
             })
             workorder_lines.workorder_component_ids = components
 
