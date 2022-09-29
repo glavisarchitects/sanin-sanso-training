@@ -50,11 +50,11 @@ class Construction(models.Model):
     location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
                                        string='配送ロケーション')
 
-    amount_untaxed = fields.Monetary(string='税抜金額', compute='_compute_amount')
-    amount_tax = fields.Monetary(string='税', compute='_compute_amount')
-    amount_total = fields.Monetary(string='合計', compute='_compute_amount')
-    margin = fields.Monetary(string='粗利益', compute='_compute_amount')
-    margin_percent = fields.Float(string='マージン(%)')
+    amount_untaxed = fields.Monetary(string='税抜金額', compute='_compute_amount', store=True)
+    amount_tax = fields.Monetary(string='税', compute='_compute_amount', store=True)
+    amount_total = fields.Monetary(string='合計', compute='_compute_amount', store=True)
+    margin = fields.Monetary(string='粗利益', compute='_compute_amount', store=True)
+    margin_percent = fields.Float(string='マージン(%)', store=True)
 
     template_id = fields.Many2one(
         comodel_name='construction.template',
@@ -232,6 +232,13 @@ class Construction(models.Model):
     fiscal_position_id = fields.Many2one('account.fiscal.position', string='会計ポジション')
 
     payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件', tracking=True)
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.partner_id and self.partner_id.property_payment_term_id:
+            self.payment_term_id = self.partner_id.property_payment_term_id.id
+        else:
+            self.payment_term_id = False
 
     state = fields.Selection(
         string='ステータス',
