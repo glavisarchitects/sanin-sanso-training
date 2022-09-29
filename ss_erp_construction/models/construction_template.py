@@ -20,13 +20,15 @@ class ConstructionTemplate(models.Model):
     code = fields.Char(string='コード')
 
     display_name = fields.Char(string='名称', compute='_compute_display_name', store=True)
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
     @api.depends('code', 'name')
     def _compute_display_name(self):
         for rec in self:
             rec.display_name = '【%s】 %s' % (rec.code, rec.name)
 
-    component_line_ids = fields.One2many(
+    component_line_ids = fields.Many2many(
         comodel_name='construction.template.component',
         inverse_name='template_id',
         string='工事構成品',
@@ -53,7 +55,7 @@ class ConstructionTemplate(models.Model):
 
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")
 
-    workcenter_line_ids = fields.One2many(
+    workcenter_line_ids = fields.Many2many(
         comodel_name='construction.template.workcenter',
         inverse_name='template_id',
         string='工事構成品',

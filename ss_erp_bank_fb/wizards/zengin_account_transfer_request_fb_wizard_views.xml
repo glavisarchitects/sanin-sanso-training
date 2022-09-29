@@ -10,7 +10,7 @@
                     <div name="filter_period" class="o_row">
                         <field name="fb_start_date" required="1"/>
                         <h2>~</h2>
-                        <field name="fb_start_date" required="1"/>
+                        <field name="fb_end_date" required="1"/>
                     </div>
                     <field name="transfer_date" required="1"/>
                 </group>

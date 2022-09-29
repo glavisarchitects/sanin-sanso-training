@@ -186,7 +186,7 @@ class SvfCloudConfig(models.Model):
             }
 
         elif res.status_code == 400:
-            raise UserError('SVF Cloudへの	リクエスト内容が不正です。')
+            raise UserError('SVF Cloudへのリクエスト内容が不正です。')
         if res.status_code == 401:
             raise UserError('SVF Cloudの認証情報が不正なです。')
         if res.status_code == 403:

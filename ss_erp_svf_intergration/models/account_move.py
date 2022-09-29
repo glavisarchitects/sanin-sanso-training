@@ -2,6 +2,8 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import calendar
 import requests
 import base64
 import json
@@ -100,7 +102,22 @@ class AccountMove(models.Model):
         #                     , to_char(e.date_done, 'MM/DD')
         #                     , k.name
         #                 ;'''
-        query = '''
+
+        registration_number = self.env['ir.config_parameter'].sudo().get_param('invoice_report.registration_number')
+
+        now = datetime.now()
+
+        first_day_current_month = datetime.combine(now.replace(day=1), datetime.min.time())
+        last_day_current_month = datetime.combine(now.replace(day=calendar.monthrange(now.year, now.month)[1]),
+                                                  datetime.max.time())
+
+        current_date_last_month = now + relativedelta(months=-1)
+        first_day_last_month = datetime.combine(current_date_last_month.replace(day=1), datetime.min.time())
+        last_day_last_month = datetime.combine(current_date_last_month.replace(
+            day=calendar.monthrange(current_date_last_month.year, current_date_last_month.month)[1]),
+                                               datetime.max.time())
+
+        query = f'''
         with org_bank as (
         select 
             rpb.organization_id,
@@ -116,20 +133,20 @@ class AccountMove(models.Model):
          , concat(rcs.name,rp.city,rp.street,rp.street2) as address
          , concat(rp.name,'様') as customer_name
          , to_char(now(), 'YYYY年MM月DD日')  as output_date
-         , NULL as registration_number
+         , '{registration_number}' as registration_number
          , seo.name
          , concat(he.job_title,':',he.name) as responsible_person
          , seo.organization_zip as organization_zip
          , concat(rcs2.name,seo.organization_city,seo.organization_street,seo.organization_street2) as organization_address
          , concat('TEL:', seo.organization_phone) as organization_phone
          , concat('FAX:', seo.organization_fax) as organization_fax
-         , NULL as this_month_amount -- TODO
+         , COALESCE(am.amount_total,0) + COALESCE(oi_pma.oi_previous_amount, 0) - COALESCE(or_pma.or_previous_amount, 0) - COALESCE(da.amount, 0) as this_month_amount -- TODO 8
          , am.invoice_date_due 
-         , NULL as previous_month_amount
-         , NULL as deposit_amount
-         , NULL as previous_month_balance
-         , NULL as this_month_purchase
-         , NULL as consumption_tax
+         , COALESCE(oi_pma.oi_previous_amount, 0) - COALESCE(or_pma.or_previous_amount, 0) as previous_month_amount
+         , COALESCE(da.amount, 0) as deposit_amount
+         , COALESCE(oi_pma.oi_previous_amount, 0) - COALESCE(or_pma.or_previous_amount, 0) - COALESCE(da.amount, 0) as previous_month_balance
+         , COALESCE(oi_tmp.oi_tmp_amount, 0) - COALESCE(or_tmp.or_tmp_amount, 0) as this_month_purchase
+         , am.amount_tax as consumption_tax
          ,  to_char(sp.date_done, 'MM/DD') as date
          , so.name as slip_number 
          , so.name as detail_number 
@@ -198,13 +215,49 @@ class AccountMove(models.Model):
                 on seo.organization_state_id = rcs2.id
                 left join org_bank ob 
                 on ob.organization_id = am.x_organization_id
-        where sp.state = 'done' and am.id = '%s'
+
+            left join 
+            ( select partner_id, sum(amount_total) oi_previous_amount from account_move
+            where invoice_date BETWEEN '{first_day_last_month}'
+            and '{last_day_last_month}' and move_type = 'out_invoice'
+            GROUP BY partner_id
+            ) oi_pma on oi_pma.partner_id = rp.id -- 10
+            
+            left join 
+            ( select partner_id, sum(amount_total) or_previous_amount from account_move
+            where invoice_date BETWEEN '{first_day_last_month}' 
+            and '{last_day_last_month}' and move_type = 'out_refund'
+            GROUP BY partner_id
+            ) or_pma on or_pma.partner_id = rp.id -- 10
+            
+            left join 
+            ( select da_ap.partner_id, sum(da_ap.amount) amount from account_payment da_ap
+            left join account_move da_jour on da_jour.id = da_ap.move_id
+            where da_jour.date BETWEEN '{first_day_current_month}' 
+            and '{last_day_current_month}' and move_type = 'out_refund'
+            GROUP BY da_ap.partner_id
+            ) da on da.partner_id = rp.id -- 11
+            
+            left join 
+            ( select partner_id, sum(amount_total) oi_tmp_amount from account_move
+            where invoice_date BETWEEN '{first_day_current_month}' 
+            and '{last_day_current_month}' and move_type = 'out_invoice'
+            GROUP BY partner_id
+            ) oi_tmp on oi_tmp.partner_id = rp.id -- 13
+            
+            left join 
+            ( select partner_id, sum(amount_total) or_tmp_amount from account_move
+            where invoice_date BETWEEN '{first_day_current_month}'
+            and '{last_day_current_month}' and move_type = 'out_refund'
+            GROUP BY partner_id
+            ) or_tmp on or_tmp.partner_id = rp.id -- 13
+        where sp.state = 'done' and am.id = '{self.id}'
         order by
                 am.name,
             sol.product_id 	
             , to_char(sp.date_done, 'MM/DD') 	
             , so.name	
-        ''' % (self.id)
+        '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 
@@ -290,9 +343,12 @@ class AccountMove(models.Model):
 
         for daq in data_query:
             one_line_data = ""
-            for da in daq.values():
+            for da in daq:
                 if da is not None:
-                    one_line_data += '"' + str(da) + '",'
+                    if da in ['this_month_amount', 'previous_month_amount', 'deposit_amount', 'previous_month_balance', 'this_month_purchase', 'consumption_tax']:
+                        one_line_data += '"' + "￥" + "{:,}".format(int(daq[da])) + '",'
+                    else:
+                        one_line_data += '"' + str(daq[da]) + '",'
                 else:
                     one_line_data += '"",'
             data_send.append(one_line_data)

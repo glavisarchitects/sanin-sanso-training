@@ -81,13 +81,10 @@ class AccountReceiptNotificationLine(models.Model):
 
     account_receipt_notification_header_id = fields.Many2one('ss_erp.account.receipt.notification.header',
                                                              string='全銀振込入金通知結果ヘッダ')
-    name = fields.Char('名称', realated='account_receipt_notification_header_id.name')
+    name = fields.Char('名称', realated='account_receipt_notification_header_id.name', store=True)
     user_id = fields.Many2one('res.users', related='account_receipt_notification_header_id.user_id')
     branch_id = fields.Many2one('ss_erp.organization', related='account_receipt_notification_header_id.branch_id',
                                 string='支店')
-
-    partner_name_search = fields.Char('顧客')
-    total_amount_search = fields.Integer('金額')
 
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
@@ -111,52 +108,37 @@ class AccountReceiptNotificationLine(models.Model):
     error_message = fields.Char(string='エラーメッセージ')
     payment_ids = fields.Many2many('account.payment', string='支払参照')
     result_account_move_ids = fields.Many2many('account.move',
-                                               domain="[('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),"
-                                                      "('invoice_partner_display_name', 'like', partner_name_search)]",
+                                               domain="[('state', '=', 'posted'), ('move_type', '=', 'out_invoice'), ('payment_state', 'in', ('not_paid','partial'))]",
                                                string='支払参照')
 
-    def search_account_move(self):
-        # update according to border in design
-        # str_customer_name = self.transfer_client_name
-        str_customer_name = self.partner_name_search
-
-        partner_rec = self.env['res.partner']
-        receipt_notification_partner = partner_rec.search([('name', 'like', str_customer_name), ], limit=1)
-        # if not receipt_notification_partner:
-        #     for pa in partner_rec.search([]):
-        #         if pa.name in str_customer_name:
-        #             receipt_notification_partner = pa
-        #             break
-        if not receipt_notification_partner:
-            raise UserError('対象の顧客情報が見つかりませんでした。')
-
-        current_employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
-        cur_employee_organization = current_employee_id.organization_first
-        customer_invoice_rec = self.env['account.move'].search(
-            [('partner_id', '=', receipt_notification_partner.id), ('move_type', '=', 'out_invoice'),
-             ('x_organization_id', '=', cur_employee_organization.id), ('x_receipt_type', '=', 'bank'),
-             ('x_is_fb_created', '=', True), ('x_is_not_create_fb', '=', False), ('state', '=', 'posted'),
-             ('payment_state', '=', 'not_paid'), ])
-
-        # ('amount_total', '=', int(self.transfer_amount)),
-
-        self.result_account_move_ids = [(6, 0, customer_invoice_rec.ids)]
-
     def processing_execution(self):
-        total_amount = sum(self.result_account_move_ids.mapped('amount_total_signed'))
+        total_amount = sum(self.result_account_move_ids.mapped('amount_residual'))
         if total_amount != int(self.transfer_amount):
             raise UserError('選択したすべての請求書の送金金額と合計金額が等しくありません。再度確認してください。')
 
         # if self.account_receipt_notification_header_id.acc_type not in ['1', '2']:
         #     raise UserError('預金種目は普通と当座だけ受け入れられます。')
 
-        account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
-        journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)],
-                                                                  limit=1)
+        a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
+            'A005_account_transfer_result_journal_id')
+        if not a005_account_transfer_result_journal_id:
+            raise UserError('仕訳帳情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
 
-        account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
-        journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)],
-                                                                  limit=1)
+        journal_ids = a005_account_transfer_result_journal_id.split(",")
+        if len(journal_ids) != 2:
+            raise UserError('仕訳帳情報の設定は間違っています。もう一度ご確認してください。')
+        # 当座預金
+        journal_account_1121 = journal_ids[0]
+        # 普通預金
+        journal_account_1122 = journal_ids[1]
+
+        # account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
+        # journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)],
+        #                                                           limit=1)
+        #
+        # account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
+        # journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)],
+        #                                                           limit=1)
 
         if self.account_receipt_notification_header_id.acc_type == '1':
             journal_id = journal_account_1122
@@ -171,7 +153,7 @@ class AccountReceiptNotificationLine(models.Model):
             {
                 # 'active_model': 'account.move',
                 # 'active_ids': partner_invoice.id,
-                'journal_id': journal_id.id,
+                'journal_id': int(journal_id),
                 # 'amount': partner_invoice.amount_total,
                 # 'payment_date': fields.Date.context_today,
                 # 'company_id': partner_invoice.company_id.id,
@@ -183,6 +165,13 @@ class AccountReceiptNotificationLine(models.Model):
         created_payment_ids = []
         for invoice in self.result_account_move_ids:
             created_payment = self.env['account.payment'].search([('ref', '=', invoice.name)], )
+
+            in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
+            receivable_line = invoice.line_ids.filtered(
+                lambda l: l.account_id.user_type_id.type == 'receivable')
+            if not in_accounts_receivable:
+                raise UserError('アカウント 1150 が見つかりません。設定してください。')
+
             created_payment.move_id.write(
                 {
                     'x_receipt_type': invoice.x_receipt_type,
@@ -193,6 +182,16 @@ class AccountReceiptNotificationLine(models.Model):
                     'date': self.account_receipt_notification_header_id.upload_date,
                     'x_responsible_user_id': invoice.x_responsible_user_id,
                     'x_mkt_user_id': invoice.x_mkt_user_id,
+                    'x_is_fb_created': False,
+                })
+            created_payment.write(
+                {
+                    'x_receipt_type': invoice.x_receipt_type,
+                    'x_payment_type': invoice.x_payment_type,
+                    'x_sub_account_id': receivable_line.x_sub_account_id,
+                    'x_organization_id': invoice.x_organization_id,
+                    'x_responsible_dept_id': invoice.x_responsible_dept_id,
+                    'x_is_not_create_fb': True,
                     'x_is_fb_created': False,
                 })
 
@@ -208,11 +207,11 @@ class AccountReceiptNotificationLine(models.Model):
             #
             # debit_line.account_id = deposit_account.id
 
-            in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
-            receivable_line = invoice.line_ids.filtered(
-                lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
-            if not in_accounts_receivable:
-                raise UserError('アカウント 1150 が見つかりません。設定してください。')
+            # in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
+            # receivable_line = invoice.line_ids.filtered(
+            #     lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
+            # if not in_accounts_receivable:
+            #     raise UserError('アカウント 1150 が見つかりません。設定してください。')
             # credit_line.account_id = in_accounts_receivable.id
             # credit_line.x_sub_account_id = receivable_line.x_sub_account_id
             # credit_line.date_maturity = self.upload_date
@@ -227,11 +226,3 @@ class AccountReceiptNotificationLine(models.Model):
             created_payment_ids.append(created_payment.id)
         self.payment_ids = created_payment_ids
         self.status = 'success'
-
-    # @api.onchange('partner_name_search', 'result_account_move_ids')
-    # def _onchange_partner_name_search(self):
-    #     if self.partner_name_search != '':
-    #         return {'domain': {
-    #             'result_account_move_ids': [('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),
-    #                                         ('invoice_partner_display_name', 'like', self.partner_name_search), ]
-    #         }}

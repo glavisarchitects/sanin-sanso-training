@@ -50,11 +50,11 @@ class Construction(models.Model):
     location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
                                        string='配送ロケーション')
 
-    amount_untaxed = fields.Monetary(string='税抜金額', compute='_compute_amount')
-    amount_tax = fields.Monetary(string='税', compute='_compute_amount')
-    amount_total = fields.Monetary(string='合計', compute='_compute_amount')
-    margin = fields.Monetary(string='粗利益', compute='_compute_amount')
-    margin_percent = fields.Float(string='マージン(%)')
+    amount_untaxed = fields.Monetary(string='税抜金額', compute='_compute_amount', store=True)
+    amount_tax = fields.Monetary(string='税', compute='_compute_amount', store=True)
+    amount_total = fields.Monetary(string='合計', compute='_compute_amount', store=True)
+    margin = fields.Monetary(string='粗利益', compute='_compute_amount', store=True)
+    margin_percent = fields.Float(string='マージン(%)', store=True)
 
     template_id = fields.Many2one(
         comodel_name='construction.template',
@@ -79,7 +79,7 @@ class Construction(models.Model):
     def _compute_show_confirmation_button(self):
 
         for rec in self:
-            minium_value = self.env['ir.config_parameter'].get_param('ss_erp_construction_estimate_report')
+            minium_value = self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_estimate_report')
             if not minium_value:
                 raise UserError(
                     "承認金額の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_estimate_report)")
@@ -164,6 +164,8 @@ class Construction(models.Model):
             workorder_lines = self.env['ss.erp.construction.workorder'].create({
                 'construction_id': self.id,
                 'name': workcenter_line.workcenter_id.name,
+                'duration_expected':workcenter_line.spend_time,
+                'costs_hour': workcenter_line.costs_hour
             })
             workorder_lines.workorder_component_ids = components
 
@@ -231,6 +233,13 @@ class Construction(models.Model):
 
     payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件', tracking=True)
 
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        if self.partner_id and self.partner_id.property_payment_term_id:
+            self.payment_term_id = self.partner_id.property_payment_term_id.id
+        else:
+            self.payment_term_id = False
+
     state = fields.Selection(
         string='ステータス',
         selection=[('draft', 'ドラフト'),
@@ -245,6 +254,34 @@ class Construction(models.Model):
                    ],
         default='draft',
         required=False, )
+
+    # Estiamtion Tab 2022/09/28
+    print_type = fields.Selection(string='帳票タイプ',
+                                  selection=[('housing', 'ハウジング'),
+                                             ('equipment', '設備'),
+                                             ], )
+
+    is_tax_exclude = fields.Selection(string='消費税',
+                                      selection=[('included', '税込'),
+                                                 ('exclude', '税抜'),
+                                                 ], )
+
+    printed_user = fields.Many2one('res.users', string='作成者')
+    sequence_number = fields.Char(string='文書番号')
+    output_date = fields.Date(string='出力日付')
+    expire_date = fields.Date(string='有効期限')
+    estimation_note = fields.Char(string='備考')
+
+    @api.onchange('is_tax_exclude')
+    def _onchange_is_tax_exclude(self):
+        if self.is_tax_exclude == 'exclude':
+            remarks = self.env['ir.config_parameter'].get_param('ss_erp_construction_estimate_remarks')
+            if remarks:
+                self.estimation_note = remarks
+        else:
+            self.estimation_note = ''
+
+    red_notice = fields.Html("注記欄")
 
     def action_pending(self):
         self.write({'state': 'pending'})
