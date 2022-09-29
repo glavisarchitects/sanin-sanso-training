@@ -103,7 +103,7 @@ class AccountTransferResultHeader(models.Model):
         # if not journal_account_1121 or not journal_account_1122:
         #     raise UserError('ジャーナル 1121 または 1122 が見つかりません。')
 
-        transfer_line = self.account_transfer_result_record_ids.search([('status', '=', 'wait')])
+        transfer_line = self.account_transfer_result_record_ids.filtered(lambda k: k.status != 'success')
         for tl in transfer_line:
             if tl.deposit_type == '1':
                 journal_id = journal_account_1122
@@ -129,7 +129,7 @@ class AccountTransferResultHeader(models.Model):
                  ('x_is_not_create_fb', '=', False),
                  ('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),
                  ('partner_id', '=', partner.id), ]).sorted(key=lambda k: k.name)
-            if int(tl.withdrawal_amount) != sum(partner_invoice.mapped('amount_residual')):
+            if int(tl.withdrawal_amount) == sum(partner_invoice.mapped('amount_residual')):
                 payment_ids = []
                 for invoice in partner_invoice:
                     register_payment = self.env['account.payment.register'].with_context(
