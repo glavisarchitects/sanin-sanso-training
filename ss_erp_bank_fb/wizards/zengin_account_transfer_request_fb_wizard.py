@@ -131,7 +131,7 @@ class AccountMoveWizard(models.TransientModel):
         invoice_zengin_data.update({'x_is_fb_created':True})
 
         # trailer record
-        len_line_record = str(len(count))
+        len_line_record = str(count)
         len_total_amount = len(str(total_sum_amount))
         file_data += '8' + get_multi_character(6 - len(len_line_record), '0') + len_line_record + \
                      get_multi_character(12 - len_total_amount, '0') + str(total_sum_amount) + \
