@@ -199,7 +199,7 @@ class AccountTransferResultHeader(models.Model):
                         'date_maturity': self.upload_date,
                     })
 
-                tl.update({'payment_id': [(6, 0,)]})
+                tl.update({'payment_id': [(6, 0, payment_ids)]})
                 tl.status = 'success'
             else:
                 continue
