@@ -83,7 +83,6 @@ class StockPicking(models.Model):
                 'picking_type_id': False,
                 'location_id': False,
                 'location_dest_id': False,
-                'x_responsible_dept_id': False
             })
             return {'domain': {'picking_type_id': ['|', ('warehouse_id', '=', False),
                                                    ('warehouse_id', '=', self.x_organization_id.warehouse_id.id)],
