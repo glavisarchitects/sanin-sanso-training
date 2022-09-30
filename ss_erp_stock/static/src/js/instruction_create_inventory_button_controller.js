@@ -1,4 +1,4 @@
-odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
+odoo.define('ss_erp_stock.InstructionCreateInventoryController', function (require) {
     "use strict";
 
     var core = require('web.core');
