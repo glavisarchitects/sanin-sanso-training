@@ -1,4 +1,4 @@
-odoo.define('ss_erp.field_utils.date', function (require) {
+odoo.define('ss_erp_stock.field_utils.date', function (require) {
 "use strict";
 // override Datetime function
 var session = require('web.session');
