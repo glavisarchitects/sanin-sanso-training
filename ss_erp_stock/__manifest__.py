@@ -10,6 +10,7 @@
         "security/ir.model.access.csv",
 
         # VIEWS
+        'views/webclient_templates.xml',
         'views/organization_views.xml',
         'views/ss_erp_instruction_order_line_views.xml',
         'views/ss_erp_instruction_order_views.xml',

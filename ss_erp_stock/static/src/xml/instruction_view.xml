@@ -2,7 +2,7 @@
 <templates id="template" xml:space="preserve">
     <t t-name="InstructionInspection.Buttons">
         <button type="button" class='btn btn-primary o_button_instruction_inspection'>
-            Inspection
+            検証
         </button>
     </t>
 </templates>
