@@ -49,7 +49,7 @@
                         <group>
                             <field name="required_responsible_dept_id" invisible="1"/>
                             <!--                            <field name="picking_type_id" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>-->
-                            <field name="organization_id" required="1" domain="[('warehouse_id','!=', False)]"
+                            <field name="organization_id" required="1"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="responsible_dept_id" required="1"
                                    attrs="{'readonly': [('state', '!=', 'draft')], 'required': [('required_responsible_dept_id', '=', True)]}"/>
@@ -74,7 +74,7 @@
                                     <field name="responsible_dept_id" required="1"/>
                                     <field name="order_id" attrs="{'column_invisible':1}"/>
                                     <field name="order_id_organization_id" attrs="{'column_invisible':1}"/>
-                                    <field name="location_dest_id" required="1" domain="[('usage','!=', 'view')]"/>
+                                    <field name="location_dest_id" required="1"/>
                                     <field name="product_id" required="1"/>
                                     <!--                                    <field name="lot_ids"/>-->
                                     <field name="product_uom_qty" required="1"/>

@@ -152,7 +152,7 @@ class AccountPaymentWizard(models.TransientModel):
 
 
         # trailer record
-        len_line_record = str(len(count))
+        len_line_record = str(count)
 
         len_total_amount = len(str(total_sum_amount))
         file_data += '8' + get_multi_character(6 - len(len_line_record), '0') + len_line_record + \
