@@ -74,7 +74,6 @@ class InventoryOrder(models.Model):
         if self.organization_id:
             warehouse_location_id = self.organization_id.warehouse_id.view_location_id.id
             self.location_id = self.organization_id.warehouse_id.lot_stock_id.id
-            # self.responsible_dept_id = False
             users = self.env['res.users'].search([]).filtered(lambda x: self.organization_id in x.organization_ids).ids
             return {'domain': {'location_id': [('id', 'child_of', warehouse_location_id), ('usage', '=', 'internal')],
                                'user_id': [('id', 'in', users)]
