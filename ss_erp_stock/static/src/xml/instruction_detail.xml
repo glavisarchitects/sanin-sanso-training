@@ -2,7 +2,7 @@
 <templates id="template" xml:space="preserve">
     <t t-name="InstructionDetails.Buttons">
         <button type="button" class='btn btn-primary o_button_instruction_create_inventory'>
-            Voucher creation
+            伝票作成
         </button>
     </t>
 </templates>
