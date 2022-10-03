@@ -178,6 +178,7 @@ class InstructionOrder(models.Model):
     def _action_start(self):
         for order in self:
             if not order.line_ids and not order.start_empty:
+                x = order._get_inventory_lines_values()
                 self.env['ss_erp.instruction.order.line'].create(order._get_inventory_lines_values())
 
     def _get_quantities(self):
@@ -248,7 +249,9 @@ class InstructionOrder(models.Model):
             for location_id in location_ids:
                 if ((product_id, location_id) not in non_exhausted_set):
                     vals.append({
-                        'inventory_id': self.id,
+                        # not clear the logic of this field? just wrong code???
+                        # 'inventory_id': self.id,
+                        'order_id': self.id,
                         'product_id': product_id,
                         'location_id': location_id,
                         'theoretical_qty': 0

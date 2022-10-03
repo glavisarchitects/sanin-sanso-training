@@ -3,7 +3,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import requests
 import json
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from odoo.fields import Date, Datetime
 
 
@@ -59,8 +59,14 @@ class AccountReceivableCustomerLedger(models.TransientModel):
 
     def _get_account_receivable_balance(self):
         branch = self._get_branch_of_login_user()
+        title = "得意先元帳（商品順）"
+        due_date_start = datetime.combine(self.due_date_start, datetime.min.time())
+        due_date_end = datetime.combine(self.due_date_end, datetime.max.time())
 
-        query = ''' 
+        str_due_date_start = due_date_start.strftime("%Y年%m月%d日")
+        str_due_date_end = due_date_end.strftime("%Y年%m月%d日")
+
+        query = f''' 
 
             -- nyukin
             -- nyukin detail
@@ -69,7 +75,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 am.x_organization_id,
                 ap.partner_id,
                 rp.ref as customer_code,
-                rp.display_name as customer_name,
+                rp.name as customer_name,
                 am.date, 	
                 am.name as slip_number, 
                 '**  入　金  **' as product_name,
@@ -79,7 +85,8 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             left join account_move am on ap.move_id = am.id
             left join account_journal aj on am.journal_id = aj.id
             left join res_partner rp on rp.id = ap.partner_id
-            where ap.payment_type = 'inbound' and am.date <= '%s' and am.date >= '%s' and ap.partner_id is not null
+            where ap.payment_type = 'inbound' and am.date <= '{self.due_date_end}' and am.date >= '{self.due_date_start}'
+            and ap.partner_id is not null
             order by ap.partner_id, am.date)
             union all 
             -- nyukin sum
@@ -88,7 +95,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 am.x_organization_id,
                 ap.partner_id,
                 rp.ref as customer_code,
-                rp.display_name as customer_name,
+                rp.name as customer_name,
                 NULL,
                 NULL,
                 '＜　入　金　計　＞' as product_name,
@@ -97,8 +104,9 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             from account_payment ap
             left join account_move am on ap.move_id = am.id
             left join res_partner rp on rp.id = ap.partner_id
-            where ap.payment_type = 'inbound' and am.date <= '%s' and am.date >= '%s' and ap.partner_id is not null
-            GROUP BY ap.partner_id, rp.display_name, am.x_organization_id,rp.ref
+            where ap.payment_type = 'inbound' and am.date <= '{self.due_date_end}' and am.date >= '{self.due_date_start}'
+            and ap.partner_id is not null
+            GROUP BY ap.partner_id, rp.name, am.x_organization_id,rp.ref
             )
             ORDER BY partner_id, order_sequence), delivery as (
             select 
@@ -108,7 +116,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 sp.sale_id,
                 sp.partner_id,
                 rp.ref as customer_code,
-                rp.display_name as customer_name,
+                rp.name as customer_name,
                 sml.product_id,
                 uu.name as measure,
                 pt.default_code as product_code,
@@ -133,9 +141,35 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             left join res_partner rp on sp.partner_id = rp.id
             left join 
             (select sol.product_id, sol.price_unit,sol.order_id from sale_order_line sol left join sale_order so on sol.order_id = so.id) tb1 on sp.sale_id = tb1.order_id and tb1.product_id = sml.product_id
-            where sml.state = 'done' and sp.sale_id is not null and sml.date <= '%s' and sml.date >= '%s'
+            where sml.state = 'done' and sp.sale_id is not null and sml.date <= '{self.due_date_end}' and sml.date >= '{self.due_date_start}'
             )
-            select * from
+            select 
+            '{title}' as title,
+            to_char(now(), 'YYYY年MM月DD日 HH24:MI:SS') as output_date,
+            '{str_due_date_start}' as due_date_start,
+            '{str_due_date_end}' as due_date_end,
+            seo.organization_code as branch_code,
+            seo.name as branch_name,
+            all_tb.customer_code,
+            all_tb.customer_name,
+            all_tb.date,
+            all_tb.slip_number,
+            all_tb.product_id,
+            all_tb.medium_class,
+            all_tb.product_code,
+            all_tb.product_name,
+            NULL as data_name,		
+            all_tb.line_division_name,
+            all_tb.quantity,
+            all_tb.unit_price,
+            all_tb.amount_of_money,            
+            NULL as destination_name,
+            NULL as drop_shipping_name,
+            NULL as taxation,
+            NULL as order_number,
+            NULL as comment,
+            all_tb.order_sequence
+            from
             (
                 select 
                     nyukin.order_sequence,
@@ -143,7 +177,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                     nyukin.partner_id,
                     nyukin.customer_code,
                     nyukin.customer_name,
-                    nyukin.date,
+                    to_char(nyukin.date, 'MM/DD') as date,
                     nyukin.slip_number,
                     NULL as product_id,
                     NULL as medium_class,
@@ -152,7 +186,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                     nyukin.line_division_name,
                     NULL as quantity,
                     NULL as unit_price,
-                    nyukin.amount,
+                    nyukin.amount as amount_of_money,
                     NULL sub_seq
                 from nyukin
             union all
@@ -162,7 +196,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                     delivery.x_organization_id,
                     delivery.customer_code,
                     delivery.customer_name,
-                    delivery.date,
+                    to_char(delivery.date, 'MM/DD'),
                     delivery.slip_number,
                     delivery.product_id,
                     delivery.medium_class,
@@ -239,15 +273,11 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 FROM delivery
                 GROUP BY 	delivery.partner_id,delivery.x_organization_id,
                     delivery.customer_code,delivery.medium_class,
-                    delivery.customer_name
+                    delivery.customer_name           
             ) all_tb
-            where all_tb.x_organization_id = '%s'
-            Order by all_tb.x_organization_id, all_tb.partner_id,all_tb.order_sequence, all_tb.product_id, all_tb.sub_seq ''' % (
-            self.due_date_end, self.due_date_start,
-            self.due_date_end, self.due_date_start,
-            self.due_date_end, self.due_date_start,
-            branch.id)
-
+            left join ss_erp_organization seo on all_tb.x_organization_id = seo.id
+            where all_tb.x_organization_id = '{branch.id}'
+            Order by all_tb.x_organization_id, all_tb.partner_id,all_tb.order_sequence, all_tb.product_id, all_tb.sub_seq '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 
@@ -259,55 +289,37 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             '"product_code","product_name","data_name","line_division_name",' + \
             '"quantity","unit_price","amount_of_money","destination_name","drop_shipping_name","taxation","order_number","comment"']
 
-        title = "得意先元帳（商品順）"
-        output_date = Datetime.now() + timedelta(hours=9)
-
-        # TODO TAX NUMBER
-        branch = self._get_branch_of_login_user()
-
         total_amount = 0
-        customer_code = False
-        customer_name = False
         account_receivable_balance = self._get_account_receivable_balance()
+
+        if not account_receivable_balance:
+            raise UserError(_("出力対象のデータがありませんでした。"))
+
         if account_receivable_balance is not None:
             for row in account_receivable_balance:
-                data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
-                    title,
-                    output_date,
-                    self.due_date_start,
-                    self.due_date_end,
-                    branch.name,
-                    row['customer_code'],
-                    row['customer_name'],
-                    row['date'],
-                    row['slip_number'],
-                    row['product_code'],
-                    row['product_name'],
-                    '',
-                    row['line_division_name'],
-                    row['quantity'],
-                    0 if row['unit_price'] is None else "{:,}".format(row['unit_price']),
-                    0 if row['amount'] is None else "{:,}".format(row['amount']),
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
-                )
-                if row['order_sequence'] == 6:
-                    total_amount += int(row['amount'])
-                customer_code = row['customer_code']
-                customer_name = row['customer_name']
+                data_line = ""
+                for col in row:
+                    if row[col] is not None:
+                        if col in ['unit_price', 'amount_of_money']:
+                            data_line += '"' + "{:,}".format(int(row[col])) + '",'
+                        else:
+                            if col != 'order_sequence':
+                                data_line += '"' + str(row[col]) + '",'
+                            else:
+                                total_amount += int(row['amount_of_money'])
+                    else:
+                        data_line += '"",'
                 new_data.append(data_line)
 
-            last_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
-                title,
-                output_date,
-                self.due_date_start,
-                self.due_date_end,
-                branch.name,
-                customer_code,
-                customer_name,
+            last_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+                account_receivable_balance[0]['title'],
+                account_receivable_balance[0]['output_date'],
+                account_receivable_balance[0]['due_date_start'],
+                account_receivable_balance[0]['due_date_end'],
+                account_receivable_balance[0]['branch_code'],
+                account_receivable_balance[0]['branch_name'],
+                account_receivable_balance[0]['customer_code'],
+                account_receivable_balance[0]['customer_name'],
                 '',
                 '',
                 '',
