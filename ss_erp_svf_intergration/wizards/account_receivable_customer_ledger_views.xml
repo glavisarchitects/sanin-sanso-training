@@ -8,8 +8,12 @@
                 <form string="売掛金残高確認書">
                     <sheet>
                         <group>
-                            <field name="due_date_start"/>
-                            <field name="due_date_end"/>
+                            <field name="organization_ids" widget="many2many_tags"/>
+                            <field name="partner_ids" widget="many2many_tags"/>
+                            <field name="product_ids" widget="many2many_tags"/>
+                            <field name="due_date_start" required="1"/>
+                            <field name="due_date_end" required="1"/>
+                            <field name="sort_order" widget="radio" options="{'horizontal': true}"/>
                         </group>
                     </sheet>
                     <footer>
