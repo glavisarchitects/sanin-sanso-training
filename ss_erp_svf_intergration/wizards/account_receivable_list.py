@@ -45,6 +45,7 @@ class AccountReceivableList(models.TransientModel):
                         account_move am 
                     WHERE
                         am.STATE = 'posted' 
+                        AND am.date < '{self.due_date_start}'
                         AND am.move_type IN ( 'out_invoice', 'out_refund' )
                         AND am.x_organization_id = '{branch.id}'
                     UNION ALL
@@ -65,7 +66,7 @@ class AccountReceivableList(models.TransientModel):
                 tb1.partner_id,
                 tb1.x_organization_id 
             ), 
-                this_period_money_collect AS (
+            this_period_money_collect AS (
             SELECT
                 tb2.partner_id,
                 tb2.x_organization_id,
@@ -167,16 +168,16 @@ class AccountReceivableList(models.TransientModel):
             seo.organization_code AS branch_code
             ,seo.name AS branch_name
             ,concat('{str_due_date_start}','~','{str_due_date_end}') AS target_date
-            ,to_char(now(), 'YYYY年MM月DD日 HH24:MI:SS') as output_date 
+            ,to_char(now() AT TIME ZONE 'JST', 'YYYY年MM月DD日 HH24:MI:SS') AS output_date 
             ,rp.ref AS customer_code
             ,rp.name AS customer_name
-            ,ppb.previous_month_balance
+            ,COALESCE (ppb.previous_month_balance,0) AS previous_month_balance
             ,0 AS correction
-            ,tpmc.receipts
-            ,ppb.previous_month_balance - tpmc.receipts AS carried_forward
-            ,tpe.earnings
-            ,tpe.consumption_tax
-            ,ppb.previous_month_balance - tpmc.receipts + tpe.earnings + tpe.consumption_tax AS this_month_balance
+            ,COALESCE (tpmc.receipts,0) AS receipts
+            ,COALESCE (ppb.previous_month_balance,0) - COALESCE (tpmc.receipts,0) AS carried_forward
+            ,COALESCE (tpe.earnings,0) AS earnings
+            ,COALESCE (consumption_tax,0) AS consumption_tax
+            ,COALESCE (ppb.previous_month_balance,0) - COALESCE (tpmc.receipts,0) + COALESCE (tpe.earnings,0) + COALESCE (consumption_tax,0) AS this_month_balance
             ,tcc.payment
             ,tcc.conditions
             ,apt.name AS closing_date
@@ -202,21 +203,11 @@ class AccountReceivableList(models.TransientModel):
         # ヘッダ
         new_data = [
             '"branch_code","branch_name","target_date","output_date","customer_code","customer_name",' + \
-            '"previous_month_balance", "correction", "receipts", "carried_forward", "earnings", "consumption_tax",' + \
-            '"this_month_balance", "payment", "conditions", "closing_date"']
-
-        branch = self._get_branch_of_login_user()
-        target_date = "%s ~ %s" % (self.due_date_start, self.due_date_end)
-        output_date = Datetime.now() + timedelta(hours=9)
+            '"previous_month_balance","correction","receipts","carried_forward","earnings","consumption_tax",' + \
+            '"this_month_balance","payment","conditions","closing_date"']
 
         total = {'previous_month_balance': 0, 'correction': 0, 'receipts': 0, 'carried_forward': 0, 'earnings': 0,
                  'consumption_tax': 0, 'this_month_balance': 0}
-        # total_correction = 0
-        # total_receipts = 0
-        # total_carried_forward = 0
-        # total_earnings = 0
-        # total_consumption_tax = 0
-        # total_this_month_balance = 0
 
         # データ＜詳細（取引先）＞
         invoice_history = self._get_invoice_history()
@@ -227,14 +218,18 @@ class AccountReceivableList(models.TransientModel):
         for row in invoice_history:
             data_line = ""
             for col in row:
-                if row[col] is not None:
-                    if col in ["previous_month_balance", "correction", "receipts", "carried_forward", "earnings", "consumption_tax","this_month_balance"]:
+                if col in ["previous_month_balance", "correction", "receipts", "carried_forward", "earnings",
+                           "consumption_tax", "this_month_balance"]:
+                    if row[col] is not None:
                         data_line += '"' + "{:,}".format(int(row[col])) + '",'
                         total[col] += int(row[col])
                     else:
-                        data_line += '"' + str(row[col]) + '",'
+                        data_line += '"",'
                 else:
-                    data_line += '"",'
+                    if row[col] is not None:
+                        data_line += '"' + str(row[col]) + '",'
+                    else:
+                        data_line += '"",'
             new_data.append(data_line)
 
         # データ＜合計＞
