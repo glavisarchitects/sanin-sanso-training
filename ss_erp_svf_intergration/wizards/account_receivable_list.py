@@ -228,9 +228,11 @@ class AccountReceivableList(models.TransientModel):
             data_line = ""
             for col in row:
                 if row[col] is not None:
-                    data_line += '"' + str(row[col]) + '",'
                     if col in ["previous_month_balance", "correction", "receipts", "carried_forward", "earnings", "consumption_tax","this_month_balance"]:
+                        data_line += '"' + "{:,}".format(int(row[col])) + '",'
                         total[col] += int(row[col])
+                    else:
+                        data_line += '"' + str(row[col]) + '",'
                 else:
                     data_line += '"",'
             new_data.append(data_line)
