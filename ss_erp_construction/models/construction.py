@@ -281,7 +281,7 @@ class Construction(models.Model):
         else:
             self.estimation_note = ''
 
-    red_notice = fields.Html("注記欄")
+    red_notice = fields.Text("注記欄")
 
     def action_pending(self):
         self.write({'state': 'pending'})
