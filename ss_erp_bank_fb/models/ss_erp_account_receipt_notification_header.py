@@ -112,7 +112,7 @@ class AccountReceiptNotificationLine(models.Model):
                                                domain="[('state', '=', 'posted'), ('move_type', '=', 'out_invoice'), "
                                                       "('payment_state', 'in', ('not_paid','partial')),"
                                                       " ('x_receipt_type', '=', 'bank'),"
-                                                      " ('x_is_fb_created', '=', True),"
+                                                      " ('x_is_fb_created', '=', False),"
                                                       " ('x_is_not_create_fb', '=', False),"
                                                       " ('x_organization_id', '=', branch_id)]",
                                                string='支払参照')
@@ -139,7 +139,7 @@ class AccountReceiptNotificationLine(models.Model):
             journal_id = journal_account_1121
 
         if len(list(set(self.result_account_move_ids.mapped('partner_id')))) != 1:
-            raise UserError('異なる顧客を選択しています。もう一度ご確認してください。')
+            raise UserError('異なる顧客が存在します。')
 
         result_account_move_ids = self.result_account_move_ids.sorted(key=lambda k: k.name)
         transfer_amount = int(self.transfer_amount)
