@@ -57,7 +57,6 @@ class ConstructionTemplate(models.Model):
 
     workcenter_line_ids = fields.Many2many(
         comodel_name='construction.template.workcenter',
-        inverse_name='template_id',
         string='工事構成品',
         required=False,
         store=True
@@ -77,7 +76,7 @@ class ConstructionTemplateComponent(models.Model):
         string='プロダクト',
         required=False)
     product_uom_qty = fields.Float(string='数量')
-    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True)
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string="プロダクトカテゴリ")
     product_uom_id = fields.Many2one(
         comodel_name='uom.uom',
         string='単位',
@@ -97,7 +96,6 @@ class ConstructionTemplateWorkcenter(models.Model):
     _description = '工事テンプレートの工程'
 
     workcenter_id = fields.Many2one('construction.workcenter', string='工程')
-    template_id = fields.Many2one('construction.template')
     spend_time = fields.Float('デフォルト所要時間', related='workcenter_id.spend_time')
     costs_hour = fields.Float(string='時間毎の費用', related='workcenter_id.costs_hour')
     currency_id = fields.Many2one(related='workcenter_id.currency_id')

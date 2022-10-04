@@ -49,7 +49,7 @@
                                                decoration-danger="status=='error'"/>
                                         <field name="processing_date" readonly="1"/>
                                         <field name="withdrawal_bank_number" readonly="1"/>
-                                        <field name="payment_id" />
+                                        <field name="payment_id" widget="many2many_tags"/>
                                         <field name="withdrawal_branch_number" readonly="1"/>
                                         <field name="deposit_type" readonly="1"/>
                                         <field name="account_number" readonly="1"/>

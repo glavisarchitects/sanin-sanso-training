@@ -109,17 +109,15 @@ class AccountReceiptNotificationLine(models.Model):
     error_message = fields.Char(string='エラーメッセージ')
     payment_ids = fields.Many2many('account.payment', string='支払参照')
     result_account_move_ids = fields.Many2many('account.move',
-                                               domain="[('state', '=', 'posted'), ('move_type', '=', 'out_invoice'), ('payment_state', 'in', ('not_paid','partial'))]",
+                                               domain="[('state', '=', 'posted'), ('move_type', '=', 'out_invoice'), "
+                                                      "('payment_state', 'in', ('not_paid','partial')),"
+                                                      " ('x_receipt_type', '=', 'bank'),"
+                                                      " ('x_is_fb_created', '=', True),"
+                                                      " ('x_is_not_create_fb', '=', False),"
+                                                      " ('x_organization_id', '=', branch_id)]",
                                                string='支払参照')
 
     def processing_execution(self):
-        # total_amount = sum(self.result_account_move_ids.mapped('amount_residual'))
-        # if total_amount != int(self.transfer_amount):
-        #     raise UserError('選択したすべての請求書の送金金額と合計金額が等しくありません。再度確認してください。')
-
-        # if self.account_receipt_notification_header_id.acc_type not in ['1', '2']:
-        #     raise UserError('預金種目は普通と当座だけ受け入れられます。')
-
         a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
             'A005_account_transfer_result_journal_id')
         if not a005_account_transfer_result_journal_id:
@@ -137,6 +135,9 @@ class AccountReceiptNotificationLine(models.Model):
             journal_id = journal_account_1122
         else:
             journal_id = journal_account_1121
+
+        if len(list(set(self.result_account_move_ids.mapped('partner_id')))) != 1:
+            raise UserError('異なる顧客を選択しています。もう一度ご確認してください。')
 
         result_account_move_ids = self.result_account_move_ids.sorted(key=lambda k: k.name)
         transfer_amount = int(self.transfer_amount)
