@@ -13,96 +13,6 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     def _get_data_svf_r002(self):
-
-        # query = f''' select
-        #                  a.name as 請求書NO
-        #                  , to_char(now(), 'YYYY年MM月DD日')  as 発行日
-        #                  , o.zip as 顧客／郵便番号
-        #                  , p.name as 顧客／都道府県
-        #                  , o.city as 顧客／市区町村
-        #                  , o.street as 顧客／町名番地
-        #                  , o.street2 as 顧客／町名番地２
-        #                  , o.name as 顧客名
-        #                  , l.complete_name as 支店名
-        #                  , n.name as 責任者
-        #                  , l.organization_zip as 支店郵便番号
-        #                  , m.name as 支店住所／都道府県
-        #                  , l.organization_city as 支店住所／市区町村
-        #                  , l.organization_street as 支店住所／町名番地
-        #                  , l.organization_street2 as 支店住所／町名番地２
-        #                  , l.organization_phone as 支店TEL
-        #                  , l.organization_fax as 支店FAX
-        #                  , r.name as 銀行名
-        #                  , q.x_bank_branch as 銀行支店名
-        #                  , q.acc_number as 口座番号
-        #                  ,  to_char(e.date_done, 'MM/DD') as 日付
-        #                  , k.name as 伝票番号
-        #                  , g.name as 商品名
-        #                  , null as 規格・商品名
-        #                  , d.product_uom_qty as 数量
-        #                  , h.name as 単位
-        #                  , d.price_unit as 単価
-        #                  , d.price_subtotal as 本体価格
-        #                  , j.name as 税率
-        #                  , d.x_remarks as 適用
-        #                 from
-        #                     account_move a  /* 仕訳 */
-        #                     inner join
-        #                     account_move_line b /* 仕訳項目 */
-        #                     on a.id = b.move_id
-        #                     inner join
-        #                     sale_order_line_invoice_rel c /* 販売明細と請求の関連 */
-        #                     on b.id = c.invoice_line_id
-        #                     inner join
-        #                     sale_order_line d /* 販売オーダ明細 */
-        #                     on c.order_line_id = d.id
-        #                     inner join
-        #                     stock_picking e /* 運送 */
-        #                     on d.order_id = e.sale_id
-        #                     inner join
-        #                     product_template g /* プロダクトテンプレート */
-        #                     on d.product_id = g.id
-        #                     inner join
-        #                     uom_uom h  /* 単位 */
-        #                     on d.product_uom = h.id
-        #                     inner join
-        #                     account_tax_sale_order_line_rel i  /* 販売オーダ明細と税の関連 */
-        #                     on d.id = i.sale_order_line_id
-        #                     inner join
-        #                     account_tax j  /* 税 */
-        #                     on i.account_tax_id = j.id
-        #                     inner join
-        #                     sale_order k /* 販売オーダ */
-        #                     on d.order_id = k.id
-        #                     inner join
-        #                     ss_erp_organization l  /* 組織 */
-        #                     on k.x_organization_id = l.id
-        #                     inner join
-        #                     res_country_state m /* 都道府県（組織） */
-        #                     on l.organization_state_id = m.id
-        #                     inner join
-        #                     hr_employee n /* 従業員 */
-        #                     on l.responsible_person = n.id
-        #                     inner join
-        #                     res_partner o /* 連絡先 */
-        #                     on k.partner_id = o.id
-        #                     inner join
-        #                     res_country_state p /* 都道府県（得意先） */
-        #                     on o.state_id = p.id
-        #                     inner join
-        #                     res_partner_bank q /* 銀行口座 */
-        #                     on l.id = q.organization_id
-        #                     inner join
-        #                     res_bank r /* 銀行 */
-        #                     on q.bank_id = r.id
-        #                 where
-        #                     a.id = '{self.id}'
-        #                 order by
-        #                     d.product_id
-        #                     , to_char(e.date_done, 'MM/DD')
-        #                     , k.name
-        #                 ;'''
-
         registration_number = self.env['ir.config_parameter'].sudo().get_param('invoice_report.registration_number')
 
         now = datetime.now()
@@ -151,7 +61,7 @@ class AccountMove(models.Model):
          , so.name as slip_number 
          , so.name as detail_number 
          , pt.name as product_name	
-         , null as 規格・商品名	
+         , '' as 規格・商品名	
          , sol.product_uom_qty as quantity	
          , uu.name as unit	
          , sol.price_unit as unit_price	
@@ -217,40 +127,40 @@ class AccountMove(models.Model):
                 on ob.organization_id = am.x_organization_id
 
             left join 
-            ( select partner_id, sum(amount_total) oi_previous_amount from account_move
+            ( select partner_id,x_organization_id, sum(amount_total) oi_previous_amount from account_move
             where invoice_date BETWEEN '{first_day_last_month}'
-            and '{last_day_last_month}' and move_type = 'out_invoice'
-            GROUP BY partner_id
+            and '{last_day_last_month}' and move_type = 'out_invoice' and state='posted'
+            GROUP BY partner_id, x_organization_id
             ) oi_pma on oi_pma.partner_id = rp.id -- 10
             
             left join 
-            ( select partner_id, sum(amount_total) or_previous_amount from account_move
+            ( select partner_id,x_organization_id, sum(amount_total) or_previous_amount from account_move
             where invoice_date BETWEEN '{first_day_last_month}' 
             and '{last_day_last_month}' and move_type = 'out_refund'
-            GROUP BY partner_id
-            ) or_pma on or_pma.partner_id = rp.id -- 10
+            GROUP BY partner_id, x_organization_id
+            ) or_pma on or_pma.partner_id = am.partner_id and or_pma.x_organization_id = am.x_organization_id -- 10
             
             left join 
-            ( select da_ap.partner_id, sum(da_ap.amount) amount from account_payment da_ap
+            ( select da_ap.partner_id,da_ap.x_organization_id, sum(da_ap.amount) amount from account_payment da_ap
             left join account_move da_jour on da_jour.id = da_ap.move_id
             where da_jour.date BETWEEN '{first_day_current_month}' 
             and '{last_day_current_month}' and move_type = 'out_refund'
-            GROUP BY da_ap.partner_id
-            ) da on da.partner_id = rp.id -- 11
+            GROUP BY da_ap.partner_id, da_ap.x_organization_id
+            ) da on da.partner_id = am.partner_id and da.x_organization_id = am.x_organization_id -- 11
             
             left join 
-            ( select partner_id, sum(amount_total) oi_tmp_amount from account_move
+            ( select partner_id,x_organization_id, sum(amount_total) oi_tmp_amount from account_move
             where invoice_date BETWEEN '{first_day_current_month}' 
             and '{last_day_current_month}' and move_type = 'out_invoice'
-            GROUP BY partner_id
-            ) oi_tmp on oi_tmp.partner_id = rp.id -- 13
+            GROUP BY partner_id, x_organization_id
+            ) oi_tmp on oi_tmp.partner_id = am.partner_id and oi_tmp.x_organization_id = am.x_organization_id --13
             
             left join 
-            ( select partner_id, sum(amount_total) or_tmp_amount from account_move
+            ( select partner_id,x_organization_id, sum(amount_total) or_tmp_amount from account_move
             where invoice_date BETWEEN '{first_day_current_month}'
             and '{last_day_current_month}' and move_type = 'out_refund'
-            GROUP BY partner_id
-            ) or_tmp on or_tmp.partner_id = rp.id -- 13
+            GROUP BY partner_id, x_organization_id
+            ) or_tmp on or_tmp.partner_id = am.partner_id and or_tmp.x_organization_id = am.x_organization_id -- 13
             
             left join (
             select id, amount from account_tax 
@@ -270,9 +180,9 @@ class AccountMove(models.Model):
         where sp.state = 'done' and am.id = '{self.id}'
         order by
                 am.name,
+                so.name,
             sol.product_id 	
-            , to_char(sp.date_done, 'MM/DD') 	
-            , so.name	
+            , to_char(sp.date_done, 'MM/DD') 	             	
         '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()

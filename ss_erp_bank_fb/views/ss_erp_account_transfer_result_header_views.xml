@@ -40,7 +40,7 @@
                         </group>
                         <notebook>
                             <page name="data_records" string="データレコード">
-                                <field name="account_transfer_result_record_ids" options="{'no_open': True}">
+                                <field name="account_transfer_result_record_ids">
                                     <tree create="0" editable="bottom">
                                         <field name="status" readonly="1"
                                                widget="badge"
@@ -49,7 +49,7 @@
                                                decoration-danger="status=='error'"/>
                                         <field name="processing_date" readonly="1"/>
                                         <field name="withdrawal_bank_number" readonly="1"/>
-                                        <field name="payment_id" widget="many2many_tags"/>
+                                        <field name="payment_id" widget="many2many_tags" readonly="1"/>
                                         <field name="withdrawal_branch_number" readonly="1"/>
                                         <field name="deposit_type" readonly="1"/>
                                         <field name="account_number" readonly="1"/>

@@ -149,7 +149,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 SELECT
                     seo.organization_code AS branch_code
                     ,seo.name AS branch_name
-                    ,concat('2022年09月01日','~','2022年09月30日') AS target_date
+                    ,concat('{str_due_date_start}','~','{str_due_date_end}') AS target_date
                     ,to_char(now() AT TIME ZONE 'JST', 'YYYY年MM月DD日 HH24:MI:SS') as output_date
                     ,rp.ref AS customer_code
                     ,rp.name AS customer_name

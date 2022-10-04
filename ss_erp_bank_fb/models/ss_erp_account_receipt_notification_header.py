@@ -92,7 +92,7 @@ class AccountReceiptNotificationLine(models.Model):
         ('success', '成功'),
         ('error', 'エラー')
     ], string='ステータス', default='wait', index=True)
-    processing_date = fields.Datetime('処理日時', default=lambda self: fields.Datetime.now(), index=True)
+    processing_date = fields.Datetime('処理日時', index=True)
 
     reference_number = fields.Char(string='照会番号')
     account_date = fields.Char(string='勘定日')
@@ -118,6 +118,8 @@ class AccountReceiptNotificationLine(models.Model):
                                                string='支払参照')
 
     def processing_execution(self):
+        self.processing_date = fields.Datetime.now()
+
         a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
             'A005_account_transfer_result_journal_id')
         if not a005_account_transfer_result_journal_id:
