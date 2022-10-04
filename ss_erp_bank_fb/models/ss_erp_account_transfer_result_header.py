@@ -202,8 +202,8 @@ class AccountTransferResultHeader(models.Model):
                 tl.update({'payment_id': [(6, 0, payment_ids)]})
                 tl.status = 'success'
             else:
-                continue
-
+                tl.status = 'error'
+                tl.error_message = '消込対象の請求情報が見つかりませんでした。'
 
 class AccountTransferResultLine(models.Model):
     _name = 'ss_erp.account.transfer.result.line'
