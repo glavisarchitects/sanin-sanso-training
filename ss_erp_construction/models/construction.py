@@ -391,7 +391,7 @@ class Construction(models.Model):
         return invoice_vals
 
     def _get_invoiceable_lines(self):
-        return self.construction_component_ids
+        return self.construction_component_ids.filtered(lambda x: x.product_id.type == 'product')
 
     @api.model
     def _prepare_down_payment_section_line(self, **optional_values):
