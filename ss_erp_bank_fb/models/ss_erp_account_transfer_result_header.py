@@ -105,6 +105,8 @@ class AccountTransferResultHeader(models.Model):
 
         transfer_line = self.account_transfer_result_record_ids.filtered(lambda k: k.status != 'success')
         for tl in transfer_line:
+            tl.processing_date = fields.Datetime.now()
+
             if tl.deposit_type == '1':
                 journal_id = journal_account_1122
             else:
