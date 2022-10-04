@@ -13,10 +13,10 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name" required="1" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                                <field name="name" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             </group>
                             <group>
-                                <field name="code" required="1" attrs="{'readonly': [('status', '!=', 'draft')]}"/>
+                                <field name="code" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             </group>
                         </group>
                         <notebook>
