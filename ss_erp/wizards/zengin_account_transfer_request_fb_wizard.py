@@ -19,7 +19,7 @@ class AccountMoveWizard(models.TransientModel):
     def _onchange_from_to__date(self):
         if self.fb_start_date and self.fb_end_date:
             if self.fb_start_date > self.fb_end_date:
-                raise UserError('有効開始日は有効終了日より大きくすることはできません。')
+                raise UserError('有効開始日は、有効終了日より先の日付は選択できません。"')
 
     def zengin_account_transfer_request_fb(self):
 

@@ -19,7 +19,7 @@ class AccountPaymentWizard(models.TransientModel):
     def _onchange_from_to__date(self):
         if self.from_date and self.to_date:
             if self.from_date > self.to_date:
-                raise UserError('有効開始日は有効終了日より大きくすることはできません。')
+                raise UserError('有効開始日は、有効終了日より先の日付は選択できません。"')
 
     def zengin_general_transfer_fb(self):
         # account_journal = self.env['account.journal']
