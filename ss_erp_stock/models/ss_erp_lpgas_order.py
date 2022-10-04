@@ -63,9 +63,14 @@ class LPGasOrder(models.Model):
         warehouse_location = branch_warehouse.lot_stock_id
         period_last_date = self.aggregation_period + relativedelta(months=-1)
         period_last_month = period_last_date.month
-        customer_location = self.env['stock.location'].search(
-            [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'),
-             ('x_inventory_type', '=', self.inventory_type)]).ids
+        # update condition new design 03/10/22
+        if self.inventory_type == 'cylinder':
+            domain_location = [('id', 'child_of', warehouse_location.id),
+                               ('x_inventory_type', '=', self.inventory_type)]
+        else:
+            domain_location = [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'),
+                               ('x_inventory_type', '=', self.inventory_type)]
+        customer_location = self.env['stock.location'].search(domain_location).ids
 
         customer_location = f"({','.join(map(str, customer_location))})"
         start_period_measure = datetime.combine(period_last_date.replace(day=19), datetime.min.time())
@@ -78,7 +83,6 @@ class LPGasOrder(models.Model):
         current_month_measure_date = self.aggregation_period.replace(day=18)
         # Number of inventory days in a month
         numbers_day_inventory_in_month = current_month_measure_date - period_last_date.replace(day=18)
-
 
         # get the number of hours difference between local time and utc time
         tz = self.env.user.tz
@@ -221,6 +225,7 @@ class LPGasOrder(models.Model):
                     LEFT JOIN sale_order so ON so.id = sp.sale_id
                     WHERE sml.state = 'done'
                     AND so.state = 'sale'
+                    AND sp.state = 'done' --update condition 3-3-1
                     AND sml.product_id = '{lpgas_product_id}'
                     AND sml.location_id IN {customer_location}
                     AND (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
@@ -261,6 +266,7 @@ class LPGasOrder(models.Model):
                                         lp.state = 'done' AND
                                         lp.organization_id = '{self.organization_id.id}' 
                                         AND sl.id = sml.location_id
+                                        AND sp.date_done >= lpl.meter_reading_date -- update condition 3-3-5a get delivery_date >= meter_reading_date 
                                     )
                                     AND (
                                     SELECT (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +

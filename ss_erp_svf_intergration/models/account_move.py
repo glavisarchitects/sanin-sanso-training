@@ -162,11 +162,11 @@ class AccountMove(models.Model):
          , NULL as price_total_tax_rate8
          , NULL as price_total_reduced_tax_rate8
          , NULL as price_total_no_tax
-         , NULL as tax_amount_rate10
-         , NULL as tax_amount_rate8
-         , NULL as tax_amount_reduced_tax_rate8
-         , NULL as tax_amount_no_tax
-         , NULL as tax_amount_no_tax
+         , COALESCE(sol.product_uom_qty * sol.price_unit * tr_10.amount/100, 0) as tax_amount_rate10
+         , COALESCE(sol.product_uom_qty * sol.price_unit * tr_8.amount/100, 0) as tax_amount_rate8
+         , COALESCE(sol.product_uom_qty * sol.price_unit * trr_8.amount/100, 0) as tax_amount_reduced_tax_rate8
+         , (Case When atsol.account_tax_id is NULL then (sol.product_uom_qty * sol.price_unit) ELSE 0 END) as tax_amount_no_tax
+         -- , NULL as tax_amount_no_tax
          , NULL as price_total
          , NULL as price_total_tax
          , ob.payee_info
@@ -251,6 +251,22 @@ class AccountMove(models.Model):
             and '{last_day_current_month}' and move_type = 'out_refund'
             GROUP BY partner_id
             ) or_tmp on or_tmp.partner_id = rp.id -- 13
+            
+            left join (
+            select id, amount from account_tax 
+            where id = 15
+            ) tr_10 on tr_10.id = atsol.account_tax_id
+
+            left join (
+            select id, amount from account_tax 
+            where id = 14
+            ) tr_8 on tr_8.id = atsol.account_tax_id
+
+            left join (
+            select id, amount from account_tax 
+            where id = 13
+            ) trr_8 on trr_8.id = atsol.account_tax_id
+            
         where sp.state = 'done' and am.id = '{self.id}'
         order by
                 am.name,
@@ -340,6 +356,8 @@ class AccountMove(models.Model):
 
         # *** use query in file design :))****
         data_query = self._get_data_svf_r002()
+        if not data_query:
+            raise UserError(_("出力対象のデータがありませんでした。"))
 
         for daq in data_query:
             one_line_data = ""

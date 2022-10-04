@@ -117,6 +117,21 @@
             <field name="value"/>
         </record>
 
+        <record id="tax_amount_rate10__record_id" model="ir.config_parameter">
+            <field name="key">tax_amount_rate10</field>
+            <field name="value"/>
+        </record>
+
+        <record id="tax_amount_rate8__record_id" model="ir.config_parameter">
+            <field name="key">tax_amount_rate8</field>
+            <field name="value"/>
+        </record>
+
+        <record id="tax_amount_reduced_tax_rate8__record_id" model="ir.config_parameter">
+            <field name="key">tax_amount_reduced_tax_rate8</field>
+            <field name="value"/>
+        </record>
+
         <record id="r004_form_format_path" model="ir.config_parameter">
             <field name="key">R004_form_format_path</field>
             <field name="value">form/Sample/ga_test/R004_accounts_receivable_ledger.xml</field>

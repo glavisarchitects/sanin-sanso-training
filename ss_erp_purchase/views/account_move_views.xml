@@ -13,8 +13,8 @@
                 </xpath>
 
 
-                <xpath expr="//field[@name='journal_id']" position="after">
-                    <field name="x_is_not_create_fb" attrs="{'invisible': ['|', ('x_receipt_type', 'not in', ('bank','transfer')), ('x_payment_type', '!=', 'bank')]}"/>
+                <xpath expr="//field[@name='edi_state']" position="before">
+                    <field name="x_is_not_create_fb" attrs="{'invisible': [('x_receipt_type', 'not in', ('bank','transfer')), ('x_payment_type', '!=', 'bank')]}"/>
                 </xpath>
             </field>
         </record>
