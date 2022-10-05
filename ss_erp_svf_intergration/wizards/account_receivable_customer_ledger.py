@@ -69,7 +69,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
         if self.sort_order == 'date':
             orderby_query = ' ORDER BY sml.date '
         elif self.sort_order == 'product':
-            orderby_query = ' ORDER BY sml.product '
+            orderby_query = ' ORDER BY sml.product_id '
         else:
             orderby_query = ''
         query = f''' 

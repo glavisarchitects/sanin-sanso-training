@@ -35,13 +35,24 @@
                     <div modifiers="{}">
                         <group>
                             <group modifiers="{}">
-                                <label for="x_name_abbreviation" string="プロダクト略称" modifiers="{}"/>
-                                <field name="x_name_abbreviation" nolabel="1" modifiers="{}" id="x_name_abbreviation"/>
+                                <div class="oe_title" modifiers="{}">
+                                    <label for="x_name_abbreviation" class="oe_edit_only" string="プロダクト略称"
+                                           modifiers="{}"/>
+                                    <h2 modifiers="{}">
+                                        <field name="x_name_abbreviation" placeholder="プロダクト略称" nolabel="1"
+                                               modifiers="{}" id="x_name_abbreviation"/>
+                                    </h2>
+                                </div>
                             </group>
                             <group modifiers="{}">
-                                <label for="x_name_specification" string="仕様・規格・型番" modifiers="{}"/>
-                                <field name="x_name_specification" nolabel="1" modifiers="{}"
-                                       id="x_name_specification"/>
+                                <div class="oe_title" modifiers="{}">
+                                    <label for="x_name_specification" string="仕様・規格・型番" modifiers="{}"/>
+                                    <h2>
+                                        <field name="x_name_specification" placeholder="仕様・規格・型番" nolabel="1"
+                                               modifiers="{}"
+                                               id="x_name_specification"/>
+                                    </h2>
+                                </div>
                             </group>
                         </group>
                     </div>

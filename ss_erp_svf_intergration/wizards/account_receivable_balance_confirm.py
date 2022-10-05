@@ -122,6 +122,7 @@ class AccountReceivableBalanceConfirm(models.TransientModel):
                 concat(rp.zip,rp.street,rp.street2) as customer_barcode,
                 concat('{close_date}','　現在') as closing_date1,
                 ba.total,
+                {return_date} as return_date,
                 concat('担当支店：',seo.name) as branch,
                 concat('TEL:',seo.organization_phone) as branch_phone_number,
                 concat('{close_date}','　現在') as closing_date2,
