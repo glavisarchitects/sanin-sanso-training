@@ -45,7 +45,6 @@ msgstr "プロダクトタイプ"
 msgid "Internal Reference"
 msgstr "内部参照"
 
-
 #. module: ss_erp_product_template
 #: model:ir.model.fields,field_description:ss_erp_product_template.field_ss_erp_product_template_form__list_price
 msgid "Sale Price"
@@ -128,7 +127,7 @@ msgstr "在庫ロケーション"
 
 #. module: ss_erp_product_template
 #: model:ir.model.fields,field_description:ss_erp_product_template.field_ss_erp_product_template_form__property_account_income_id
-msgid "Gain Account"
+msgid "Income Account"
 msgstr "収益勘定"
 
 #. module: ss_erp_product_template

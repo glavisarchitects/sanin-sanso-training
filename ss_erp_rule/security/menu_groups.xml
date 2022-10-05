@@ -146,7 +146,7 @@
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-        <record id="ss_erp_accounting.ss_erp_annual_monthly_menu" model="ir.ui.menu">
+        <record id="ss_erp_svf_intergration.ss_erp_annual_monthly_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('group_branch_general')),
             (4, ref('group_branch_middle_manager')),

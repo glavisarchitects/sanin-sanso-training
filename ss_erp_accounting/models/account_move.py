@@ -82,6 +82,8 @@ class AccountMove(models.Model):
         res = super().action_register_payment()
         res['context']['default_x_organization_id'] = self.x_organization_id.id
         res['context']['default_x_responsible_dept_id'] = self.x_responsible_dept_id.id
+        res['context']['default_x_receipt_type'] = self.x_receipt_type
+        res['context']['default_x_payment_type'] = self.x_payment_type
         return res
 
 
