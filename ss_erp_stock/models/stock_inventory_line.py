@@ -12,8 +12,9 @@ class StockInventoryLine(models.Model):
     organization_id = fields.Many2one(
         'ss_erp.organization', string='組織名',
         related='inventory_order_line_id.organization_id')
-    # type_id = fields.Many2one(related='inventory_order_line_id.type_id', string='棚卸種別')
     product_cost = fields.Float(string='単価')
+    currency_id = fields.Many2one(string='Company Currency', readonly=True,
+        related='company_id.currency_id')
 
     def write(self, vals):
         res = super(StockInventoryLine, self).write(vals)

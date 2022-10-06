@@ -27,6 +27,14 @@ class AccountMove(models.Model):
             day=calendar.monthrange(current_date_last_month.year, current_date_last_month.month)[1]),
                                                datetime.max.time())
 
+        r002_tax10_id = self.env['ir.config_parameter'].sudo().get_param('R002_tax10_id')
+        r002_tax8_id = self.env['ir.config_parameter'].sudo().get_param('R002_tax8_id')
+        r002_reduction_tax8_id = self.env['ir.config_parameter'].sudo().get_param('R002_reduction_tax8_id')
+        r002_tax_exempt_id = self.env['ir.config_parameter'].sudo().get_param('R002_tax_exempt_id')
+
+        if not r002_tax10_id or not r002_tax8_id or not r002_reduction_tax8_id or not r002_tax_exempt_id:
+            raise UserError('パラメータで税勘定を設定してください')
+
         query = f'''
         with org_bank as (
         select 
@@ -36,7 +44,38 @@ class AccountMove(models.Model):
         from res_partner_bank rpb
         left join res_bank rb on rpb.bank_id = rb.id
         where rpb.organization_id is not null
+        ),
+        -- SUM TAX REGION
+            sum_tax_10 as (
+        select am.id move_id,amlat.account_tax_id tax_id, sum(quantity * price_unit) sum from account_move_line aml
+        left join account_move am ON am.id = aml.move_id
+        left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
+                    where amlat.account_tax_id = '{int(r002_tax10_id)}'
+                    GROUP BY am.id, amlat.account_tax_id
+        ),
+            sum_tax_8 as (
+        select am.id move_id,amlat.account_tax_id tax_id, sum(quantity * price_unit) sum from account_move_line aml
+        left join account_move am ON am.id = aml.move_id
+        left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
+                    where amlat.account_tax_id = '{int(r002_tax8_id)}'
+                    GROUP BY am.id, amlat.account_tax_id
+        ),
+            sum_reduce_tax_8 as (
+        select am.id move_id,amlat.account_tax_id tax_id, sum(quantity * price_unit ) sum from account_move_line aml
+        left join account_move am ON am.id = aml.move_id
+        left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
+                    where amlat.account_tax_id = '{int(r002_reduction_tax8_id)}'
+                    GROUP BY am.id, amlat.account_tax_id
+        ),
+            sum_no_tax as (
+        select am.id move_id,amlat.account_tax_id tax_id, sum(quantity * price_unit ) sum from account_move_line aml
+        left join account_move am ON am.id = aml.move_id
+        left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
+                    where amlat.account_tax_id = '{int(r002_tax_exempt_id)}'
+                    GROUP BY am.id, amlat.account_tax_id
         )
+        -- END
+
         select
          am.name as invoice_no
          , rp.zip as zip
@@ -51,7 +90,7 @@ class AccountMove(models.Model):
          , concat('TEL:', seo.organization_phone) as organization_phone
          , concat('FAX:', seo.organization_fax) as organization_fax
          , COALESCE(am.amount_total,0) + COALESCE(oi_pma.oi_previous_amount, 0) - COALESCE(or_pma.or_previous_amount, 0) - COALESCE(da.amount, 0) as this_month_amount -- TODO 8
-         , am.invoice_date_due 
+         , to_char(am.invoice_date_due, 'YYYY年MM月DD日') invoice_date_due 
          , COALESCE(oi_pma.oi_previous_amount, 0) - COALESCE(or_pma.or_previous_amount, 0) as previous_month_amount
          , COALESCE(da.amount, 0) as deposit_amount
          , COALESCE(oi_pma.oi_previous_amount, 0) - COALESCE(or_pma.or_previous_amount, 0) - COALESCE(da.amount, 0) as previous_month_balance
@@ -59,26 +98,25 @@ class AccountMove(models.Model):
          , am.amount_tax as consumption_tax
          ,  to_char(sp.date_done, 'MM/DD') as date
          , so.name as slip_number 
-         , so.name as detail_number 
+         , 0 as detail_number 
          , pt.name as product_name	
-         , '' as 規格・商品名	
          , sol.product_uom_qty as quantity	
          , uu.name as unit	
          , sol.price_unit as unit_price	
          , sol.price_subtotal as price	
-         , at.name as tax_rate	
-         , sol.x_remarks as summary
-         , NULL as price_total_tax_rate10
-         , NULL as price_total_tax_rate8
-         , NULL as price_total_reduced_tax_rate8
-         , NULL as price_total_no_tax
-         , COALESCE(sol.product_uom_qty * sol.price_unit * tr_10.amount/100, 0) as tax_amount_rate10
-         , COALESCE(sol.product_uom_qty * sol.price_unit * tr_8.amount/100, 0) as tax_amount_rate8
-         , COALESCE(sol.product_uom_qty * sol.price_unit * trr_8.amount/100, 0) as tax_amount_reduced_tax_rate8
-         , (Case When atsol.account_tax_id is NULL then (sol.product_uom_qty * sol.price_unit) ELSE 0 END) as tax_amount_no_tax
+         , COALESCE(at.name, '') as tax_rate	
+         , COALESCE(sol.x_remarks, '') as summary
+         , COALESCE(st10.sum, 0) as price_total_tax_rate10
+         , COALESCE(st8.sum, 0) as price_total_tax_rate8
+         , COALESCE(srt8.sum, 0) as price_total_reduced_tax_rate8
+         , COALESCE(snt.sum, 0) as price_total_no_tax
+         , COALESCE(st10.sum * 0.1, 0) as tax_amount_rate10
+         , COALESCE(st8.sum * 0.08, 0) as tax_amount_rate8
+         , COALESCE(srt8.sum * 0.08, 0) as tax_amount_reduced_tax_rate8
+         , 0 as tax_amount_no_tax
          -- , NULL as tax_amount_no_tax
-         , NULL as price_total
-         , NULL as price_total_tax
+         , COALESCE(st10.sum + st8.sum + srt8.sum + snt.sum, 0) as price_total
+         , COALESCE(st10.sum * 0.1 + st8.sum * 0.08 + srt8.sum * 0.08, 0) as price_total_tax
          , ob.payee_info
          from
             account_move am  /* 仕訳 */	
@@ -93,7 +131,7 @@ class AccountMove(models.Model):
             on solir.order_line_id = sol.id	
             left join	
             stock_picking sp /* 運送 */	
-            on sol.order_id = sp.sale_id	
+            on sol.order_id = sp.sale_id and sp.backorder_id is NULL
             left join	
             product_template pt /* プロダクトテンプレート */	
             on sol.product_id = pt.id	
@@ -162,20 +200,14 @@ class AccountMove(models.Model):
             GROUP BY partner_id, x_organization_id
             ) or_tmp on or_tmp.partner_id = am.partner_id and or_tmp.x_organization_id = am.x_organization_id -- 13
             
-            left join (
-            select id, amount from account_tax 
-            where id = 15
-            ) tr_10 on tr_10.id = atsol.account_tax_id
-
-            left join (
-            select id, amount from account_tax 
-            where id = 14
-            ) tr_8 on tr_8.id = atsol.account_tax_id
-
-            left join (
-            select id, amount from account_tax 
-            where id = 13
-            ) trr_8 on trr_8.id = atsol.account_tax_id
+            left join sum_tax_10 st10
+            on st10.move_id = am.id
+            left join sum_tax_8 st8
+            on st8.move_id = am.id
+            left join sum_reduce_tax_8 srt8
+            on srt8.move_id = am.id
+            left join sum_no_tax snt
+            on snt.move_id = am.id
             
         where sp.state = 'done' and am.id = '{self.id}'
         order by
@@ -189,18 +221,6 @@ class AccountMove(models.Model):
 
     def svf_template_export(self):
 
-        # Prepare data sent to SVF
-        # customer_so_recs = self.env['sale.order'].search([('state', 'not in', ['draft', 'cancel'])])
-        # so_records = customer_so_recs.filtered(lambda csr: self.id in csr.invoice_ids.ids)
-        # if not so_records:
-        #     raise UserError('対応する SO レコードが見つかりません。')
-        #
-        # customer_payment_recs = self.env['account.payment'].search(
-        #     [('state', '=', 'posted'), ('reconciled_invoice_ids', '!=', []), ])
-        # payment_record = customer_payment_recs.filtered(lambda cpr: self.id in cpr.reconciled_invoice_ids.ids)
-        # if not payment_record:
-        #     raise UserError('対応する Payment レコードが見つかりません。')
-        #
         data_send = [
             '''"invoice_no","zip","address","customer_name","output_date","registration_number","name","responsible_person","organization_zip","organization_address","organization_phone","organization_fax","this_month_amount","invoice_date_due","previous_month_amount","deposit_amount","previous_month_balance","this_month_purchase","consumption_tax","date","slip_number","detail_number","product_name","quantity","unit","unit_price","price","tax_rate","summary","price_total_tax_rate10","price_total_tax_rate8","price_total_reduced_tax_rate8","price_total_no_tax","tax_amount_rate10","tax_amount_rate8","tax_amount_reduced_tax_rate8","tax_amount_no_tax","price_total","price_total_tax","payee_info"''']
         #
@@ -269,16 +289,20 @@ class AccountMove(models.Model):
         if not data_query:
             raise UserError(_("出力対象のデータがありませんでした。"))
 
+        seq_number = 1
         for daq in data_query:
             one_line_data = ""
             for da in daq:
                 if da is not None:
                     if da in ['this_month_amount', 'previous_month_amount', 'deposit_amount', 'previous_month_balance', 'this_month_purchase', 'consumption_tax']:
                         one_line_data += '"' + "￥" + "{:,}".format(int(daq[da])) + '",'
+                    elif da == 'detail_number':
+                        one_line_data += '"' + str(seq_number) + '",'
                     else:
                         one_line_data += '"' + str(daq[da]) + '",'
                 else:
                     one_line_data += '"",'
+            seq_number += 1
             data_send.append(one_line_data)
         data_file = "\n".join(data_send)
         data_file = data_file[0:-1]

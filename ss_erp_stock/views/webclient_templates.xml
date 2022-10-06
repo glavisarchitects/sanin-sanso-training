@@ -11,6 +11,7 @@
             <script type="text/javascript" src="/ss_erp_stock/static/src/js/instruction_inspection_button_view.js"/>
             <script type="text/javascript" src="/ss_erp_stock/static/src/js/ss_erp_date_picker.js"/>
             <script type="text/javascript" src="/ss_erp_stock/static/src/js/web_required_field_inventory_order.js"/>
+            <script type="text/javascript" src="/ss_erp_stock/static/src/js/hide_validate_inventory.js"/>
         </xpath>
     </template>
 </odoo>

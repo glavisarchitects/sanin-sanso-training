@@ -22,7 +22,7 @@ class LPGasOrder(models.Model):
     organization_id = fields.Many2one('ss_erp.organization', string="組織名", domain="[('warehouse_id', '!=', False)]")
     inventory_type = fields.Selection([('cylinder', 'シリンダー'), ('minibulk', 'ミニバルク')], string='棚卸種別')
     accounting_date = fields.Date(string='会計日')
-    aggregation_period = fields.Date(string='棚卸対象期間')
+    aggregation_period = fields.Date(string='棚卸対象期間', copy=False)
     month_aggregation_period = fields.Integer(string='month of aggregation period', store=True,
                                               compute='compute_month_aggregation_period')
     state = fields.Selection(
@@ -31,6 +31,51 @@ class LPGasOrder(models.Model):
 
     lpgas_order_line_ids = fields.One2many('ss_erp.lpgas.order.line', 'lpgas_order_id', ondelete="cascade",
                                            string='集計結果')
+
+    def make_inventory_adjustment(self):
+        lpgas_product_tmp_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id')
+        if lpgas_product_tmp_id == '':
+            raise UserError(_("プロダクトコードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。"))
+        lpgas_product_id = self.env['product.product'].search([('product_tmpl_id', '=', int(lpgas_product_tmp_id))],
+                                                              limit=1)
+        branch_loss_location = self.env['stock.location'].search(
+            [('usage', '=', 'inventory'), ('id', 'child_of', self.organization_id.warehouse_id.view_location_id.id), ],
+            limit=1)
+        for line in self.lpgas_order_line_ids:
+            if line.difference_qty == 0:
+                continue
+            if line.difference_qty > 0:
+                location_id = line.location_id.id
+                location_dest_id = branch_loss_location.id
+            elif line.difference_qty < 0:
+                location_id = branch_loss_location.id
+                location_dest_id = line.location_id.id
+            sm_value = {
+                'name': _('INV:LP GAS ') + (str(self.inventory_type) or ''),
+                'product_id': lpgas_product_id.id,
+                'product_uom': lpgas_product_id.uom_id.id,
+                'product_uom_qty': line.difference_qty,
+                'date': datetime.now(),
+                'company_id': self.env.user.company_id.id,
+                'state': 'done',
+                'location_id': location_id,
+                'location_dest_id': location_dest_id,
+                'move_line_ids': [(0, 0, {
+                    'product_id': lpgas_product_id.id,
+                    # 'lot_id': self.prod_lot_id.id,
+                    'product_uom_qty': 0,  # bypass reservation here
+                    'product_uom_id': lpgas_product_id.uom_id.id,
+                    'qty_done': line.difference_qty,
+                    'state': 'done',
+                    # 'package_id': out and self.package_id.id or False,
+                    # 'result_package_id': (not out) and self.package_id.id or False,
+                    'location_id': line.location_id.id,
+                    'location_dest_id': branch_loss_location.id,
+                    # 'owner_id': self.partner_id.id,
+                })]
+            }
+
+            return self.env['stock.move'].create(sm_value)
 
     @api.depends('aggregation_period')
     def compute_month_aggregation_period(self):
@@ -406,8 +451,9 @@ class LPGasOrder(models.Model):
     @api.constrains("accounting_date", "aggregation_period")
     def _check_accounting_date_aggregation_period(self):
         for r in self:
-            if r.accounting_date < r.aggregation_period:
-                raise ValidationError(_("会計日は棚卸対象期間より過去の日付は設定できません。"))
+            if r.accounting_date and r.aggregation_period:
+                if r.accounting_date < r.aggregation_period:
+                    raise ValidationError(_("会計日は棚卸対象期間より過去の日付は設定できません。"))
 
 
 class LPGasOrderLine(models.Model):
