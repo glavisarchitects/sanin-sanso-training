@@ -58,6 +58,8 @@ class AccountPaymentRegister(models.TransientModel):
         payment_vals['x_sub_account_id'] = self.x_sub_account_id.id
         payment_vals['x_organization_id'] = self.x_organization_id.id
         payment_vals['x_responsible_dept_id'] = self.x_responsible_dept_id.id
+        payment_vals['x_receipt_type'] = self.x_receipt_type
+        payment_vals['x_payment_type'] = self.x_payment_type
 
         return payment_vals
 
