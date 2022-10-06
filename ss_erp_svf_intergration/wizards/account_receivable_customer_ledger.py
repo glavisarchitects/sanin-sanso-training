@@ -17,7 +17,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
     due_date_start = fields.Date(string='期日（開始）')
     due_date_end = fields.Date(string='期日（終了）')
     organization_ids = fields.Many2many('ss_erp.organization', string="組織")
-    partner_ids = fields.Many2many('res.partner', string="得意先")
+    partner_ids = fields.Many2many('res.partner', string="得意先", domain="[('x_is_customer', '=', True)]")
     product_ids = fields.Many2many('product.product', string="プロダクト")
     sort_order = fields.Selection([('date', '日付順'), ('product', 'プロダクト順'), ('address', '届け先順')],
                                   string='ソート条件',
@@ -41,6 +41,15 @@ class AccountReceivableCustomerLedger(models.TransientModel):
 
     def _get_account_receivable_balance(self):
         title = "得意先元帳（商品順）"
+        if not self.sort_order:
+            title = "得意先元帳"
+        elif self.sort_order == 'date':
+            title = "得意先元帳（日付順）"
+        elif self.sort_order == 'product':
+            title = "得意先元帳（プロダクト順）"
+        else:
+            title = "得意先元帳（届け先順）"
+
         due_date_start = datetime.combine(self.due_date_start, datetime.min.time())
         due_date_end = datetime.combine(self.due_date_end, datetime.max.time())
 
@@ -151,7 +160,8 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             left join 
             (select sol.product_id, sol.price_unit,sol.order_id, so.partner_invoice_id as partner_id,so.x_organization_id from sale_order_line sol left join sale_order so on sol.order_id = so.id) tb1 on sp.sale_id = tb1.order_id and tb1.product_id = sml.product_id
             left join res_partner rp on tb1.partner_id = rp.id
-            where sml.state = 'done' and sp.sale_id is not null and sml.date <= '{self.due_date_end}' and sml.date >= '{self.due_date_start}' ''' + \
+            where sml.state = 'done' and spt.code in ('outgoing','incoming') 
+            and sp.sale_id is not null and sml.date <= '{self.due_date_end}' and sml.date >= '{self.due_date_start}' ''' + \
             do_query + \
             do_partner_query + \
             do_product_query + \

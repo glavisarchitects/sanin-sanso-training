@@ -188,7 +188,9 @@ class AccountReceivableList(models.TransientModel):
             LEFT JOIN this_period_money_collect tpmc ON tpe.partner_id = tpmc.partner_id AND tpe.x_organization_id = tpmc.x_organization_id
             LEFT JOIN partner_contract_condition tcc ON tpe.partner_id = tcc.partner_id AND tpe.x_organization_id = tcc.x_organization_id
             LEFT JOIN last_payment_term plt ON tpe.partner_id = plt.partner_id AND plt.x_organization_id = tcc.x_organization_id
-            LEFT JOIN account_payment_term apt ON plt.invoice_payment_term_id = apt.id'''
+            LEFT JOIN account_payment_term apt ON plt.invoice_payment_term_id = apt.id
+            WHERE rp.x_is_customer = 't'
+            '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 
