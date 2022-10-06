@@ -94,7 +94,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 am.date, 	
                 am.name as slip_number, 
                 '**  入　金  **' as product_name,
-                aj.name as line_division_name, 
+                ap.x_receipt_type as line_division_name, 
                 ap.amount
             from account_payment ap
             left join account_move am on ap.move_id = am.id
@@ -102,9 +102,9 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             left join res_partner rp on rp.id = ap.partner_id
             where ap.payment_type = 'inbound' and am.date <= '{self.due_date_end}' and am.date >= '{self.due_date_start}'
             and ap.partner_id is not null ''' + \
-            ap_query + \
-            ap_partner_query + \
-            f''' order by ap.partner_id, am.date)
+                ap_query + \
+                ap_partner_query + \
+                f''' order by ap.partner_id, am.date)
             union all 
             -- nyukin sum
             (select 
@@ -123,9 +123,9 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             left join res_partner rp on rp.id = ap.partner_id
             where ap.payment_type = 'inbound' and am.date <= '{self.due_date_end}' and am.date >= '{self.due_date_start}'
             and ap.partner_id is not null ''' + \
-            ap_query + \
-            ap_partner_query + \
-            f'''GROUP BY ap.partner_id, rp.name, am.x_organization_id,rp.ref
+                ap_query + \
+                ap_partner_query + \
+                f'''GROUP BY ap.partner_id, rp.name, am.x_organization_id,rp.ref
             )
             ORDER BY partner_id, order_sequence), delivery as (
             select 
@@ -162,11 +162,11 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             left join res_partner rp on tb1.partner_id = rp.id
             where sml.state = 'done' and spt.code in ('outgoing','incoming') 
             and sp.sale_id is not null and sml.date <= '{self.due_date_end}' and sml.date >= '{self.due_date_start}' ''' + \
-            do_query + \
-            do_partner_query + \
-            do_product_query + \
-            orderby_query + \
-            f''')
+                do_query + \
+                do_partner_query + \
+                do_product_query + \
+                orderby_query + \
+                f''')
             select 
             '{title}' as title,
             to_char(now() AT TIME ZONE 'JST', 'YYYY年MM月DD日 HH24:MI:SS') as output_date,
@@ -316,6 +316,16 @@ class AccountReceivableCustomerLedger(models.TransientModel):
         if not account_receivable_balance:
             raise UserError(_("出力対象のデータがありませんでした。"))
 
+        x_receipt_type_dict = {
+            'bank': '振込',
+            'transfer': '振替',
+            'bills': '手形',
+            'cash': '現金',
+            'paycheck': '小切手',
+            'branch_receipt': '他店入金',
+            'offset': '相殺'
+        }
+
         if account_receivable_balance is not None:
             for row in account_receivable_balance:
                 data_line = ""
@@ -323,11 +333,12 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                     if row[col] is not None:
                         if col in ['unit_price', 'amount_of_money']:
                             data_line += '"' + "{:,}".format(int(row[col])) + '",'
+                        elif col == 'line_division_name':
+                            data_line += '"' + x_receipt_type_dict[str(row[col])] + '",'
+                        elif col != 'order_sequence':
+                            data_line += '"' + str(row[col]) + '",'
                         else:
-                            if col != 'order_sequence':
-                                data_line += '"' + str(row[col]) + '",'
-                            else:
-                                total_amount += int(row['amount_of_money'])
+                            total_amount += int(row['amount_of_money'])
                     else:
                         data_line += '"",'
                 new_data.append(data_line)
@@ -339,8 +350,10 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 account_receivable_balance[-1]['due_date_end'],
                 account_receivable_balance[-1]['branch_code'],
                 account_receivable_balance[-1]['branch_name'],
-                '' if account_receivable_balance[-1]['customer_code'] is None else account_receivable_balance[-1]['customer_code'],
-                '' if account_receivable_balance[-1]['customer_name'] is None else account_receivable_balance[-1]['customer_name'],
+                '' if account_receivable_balance[-1]['customer_code'] is None else account_receivable_balance[-1][
+                    'customer_code'],
+                '' if account_receivable_balance[-1]['customer_name'] is None else account_receivable_balance[-1][
+                    'customer_name'],
                 '',
                 '',
                 '',
