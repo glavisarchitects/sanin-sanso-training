@@ -131,7 +131,8 @@ class InstructionOrder(models.Model):
             ('order_id', '=', self.id),
         ]
         view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree').id
-        if self.stock_inventory_id and self.stock_inventory_id.state != 'draft':
+        stock_inventory_id_list = list(set(self.stock_inventory_id.mapped('state')))
+        if self.stock_inventory_id and 'draft' not in stock_inventory_id_list:
             view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree_non_edit').id
         action['view_id'] = view_id
         action['context'] = context
@@ -156,7 +157,8 @@ class InstructionOrder(models.Model):
             ('organization_id', '=', self.organization_id.id)
         ]
         view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree').id
-        if self.stock_inventory_id and self.stock_inventory_id.state != 'draft':
+        stock_inventory_id_list = list(set(self.stock_inventory_id.mapped('state')))
+        if self.stock_inventory_id and 'draft' not in stock_inventory_id_list:
             view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree_non_edit').id
         action['view_id'] = view_id
         action['context'] = context
