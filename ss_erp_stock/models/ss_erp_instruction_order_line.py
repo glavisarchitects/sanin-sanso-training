@@ -115,9 +115,10 @@ class InstructionOrderLine(models.Model):
             'product_uom': self.product_uom_id.id,
             'product_uom_qty': qty,
             'date': self.order_id.date,
+            'x_organization_id': self.order_id.organization_id.id,
             'instruction_order_id': self.order_id.id,
-            'instruction_order_line_id': self.id,
             'company_id': self.order_id.company_id.id,
+            'price_unit': self.product_cost,
             'state': 'confirmed',
             'location_id': location_id,
             'location_dest_id': location_dest_id,
@@ -145,63 +146,6 @@ class InstructionOrderLine(models.Model):
                 raise UserError(
                     '棚卸減耗費勘定の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_stock_expense）')
         return account_id
-
-    @api.model
-    def _prepare_move_for_instruction_order_line(self):
-        amount = self.product_cost * self.difference_qty
-        current_currency = self.env.company.currency_id
-        label = '%s-%s'%(self.order_id.name,self.product_id.name)
-        journal_id = self.product_id.categ_id.property_stock_journal
-        if amount > 0:
-            move_line_1 = {
-                'name': label,
-                'account_id': self.product_id.categ_id.property_stock_valuation_account_id.id,
-                'debit': amount,
-                'credit': 0.0,
-                'currency_id': current_currency.id,
-                'amount_currency': amount,
-            }
-            move_line_2 = {
-                'name': label,
-                'account_id': int(self._get_account_id()),
-                'debit': 0.0,
-                'credit': amount,
-                'currency_id': current_currency.id,
-                'amount_currency': amount,
-            }
-        else:
-            move_line_1 = {
-                'name': label,
-                'account_id': int(self._get_account_id()),
-                'debit': -amount,
-                'credit': 0.0,
-                'currency_id': current_currency.id,
-                'amount_currency': -amount,
-            }
-            move_line_2 = {
-                'name': label,
-                'account_id': self.product_id.categ_id.property_stock_valuation_account_id.id,
-                'debit': 0.0,
-                'credit': -amount,
-                'currency_id': current_currency.id,
-                'amount_currency': -amount,
-            }
-
-        move_vals = {
-            'ref': self.order_id.name,
-            'x_organization_id': self.order_id.organization_id.id,
-            'date': datetime.now(),
-            'journal_id': journal_id.id,
-            'line_ids': [(0, 0, move_line_1), (0, 0, move_line_2)],
-            'amount_total': -amount,
-            'move_type': 'entry',
-            'currency_id': current_currency.id,
-        }
-        return move_vals
-
-    def _generate_moves_account_move(self):
-        move_vals = self._prepare_move_for_instruction_order_line()
-        self.env['account.move'].create(move_vals)
 
     def _generate_moves(self):
         vals_list = []
