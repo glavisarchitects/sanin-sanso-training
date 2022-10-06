@@ -29,7 +29,7 @@ class ConstructionComponent(models.Model):
     margin_rate = fields.Float(string='マージン(%)', compute='_compute_margin', store=True)
     subtotal_exclude_tax = fields.Monetary(string='小計（税別）', compute='_compute_margin', store=True)
     subtotal = fields.Monetary(string='小計', compute='_compute_margin', store=True)
-    construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事')
+    construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事', ondelete='cascade')
 
     is_downpayment = fields.Boolean(
         string="頭金であるか", help="Down payments are made when creating invoices from a construction order.")

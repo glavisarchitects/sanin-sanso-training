@@ -24,6 +24,7 @@ class ConstructionWorkorder(models.Model):
     workcenter_id = fields.Many2one(
         comodel_name='construction.workcenter',
         string='作業区',
+        ondelete='cascade',
         required=False)
 
     picking_type_id = fields.Many2one('stock.picking.type', related='construction_id.picking_type_id',
