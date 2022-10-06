@@ -332,12 +332,12 @@ class ApprovalRequest(models.Model):
                     user_ids = list(dict.fromkeys(approve_partner_ids))
                     self.with_user(SUPERUSER_ID).sudo().notify_approve_request(partner_ids=approve_partner_ids)
                 # 最終ステップである場合、申請者及び関係者を全員に最終通知する
-                else:
-                    notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
-                        "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
-                    notify_parner_ids.append(self.request_owner_id.partner_id.id)
-                    notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-                    self.with_user(SUPERUSER_ID).sudo().notify_final(partner_ids=notify_parner_ids)
+                # else:
+                #     notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
+                #         "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
+                #     notify_parner_ids.append(self.request_owner_id.partner_id.id)
+                #     notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+                #     self.with_user(SUPERUSER_ID).sudo().notify_final(partner_ids=notify_parner_ids)
 
     def action_approve(self, approver=None):
         super(ApprovalRequest, self).action_approve(approver=approver)
@@ -388,7 +388,7 @@ class ApprovalRequest(models.Model):
     def action_temporary_approve(self):
         if self.x_is_multiple_approval:
             self.action_approve()
-            self._approve_multi_approvers(self.env.user)
+            # self._approve_multi_approvers(self.env.user)
             curren_multi_approvers = self.multi_approvers_ids.filtered(lambda p: self.env.user in p.x_approval_user_ids)
 
             # 前のステップのステータスを承認に変更
@@ -437,6 +437,13 @@ class ApprovalRequest(models.Model):
 
             request.request_status = status
             request._validate_request()
+
+            if status == 'approved':
+                notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
+                    "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
+                notify_parner_ids.append(self.request_owner_id.partner_id.id)
+                notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+                self.with_user(SUPERUSER_ID).sudo().notify_final(partner_ids=notify_parner_ids)
 
     def _validate_request(self):
         # LPガス棚卸伝票
