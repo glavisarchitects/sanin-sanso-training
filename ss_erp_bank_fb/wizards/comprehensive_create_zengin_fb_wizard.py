@@ -27,6 +27,7 @@ class AccountPaymentWizard(models.TransientModel):
         partner_match_payment_term = self.env['res.partner'].search(
             [('property_supplier_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
         domain = [('payment_type', '=', 'outbound'), ('x_is_fb_created', '=', False),
+                  ('x_is_not_create_fb','=',False),
                   ('date', '<=', self.to_date), ('date', '>=', self.from_date),
                   ('partner_id', 'in', partner_match_payment_term.ids),
                   ('x_payment_type', '=', 'bank')]
