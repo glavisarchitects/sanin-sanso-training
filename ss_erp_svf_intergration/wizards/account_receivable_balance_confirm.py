@@ -58,7 +58,7 @@ class AccountReceivableBalanceConfirm(models.TransientModel):
 
     return_date = fields.Date(string='返送日')
     close_date = fields.Date(string='締日')
-    partner_id = fields.Many2one('res.partner', string='得意先顧客')
+    partner_id = fields.Many2one('res.partner', string='得意先顧客', domain="[('x_is_customer', '=', True)]")
 
     # form/Sample/ga_test/
     def svf_template_export(self):

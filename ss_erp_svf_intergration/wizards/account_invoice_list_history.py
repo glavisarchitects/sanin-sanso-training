@@ -164,7 +164,9 @@ class AccountInvoiceListHistory(models.TransientModel):
                 LEFT JOIN this_month_money_collect tmmc ON tme.partner_id = tmmc.partner_id
                 LEFT JOIN previous_month_balance pmb ON tme.partner_id = pmb.partner_id
                 LEFT JOIN ss_erp_organization seo ON tme.x_organization_id = seo.id
-                LEFT JOIN res_partner rp ON tme.partner_id = rp.id'''
+                LEFT JOIN res_partner rp ON tme.partner_id = rp.id
+                WHERE rp.x_is_customer = 't'
+                '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 
