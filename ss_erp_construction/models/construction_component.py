@@ -89,6 +89,8 @@ class ConstructionComponent(models.Model):
 
     @api.onchange('product_id')
     def _onchange_component_product_id(self):
+        if self.product_id:
+            self.product_uom_id = self.product_id.uom_id.id
         direct_expense_fee_product = self.env.ref('ss_erp_construction.direct_expense_fee_product_data')
         direct_labo_fee_product = self.env.ref('ss_erp_construction.direct_labo_fee_product_data')
         direct_outsource_fee_product = self.env.ref('ss_erp_construction.direct_outsource_fee_product_data')

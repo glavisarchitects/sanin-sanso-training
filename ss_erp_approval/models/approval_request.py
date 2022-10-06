@@ -257,7 +257,6 @@ class ApprovalRequest(models.Model):
     def _create_activity_for_approver(self):
         approvers = self.mapped('approver_ids').filtered(lambda approver: approver.status == 'new')
         approvers.write({'status': 'pending'})
-        # approvers._create_activity()
 
     def _change_request_state(self):
         if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
@@ -445,6 +444,10 @@ class ApprovalRequest(models.Model):
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'approval'})
             elif self.request_status == 'approved':
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'approved'})
+                # Inventory Adjustment
+                self.x_lpgas_inventory_ids.sudo().make_inventory_adjustment()
+
+
             elif self.request_status == 'cancel':
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'cancel'})
 

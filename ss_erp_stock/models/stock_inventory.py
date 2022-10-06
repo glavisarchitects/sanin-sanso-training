@@ -15,6 +15,7 @@ class StockInventory(models.Model):
         ('confirm', '進行中'),
         ('approval', '承認依頼中'),
         ('done', '承認完了'),
+        ('validated', '検証済'),
         ('cancel', '取消済')],
                              copy=False, index=True, readonly=True, tracking=True,
                              default='draft')
@@ -53,18 +54,6 @@ class StockInventory(models.Model):
                     'state': 'draft'
                 })
         return res
-
-    # def action_approval_request(self):
-    #     action = self.env["ir.actions.actions"]._for_xml_id("approvals.approval_request_action")
-    #     action.update({
-    #         'views': [(self.env.ref('approvals.approval_request_view_form').id, 'form')],
-    #         'context': {
-    #             'views': [(env.ref('approvals.approval_request_view_form').id, 'form')],
-    #             'context': {
-    #                 'default_x_inventory_order_ids': [(6, 0, records.ids)]
-    #             }
-    #         })
-    #     return action
 
     # change state to cancel
     def action_cancel(self):

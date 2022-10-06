@@ -76,7 +76,7 @@ class ConstructionTemplateComponent(models.Model):
         string='プロダクト',
         required=False)
     product_uom_qty = fields.Float(string='数量')
-    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string="プロダクトカテゴリ")
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string="単位カテゴリ")
     product_uom_id = fields.Many2one(
         comodel_name='uom.uom',
         string='単位',
