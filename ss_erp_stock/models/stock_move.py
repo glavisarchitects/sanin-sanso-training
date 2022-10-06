@@ -9,7 +9,7 @@ class StockMove(models.Model):
     instruction_order_line_id = fields.Many2one('ss_erp.instruction.order.line', string="棚卸計画明細")
 
     product_packaging = fields.Many2one(string='パッケージ', related='inventory_order_line_id.product_packaging', store=True)
-    x_organization_id = fields.Many2one('ss_erp.organization', related='picking_id.x_organization_id',
+    x_organization_id = fields.Many2one('ss_erp.organization',
                                       string='組織名', store=True)
 
     x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department',
