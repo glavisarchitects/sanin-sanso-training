@@ -388,6 +388,7 @@ class ApprovalRequest(models.Model):
     def action_temporary_approve(self):
         if self.x_is_multiple_approval:
             self.action_approve()
+            self._approve_multi_approvers(self.env.user)
             curren_multi_approvers = self.multi_approvers_ids.filtered(lambda p: self.env.user in p.x_approval_user_ids)
 
             # 前のステップのステータスを承認に変更
