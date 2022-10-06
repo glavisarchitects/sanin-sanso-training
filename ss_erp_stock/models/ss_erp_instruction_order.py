@@ -183,7 +183,7 @@ class InstructionOrder(models.Model):
         lines = self.line_ids.filtered(lambda x:x.difference_qty!=0)
         for line in lines:
             line._generate_moves()
-            line._generate_moves_account_move()
+            # line._generate_moves_account_move()
 
     def post_inventory(self):
         self.env['stock.move'].search([('instruction_order_id','=',self.id)]).filtered(lambda move: move.state != 'done')._action_done()
