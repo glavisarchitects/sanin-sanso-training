@@ -104,13 +104,15 @@ class InstructionOrder(models.Model):
 
     def display_action(self):
         self.ensure_one()
-        self._action_start()
+        if not self.stock_inventory_id:
+            self._action_start()
         self._check_company()
         return self.display_view()
 
     def search_action(self):
         self.ensure_one()
-        self._action_start()
+        if not self.stock_inventory_id:
+            self._action_start()
         self._check_company()
         return self.search_view()
 
@@ -349,6 +351,7 @@ class InstructionOrder(models.Model):
 
     def action_inspection(self):
         self.action_check()
+        self.post_inventory()
         self.write({'state': 'done'})
         self.stock_inventory_id.write({'state': 'validated'})
-        self.post_inventory()
+        # self.post_inventory()

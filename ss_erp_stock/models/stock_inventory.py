@@ -43,7 +43,7 @@ class StockInventory(models.Model):
             ))
         self.action_check()
         self.write({'date': fields.Datetime.now()})
-        self.post_inventory()
+        # self.post_inventory()
         return True
 
     def action_cancel_draft(self):

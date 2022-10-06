@@ -27,8 +27,6 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,waiting,shipping,done,cancel"/>
                     <button name="confirm_inventory_order" string="確定" type="object" class="btn-primary"
                             attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-<!--                    <button name="check_availability" string="利用可能確認" type="object" class="btn-primary"-->
-<!--                            attrs="{'invisible': [('state', '!=', 'waiting')]}"/>-->
                     <button name="cancel_state" string="取消" type="object"
                             attrs="{'invisible': [('state', '==', 'cancel')]}"/>
                 </header>
