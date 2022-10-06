@@ -36,7 +36,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 SELECT
                     tb1.partner_id,
                     tb1.x_organization_id,
-                    SUM ( tb1.amount ) AS previous_month_amount
+                    ABS(SUM ( tb1.amount )) AS previous_month_amount
                 FROM
                 (
                         SELECT
@@ -74,7 +74,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 SELECT
                         tb2.partner_id,
                         tb2.x_organization_id,
-                        sum(tb2.amount) AS receipts
+                        ABS(sum(tb2.amount)) AS receipts
                 FROM 
                         (
                         SELECT
@@ -99,7 +99,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 SELECT
                     tb3.partner_id,
                     tb3.x_organization_id,
-                    SUM ( tb3.amount_residual ) AS previous_month_balance
+                    ABS(SUM ( tb3.amount_residual )) AS previous_month_balance
                 FROM
                 (
                         SELECT
