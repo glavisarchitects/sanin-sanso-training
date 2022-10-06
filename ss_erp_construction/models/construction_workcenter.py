@@ -40,3 +40,8 @@ class ConstructionWorkcenterComponent(models.Model):
         comodel_name='construction.workcenter',
         string='作業区',
         required=False)
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.product_uom_id = self.product_id.uom_id.id
