@@ -460,25 +460,22 @@ class ApprovalRequest(models.Model):
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'approved'})
                 # Inventory Adjustment
                 self.x_lpgas_inventory_ids.sudo().make_inventory_adjustment()
-
-
             elif self.request_status == 'cancel':
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'cancel'})
 
         # 棚卸更新
         if self.request_status == 'approved':
-            if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
-                if self.x_inventory_order_ids:
-                    self.x_inventory_order_ids.write({
-                        'state': 'done'
-                    })
-                    self.x_inventory_order_ids.mapped('instruction_order_id').write({
-                        'state': 'waiting'
-                    })
-                if self.x_inventory_instruction_ids:
-                    self.x_inventory_instruction_ids.write({
-                        'state': 'approved'
-                    })
+            if self.x_inventory_order_ids:
+                self.x_inventory_order_ids.write({
+                    'state': 'done'
+                })
+                self.x_inventory_order_ids.mapped('instruction_order_id').write({
+                    'state': 'waiting'
+                })
+            if self.x_inventory_instruction_ids:
+                self.x_inventory_instruction_ids.write({
+                    'state': 'approved'
+                })
 
         # 工事
         if self.x_construction_order_id:
