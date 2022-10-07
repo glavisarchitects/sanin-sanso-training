@@ -37,18 +37,14 @@ class ApprovalRequest(models.Model):
     x_product_template_form_id = fields.Many2one(
         'ss_erp.product.template.form', string='プロダクト申請フォーム')
     x_inventory_order_ids = fields.Many2many(
-        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票',
-        domain=[('state', '=', 'confirm')])
+        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票',store=True,)
     x_sale_order_ids = fields.Many2many(
-        'sale.order', 'ss_erp_sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票',
-        domain=[('state', '=', 'draft')])
-    x_lpgas_inventory_ids = fields.Many2many('ss_erp.lpgas.order', string='LPガス棚卸伝票')
+        'sale.order', 'ss_erp_sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票',store=True,)
+    x_lpgas_inventory_ids = fields.Many2many('ss_erp.lpgas.order', store=True,string='LPガス棚卸伝票')
     x_account_move_ids = fields.Many2many(
-        'account.move', 'ss_erp_account_move_request_rel', 'move_id', 'request_id', string='仕入請求伝票',
-        domain=[('state', '=', 'draft')])
+        'account.move', 'ss_erp_account_move_request_rel', 'move_id', 'request_id',store=True, string='仕入請求伝票',)
     x_purchase_order_ids = fields.Many2many(
-        'purchase.order', 'ss_erp_purchase_request_rel', 'purchase_id', 'request_id', string='見積依頼伝票',
-        domain=[('state', '=', 'draft')])
+        'purchase.order', 'ss_erp_purchase_request_rel', 'purchase_id', 'request_id',store=True, string='見積依頼伝票',)
     x_payment_date = fields.Date('請求書締日')
     x_purchase_material = fields.Text('仕入商材')
     x_cash_amount = fields.Float('現金仕入額')
@@ -66,8 +62,7 @@ class ApprovalRequest(models.Model):
     multi_approvers_ids = fields.One2many(
         'ss_erp.multi.approvers', 'x_request_id', string='多段階承認', readonly=True, copy=False)
     x_inventory_instruction_ids = fields.Many2many(
-        'ss_erp.instruction.order', 'ss_erp_instruction_request_rel', 'instruction_id', 'request_id',
-        domain=[('state', '=', 'confirm')],
+        'ss_erp.instruction.order', 'ss_erp_instruction_request_rel', 'instruction_id', 'request_id',store=True,
         string='指示伝票')
 
     x_approval_date = fields.Date('申請日', default=datetime.now())
@@ -264,15 +259,14 @@ class ApprovalRequest(models.Model):
         approvers.write({'status': 'pending'})
 
     def _change_request_state(self):
-        if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
-            if self.x_inventory_order_ids:
-                self.x_inventory_order_ids.write({
-                    'state': 'approval'
-                })
-            if self.x_inventory_instruction_ids:
-                self.x_inventory_instruction_ids.write({
-                    'state': 'approval'
-                })
+        if self.x_inventory_order_ids:
+            self.x_inventory_order_ids.write({
+                'state': 'approval'
+            })
+        if self.x_inventory_instruction_ids:
+            self.x_inventory_instruction_ids.write({
+                'state': 'approval'
+            })
 
         if self.x_contact_form_id:
             self.x_contact_form_id.write(

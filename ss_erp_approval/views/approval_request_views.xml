@@ -206,7 +206,7 @@
                         'invisible': [('has_x_purchase_order_ids', '=', 'no')],
                         'required': [('has_x_purchase_order_ids', '=', 'required')],
                         'readonly':[('request_status','!=','new')]
-                    }" domain="[('state', '=', 'draft')]">
+                    }" domain="[('state', '=', 'draft')]" force_save="1">
                         <tree>
                             <field name="name" string="伝票No."/>
                             <field name="x_bis_categ_id" string="取引区分"/>
@@ -227,6 +227,7 @@
                         'readonly':[('request_status','!=','new')]
                     }"
                            domain="[('state', '=', 'draft'),('approval_status','=','out_of_process')]"
+                           force_save="1"
                     >
                         <tree>
                             <field name="name" string="伝票No."/>
@@ -244,7 +245,8 @@
                         'invisible': [('has_x_account_move_ids', '=', 'no')],
                         'required': [('has_x_account_move_ids', '=', 'required')],
                         'readonly':[('request_status','!=','new')]
-                    }" domain="[('move_type', 'in', ['in_invoice','in_refund']), ('state','=','draft')]">
+                    }" domain="[('move_type', 'in', ['in_invoice','in_refund']), ('state','=','draft')]"
+                    force_save="1">
                         <tree>
                             <field name="name"/>
                             <field name="invoice_partner_display_name" string="取引先"/>
@@ -261,10 +263,11 @@
                         'invisible': [('has_x_inventory_order_ids', '=', 'no')],
                         'required': [('has_x_inventory_order_ids', '=', 'required')],
                         'readonly':[('request_status','!=','new')]
-                    }" domain="[('state', 'not in', ['cancel', 'done'])]"/>
+                    }" domain="[('state', 'not in', ['cancel', 'done'])]"
+                    force_save="1"/>
                 </page>
                 <page string="指示伝票" name="inventory_instruction"
-                      attrs="{'invisible': [('has_x_inventory_instruction_ids', '=', 'no')]}">
+                      attrs="{'invisible': [('has_x_inventory_instruction_ids', '=', 'no')]}" force_save="1">
                     <field name="x_inventory_instruction_ids" attrs="{
                         'invisible': [('has_x_inventory_instruction_ids', '=', 'no')],
                         'required': [('has_x_inventory_instruction_ids', '=', 'required')],
@@ -272,7 +275,7 @@
                     }"/>
                 </page>
                 <page string="LPガス棚卸伝票" name="lp_gas_inventory"
-                      attrs="{'invisible': [('has_lp_gas_inventory_ids', '=', 'no')]}">
+                      attrs="{'invisible': [('has_lp_gas_inventory_ids', '=', 'no')]}" force_save="1">
                     <field name="x_lpgas_inventory_ids" attrs="{
                         'invisible': [('has_lp_gas_inventory_ids', '=', 'no')],
                         'required': [('has_lp_gas_inventory_ids', '=', 'required')],
