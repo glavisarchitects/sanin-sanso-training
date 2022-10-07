@@ -158,6 +158,9 @@ class ResPartnerForm(models.Model):
     def _action_process(self):
         DEFAULT_FIELDS = ['id', 'create_uid', 'create_date', 'write_uid', 'write_date',
                           '__last_update', 'approval_id', 'approval_state', 'meeting_ids']
+
+        MANY2MANY_FIELDS = ['construction_ids','contract_ids','invoice_ids','purchase_line_ids','sale_order_ids']
+
         for form_id in self:
             vals = {}
 
@@ -165,7 +168,7 @@ class ResPartnerForm(models.Model):
                 if name not in DEFAULT_FIELDS and \
                         form_id._fields[name].type not in ['one2many'] and \
                         type(form_id._fields[name].compute) != str:
-                    if form_id._fields[name].type == 'many2many':
+                    if form_id._fields[name].type == 'many2many' and name not in MANY2MANY_FIELDS:
                         value = getattr(form_id, name, ())
                         value = [(6, 0, value.ids)] if value else False
                     else:
