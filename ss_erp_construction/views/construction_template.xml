@@ -13,15 +13,15 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name" required="1"/>
+                                <field name="name" required="1" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             </group>
                             <group>
-                                <field name="code" required="1"/>
+                                <field name="code" required="1" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             </group>
                         </group>
                         <notebook>
                             <page name="workcenter" string="工程">
-                                <field name="workcenter_line_ids" force_save="1" widget="one2many" nolabel="1">
+                                <field name="workcenter_line_ids" attrs="{'readonly': [('state', '!=', 'new')]}" force_save="1" widget="one2many" nolabel="1">
                                     <tree editable="bottom">
                                         <field name="workcenter_id"/>
                                         <field name="spend_time" widget="float_time"/>
@@ -32,7 +32,7 @@
                             </page>
                             <page name="template_lines" string="構成品">
 
-                                <field name="component_line_ids" force_save="1" widget="one2many" nolabel="1">
+                                <field name="component_line_ids" force_save="1" widget="one2many" nolabel="1" attrs="{'readonly': [('state', '!=', 'new')]}">
                                     <tree>
                                         <field name="product_uom_category_id" attrs="{'column_invisible':1}"/>
                                         <field name="product_id"/>

@@ -12,15 +12,15 @@ class StockInventoryLine(models.Model):
     organization_id = fields.Many2one(
         'ss_erp.organization', string='組織名',
         related='inventory_order_line_id.organization_id')
-    # type_id = fields.Many2one(related='inventory_order_line_id.type_id', string='棚卸種別')
     product_cost = fields.Float(string='単価')
+    currency_id = fields.Many2one(string='Company Currency', readonly=True,
+        related='company_id.currency_id')
 
     def write(self, vals):
         res = super(StockInventoryLine, self).write(vals)
-        for record in self:
-            if record.inventory_order_line_id:
-                record.inventory_order_line_id.write({
-                    'product_cost': vals.get('product_cost', False),
-                    'product_qty': vals.get('product_qty', False),
-                })
+        if self.inventory_order_line_id:
+            self.inventory_order_line_id.write({
+                'product_cost': self.product_cost,
+                'product_qty': self.product_qty,
+            })
         return res

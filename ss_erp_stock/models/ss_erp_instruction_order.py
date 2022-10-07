@@ -44,7 +44,18 @@ class InstructionOrder(models.Model):
         states={'draft': [('readonly', False)]}, )
     organization_id = fields.Many2one('ss_erp.organization', string='組織名')
     # type_id = fields.Many2one('product.template', string='棚卸種別')
-    stock_inventory_id = fields.Many2one('stock.inventory', string='棚卸伝票番号')
+    stock_inventory_id = fields.One2many('stock.inventory', 'instruction_order_id', string='棚卸伝票番号', ondelete='cascade')
+
+    stock_inventory_id_count = fields.Integer(compute='_compute_count_stock_inventory_id')
+
+    def _compute_count_stock_inventory_id(self):
+        for rec in self:
+            rec.stock_inventory_id_count = len(self.env['stock.inventory'].search([('instruction_order_id', '=', rec.id)]))
+
+    def action_view_inventory_adjustment(self):
+        action = self.env["ir.actions.actions"]._for_xml_id("stock.action_inventory_form")
+        action['domain'] = [('instruction_order_id', '=', self.id)]
+        return action
 
     @api.constrains("organization_id")
     def _check_default_warehouse(self):
@@ -84,13 +95,6 @@ class InstructionOrder(models.Model):
                     _("組織名を選択してください。")
                 )
 
-    # @api.constrains('type_id')
-    # def _check_type_id(self):
-    #     for record in self:
-    #         if not record.type_id:
-    #             raise ValidationError(
-    #                 _("棚卸種別を選択してください。"))
-
     @api.constrains('date')
     def _check_date(self):
         for record in self:
@@ -100,13 +104,15 @@ class InstructionOrder(models.Model):
 
     def display_action(self):
         self.ensure_one()
-        self._action_start()
+        if not self.stock_inventory_id:
+            self._action_start()
         self._check_company()
         return self.display_view()
 
     def search_action(self):
         self.ensure_one()
-        self._action_start()
+        if not self.stock_inventory_id:
+            self._action_start()
         self._check_company()
         return self.search_view()
 
@@ -127,7 +133,8 @@ class InstructionOrder(models.Model):
             ('order_id', '=', self.id),
         ]
         view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree').id
-        if self.stock_inventory_id and self.stock_inventory_id.state != 'draft':
+        stock_inventory_id_list = list(set(self.stock_inventory_id.mapped('state')))
+        if self.stock_inventory_id and 'draft' not in stock_inventory_id_list:
             view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree_non_edit').id
         action['view_id'] = view_id
         action['context'] = context
@@ -152,7 +159,8 @@ class InstructionOrder(models.Model):
             ('organization_id', '=', self.organization_id.id)
         ]
         view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree').id
-        if self.stock_inventory_id and self.stock_inventory_id.state != 'draft':
+        stock_inventory_id_list = list(set(self.stock_inventory_id.mapped('state')))
+        if self.stock_inventory_id and 'draft' not in stock_inventory_id_list:
             view_id = self.env.ref('ss_erp_stock.ss_erp_instruction_order_line_tree_non_edit').id
         action['view_id'] = view_id
         action['context'] = context
@@ -174,6 +182,16 @@ class InstructionOrder(models.Model):
         instruction_orders.update({
             'state': 'draft',
         })
+
+    def action_check(self):
+        lines = self.line_ids.filtered(lambda x:x.difference_qty!=0)
+        for line in lines:
+            line._generate_moves()
+            # line._generate_moves_account_move()
+
+    def post_inventory(self):
+        self.env['stock.move'].search([('instruction_order_id','=',self.id)]).filtered(lambda move: move.state != 'done')._action_done()
+        return True
 
     def _action_start(self):
         for order in self:
@@ -263,17 +281,11 @@ class InstructionOrder(models.Model):
         quants_groups = self._get_quantities()
         vals = []
         for (product_id, location_id, lot_id, package_id, owner_id), quantity in quants_groups.items():
-            line_values = {
-                'order_id': self.id,
-                'product_qty': 0 if self.prefill_counted_quantity == "zero" else quantity,
-                'theoretical_qty': quantity,
-                'prod_lot_id': lot_id,
-                'partner_id': owner_id,
-                'product_id': product_id,
-                'location_id': location_id,
-                'package_id': package_id
-            }
-            line_values['product_uom_id'] = self.env['product.product'].browse(product_id).uom_id.id
+            line_values = {'order_id': self.id,
+                           'product_qty': 0 if self.prefill_counted_quantity == "zero" else quantity,
+                           'theoretical_qty': quantity, 'prod_lot_id': lot_id, 'partner_id': owner_id,
+                           'product_id': product_id, 'location_id': location_id, 'package_id': package_id,
+                           'product_uom_id': self.env['product.product'].browse(product_id).uom_id.id}
             vals.append(line_values)
         if self.exhausted:
             vals += self._get_exhausted_inventory_lines_vals({(l['product_id'], l['location_id']) for l in vals})
@@ -282,57 +294,64 @@ class InstructionOrder(models.Model):
     def action_create_inventory(self, ids):
         lines = self.env['ss_erp.instruction.order.line'].browse(ids)
         if not self.stock_inventory_id:
-            inventory_data = {
-                'name': self.env['ir.sequence'].next_by_code('stock.inventory.name'),
-                'company_id': self.company_id.id,
-                'organization_id': self.organization_id.id,
-                # 'type_id': self.type_id.id,
-                'accounting_date': self.accounting_date,
-                'prefill_counted_quantity': self.prefill_counted_quantity,
-                'instruction_order_id': self.id
-            }
-            line_ids = []
-            lines = self.env['ss_erp.instruction.order.line'].search([('order_id', '=', self.id)])
-            for line in lines:
-                line_data = {
-                    'product_id': line.product_id.id,
-                    'product_uom_id': line.product_uom_id.id,
-                    'location_id': line.location_id.id,
-                    'prod_lot_id': line.prod_lot_id.id,
-                    'inventory_order_line_id': line.id,
-                    'product_qty': line.product_qty,
+            locations = lines.mapped('location_id')
+            for location in locations:
+                location_data = lines.filtered(lambda x: x.location_id.id == location.id)
+                inventory_data = {
+                    'name': self.env['ir.sequence'].next_by_code('stock.inventory.name'),
+                    'company_id': self.company_id.id,
+                    'location_ids': [(4, location.id)],
+                    'organization_id': self.organization_id.id,
+                    'accounting_date': self.accounting_date,
+                    'prefill_counted_quantity': self.prefill_counted_quantity,
+                    'instruction_order_id': self.id
                 }
-                line_ids.append((0, 0, line_data))
-            inventory_data['line_ids'] = line_ids
-            stock_inventory_id = self.env['stock.inventory'].create(inventory_data)
-            self.stock_inventory_id = stock_inventory_id
-        elif self.stock_inventory_id and self.stock_inventory_id.state == 'draft':
-            for line in lines:
-                inventory_line_id = self.env['stock.inventory.line'].search([('inventory_order_line_id', '=', line.id)],
-                                                                            limit=1)
-                if inventory_line_id:
-                    inventory_line_id.write({
+                line_ids = []
+                for line in location_data:
+                    line_data = {
                         'product_id': line.product_id.id,
                         'product_uom_id': line.product_uom_id.id,
                         'location_id': line.location_id.id,
                         'prod_lot_id': line.prod_lot_id.id,
                         'inventory_order_line_id': line.id,
                         'product_qty': line.product_qty,
-                    })
-                else:
-                    self.env['stock.inventory.line'].create({
-                        'inventory_id': self.stock_inventory_id.id,
+                    }
+                    line_ids.append((0, 0, line_data))
+                inventory_data['line_ids'] = line_ids
+                self.env['stock.inventory'].create(inventory_data)
+        else:
+            exist_inventory_order_line_ids =list(set(self.env['stock.inventory.line'].search([('inventory_order_line_id', 'in', lines.ids)]).mapped('inventory_order_line_id')))
+            new_lines = lines.filtered(lambda x:x.id not in exist_inventory_order_line_ids)
+            locations = new_lines.mapped('location_id')
+            for location in locations:
+                location_data = new_lines.filtered(lambda x: x.location_id.id == location.id)
+                inventory_data = {
+                    'name': self.env['ir.sequence'].next_by_code('stock.inventory.name'),
+                    'company_id': self.company_id.id,
+                    'location_ids': [(4, location.id)],
+                    'organization_id': self.organization_id.id,
+                    'accounting_date': self.accounting_date,
+                    'prefill_counted_quantity': self.prefill_counted_quantity,
+                    'instruction_order_id': self.id
+                }
+                line_ids = []
+                for line in location_data:
+                    line_data = {
                         'product_id': line.product_id.id,
                         'product_uom_id': line.product_uom_id.id,
                         'location_id': line.location_id.id,
                         'prod_lot_id': line.prod_lot_id.id,
                         'inventory_order_line_id': line.id,
                         'product_qty': line.product_qty,
-                    })
+                    }
+                    line_ids.append((0, 0, line_data))
+                inventory_data['line_ids'] = line_ids
+                self.env['stock.inventory'].create(inventory_data)
 
-    @api.model
-    def action_inspection(self, ids):
-        instructions = self.browse(ids)
-        instructions.write({
-            'state': 'done'
-        })
+
+    def action_inspection(self):
+        self.action_check()
+        self.post_inventory()
+        self.write({'state': 'done'})
+        self.stock_inventory_id.write({'state': 'validated'})
+        # self.post_inventory()

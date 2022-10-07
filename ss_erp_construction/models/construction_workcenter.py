@@ -39,4 +39,10 @@ class ConstructionWorkcenterComponent(models.Model):
     workcenter_id = fields.Many2one(
         comodel_name='construction.workcenter',
         string='作業区',
+        ondelete='cascade',
         required=False)
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.product_uom_id = self.product_id.uom_id.id

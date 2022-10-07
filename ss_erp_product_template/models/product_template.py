@@ -10,6 +10,13 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    x_name_abbreviation = fields.Char(
+        string='プロダクト略称',
+        required=False)
+    x_name_specification = fields.Char(
+        string='仕様・規格・型番',
+        required=False)
+
     x_fixed_cost = fields.Float("仕入定価", default=0, tracking=True)
     x_supply_fixed_cost = fields.Float("仕入定価", default=0, tracking=True)
     x_product_unit_measure_ids = fields.One2many('ss_erp.product.units.measure',"product_template_id",string='代替単位', tracking=True)

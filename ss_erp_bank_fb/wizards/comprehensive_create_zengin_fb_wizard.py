@@ -20,13 +20,14 @@ class AccountPaymentWizard(models.TransientModel):
     def _onchange_from_to__date(self):
         if self.from_date and self.to_date:
             if self.from_date > self.to_date:
-                raise UserError('有効開始日は有効終了日より大きくすることはできません。')
+                raise UserError('有効開始日は、有効終了日より先の日付は選択できません。"')
 
     def zengin_general_transfer_fb(self):
         # account_journal = self.env['account.journal']
         partner_match_payment_term = self.env['res.partner'].search(
             [('property_supplier_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
         domain = [('payment_type', '=', 'outbound'), ('x_is_fb_created', '=', False),
+                  ('x_is_not_create_fb','=',False),
                   ('date', '<=', self.to_date), ('date', '>=', self.from_date),
                   ('partner_id', 'in', partner_match_payment_term.ids),
                   ('x_payment_type', '=', 'bank')]
@@ -164,7 +165,7 @@ class AccountPaymentWizard(models.TransientModel):
         # b = bytes(file_data, 'shift-jis')
         b = file_data.encode('shift-jis')
         vals = {
-            'name': 'sample' '.txt',
+            'name': 'furikomi' '.txt',
             'datas': base64.b64encode(b).decode('shift-jis'),
             'type': 'binary',
             'res_model': 'ir.ui.view',

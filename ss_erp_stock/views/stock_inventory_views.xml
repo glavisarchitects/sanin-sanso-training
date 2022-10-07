@@ -8,6 +8,15 @@
                 <xpath expr="//field[@name='product_ids']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//button[@name='action_print']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_validate'][1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_validate'][2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//button[@name='action_cancel_draft'][2]" position="replace">
 <!--                    <button name="action_cancel" states="confirm,approval" string="棚卸取消" type="object"-->
 <!--                            confirm="If you cancel this inventory adjustment, all its inventory adjustment lines will be lost.-->

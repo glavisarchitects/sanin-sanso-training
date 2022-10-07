@@ -58,7 +58,7 @@ class AccountReceivableBalanceConfirm(models.TransientModel):
 
     return_date = fields.Date(string='返送日')
     close_date = fields.Date(string='締日')
-    partner_id = fields.Many2one('res.partner', string='得意先顧客')
+    partner_id = fields.Many2one('res.partner', string='得意先顧客', domain="[('x_is_customer', '=', True)]")
 
     # form/Sample/ga_test/
     def svf_template_export(self):
@@ -122,6 +122,7 @@ class AccountReceivableBalanceConfirm(models.TransientModel):
                 concat(rp.zip,rp.street,rp.street2) as customer_barcode,
                 concat('{close_date}','　現在') as closing_date1,
                 ba.total,
+                concat('【返送期限：','{return_date}','】') as return_date,
                 concat('担当支店：',seo.name) as branch,
                 concat('TEL:',seo.organization_phone) as branch_phone_number,
                 concat('{close_date}','　現在') as closing_date2,
@@ -141,12 +142,6 @@ class AccountReceivableBalanceConfirm(models.TransientModel):
         new_data = [
             '"zip","address","customer_name","customer_barcode","closing_date1","total",' + \
             '"return_date","branch","branch_phone_number","closing_date2","customer_code"']
-
-        column = [
-            "zip","address","customer_name","customer_barcode","closing_date1","total",
-            "return_date","branch","branch_phone_number","closing_date2","customer_code"]
-
-        branch = self._get_branch_of_login_user()
 
         recs = self._get_accounts_receivable()
 

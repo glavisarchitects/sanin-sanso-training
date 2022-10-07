@@ -36,7 +36,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 SELECT
                     tb1.partner_id,
                     tb1.x_organization_id,
-                    SUM ( tb1.amount ) AS previous_month_amount
+                    ABS(SUM ( tb1.amount )) AS previous_month_amount
                 FROM
                 (
                         SELECT
@@ -74,7 +74,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 SELECT
                         tb2.partner_id,
                         tb2.x_organization_id,
-                        sum(tb2.amount) AS receipts
+                        ABS(sum(tb2.amount)) AS receipts
                 FROM 
                         (
                         SELECT
@@ -99,7 +99,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 SELECT
                     tb3.partner_id,
                     tb3.x_organization_id,
-                    SUM ( tb3.amount_residual ) AS previous_month_balance
+                    ABS(SUM ( tb3.amount_residual )) AS previous_month_balance
                 FROM
                 (
                         SELECT
@@ -149,7 +149,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 SELECT
                     seo.organization_code AS branch_code
                     ,seo.name AS branch_name
-                    ,concat('2022年09月01日','~','2022年09月30日') AS target_date
+                    ,concat('{str_due_date_start}','~','{str_due_date_end}') AS target_date
                     ,to_char(now() AT TIME ZONE 'JST', 'YYYY年MM月DD日 HH24:MI:SS') as output_date
                     ,rp.ref AS customer_code
                     ,rp.name AS customer_name
@@ -164,7 +164,9 @@ class AccountInvoiceListHistory(models.TransientModel):
                 LEFT JOIN this_month_money_collect tmmc ON tme.partner_id = tmmc.partner_id
                 LEFT JOIN previous_month_balance pmb ON tme.partner_id = pmb.partner_id
                 LEFT JOIN ss_erp_organization seo ON tme.x_organization_id = seo.id
-                LEFT JOIN res_partner rp ON tme.partner_id = rp.id'''
+                LEFT JOIN res_partner rp ON tme.partner_id = rp.id
+                WHERE rp.x_is_customer = 't'
+                '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 

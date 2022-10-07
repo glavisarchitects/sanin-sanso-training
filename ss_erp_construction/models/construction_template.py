@@ -28,18 +28,20 @@ class ConstructionTemplate(models.Model):
         for rec in self:
             rec.display_name = '【%s】 %s' % (rec.code, rec.name)
 
-    component_line_ids = fields.Many2many(
+    component_line_ids = fields.One2many(
         comodel_name='construction.template.component',
         inverse_name='template_id',
         string='工事構成品',
         compute='_compute_component_line_ids',
         required=False,
+        ondelete='cascade',
         store=True
     )
 
     @api.depends('workcenter_line_ids.workcenter_id.component_ids')
     def _compute_component_line_ids(self):
-        component_arr = [(5, 0, 0)]
+        self.component_line_ids = False
+        component_arr = [(6, 0, 0)]
         for line in self.workcenter_line_ids:
             for component in line.workcenter_id.component_ids:
                 data = {
@@ -70,13 +72,14 @@ class ConstructionTemplateComponent(models.Model):
     template_id = fields.Many2one(
         comodel_name='construction.template',
         string='工事テンプレート',
+        ondelete='cascade',
         required=False)
     product_id = fields.Many2one(
         comodel_name='product.product',
         string='プロダクト',
         required=False)
     product_uom_qty = fields.Float(string='数量')
-    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string="プロダクトカテゴリ")
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string="単位カテゴリ")
     product_uom_id = fields.Many2one(
         comodel_name='uom.uom',
         string='単位',

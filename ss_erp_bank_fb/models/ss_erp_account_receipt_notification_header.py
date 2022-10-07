@@ -92,7 +92,7 @@ class AccountReceiptNotificationLine(models.Model):
         ('success', '成功'),
         ('error', 'エラー')
     ], string='ステータス', default='wait', index=True)
-    processing_date = fields.Datetime('処理日時', default=lambda self: fields.Datetime.now(), index=True)
+    processing_date = fields.Datetime('処理日時', index=True)
 
     reference_number = fields.Char(string='照会番号')
     account_date = fields.Char(string='勘定日')
@@ -112,12 +112,14 @@ class AccountReceiptNotificationLine(models.Model):
                                                domain="[('state', '=', 'posted'), ('move_type', '=', 'out_invoice'), "
                                                       "('payment_state', 'in', ('not_paid','partial')),"
                                                       " ('x_receipt_type', '=', 'bank'),"
-                                                      " ('x_is_fb_created', '=', True),"
+                                                      " ('x_is_fb_created', '=', False),"
                                                       " ('x_is_not_create_fb', '=', False),"
                                                       " ('x_organization_id', '=', branch_id)]",
                                                string='支払参照')
 
     def processing_execution(self):
+        self.processing_date = fields.Datetime.now()
+
         a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
             'A005_account_transfer_result_journal_id')
         if not a005_account_transfer_result_journal_id:
@@ -137,7 +139,7 @@ class AccountReceiptNotificationLine(models.Model):
             journal_id = journal_account_1121
 
         if len(list(set(self.result_account_move_ids.mapped('partner_id')))) != 1:
-            raise UserError('異なる顧客を選択しています。もう一度ご確認してください。')
+            raise UserError('異なる顧客が存在します。')
 
         result_account_move_ids = self.result_account_move_ids.sorted(key=lambda k: k.name)
         transfer_amount = int(self.transfer_amount)
