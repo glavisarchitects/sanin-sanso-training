@@ -36,7 +36,7 @@
                         <group>
                             <group modifiers="{}">
                                 <div class="oe_title" modifiers="{}">
-                                    <label for="x_name_abbreviation" class="oe_edit_only" string="プロダクト略称"
+                                    <label for="x_name_abbreviation" string="プロダクト略称"
                                            modifiers="{}"/>
                                     <h2 modifiers="{}">
                                         <field name="x_name_abbreviation" placeholder="プロダクト略称" nolabel="1"
