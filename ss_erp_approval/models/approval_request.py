@@ -37,14 +37,18 @@ class ApprovalRequest(models.Model):
     x_product_template_form_id = fields.Many2one(
         'ss_erp.product.template.form', string='プロダクト申請フォーム')
     x_inventory_order_ids = fields.Many2many(
-        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票')
+        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票',
+        domain=[('state', '=', 'confirm')])
     x_sale_order_ids = fields.Many2many(
-        'sale.order', 'ss_erp_sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票')
+        'sale.order', 'ss_erp_sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票',
+        domain=[('state', '=', 'draft')])
     x_lpgas_inventory_ids = fields.Many2many('ss_erp.lpgas.order', string='LPガス棚卸伝票')
     x_account_move_ids = fields.Many2many(
-        'account.move', 'ss_erp_account_move_request_rel', 'move_id', 'request_id', string='仕入請求伝票')
+        'account.move', 'ss_erp_account_move_request_rel', 'move_id', 'request_id', string='仕入請求伝票',
+        domain=[('state', '=', 'draft')])
     x_purchase_order_ids = fields.Many2many(
-        'purchase.order', 'ss_erp_purchase_request_rel', 'purchase_id', 'request_id', string='見積依頼伝票')
+        'purchase.order', 'ss_erp_purchase_request_rel', 'purchase_id', 'request_id', string='見積依頼伝票',
+        domain=[('state', '=', 'draft')])
     x_payment_date = fields.Date('請求書締日')
     x_purchase_material = fields.Text('仕入商材')
     x_cash_amount = fields.Float('現金仕入額')
@@ -63,6 +67,7 @@ class ApprovalRequest(models.Model):
         'ss_erp.multi.approvers', 'x_request_id', string='多段階承認', readonly=True, copy=False)
     x_inventory_instruction_ids = fields.Many2many(
         'ss_erp.instruction.order', 'ss_erp_instruction_request_rel', 'instruction_id', 'request_id',
+        domain=[('state', '=', 'confirm')],
         string='指示伝票')
 
     x_approval_date = fields.Date('申請日', default=datetime.now())
@@ -277,6 +282,10 @@ class ApprovalRequest(models.Model):
             self.x_product_template_form_id.write(
                 {'approval_id': self.id, 'approval_state': self.request_status})
 
+        if self.x_lpgas_inventory_ids:
+            self.x_lpgas_inventory_ids.write(
+                {'state': 'approval'})
+
     # Override
     def action_confirm(self):
         self._validate_before_confirm()
@@ -285,7 +294,7 @@ class ApprovalRequest(models.Model):
             self._generate_approver_ids()
             self.multi_approvers_ids.write({'x_user_status': 'pending'})
 
-        # self._create_activity_for_approver()
+            # self._create_activity_for_approver()
             self._change_request_state()
 
             # Send email to all member
@@ -536,11 +545,19 @@ class ApprovalRequest(models.Model):
         self = self.with_context(lang=self.env.user.lang)
         body_template = body_template.with_context(lang=self.env.user.lang)
         model_description = self.env['ir.model']._get('approval.request').display_name
+
+        self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'approved')
+        if len(self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'approved')) == 1:
+            message = '一次承認済み'
+        else:
+            message = '二次承認済み'
+
         subject = _('【新販売基幹システムOdoo】%(name)s 承認ステータス進捗', name=self.name)
         body = body_template._render(
             dict(
                 request=self,
                 model_description=model_description,
+                message=message,
                 access_link=self.env['mail.thread']._notify_get_action_link(
                     'view', model=self._name, res_id=self.id),
             ),
