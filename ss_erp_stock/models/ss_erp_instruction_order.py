@@ -257,14 +257,18 @@ class InstructionOrder(models.Model):
             product_ids = [p['id'] for p in product_ids]
 
         if self.location_ids:
-            location_ids = self.location_ids.ids
+            domain_loc = [('id', 'child_of', self.location_ids.ids)]
         else:
-            location_ids = self.env['stock.warehouse'].search(
-                [('company_id', '=', self.company_id.id)]).lot_stock_id.ids
+            domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
+
+        if self.organization_id.warehouse_id and self.organization_id.warehouse_id.view_location_id:
+            domain_loc.append(('id', 'child_of', self.organization_id.warehouse_id.view_location_id.id))
+
+        locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
         vals = []
         for product_id in product_ids:
-            for location_id in location_ids:
+            for location_id in locations_ids:
                 if ((product_id, location_id) not in non_exhausted_set):
                     vals.append({
                         # not clear the logic of this field? just wrong code???
