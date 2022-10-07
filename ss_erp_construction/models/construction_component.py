@@ -45,7 +45,7 @@ class ConstructionComponent(models.Model):
                 rec.sale_price = rec.standard_price / (1 - rec.margin_rate)
                 rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
             else:
-                rec.margin_rate = rec.standard_price / rec.sale_price - 1 if rec.sale_price != 0 else 0
+                rec.margin_rate = abs(rec.standard_price / rec.sale_price - 1) if rec.sale_price != 0 else 0
                 rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
             rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
             rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
