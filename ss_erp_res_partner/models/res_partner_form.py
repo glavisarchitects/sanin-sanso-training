@@ -165,19 +165,21 @@ class ResPartnerForm(models.Model):
             vals = {}
 
             for name, field in form_id._fields.items():
-                if name not in DEFAULT_FIELDS and \
-                        form_id._fields[name].type not in ['one2many'] and \
-                        type(form_id._fields[name].compute) != str:
-                    if form_id._fields[name].type == 'many2many' and name not in MANY2MANY_FIELDS:
-                        value = getattr(form_id, name, ())
-                        value = [(6, 0, value.ids)] if value else False
-                    else:
-                        value = getattr(form_id, name)
-                        if form_id._fields[name].type == 'many2one':
-                            value = value.id if value else False
+                if name in MANY2MANY_FIELDS:
+                    continue
+                else:
+                    if name not in DEFAULT_FIELDS and \
+                            form_id._fields[name].type not in ['one2many'] and \
+                            type(form_id._fields[name].compute) != str:
+                        if form_id._fields[name].type == 'many2many':
+                            value = getattr(form_id, name, ())
+                            value = [(6, 0, value.ids)] if value else False
+                        else:
+                            value = getattr(form_id, name)
+                            if form_id._fields[name].type == 'many2one':
+                                value = value.id if value else False
 
-                    vals.update({name: value})
-
+                        vals.update({name: value})
             res_partner_id = vals.pop('res_partner_id')
             if not res_partner_id:
                 # Create partner with contact form
