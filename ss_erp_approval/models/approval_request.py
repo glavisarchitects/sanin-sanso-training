@@ -289,13 +289,10 @@ class ApprovalRequest(models.Model):
     # Override
     def action_confirm(self):
         self._validate_before_confirm()
-
+        self._change_request_state()
         if self.x_is_multiple_approval:
             self._generate_approver_ids()
             self.multi_approvers_ids.write({'x_user_status': 'pending'})
-
-            # self._create_activity_for_approver()
-            self._change_request_state()
 
             # Send email to all member
             notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
