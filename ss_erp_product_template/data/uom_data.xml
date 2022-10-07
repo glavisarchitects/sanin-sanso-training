@@ -5,6 +5,9 @@
         <record id="uom_category_data_electricity" model="uom.category">
             <field name="name">電気量</field>
         </record>
+        <record id="uom_category_data_base" model="uom.category">
+            <field name="name">台</field>
+        </record>
 
         <!--                uom uom-->
         <record id="uom_uom_data_Wh" model="uom.uom">
