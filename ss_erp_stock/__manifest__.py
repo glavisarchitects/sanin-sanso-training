@@ -10,6 +10,7 @@
         "security/ir.model.access.csv",
 
         # VIEWS
+        'views/webclient_templates.xml',
         'views/organization_views.xml',
         'views/ss_erp_instruction_order_line_views.xml',
         'views/ss_erp_instruction_order_views.xml',
@@ -26,6 +27,7 @@
         # DATA
         'data/ir_action_server_data.xml',
         'data/ir_sequence_data.xml',
+        'data/parameter_config_data.xml',
         # 'data/default_param_setting_data.xml',
     ],
     "application": False,

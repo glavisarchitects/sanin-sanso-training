@@ -13,7 +13,8 @@ class StockPicking(models.Model):
         "在庫仕訳訂正", index=True)
     x_dest_address_info = fields.Html("直送先住所")
     x_organization_id = fields.Many2one(
-        'ss_erp.organization', string="移動元組織", domain=lambda self: [('id', 'in', self._login_user_organization_id())],
+        'ss_erp.organization', string="移動元組織",
+        domain=lambda self: [('id', 'in', self._login_user_organization_id())],
         default=lambda self: self._get_default_x_organization_id())
     x_responsible_dept_id = fields.Many2one(
         'ss_erp.responsible.department', string="移動元管轄部門",
@@ -83,7 +84,6 @@ class StockPicking(models.Model):
                 'picking_type_id': False,
                 'location_id': False,
                 'location_dest_id': False,
-                'x_responsible_dept_id': False
             })
             return {'domain': {'picking_type_id': ['|', ('warehouse_id', '=', False),
                                                    ('warehouse_id', '=', self.x_organization_id.warehouse_id.id)],
@@ -93,19 +93,33 @@ class StockPicking(models.Model):
     def _onchange_picking_type_id(self):
         if self.picking_type_code == 'incoming':
             return {'domain': {'location_dest_id': [('usage', '=', 'internal'), (
-            'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
+                'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'outgoing':
             return {'domain': {'location_id': [('usage', '=', 'internal'), (
-            'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
+                'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'internal':
             return {'domain': {'location_dest_id': [('usage', '=', 'internal'), (
-            'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)],
+                'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)],
                                'location_id': [('usage', '=', 'internal'), (
-                               'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
+                                   'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'mrp_operation':
             return {'domain': {'location_id': [('usage', '=', 'internal'), (
-            'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}
+                'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}
                     }
+
+    def write(self, vals):
+        res = super().write(vals)
+        if self.move_lines:
+            self.move_lines.update({'x_organization_id': self.x_organization_id.id})
+        if self.move_ids_without_package:
+            self.move_ids_without_package.update({'x_organization_id': self.x_organization_id.id})
+        if self.move_line_ids:
+            self.move_line_ids.update({'x_organization_id': self.x_organization_id.id})
+        if self.move_line_ids_without_package:
+            self.move_line_ids_without_package.update({'x_organization_id': self.x_organization_id.id})
+        if self.move_line_nosuggest_ids:
+            self.move_line_nosuggest_ids.update({'x_organization_id': self.x_organization_id.id})
+        return res
 
 
 class StockMove(models.Model):

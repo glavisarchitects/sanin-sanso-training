@@ -25,7 +25,7 @@
 
 
         <record id="direct_outsource_fee_product_data" model="product.template">
-            <field name="name">外注費</field>
+            <field name="name">直接外注費</field>
             <field name="categ_id" ref="product.product_category_all"/>
             <field name="type">service</field>
             <field name="uom_id" ref="uom.product_uom_unit"/>

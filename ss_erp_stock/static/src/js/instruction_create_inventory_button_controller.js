@@ -1,4 +1,4 @@
-odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
+odoo.define('ss_erp_stock.InstructionCreateInventoryController', function (require) {
     "use strict";
 
     var core = require('web.core');
@@ -71,7 +71,7 @@ odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
                         // ... but in any other cases, we go back on the inventory form.
                         self.do_notify(
                             false,
-                            _t("The inventory has been created"));
+                            _t("棚卸伝票は作成されました。"));
                         self.trigger_up('history_back');
                     };
 

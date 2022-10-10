@@ -20,6 +20,26 @@ class AccountPaymentRegister(models.TransientModel):
     x_responsible_dept_id = fields.Many2one(
         'ss_erp.responsible.department', string="管轄部門", index=True)
 
+    x_payment_type = fields.Selection(
+        string='支払手段',
+        selection=[('bank', '振込'),
+                   ('cash', '現金'),
+                   ('bills', '手形'), ],
+        required=False, )
+
+    x_receipt_type = fields.Selection(
+        string='入金手段',
+        selection=[
+            ('bank', '振込'),
+            ('transfer', '振替'),
+            ('bills', '手形'),
+            ('cash', '現金'),
+            ('paycheck', '小切手'),
+            ('branch_receipt', '他店入金'),
+            ('offset', '相殺'), ],
+        required=False, )
+
+
     # -------------------------------------------------------------------------
     # BUSINESS METHODS
     # -------------------------------------------------------------------------
@@ -38,6 +58,8 @@ class AccountPaymentRegister(models.TransientModel):
         payment_vals['x_sub_account_id'] = self.x_sub_account_id.id
         payment_vals['x_organization_id'] = self.x_organization_id.id
         payment_vals['x_responsible_dept_id'] = self.x_responsible_dept_id.id
+        payment_vals['x_receipt_type'] = self.x_receipt_type
+        payment_vals['x_payment_type'] = self.x_payment_type
 
         return payment_vals
 

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="ss_erp_svf_intergration.account_receivable_customer_ledger_form" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="ss_erp_svf_intergration.account_list_receivable_form" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="ss_erp_svf_intergration.account_invoice_list_history_form" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+    </data>
+</odoo>

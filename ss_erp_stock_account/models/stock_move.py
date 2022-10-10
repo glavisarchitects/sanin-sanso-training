@@ -26,3 +26,9 @@ class StockMove(models.Model):
                 'move_type': 'entry',
             })
             new_account_move._post()
+
+    def _get_price_unit(self):
+        if self.instruction_order_line_id:
+            return self.instruction_order_line_id.product_cost
+        else:
+            return super()._get_price_unit()

@@ -24,6 +24,7 @@ class ConstructionWorkorder(models.Model):
     workcenter_id = fields.Many2one(
         comodel_name='construction.workcenter',
         string='作業区',
+        ondelete='cascade',
         required=False)
 
     picking_type_id = fields.Many2one('stock.picking.type', related='construction_id.picking_type_id',
@@ -39,6 +40,7 @@ class ConstructionWorkorder(models.Model):
     result_labor_costs = fields.Monetary(string='[実績] 労務費')
     planned_expenses = fields.Monetary(string='[予定] 経費')
     result_expenses = fields.Monetary(string='[実績] 経費')
+    costs_hour = fields.Float(string='時間毎の費用')
     construction_work_notes = fields.Text(string='備考')
     date_planned_start = fields.Datetime(string='計画開始日')
     date_planned_finished = fields.Datetime(string='計画終了日')
@@ -61,6 +63,8 @@ class ConstructionWorkorder(models.Model):
         inverse_name='workorder_id',
         string='構成品',
         required=False)
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
     def _prepare_stock_picking(self):
         picking = {
@@ -87,8 +91,10 @@ class ConstructionWorkorder(models.Model):
                     'picking_type_id': self.picking_type_id.id,
                 }))
 
-        picking['move_ids_without_package'] = move_live
-        self.env['stock.picking'].create(picking).action_assign()
+        if move_live:
+            picking['move_ids_without_package'] = move_live
+
+            self.env['stock.picking'].create(picking).action_assign()
 
 
 class ConstructionWorkorderComponent(models.Model):

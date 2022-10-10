@@ -17,6 +17,8 @@ class ConstructionWorkcenter(models.Model):
     active = fields.Boolean(default=True)
     component_ids = fields.One2many('construction.workcenter.component', 'workcenter_id')
     template_id = fields.Many2one('construction.template')
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
 
 class ConstructionWorkcenterComponent(models.Model):
@@ -37,4 +39,10 @@ class ConstructionWorkcenterComponent(models.Model):
     workcenter_id = fields.Many2one(
         comodel_name='construction.workcenter',
         string='作業区',
+        ondelete='cascade',
         required=False)
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.product_uom_id = self.product_id.uom_id.id

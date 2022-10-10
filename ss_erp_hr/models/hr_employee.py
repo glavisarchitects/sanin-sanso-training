@@ -38,14 +38,14 @@ class HrEmployee(models.Model):
             if not r.organization_second and r.organization_third:
                 raise ValidationError(_("第二組織が選択されていません"))
 
-    # Check Jurisdiction
-    @api.constrains("department_jurisdiction_first", "department_jurisdiction_second", "department_jurisdiction_third")
-    def _check_same_jurisdiction(self):
-        for r in self:
-            if r.department_jurisdiction_first.filtered(lambda m: m.id in r.department_jurisdiction_second.ids) or \
-                    r.department_jurisdiction_second.filtered(lambda m: m.id in r.department_jurisdiction_third.ids) or \
-                    r.department_jurisdiction_third.filtered(lambda m: m.id in r.department_jurisdiction_first.ids):
-                raise ValidationError(_('同一の管轄部門が選択されています'))
+    # # Check Jurisdiction
+    # @api.constrains("department_jurisdiction_first", "department_jurisdiction_second", "department_jurisdiction_third")
+    # def _check_same_jurisdiction(self):
+    #     for r in self:
+    #         if r.department_jurisdiction_first.filtered(lambda m: m.id in r.department_jurisdiction_second.ids) or \
+    #                 r.department_jurisdiction_second.filtered(lambda m: m.id in r.department_jurisdiction_third.ids) or \
+    #                 r.department_jurisdiction_third.filtered(lambda m: m.id in r.department_jurisdiction_first.ids):
+    #             raise ValidationError(_('同一の管轄部門が選択されています'))
 
 
     @api.model

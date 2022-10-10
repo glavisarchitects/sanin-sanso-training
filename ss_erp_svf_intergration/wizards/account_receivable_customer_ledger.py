@@ -3,8 +3,12 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import requests
 import json
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from odoo.fields import Date, Datetime
+
+
+def _convert_list_to_tupple(values=None):
+    return ','.join([str(value) for value in values])
 
 
 class AccountReceivableCustomerLedger(models.TransientModel):
@@ -12,38 +16,16 @@ class AccountReceivableCustomerLedger(models.TransientModel):
 
     due_date_start = fields.Date(string='期日（開始）')
     due_date_end = fields.Date(string='期日（終了）')
+    organization_ids = fields.Many2many('ss_erp.organization', string="組織")
+    partner_ids = fields.Many2many('res.partner', string="得意先", domain="[('x_is_customer', '=', True)]")
+    product_ids = fields.Many2many('product.product', string="プロダクト")
+    sort_order = fields.Selection([('date', '日付順'), ('product', 'プロダクト順'), ('address', '届け先順')],
+                                  string='ソート条件',
+                                  )
 
     # form/Sample/ga_test/
     def svf_template_export(self):
         data_file = self._prepare_data_file()
-        # data_file = '''"得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","11/20","000009","","**  入　金  **","","他支店入金","","","82,582","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","11/20","000009","","**  入　金  **","","振込手数料","","","110","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","","","","＜　入　金　計　＞","","","","","82,692","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","11/04","432145","06841101","フロン　R４０７CーNRC　１０KG","","","1.00 本","12,800.00","12,800","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","","","","**　フロン　R４０７CーNRC　１０KG　計　**","","","1.0 個","","12,800","","","","","松本様"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","","","","＜　[フロン]　＞","","","1.0 kg","","12,800","","←パナソニック産機システムズ株式会社　修繕・点検","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","11/30","436786","60300003301","菅沢ダム様暖房前GHP簡易点検","直送","","1.00 式","35,000.00","35,000","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","","","","**　菅沢ダム様暖房前GHP簡易点検　計　**","","","1.0 式","","35,000","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","11/30","436784","6030010365","菅沢ダム様PAC-1系統修繕費","直送","","1.00 式","105,000.00","105,000","","←パナソニック産機システムズ株式会社　修繕・点検","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","","","","**　菅沢ダム様PAC-1系統修繕費　計　**","","","1.0 式","","105,000","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","","","","＜　[器材／サービス]　＞","","","2.0","","140,000","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10100000","大和設備株式会社","","","　","**　合　計　**","","","","","152,800","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/20","000009","","**  入　金  **","","他支店入金","","","350,422","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/20","000009","","**  入　金  **","","振込手数料","","","880","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","","","","＜　入　金　計　＞","","","","","351,302","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/02","429363","F125","食品添加物液化窒素　ＬＧＣ","","","107.00 m3","190.00","20,330","","","*8%","","326017840"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/04","429646","F125","食品添加物液化窒素　ＬＧＣ","","","107.00 m3","190.00","20,330","","","*8%","","326017856"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/06","429930","F125","食品添加物液化窒素　ＬＧＣ","","","214.00 m3","190.00","40,660","","","*8%","","326017890"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/10","430608","F125","食品添加物液化窒素　ＬＧＣ","","","214.00 m3","190.00","40,660","","","*8%","","326017944"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/12","431025","F125","食品添加物液化窒素　ＬＧＣ","","","214.00 m3","190.00","40,660","","","*8%","","326017993"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/16","431548","F125","食品添加物液化窒素　ＬＧＣ","","","214.00 m3","190.00","40,660","","","*8%","","321013065"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/18","432228","F125","食品添加物液化窒素　ＬＧＣ","","","107.00 m3","190.00","20,330","","","*8%","","321013088"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/24","433597","F125","食品添加物液化窒素　ＬＧＣ","","","107.00 m3","190.00","20,330","","","*8%","","321013137"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","11/26","434520","F125","食品添加物液化窒素　ＬＧＣ","","","107.00 m3","190.00","20,330","","","*8%","","321013179"
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","","","","**　食品添加物液化窒素　ＬＧＣ　計　**","","","1,391.0 m3","","264,290","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","","","","＜　[窒素]　＞","","","1,391.0 m3","","264,290","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","","","","**　合　計　**","","","","","264,290","","","","",""
-        #             "得意先元帳（商品順）","2022年12月05日 09:30:51","2022年11月01日","2020年11月30日","03000","米子支店","10170000","フジッコ株式会社　境港工場","","","","**　総　合　計　**","","","","","205,605,853","","","","",""'''
         return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_file, type_report='R004')
 
     # 請求書一覧表出力ボタンを追加する。
@@ -58,9 +40,48 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             return False
 
     def _get_account_receivable_balance(self):
-        branch = self._get_branch_of_login_user()
+        title = "得意先元帳（商品順）"
+        if not self.sort_order:
+            title = "得意先元帳"
+        elif self.sort_order == 'date':
+            title = "得意先元帳（日付順）"
+        elif self.sort_order == 'product':
+            title = "得意先元帳（プロダクト順）"
+        else:
+            title = "得意先元帳（届け先順）"
 
-        query = ''' 
+        due_date_start = datetime.combine(self.due_date_start, datetime.min.time())
+        due_date_end = datetime.combine(self.due_date_end, datetime.max.time())
+
+        str_due_date_start = due_date_start.strftime("%Y年%m月%d日")
+        str_due_date_end = due_date_end.strftime("%Y年%m月%d日")
+
+        if self.organization_ids:
+            ap_query = f' AND ap.x_organization_id in ({_convert_list_to_tupple(self.organization_ids.ids)})'
+            do_query = f' AND tb1.x_organization_id in ({_convert_list_to_tupple(self.organization_ids.ids)})'
+        else:
+            ap_query = ''
+            do_query = ''
+
+        if self.partner_ids:
+            ap_partner_query = f' AND ap.partner_id in ({_convert_list_to_tupple(self.partner_ids.ids)})'
+            do_partner_query = f' AND tb1.partner_id in ({_convert_list_to_tupple(self.partner_ids.ids)})'
+        else:
+            ap_partner_query = ''
+            do_partner_query = ''
+
+        if self.product_ids:
+            do_product_query = f' AND sml.product_id in ({_convert_list_to_tupple(self.product_ids.ids)})'
+        else:
+            do_product_query = ''
+
+        if self.sort_order == 'date':
+            orderby_query = ' ORDER BY sml.date '
+        elif self.sort_order == 'product':
+            orderby_query = ' ORDER BY sml.product_id '
+        else:
+            orderby_query = ''
+        query = f''' 
 
             -- nyukin
             -- nyukin detail
@@ -69,18 +90,21 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 am.x_organization_id,
                 ap.partner_id,
                 rp.ref as customer_code,
-                rp.display_name as customer_name,
+                rp.name as customer_name,
                 am.date, 	
                 am.name as slip_number, 
                 '**  入　金  **' as product_name,
-                aj.name as line_division_name, 
+                ap.x_receipt_type as line_division_name, 
                 ap.amount
             from account_payment ap
             left join account_move am on ap.move_id = am.id
             left join account_journal aj on am.journal_id = aj.id
             left join res_partner rp on rp.id = ap.partner_id
-            where ap.payment_type = 'inbound' and am.date <= '%s' and am.date >= '%s' and ap.partner_id is not null
-            order by ap.partner_id, am.date)
+            where ap.payment_type = 'inbound' and am.date <= '{self.due_date_end}' and am.date >= '{self.due_date_start}'
+            and ap.partner_id is not null ''' + \
+                ap_query + \
+                ap_partner_query + \
+                f''' order by ap.partner_id, am.date)
             union all 
             -- nyukin sum
             (select 
@@ -88,7 +112,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 am.x_organization_id,
                 ap.partner_id,
                 rp.ref as customer_code,
-                rp.display_name as customer_name,
+                rp.name as customer_name,
                 NULL,
                 NULL,
                 '＜　入　金　計　＞' as product_name,
@@ -97,18 +121,21 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             from account_payment ap
             left join account_move am on ap.move_id = am.id
             left join res_partner rp on rp.id = ap.partner_id
-            where ap.payment_type = 'inbound' and am.date <= '%s' and am.date >= '%s' and ap.partner_id is not null
-            GROUP BY ap.partner_id, rp.display_name, am.x_organization_id,rp.ref
+            where ap.payment_type = 'inbound' and am.date <= '{self.due_date_end}' and am.date >= '{self.due_date_start}'
+            and ap.partner_id is not null ''' + \
+                ap_query + \
+                ap_partner_query + \
+                f'''GROUP BY ap.partner_id, rp.name, am.x_organization_id,rp.ref
             )
             ORDER BY partner_id, order_sequence), delivery as (
             select 
                 sml.date::TIMESTAMP::DATE as date,
-                sp.x_organization_id,
+                tb1.x_organization_id,
                 sp.name as slip_number,
                 sp.sale_id,
-                sp.partner_id,
+                tb1.partner_id,
                 rp.ref as customer_code,
-                rp.display_name as customer_name,
+                rp.name as customer_name,
                 sml.product_id,
                 uu.name as measure,
                 pt.default_code as product_code,
@@ -130,20 +157,49 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             left join product_template pt on pp.product_tmpl_id = pt.id
             left join uom_uom uu on sml.product_uom_id = uu.id
             left join ss_erp_product_medium_classification pm on pt.x_medium_classification_id = pm.id
-            left join res_partner rp on sp.partner_id = rp.id
             left join 
-            (select sol.product_id, sol.price_unit,sol.order_id from sale_order_line sol left join sale_order so on sol.order_id = so.id) tb1 on sp.sale_id = tb1.order_id and tb1.product_id = sml.product_id
-            where sml.state = 'done' and sp.sale_id is not null and sml.date <= '%s' and sml.date >= '%s'
-            )
-            select * from
+            (select sol.product_id, sol.price_unit,sol.order_id, so.partner_invoice_id as partner_id,so.x_organization_id from sale_order_line sol left join sale_order so on sol.order_id = so.id) tb1 on sp.sale_id = tb1.order_id and tb1.product_id = sml.product_id
+            left join res_partner rp on tb1.partner_id = rp.id
+            where sml.state = 'done' and spt.code in ('outgoing','incoming') 
+            and sp.sale_id is not null and sml.date <= '{self.due_date_end}' and sml.date >= '{self.due_date_start}' ''' + \
+                do_query + \
+                do_partner_query + \
+                do_product_query + \
+                orderby_query + \
+                f''')
+            select 
+            '{title}' as title,
+            to_char(now() AT TIME ZONE 'JST', 'YYYY年MM月DD日 HH24:MI:SS') as output_date,
+            '{str_due_date_start}' as due_date_start,
+            '{str_due_date_end}' as due_date_end,
+            seo.organization_code as branch_code,
+            seo.name as branch_name,
+            all_tb.customer_code,
+            all_tb.customer_name,
+            all_tb.date,
+            all_tb.slip_number,
+            all_tb.product_code,
+            all_tb.product_name,
+            NULL as data_name,		
+            all_tb.line_division_name,
+            all_tb.quantity,
+            all_tb.unit_price,
+            all_tb.amount_of_money,            
+            NULL as destination_name,
+            NULL as drop_shipping_name,
+            NULL as taxation,
+            NULL as order_number,
+            NULL as comment,
+            all_tb.order_sequence
+            from
             (
                 select 
                     nyukin.order_sequence,
-                    nyukin.x_organization_id,
                     nyukin.partner_id,
+                    nyukin.x_organization_id,
                     nyukin.customer_code,
                     nyukin.customer_name,
-                    nyukin.date,
+                    to_char(nyukin.date, 'MM/DD') as date,
                     nyukin.slip_number,
                     NULL as product_id,
                     NULL as medium_class,
@@ -152,7 +208,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                     nyukin.line_division_name,
                     NULL as quantity,
                     NULL as unit_price,
-                    nyukin.amount,
+                    nyukin.amount as amount_of_money,
                     NULL sub_seq
                 from nyukin
             union all
@@ -162,14 +218,14 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                     delivery.x_organization_id,
                     delivery.customer_code,
                     delivery.customer_name,
-                    delivery.date,
+                    to_char(delivery.date, 'MM/DD'),
                     delivery.slip_number,
                     delivery.product_id,
                     delivery.medium_class,
                     delivery.product_code,
                     delivery.product_name,
                     NULL,
-                    CONCAT(to_char(delivery.quantity,'999'),' ', delivery.measure),
+                    CONCAT(to_char(delivery.quantity,'9G999'),' ',delivery.measure),
                     delivery.unit_price,
                     delivery.amount_of_money,
                     1
@@ -188,7 +244,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                     NULL,
                     CONCAT  ('**　', delivery.product_name, '　計　**'),
                     NULL,
-                    CONCAT(to_char(sum(delivery.quantity),'999'),' ', delivery.measure),
+                    CONCAT(to_char(sum(delivery.quantity),'9G999'),' ', delivery.measure),
                     NULL,
                     SUM(delivery.amount_of_money),
                     2		
@@ -210,7 +266,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                     NULL,
                     CONCAT  ('＜　[', delivery.medium_class, ']　＞'),
                     NULL,
-                    to_char(sum(delivery.quantity),'999'),
+                    to_char(sum(delivery.quantity),'9G999'),
                     NULL,
                     SUM(delivery.amount_of_money),
                     NULL
@@ -239,15 +295,10 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 FROM delivery
                 GROUP BY 	delivery.partner_id,delivery.x_organization_id,
                     delivery.customer_code,delivery.medium_class,
-                    delivery.customer_name
+                    delivery.customer_name           
             ) all_tb
-            where all_tb.x_organization_id = '%s'
-            Order by all_tb.x_organization_id, all_tb.partner_id,all_tb.order_sequence, all_tb.product_id, all_tb.sub_seq ''' % (
-            self.due_date_end, self.due_date_start,
-            self.due_date_end, self.due_date_start,
-            self.due_date_end, self.due_date_start,
-            branch.id)
-
+            left join ss_erp_organization seo on all_tb.x_organization_id = seo.id
+            Order by all_tb.x_organization_id, all_tb.partner_id,all_tb.order_sequence, all_tb.product_id, all_tb.sub_seq '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 
@@ -259,55 +310,50 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             '"product_code","product_name","data_name","line_division_name",' + \
             '"quantity","unit_price","amount_of_money","destination_name","drop_shipping_name","taxation","order_number","comment"']
 
-        title = "得意先元帳（商品順）"
-        output_date = Datetime.now() + timedelta(hours=9)
-
-        # TODO TAX NUMBER
-        branch = self._get_branch_of_login_user()
-
         total_amount = 0
-        customer_code = False
-        customer_name = False
         account_receivable_balance = self._get_account_receivable_balance()
+
+        if not account_receivable_balance:
+            raise UserError(_("出力対象のデータがありませんでした。"))
+
+        x_receipt_type_dict = {
+            'bank': '振込',
+            'transfer': '振替',
+            'bills': '手形',
+            'cash': '現金',
+            'paycheck': '小切手',
+            'branch_receipt': '他店入金',
+            'offset': '相殺'
+        }
+
         if account_receivable_balance is not None:
             for row in account_receivable_balance:
-                data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
-                    title,
-                    output_date,
-                    self.due_date_start,
-                    self.due_date_end,
-                    branch.name,
-                    row['customer_code'],
-                    row['customer_name'],
-                    row['date'],
-                    row['slip_number'],
-                    row['product_code'],
-                    row['product_name'],
-                    '',
-                    row['line_division_name'],
-                    row['quantity'],
-                    0 if row['unit_price'] is None else "{:,}".format(row['unit_price']),
-                    0 if row['amount'] is None else "{:,}".format(row['amount']),
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
-                )
-                if row['order_sequence'] == 6:
-                    total_amount += int(row['amount'])
-                customer_code = row['customer_code']
-                customer_name = row['customer_name']
+                data_line = ""
+                for col in row:
+                    if row[col] is not None:
+                        if col in ['unit_price', 'amount_of_money']:
+                            data_line += '"' + "{:,}".format(int(row[col])) + '",'
+                        elif col == 'line_division_name':
+                            data_line += '"' + x_receipt_type_dict[str(row[col])] + '",'
+                        elif col != 'order_sequence':
+                            data_line += '"' + str(row[col]) + '",'
+                        else:
+                            total_amount += int(row['amount_of_money'])
+                    else:
+                        data_line += '"",'
                 new_data.append(data_line)
 
-            last_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
-                title,
-                output_date,
-                self.due_date_start,
-                self.due_date_end,
-                branch.name,
-                customer_code,
-                customer_name,
+            last_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+                account_receivable_balance[-1]['title'],
+                account_receivable_balance[-1]['output_date'],
+                account_receivable_balance[-1]['due_date_start'],
+                account_receivable_balance[-1]['due_date_end'],
+                account_receivable_balance[-1]['branch_code'],
+                account_receivable_balance[-1]['branch_name'],
+                '' if account_receivable_balance[-1]['customer_code'] is None else account_receivable_balance[-1][
+                    'customer_code'],
+                '' if account_receivable_balance[-1]['customer_name'] is None else account_receivable_balance[-1][
+                    'customer_name'],
                 '',
                 '',
                 '',

@@ -1,4 +1,4 @@
-odoo.define('ss_erp.InstructionInspectionController', function (require) {
+odoo.define('ss_erp_stock.InstructionInspectionController', function (require) {
     "use strict";
 
     var core = require('web.core');

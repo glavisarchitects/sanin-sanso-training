@@ -261,6 +261,28 @@ class ResPartner(models.Model):
         if self.x_contact_categ and self.x_contact_categ.type:
             self.type = self.x_contact_categ.type
 
+    @api.onchange('parent_id')
+    def onchange_parent_id(self):
+        kyoten = self.env.ref('ss_erp_res_partner.ss_erp_contact_category_data_2').id
+        if self.x_contact_categ and self.x_contact_categ.id != kyoten:
+            return False
+        else:
+            super().onchange_parent_id()
+
+    def _fields_sync(self, values):
+        kyoten = self.env.ref('ss_erp_res_partner.ss_erp_contact_category_data_2').id
+        if values.get('parent_id') or values.get('type') == 'contact':
+            # 1a. Commercial fields: sync if parent changed
+            if values.get('parent_id'):
+                self._commercial_sync_from_company()
+            # 1b. Address fields: sync if parent or use_parent changed *and* both are now set
+            if self.parent_id and self.type == 'contact' and self.x_contact_categ and self.x_contact_categ.id != kyoten:
+                onchange_vals = self.onchange_parent_id().get('value', {})
+                self.update_address(onchange_vals)
+
+        # 2. To DOWNSTREAM: sync children
+        self._children_sync(values)
+
     def write(self, vals):
         update_partner_form = True
         if vals.get('source'):
