@@ -20,6 +20,8 @@ class ConstructionTemplate(models.Model):
     code = fields.Char(string='コード')
 
     display_name = fields.Char(string='名称', compute='_compute_display_name', store=True)
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
     @api.depends('code', 'name')
     def _compute_display_name(self):
@@ -32,12 +34,14 @@ class ConstructionTemplate(models.Model):
         string='工事構成品',
         compute='_compute_component_line_ids',
         required=False,
+        ondelete='cascade',
         store=True
     )
 
     @api.depends('workcenter_line_ids.workcenter_id.component_ids')
     def _compute_component_line_ids(self):
-        component_arr = [(5, 0, 0)]
+        self.component_line_ids = False
+        component_arr = [(6, 0, 0)]
         for line in self.workcenter_line_ids:
             for component in line.workcenter_id.component_ids:
                 data = {
@@ -53,9 +57,8 @@ class ConstructionTemplate(models.Model):
 
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")
 
-    workcenter_line_ids = fields.One2many(
+    workcenter_line_ids = fields.Many2many(
         comodel_name='construction.template.workcenter',
-        inverse_name='template_id',
         string='工事構成品',
         required=False,
         store=True
@@ -69,13 +72,14 @@ class ConstructionTemplateComponent(models.Model):
     template_id = fields.Many2one(
         comodel_name='construction.template',
         string='工事テンプレート',
+        ondelete='cascade',
         required=False)
     product_id = fields.Many2one(
         comodel_name='product.product',
         string='プロダクト',
         required=False)
     product_uom_qty = fields.Float(string='数量')
-    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True)
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string="単位カテゴリ")
     product_uom_id = fields.Many2one(
         comodel_name='uom.uom',
         string='単位',
@@ -95,7 +99,6 @@ class ConstructionTemplateWorkcenter(models.Model):
     _description = '工事テンプレートの工程'
 
     workcenter_id = fields.Many2one('construction.workcenter', string='工程')
-    template_id = fields.Many2one('construction.template')
     spend_time = fields.Float('デフォルト所要時間', related='workcenter_id.spend_time')
     costs_hour = fields.Float(string='時間毎の費用', related='workcenter_id.costs_hour')
     currency_id = fields.Many2one(related='workcenter_id.currency_id')

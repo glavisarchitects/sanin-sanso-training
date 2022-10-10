@@ -24,6 +24,50 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="replace">
+                <div class="oe_title" modifiers="{}">
+                    <label class="oe_edit_only" for="name" string="プロダクト名" modifiers="{}"/>
+                    <h1 modifiers="{}">
+                        <field name="name" placeholder="プロダクト名" on_change="1" modifiers="{'required':true}" id="name"/>
+                    </h1>
+                </div>
+                <div class="">
+                    <div modifiers="{}">
+                        <group>
+                            <group modifiers="{}">
+                                <div class="oe_title" modifiers="{}">
+                                    <label for="x_name_abbreviation" string="プロダクト略称"
+                                           modifiers="{}"/>
+                                    <h2 modifiers="{}">
+                                        <field name="x_name_abbreviation" placeholder="プロダクト略称" nolabel="1"
+                                               modifiers="{}" id="x_name_abbreviation"/>
+                                    </h2>
+                                </div>
+                            </group>
+                            <group modifiers="{}">
+                                <div class="oe_title" modifiers="{}">
+                                    <label for="x_name_specification" string="仕様・規格・型番" modifiers="{}"/>
+                                    <h2>
+                                        <field name="x_name_specification" placeholder="仕様・規格・型番" nolabel="1"
+                                               modifiers="{}"
+                                               id="x_name_specification"/>
+                                    </h2>
+                                </div>
+                            </group>
+                        </group>
+                    </div>
+                    <div name="options" modifiers="{}">
+                        <div modifiers="{}">
+                            <field name="sale_ok" on_change="1" modifiers="{}" id="sale_ok"/>
+                            <label for="sale_ok" modifiers="{}"/>
+                        </div>
+                        <div modifiers="{}">
+                            <field name="purchase_ok" modifiers="{}" id="purchase_ok"/>
+                            <label for="purchase_ok" modifiers="{}"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
             <xpath expr="//field[@name='company_id']" position="before">
                 <field name="x_supply_fixed_cost" widget='monetary' options="{'currency_field': 'currency_id'}"/>
             </xpath>

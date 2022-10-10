@@ -2,7 +2,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools import float_compare, float_is_zero
-
+from datetime import datetime
 
 class InstructionOrderLine(models.Model):
     _name = 'ss_erp.instruction.order.line'
@@ -32,7 +32,7 @@ class InstructionOrderLine(models.Model):
     state = fields.Selection(string='ステータス', related='inventory_id.state')
     theoretical_qty = fields.Float(readonly=True, string='理論数量')
     order_id = fields.Many2one('ss_erp.instruction.order', string='オーダ参照', required=True, ondelete='cascade')
-    organization_id = fields.Many2one('ss_erp.organization', related='order_id.organization_id',
+    organization_id = fields.Many2one('ss_erp.organization', related='order_id.organization_id', store = True,
                                       string='組織名')
     # type_id = fields.Many2one('product.template', related='order_id.type_id', string='棚卸種別')
     stock_inventory_line_id = fields.Many2one('stock.inventory.line', string='棚卸明細')
@@ -98,4 +98,66 @@ class InstructionOrderLine(models.Model):
                 values['product_uom_id'] = product.product_tmpl_id.uom_id.id
         res = super(InstructionOrderLine, self).create(vals_list)
         return res
+
+    def _get_virtual_location(self):
+        virtual_location = self.env['stock.location'].search(
+            [('id', 'child_of', self.organization_id.warehouse_id.view_location_id.id), ('scrap_location', '=', True)])
+        if virtual_location:
+            return virtual_location
+        else:
+            raise UserError('在庫ロスロケーションは未設定です。ご確認ください。')
+
+    def _get_move_values(self, qty, location_id, location_dest_id, out):
+        self.ensure_one()
+        return {
+            'name': _('INV:') + (self.order_id.name or ''),
+            'product_id': self.product_id.id,
+            'product_uom': self.product_uom_id.id,
+            'product_uom_qty': qty,
+            'date': self.order_id.date,
+            'x_organization_id': self.organization_id.id,
+            'instruction_order_id': self.order_id.id,
+            'company_id': self.order_id.company_id.id,
+            'price_unit': self.product_cost,
+            'state': 'confirmed',
+            'location_id': location_id,
+            'location_dest_id': location_dest_id,
+            'move_line_ids': [(0, 0, {
+                'product_id': self.product_id.id,
+                'lot_id': self.prod_lot_id.id,
+                'product_uom_qty': 0,  # bypass reservation here
+                'product_uom_id': self.product_uom_id.id,
+                'qty_done': qty,
+                'package_id': out and self.package_id.id or False,
+                'result_package_id': (not out) and self.package_id.id or False,
+                'location_id': location_id,
+                'location_dest_id': location_dest_id,
+            })]
+        }
+
+    def _get_account_id(self):
+        if self.difference_qty > 0:
+            account_id = self.env['ir.config_parameter'].sudo().get_param('ss_erp_stock_adjustment')
+            if not account_id:
+                raise UserError('棚卸差益勘定の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_stock_adjustment）')
+        else:
+            account_id = self.env['ir.config_parameter'].sudo().get_param('ss_erp_stock_expense')
+            if not account_id:
+                raise UserError(
+                    '棚卸減耗費勘定の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_stock_expense）')
+        return account_id
+
+    def _generate_moves(self):
+        vals_list = []
+        for line in self:
+            virtual_location = line._get_virtual_location()
+            rounding = line.product_id.uom_id.rounding
+            if float_is_zero(line.difference_qty, precision_rounding=rounding):
+                continue
+            if line.difference_qty > 0:  # found more than expected
+                vals = line._get_move_values(line.difference_qty, virtual_location.id, line.location_id.id, False)
+            else:
+                vals = line._get_move_values(abs(line.difference_qty), line.location_id.id, virtual_location.id, True)
+            vals_list.append(vals)
+        return self.env['stock.move'].create(vals_list)
 

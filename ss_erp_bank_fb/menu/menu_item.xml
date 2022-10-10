@@ -20,11 +20,11 @@
                 parent="ss_erp_invoices"
                 sequence="2"/>
 
-        <menuitem
-                id="ss_erp_account_transfer_result_menu"
-                action="action_account_transfer_result_line"
-                parent="ss_erp_invoices"
-                sequence="3"/>
+<!--        <menuitem-->
+<!--                id="ss_erp_account_transfer_result_menu"-->
+<!--                action="action_account_transfer_result_line"-->
+<!--                parent="ss_erp_invoices"-->
+<!--                sequence="3"/>-->
         <menuitem
                 id="ss_erp_account_receipt_notofication_header_menu"
                 action="action_account_receipt_notification_result_header"

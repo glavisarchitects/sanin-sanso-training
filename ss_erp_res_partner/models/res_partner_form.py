@@ -47,6 +47,8 @@ class ResPartnerForm(models.Model):
         domain="['|', ('company_id', '=', False), ('company_id', '=', allowed_company_ids[0])]",
         help="The stock location used as source when receiving goods from this contact.",
         default=lambda self: self.env.ref('stock.stock_location_suppliers', raise_if_not_found=False))
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
     @api.model
     def _default_property_account_payable_id(self):
@@ -156,23 +158,28 @@ class ResPartnerForm(models.Model):
     def _action_process(self):
         DEFAULT_FIELDS = ['id', 'create_uid', 'create_date', 'write_uid', 'write_date',
                           '__last_update', 'approval_id', 'approval_state', 'meeting_ids']
+
+        MANY2MANY_FIELDS = ['construction_ids','contract_ids','invoice_ids','purchase_line_ids','sale_order_ids']
+
         for form_id in self:
             vals = {}
 
             for name, field in form_id._fields.items():
-                if name not in DEFAULT_FIELDS and \
-                        form_id._fields[name].type not in ['one2many'] and \
-                        type(form_id._fields[name].compute) != str:
-                    if form_id._fields[name].type == 'many2many':
-                        value = getattr(form_id, name, ())
-                        value = [(6, 0, value.ids)] if value else False
-                    else:
-                        value = getattr(form_id, name)
-                        if form_id._fields[name].type == 'many2one':
-                            value = value.id if value else False
+                if name in MANY2MANY_FIELDS:
+                    continue
+                else:
+                    if name not in DEFAULT_FIELDS and \
+                            form_id._fields[name].type not in ['one2many'] and \
+                            type(form_id._fields[name].compute) != str:
+                        if form_id._fields[name].type == 'many2many':
+                            value = getattr(form_id, name, ())
+                            value = [(6, 0, value.ids)] if value else False
+                        else:
+                            value = getattr(form_id, name)
+                            if form_id._fields[name].type == 'many2one':
+                                value = value.id if value else False
 
-                    vals.update({name: value})
-
+                        vals.update({name: value})
             res_partner_id = vals.pop('res_partner_id')
             if not res_partner_id:
                 # Create partner with contact form

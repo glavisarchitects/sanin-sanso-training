@@ -19,7 +19,7 @@ class AccountMoveWizard(models.TransientModel):
     def _onchange_from_to__date(self):
         if self.fb_start_date and self.fb_end_date:
             if self.fb_start_date > self.fb_end_date:
-                raise UserError('有効開始日は有効終了日より大きくすることはできません。')
+                raise UserError('有効開始日は、有効終了日より先の日付は選択できません。"')
 
     def zengin_account_transfer_request_fb(self):
 
@@ -79,6 +79,8 @@ class AccountMoveWizard(models.TransientModel):
             raise UserError('取引先【%s】の銀行を設定してください' % '、'.join(not_setting_bank_partner))
 
         total_sum_amount = 0
+        bank_list = []
+        count=0
         for inv in invoice_zengin_data:
             partner_bic_number = inv.partner_id.bank_ids[0].bank_id.bic
             if len(partner_bic_number) != 4:
@@ -100,8 +102,21 @@ class AccountMoveWizard(models.TransientModel):
             partner_acc_holder_furigana = inv.partner_id.bank_ids[0].x_acc_holder_furigana
             if not partner_acc_holder_furigana:
                 raise UserError('銀行口座 フリガナ まだ設定されていません')
-            partner_bank_amount = str(int(inv.amount_total))
-            total_sum_amount += int(inv.amount_total)
+            # partner_bank_amount = str(int(inv.amount_total))
+
+            if (inv.partner_id.id, inv.partner_id.bank_ids[0].acc_number) not in bank_list:
+                bank_list.append((inv.partner_id.id, inv.partner_id.bank_ids[0].acc_number))
+            else:
+                continue
+
+
+            # total_amount_line = int(pay.amount)
+            partner_bank_amount = int(sum(invoice_zengin_data.filtered(lambda line: line.partner_id.id == inv.partner_id.id and
+                                                                                  line.partner_id.bank_ids[0].acc_number == inv.partner_id.bank_ids[0].acc_number
+                                                             ).mapped('amount_total')))
+
+            total_sum_amount += partner_bank_amount
+            partner_bank_amount = str(partner_bank_amount)
 
             file_data += '2' + partner_bic_number + get_multi_character(15) + partner_branch_number + \
                          get_multi_character(15) + get_multi_character(4, '0') + partner_bank_acc_type + \
@@ -111,9 +126,12 @@ class AccountMoveWizard(models.TransientModel):
                          '0' + get_multi_character(20) + '0' + get_multi_character(8) + '\r\n'
             #
             #     # Todo: Now comment this line to test data
-            inv.x_is_fb_created = True
+            count+=1
+
+        invoice_zengin_data.update({'x_is_fb_created':True})
+
         # trailer record
-        len_line_record = str(len(invoice_zengin_data))
+        len_line_record = str(count)
         len_total_amount = len(str(total_sum_amount))
         file_data += '8' + get_multi_character(6 - len(len_line_record), '0') + len_line_record + \
                      get_multi_character(12 - len_total_amount, '0') + str(total_sum_amount) + \

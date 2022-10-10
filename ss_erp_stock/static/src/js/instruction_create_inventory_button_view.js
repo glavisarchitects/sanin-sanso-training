@@ -1,7 +1,7 @@
-odoo.define('ss_erp.InstructionCreateInventoryView', function (require) {
+odoo.define('ss_erp_stock.InstructionCreateInventoryView', function (require) {
     "use strict";
 
-    var InstructionCreateInventoryController = require('ss_erp.InstructionCreateInventoryController');
+    var InstructionCreateInventoryController = require('ss_erp_stock.InstructionCreateInventoryController');
     var ListView = require('web.ListView');
     var viewRegistry = require('web.view_registry');
 

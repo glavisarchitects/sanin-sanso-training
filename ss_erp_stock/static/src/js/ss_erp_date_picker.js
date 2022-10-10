@@ -1,4 +1,4 @@
-odoo.define('ss_erp.datepicker', function (require) {
+odoo.define('ss_erp_stock.datepicker', function (require) {
 "use strict";
     var field_registry = require('web.field_registry');
     var DatePicker = require('web.datepicker');
