@@ -1,5 +1,5 @@
 from odoo import fields, models, api
-
+from odoo.exceptions import UserError
 
 class ConstructionWorkcenter(models.Model):
     _name = 'construction.workcenter'
@@ -16,10 +16,14 @@ class ConstructionWorkcenter(models.Model):
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")
     active = fields.Boolean(default=True)
     component_ids = fields.One2many('construction.workcenter.component', 'workcenter_id')
-    template_id = fields.Many2one('construction.template')
     user_id = fields.Many2one(
         comodel_name='res.users', default=lambda self: self.env.uid)
 
+    def write(self,vals):
+        records = self.env['construction.template'].search([('state','in',('pending','approved'))]).workcenter_line_ids.mapped('workcenter_id').ids
+        if self.id in records:
+            raise UserError('承認中または承認済みの工事テンプレートで使用されているため変更出来ません')
+        super().write(vals)
 
 class ConstructionWorkcenterComponent(models.Model):
     _name = 'construction.workcenter.component'
