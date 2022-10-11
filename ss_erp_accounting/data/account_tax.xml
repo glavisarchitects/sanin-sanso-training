@@ -205,12 +205,12 @@
             <field name="refund_repartition_line_ids" ref="account_tax_repartition_line_consumption_tax_deductible_5percent_credit_note_taxes"/>
         </record>
         <!-- 不課税-->
-        <record id="account_tax_consumption_tax_deductible_outside_5percent" model="account.tax">
-            <field name="name">非課税販売</field>
+        <record id="account_tax_non_tax_sales" model="account.tax">
+            <field name="name">不課税販売</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">sale</field>
             <field name="amount">0</field>
-            <field name="description">非課税販売</field>
+            <field name="description">不課税販売</field>
             <field name="price_include" eval="False"/>
             <field name="tax_group_id" ref="l10n_jp.tax_group_0"/>
             <field name="invoice_repartition_line_ids" ref="account_tax_repartition_line_non_tax_sales_invoice_base"/>
@@ -219,11 +219,11 @@
             <field name="refund_repartition_line_ids" ref="account_tax_repartition_line_non_tax_common"/>
         </record>
         <record id="account_tax_non_tax_purchase" model="account.tax">
-            <field name="name">非課税購買</field>
+            <field name="name">不課税購買</field>
             <field name="amount_type">percent</field>
             <field name="type_tax_use">purchase</field>
             <field name="amount">0</field>
-            <field name="description">非課税購買</field>
+            <field name="description">不課税購買</field>
             <field name="price_include" eval="False"/>
             <field name="tax_group_id" ref="l10n_jp.tax_group_0"/>
             <field name="invoice_repartition_line_ids" ref="account_tax_repartition_line_non_tax_purchase_invoice_base"/>
