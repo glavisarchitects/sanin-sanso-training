@@ -42,11 +42,18 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).action_confirm()
 
         if self.picking_ids:
-            self.picking_ids.update({
+            self.picking_ids.sudo().update({
                 'user_id': self.user_id and self.user_id.id or False,
                 'x_organization_id': self.x_organization_id and self.x_organization_id.id or False,
                 'x_responsible_dept_id': self.x_responsible_dept_id and self.x_responsible_dept_id.id or False, }
             )
+        if self.order_line.purchase_line_ids.order_id:
+            self.order_line.purchase_line_ids.order_id.sudo().update({
+                'x_organization_id': self.x_organization_id and self.x_organization_id.id or False,
+                'x_responsible_dept_id': self.x_responsible_dept_id and self.x_responsible_dept_id.id or False,
+                'x_bis_categ_id': self.order_line.purchase_line_ids.order_id.partner_id.x_transaction_categ or False,
+                'x_mkt_user_id': self.user_id.id or False,
+            })
         return res
 
     def _prepare_confirmation_values(self):

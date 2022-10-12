@@ -76,9 +76,9 @@
                                 <field name="invoice_count" widget="statinfo" string="請求書"
                                        modifiers="{'readonly':true}" id="invoice_count"/>
                             </button>
-                            <button name="%(ss_erp_construction.action_cost_struct_construction)d" type="action"
-                                    class="oe_stat_button" icon="fa-dollar" string="原価分析">
-                            </button>
+<!--                            <button name="%(ss_erp_construction.action_cost_struct_construction)d" type="action"-->
+<!--                                    class="oe_stat_button" icon="fa-dollar" string="原価分析">-->
+<!--                            </button>-->
                         </div>
 
                         <div class="oe_title">

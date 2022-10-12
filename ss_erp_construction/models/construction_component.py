@@ -25,8 +25,8 @@ class ConstructionComponent(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     tax_id = fields.Many2one(comodel_name='account.tax', string='税', tracking=True)
     sale_price = fields.Monetary(string='販売価格', tracking=True)
-    margin = fields.Monetary(string='粗利益', compute='_compute_margin', store=True)
-    margin_rate = fields.Float(string='マージン(%)', compute='_compute_margin', store=True)
+    margin = fields.Monetary(string='粗利益', store=True)
+    margin_rate = fields.Float(string='マージン(%)', store=True)
     subtotal_exclude_tax = fields.Monetary(string='小計（税別）', compute='_compute_margin', store=True)
     subtotal = fields.Monetary(string='小計', compute='_compute_margin', store=True)
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事', ondelete='cascade')
@@ -37,18 +37,21 @@ class ConstructionComponent(models.Model):
     state = fields.Selection(
         related='construction_id.state', string='工事ステータス', readonly=True, copy=False, store=True, default='draft')
 
-    @api.depends('sale_price', 'construction_id.all_margin_rate', 'tax_id', 'standard_price', 'product_uom_qty')
-    def _compute_margin(self):
-        for rec in self:
-            if rec.construction_id.all_margin_rate != 0:
-                rec.margin_rate = rec.construction_id.all_margin_rate
-                rec.sale_price = rec.standard_price / (1 - rec.margin_rate)
-                rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
-            else:
-                rec.margin_rate = abs(rec.standard_price / rec.sale_price - 1) if rec.sale_price != 0 else 0
-                rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
-            rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
-            rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
+    @api.onchange('construction_id.all_margin_rate')
+    def _onchange_all_margin_rate(self):
+        if self.construction_id.all_margin_rate != 0:
+            self.margin_rate = self.construction_id.all_margin_rate
+            self.sale_price = self.standard_price / (1 - self.margin_rate)
+            self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
+        self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
+        self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
+
+    @api.onchange('sale_price', 'tax_id', 'standard_price', 'product_uom_qty')
+    def _onchange_component(self):
+        self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
+        self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
+        self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
+        self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
 
     def _compute_qty_to_invoice(self):
         for line in self:
@@ -102,25 +105,29 @@ class ConstructionComponent(models.Model):
         # 間接経費計算
         if self.product_id.id == indirect_expense_fee_product.id:
             self.product_uom_qty = 1
-            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
+            self.standard_price = sum(
+                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
 
         # 間接材料費計算
         if self.product_id.id == indirect_material_fee_product.id:
             self.product_uom_qty = 1
-            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                lambda line: line.product_id.type == 'product')) * 0.00
+            self.standard_price = sum(
+                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    lambda line: line.product_id.type == 'product')) * 0.00
 
         # 間接労務費計算
         if self.product_id.id == indirect_labo_fee_product.id:
             self.product_uom_qty = 1
-            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
+            self.standard_price = sum(
+                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
 
         if self.product_id.id == indirect_outsource_fee_product.id:
             self.product_uom_qty = 1
-            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
+            self.standard_price = sum(
+                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
 
     def calculate_qty_to_buy(self):
         if self.product_id.type == "product":
@@ -179,7 +186,8 @@ class ConstructionComponent(models.Model):
                     'order_id': po.id,
                     'product_id': self.product_id.id,
                     'product_qty': qty_to_buy,
-                    'product_uom': self.product_uom_id.id
+                    'product_uom': self.product_uom_id.id,
+                    'price_unit': self.standard_price
                 }
                 self.env['purchase.order.line'].sudo().create(po_line_values)
             return po
