@@ -4,14 +4,14 @@
 
         <!-- SS AUTHORITY GROUP -->
         <record model="ir.module.category" id="module_ss_authority_group">
-            <field name="name">SS権限グループ</field>
+            <field name="name">SS権限</field>
             <field name="sequence">2</field>
             <field name="description">
                 This category for access SS AUTHORITY GROUP
             </field>
         </record>
         <record model="ir.module.category" id="category_authority">
-            <field name="name">権限</field>
+            <field name="name">SS権限グループ</field>
             <field name="sequence">3</field>
             <field name="parent_id" ref="module_ss_authority_group"/>
         </record>
