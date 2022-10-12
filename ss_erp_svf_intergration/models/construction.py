@@ -1,11 +1,13 @@
 from odoo import fields, models, api
-
+from odoo.exceptions import UserError
 
 class Construction(models.Model):
     _inherit = 'ss.erp.construction'
 
     def action_print_estimation(self):
         data_file = self._prepare_data_file()
+        if not data_file:
+            raise UserError("出力対象のデータがありませんでした。")
         return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_file, type_report='R002')
 
     def _get_estimation_detail(self):
@@ -63,5 +65,5 @@ class Construction(models.Model):
             '"product_name_head","specification_head","quantity_head","unit_head","unit_price_head",' + \
             '"amount_of_money_head","subtotal_head","tax_of_money_head","total_head","comment_text",' + \
             '"page_title","product_name","specification","quantity","unit","unit_price","amount_of_money","subtotal"']
-
+        return False
 
