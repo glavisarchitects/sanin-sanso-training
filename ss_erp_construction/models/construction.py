@@ -272,10 +272,20 @@ class Construction(models.Model):
     expire_date = fields.Date(string='有効期限')
     estimation_note = fields.Char(string='備考')
 
+    @api.onchange('all_margin_rate')
+    def _onchange_all_margin_rate(self):
+        if self.construction_component_ids:
+            for line in self.construction_component_ids:
+                line.margin_rate = self.all_margin_rate
+                line.sale_price = line.standard_price / (1 - line.margin_rate)
+                line.margin = (line.sale_price - line.standard_price) * line.product_uom_qty
+                line.subtotal_exclude_tax = line.product_uom_qty * line.sale_price
+                line.subtotal = line.subtotal_exclude_tax * (1 + line.tax_id.amount / 100)
+
     @api.onchange('is_tax_exclude')
     def _onchange_is_tax_exclude(self):
         if self.is_tax_exclude == 'exclude':
-            remarks = self.env['ir.config_parameter'].get_param('ss_erp_construction_estimate_remarks')
+            remarks = self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_estimate_remarks')
             if remarks:
                 self.estimation_note = remarks
         else:
@@ -348,7 +358,7 @@ class Construction(models.Model):
             action = {'type': 'ir.actions.act_window_close'}
 
         context = {
-            'default_move_type': 'out_invoice',
+            'default_move_type': 'counstruction_out_invoice',
         }
         action['context'] = context
         return action
@@ -365,14 +375,14 @@ class Construction(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        journal = self.env['account.move'].with_context(default_move_type='out_invoice')._get_default_journal()
+        journal = self.env['account.move'].with_context(default_move_type='counstruction_out_invoice')._get_default_journal()
         if not journal:
             raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
                 self.company_id.name, self.company_id.id))
 
         invoice_vals = {
             'ref': self.client_order_ref,
-            'move_type': 'out_invoice',
+            'move_type': 'counstruction_out_invoice',
             'invoice_origin': self.name,
             'x_organization_id': self.organization_id.id,
             'x_responsible_dept_id': self.responsible_dept_id.id,
@@ -461,7 +471,7 @@ class Construction(models.Model):
         if not invoice_vals_list:
             raise self._nothing_to_invoice_error()
 
-        moves = self.env['account.move'].sudo().with_context(default_move_type='out_invoice').create(invoice_vals_list)
+        moves = self.env['account.move'].sudo().with_context(default_move_type='construction_sale').create(invoice_vals_list)
 
         if final:
             moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
