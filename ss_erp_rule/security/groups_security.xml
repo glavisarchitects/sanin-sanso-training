@@ -46,7 +46,7 @@
         </record>
 
         <record id="group_branch_manager" model="res.groups">
-            <field name="name">支店長</field>
+            <field name="name">支店:管理者</field>
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[(4, ref('ss_erp_rule.group_branch_general')),
                                             (4, ref('ss_erp_rule.group_branch_middle_manager')),
@@ -61,7 +61,7 @@
 
         <!--  HEAD QUARTER  -->
         <record id="group_head_quarter_general" model="res.groups">
-            <field name="name">本部: 一般l</field>
+            <field name="name">本社:一般</field>
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[(4, ref('ss_erp_rule.group_branch_general')),
                                              (4, ref('ss_erp_rule.group_branch_manager')),
@@ -74,7 +74,7 @@
 
         </record>
         <record id="group_head_quarter_middle_general" model="res.groups">
-            <field name="name">本社: 中間管理職</field>
+            <field name="name">本社:中間管理者</field>
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[(4, ref('ss_erp_rule.group_branch_general')),
                                             (4, ref('ss_erp_rule.group_head_quarter_general')),
@@ -90,7 +90,7 @@
 
         </record>
         <record id="group_head_quarter" model="res.groups">
-            <field name="name">本社: マネージャー</field>
+            <field name="name">本社:管理者</field>
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[(4, ref('ss_erp_rule.group_head_quarter_middle_general')),
                                             (4, ref('sales_team.group_sale_manager')),
@@ -113,24 +113,41 @@
 
         <record id="group_my_org_only_sale" model="res.groups">
             <field name="name">自分の組織のみ (販売)</field>
-
             <field name="category_id" ref="ss_erp_rule.module_ss_other_authority_group"/>
-            <field name="implied_ids" eval="[(4, ref('ss_erp_rule.group_branch_general')),
-                                             (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                                             (4, ref('ss_erp_rule.group_head_quarter_general')),
-                                             (4, ref('ss_erp_rule.group_branch_manager')),
-                                             (4, ref('ss_erp_rule.group_head_quarter_middle_general'))
-
+            <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_manager')),
                                              ]"/>
+            <field name="rule_groups" eval="[(6,0,[
+                                ref('ss_erp_rule.ss_erp_own_branch_orders_analysis_rule'),
+                                ref('ss_erp_rule.ss_erp_own_branch_orders_rule'),
+                                ref('ss_erp_rule.ss_erp_own_branch_orders_line_rule'),
+                                ref('ss_erp_rule.ss_erp_own_branch_invoice_analysis_rule'),
+                                ref('ss_erp_rule.ss_erp_own_branch_invoice_rule'),
+                                ref('ss_erp_rule.ss_erp_own_branch_invoice_line_rule'),
+                            ])]"/>
 
         </record>
         <record id="group_my_org_only_external_link" model="res.groups">
             <field name="name">自分の組織のみ (外部連携)</field>
             <field name="category_id" ref="ss_erp_rule.module_ss_other_authority_group"/>
-            <field name="implied_ids" eval="[(4, ref('ss_erp_rule.group_branch_general')),
-                                             (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                                             (4, ref('ss_erp_rule.group_head_quarter_general')),
-                                             (4, ref('ss_erp_rule.group_branch_manager'))]"/>
+            <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user')),
+                                             (4, ref('sales_team.group_sale_manager'))]"/>
+            <field name="rule_groups" eval="[(6,0,[
+                    ref('ss_erp_rule.ss_erp_yamasan_gas_header_rule'),
+                    ref('ss_erp_rule.ss_erp_yamasan_gas_summary_rule'),
+                    ref('ss_erp_rule.ss_erp_yamasan_gas_detail_rule'),
+                    ref('ss_erp_rule.ss_erp_powernet_import_rule'),
+                    ref('ss_erp_rule.ss_erp_powernet_detail_rule'),
+                    ref('ss_erp_rule.ss_erp_youki_kanri_import_rule'),
+                    ref('ss_erp_rule.ss_erp_youki_kanri_detail_rule'),
+                    ref('ss_erp_rule.ss_erp_autogas_import_rule'),
+                    ref('ss_erp_rule.ss_erp_autogas_detail_rule'),
+                    ref('ss_erp_rule.ss_erp_propane_import_rule'),
+                    ref('ss_erp_rule.ss_erp_propane_import_rule'),
+                    ref('ss_erp_rule.ss_erp_youki_billing_import_rule'),
+                    ref('ss_erp_rule.ss_erp_youki_billing_detail_rule'),
+                    ref('ss_erp_rule.ss_erp_youki_billing_import_delete_rule'),
+                    ref('ss_erp_rule.ss_erp_youki_billing_detail_delete_rule'),
+                ])]"/>
 
         </record>
 
@@ -226,7 +243,7 @@
         </record>
         <!--        Instruction Category Delete-->
         <record id="ss_erp_construction_category_rule" model="ir.rule">
-            <field name="name">Instruction Category Delete</field>
+            <field name="name">Counstruction Category Delete</field>
             <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction_category"/>
             <field name="domain_force">
                 [('user_id','=',user.id)]
@@ -244,7 +261,7 @@
         </record>
         <!--        Instruction Category Delete-->
         <record id="ss_erp_construction_template_rule" model="ir.rule">
-            <field name="name">Instruction Category Delete</field>
+            <field name="name">Construction Template Delete</field>
             <field name="model_id" ref="ss_erp_construction.model_construction_template"/>
             <field name="domain_force">
                 [('user_id','=',user.id)]
