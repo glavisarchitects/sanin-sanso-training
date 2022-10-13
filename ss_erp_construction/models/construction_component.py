@@ -37,25 +37,33 @@ class ConstructionComponent(models.Model):
     state = fields.Selection(
         related='construction_id.state', string='工事ステータス', readonly=True, copy=False, store=True, default='draft')
 
-    @api.onchange('tax_id', 'standard_price', 'product_uom_qty','product_id')
-    def _onchange_component(self):
-        self.margin_rate = self.construction_id.all_margin_rate
-        self.sale_price = self.standard_price / (1 - self.margin_rate)
-        self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
-        self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
-        self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
+    old_sale_price = fields.Monetary(string='古い販売価格', default=0)
 
+    @api.onchange('tax_id', 'standard_price', 'product_uom_qty','product_id','sale_price')
+    def _onchange_component(self):
+        if self.old_sale_price == self.sale_price:
+            self.margin_rate = self.construction_id.all_margin_rate
+            self.sale_price = self.standard_price / (1 - self.margin_rate)
+            self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
+            self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
+            self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
+        else:
+            self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
+            self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
+            self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
+            self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
+        self.old_sale_price = self.sale_price
         # self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
         # self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
         # self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
         # self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
 
-    @api.onchange('sale_price')
-    def _onchange_sale_price(self):
-        self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
-        self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
-        self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
-        self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
+    # @api.onchange('sale_price')
+    # def _onchange_sale_price(self):
+    #     self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
+    #     self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
+    #     self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
+    #     self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
 
     def _compute_qty_to_invoice(self):
         for line in self:
@@ -134,7 +142,7 @@ class ConstructionComponent(models.Model):
                     lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
 
     def calculate_qty_to_buy(self):
-        if self.product_id.type == "product":
+        if self.product_id.type != "service":
             quantity = 0
             for picking in self.construction_id.picking_ids:
                 # 在庫出荷の量の計算
@@ -164,7 +172,7 @@ class ConstructionComponent(models.Model):
     @api.model
     def _run_buy(self):
         qty_to_buy = self.calculate_qty_to_buy()
-        if qty_to_buy != 0 and self.product_id.type == "product":
+        if qty_to_buy != 0 and self.product_id.type != "service":
             if not self.partner_id:
                 raise UserError("%sのプロダクトに対して、仕入先は設定してください。" % self.product_id.name)
 
