@@ -156,7 +156,7 @@ class AccountTransferResultHeader(models.Model):
                     # Year + Withdrawal date in account transfer result header (yyyy/mm/dd)
                     year_current = datetime.today().year
                     withdrawal_date = (str(self.withdrawal_date) + str(year_current)) if self.withdrawal_date else False
-                    date_acc_payment = datetime.strptime(withdrawal_date, '%m%d%Y')
+                    date_acc_payment = datetime.strptime(withdrawal_date, '%m%d%Y').date()
 
                     in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
                     receivable_line = invoice.line_ids.filtered(
@@ -164,7 +164,7 @@ class AccountTransferResultHeader(models.Model):
                     if not in_accounts_receivable:
                         raise UserError('アカウント 1150 が見つかりません。設定してください。')
 
-                    created_payment.move_id.sudo().write({
+                    created_payment.move_id.with_context(rewrite_name_fb=True).sudo().write({
                         'x_receipt_type': invoice.x_receipt_type,
                         'x_payment_type': invoice.x_payment_type,
                         'x_organization_id': invoice.x_organization_id,
