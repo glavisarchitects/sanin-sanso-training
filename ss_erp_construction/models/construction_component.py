@@ -39,7 +39,7 @@ class ConstructionComponent(models.Model):
 
     @api.onchange('tax_id', 'standard_price', 'product_uom_qty')
     def _onchange_component(self):
-        self.margin_rate = self.all_margin_rate
+        self.margin_rate = self.construction_id.all_margin_rate
         self.sale_price = self.standard_price / (1 - self.margin_rate)
         self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
         self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
