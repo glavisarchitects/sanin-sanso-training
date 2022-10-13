@@ -272,15 +272,15 @@ class Construction(models.Model):
     expire_date = fields.Date(string='有効期限')
     estimation_note = fields.Char(string='備考')
 
-    @api.onchange('all_margin_rate')
-    def _onchange_all_margin_rate(self):
-        if self.construction_component_ids:
-            for line in self.construction_component_ids:
-                line.margin_rate = self.all_margin_rate
-                line.sale_price = line.standard_price / (1 - line.margin_rate)
-                line.margin = (line.sale_price - line.standard_price) * line.product_uom_qty
-                line.subtotal_exclude_tax = line.product_uom_qty * line.sale_price
-                line.subtotal = line.subtotal_exclude_tax * (1 + line.tax_id.amount / 100)
+    # @api.onchange('all_margin_rate')
+    # def _onchange_all_margin_rate(self):
+    #     if self.construction_component_ids:
+    #         for line in self.construction_component_ids:
+    #             line.margin_rate = self.all_margin_rate
+    #             line.sale_price = line.standard_price / (1 - line.margin_rate)
+    #             line.margin = (line.sale_price - line.standard_price) * line.product_uom_qty
+    #             line.subtotal_exclude_tax = line.product_uom_qty * line.sale_price
+    #             line.subtotal = line.subtotal_exclude_tax * (1 + line.tax_id.amount / 100)
 
     @api.onchange('is_tax_exclude')
     def _onchange_is_tax_exclude(self):
