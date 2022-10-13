@@ -54,7 +54,7 @@ class OrganizationCategory(models.Model):
 
     def action_view_organizations(self):
         organization_ids = self.organization_ids
-        action = self.env.ref('ss_erp.action_organizations')
+        action = self.env.ref('ss_erp_organization.action_organizations')
         result = action.read()[0]
         result["context"] = {}
         organization_count = len(organization_ids)
@@ -62,7 +62,7 @@ class OrganizationCategory(models.Model):
             result["domain"] = "[('organization_category_id', 'in', " + \
                                str(self.ids) + ")]"
             return result
-        res = self.env.ref('ss_erp.organization_view_form', False)
+        res = self.env.ref('ss_erp_organization.organization_view_form', False)
         result["views"] = [(res and res.id or False, "form")]
         result["res_id"] = organization_ids.id
         return result
