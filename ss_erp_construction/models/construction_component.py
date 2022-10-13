@@ -37,7 +37,7 @@ class ConstructionComponent(models.Model):
     state = fields.Selection(
         related='construction_id.state', string='工事ステータス', readonly=True, copy=False, store=True, default='draft')
 
-    @api.onchange('tax_id', 'standard_price', 'product_uom_qty')
+    @api.onchange('tax_id', 'standard_price', 'product_uom_qty','product_id')
     def _onchange_component(self):
         self.margin_rate = self.construction_id.all_margin_rate
         self.sale_price = self.standard_price / (1 - self.margin_rate)
@@ -51,7 +51,7 @@ class ConstructionComponent(models.Model):
         # self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
 
     @api.onchange('sale_price')
-    def _onchange_component(self):
+    def _onchange_sale_price(self):
         self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
         self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
         self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
