@@ -142,7 +142,7 @@ class ConstructionComponent(models.Model):
                     lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
 
     def calculate_qty_to_buy(self):
-        if self.product_id.type != "service":
+        if self.product_id.type == "product":
             quantity = 0
             for picking in self.construction_id.picking_ids:
                 # 在庫出荷の量の計算
@@ -172,7 +172,7 @@ class ConstructionComponent(models.Model):
     @api.model
     def _run_buy(self):
         qty_to_buy = self.calculate_qty_to_buy()
-        if qty_to_buy != 0 and self.product_id.type != "service":
+        if qty_to_buy != 0 and self.product_id.type == "product":
             if not self.partner_id:
                 raise UserError("%sのプロダクトに対して、仕入先は設定してください。" % self.product_id.name)
 
