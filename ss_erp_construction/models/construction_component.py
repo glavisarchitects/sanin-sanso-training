@@ -166,19 +166,29 @@ class ConstructionComponent(models.Model):
                         'product_uom_qty'))
 
             return self.product_uom_qty - quantity
+        elif self.product_id.type == "service":
+            domain = [
+                ('partner_id', '=', self.partner_id.id),
+                ('state', '!=', 'cancel'),
+                ('payment_term_id', '=', self.payment_term_id.id),
+                ('x_construction_order_id', '=', self.construction_id.id),
+            ]
+            po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(lambda x:x.product_id==self.product_id)
+            return self.product_uom_qty - sum(po_ids.mapped('product_qty'))
         else:
             return 0
 
     @api.model
     def _run_buy(self):
         qty_to_buy = self.calculate_qty_to_buy()
-        if qty_to_buy != 0 and self.product_id.type == "product":
+        if qty_to_buy != 0 and self.product_id.type != "consu":
             if not self.partner_id:
                 raise UserError("%sのプロダクトに対して、仕入先は設定してください。" % self.product_id.name)
 
             domain = [
                 ('partner_id', '=', self.partner_id.id),
                 ('state', '=', 'draft'),
+                ('payment_term_id', '=', self.payment_term_id.id),
                 ('x_construction_order_id', '=', self.construction_id.id),
             ]
             po = self.env['purchase.order'].sudo().search(domain, limit=1)
