@@ -18,6 +18,7 @@
         "security/groups_security.xml",
         "security/menu_groups.xml",
         "security/view_groups.xml",
+        "security/ir_rule.xml",
         'security/ir.model.access.csv',
 
     ],
