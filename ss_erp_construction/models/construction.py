@@ -22,6 +22,18 @@ class Construction(models.Model):
         default=lambda self: self._get_default_x_responsible_dept_id()
     )
 
+    estimate_approval_status = fields.Selection([('new', '未申請'),
+                                        ('pending', '申請済'),
+                                        ('approved', '確認済'),
+                                        ('refused', '却下済'),
+                                        ('cancel', '取消')], string='承認ステータス', default='new')
+
+    validate_approval_status = fields.Selection([('new', '未申請'),
+                                        ('pending', '申請済'),
+                                        ('approved', '確認済'),
+                                        ('refused', '却下済'),
+                                        ('cancel', '取消')], string='承認ステータス', default='new')
+
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
@@ -84,7 +96,7 @@ class Construction(models.Model):
                 raise UserError(
                     "承認金額の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_estimate_report)")
             minium_value = float(minium_value)
-            rec.show_confirmation_button = True if 0 < rec.amount_total < minium_value else False
+            rec.show_confirmation_button = True if (0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
 
     def _compute_invoice_count(self):
         Invoice = self.env['account.move']
@@ -164,7 +176,7 @@ class Construction(models.Model):
             workorder_lines = self.env['ss.erp.construction.workorder'].create({
                 'construction_id': self.id,
                 'name': workcenter_line.workcenter_id.name,
-                'duration_expected':workcenter_line.spend_time,
+                'duration_expected': workcenter_line.spend_time,
                 'costs_hour': workcenter_line.costs_hour
             })
             workorder_lines.workorder_component_ids = components
@@ -379,7 +391,8 @@ class Construction(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        journal = self.env['account.move'].with_context(default_move_type='counstruction_out_invoice')._get_default_journal()
+        journal = self.env['account.move'].with_context(
+            default_move_type='counstruction_out_invoice')._get_default_journal()
         if not journal:
             raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
                 self.company_id.name, self.company_id.id))
@@ -475,7 +488,8 @@ class Construction(models.Model):
         if not invoice_vals_list:
             raise self._nothing_to_invoice_error()
 
-        moves = self.env['account.move'].sudo().with_context(default_move_type='construction_sale').create(invoice_vals_list)
+        moves = self.env['account.move'].sudo().with_context(default_move_type='construction_sale').create(
+            invoice_vals_list)
 
         if final:
             moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
