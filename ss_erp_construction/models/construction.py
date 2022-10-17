@@ -272,15 +272,15 @@ class Construction(models.Model):
     expire_date = fields.Date(string='有効期限')
     estimation_note = fields.Char(string='備考')
 
-    # @api.onchange('all_margin_rate')
-    # def _onchange_all_margin_rate(self):
-    #     if self.construction_component_ids:
-    #         for line in self.construction_component_ids:
-    #             line.margin_rate = self.all_margin_rate
-    #             line.sale_price = line.standard_price / (1 - line.margin_rate)
-    #             line.margin = (line.sale_price - line.standard_price) * line.product_uom_qty
-    #             line.subtotal_exclude_tax = line.product_uom_qty * line.sale_price
-    #             line.subtotal = line.subtotal_exclude_tax * (1 + line.tax_id.amount / 100)
+    @api.onchange('all_margin_rate')
+    def _onchange_all_margin_rate(self):
+        if self.construction_component_ids and self.all_margin_rate:
+            for line in self.construction_component_ids:
+                line.margin_rate = self.all_margin_rate
+                line.sale_price = line.standard_price / (1 - line.margin_rate)
+                line.margin = (line.sale_price - line.standard_price) * line.product_uom_qty
+                line.subtotal_exclude_tax = line.product_uom_qty * line.sale_price
+                line.subtotal = line.subtotal_exclude_tax * (1 + line.tax_id.amount / 100)
 
     @api.onchange('is_tax_exclude')
     def _onchange_is_tax_exclude(self):
@@ -318,6 +318,9 @@ class Construction(models.Model):
     def action_cancel(self):
         self.write({'state': 'cancel'})
 
+    def action_validate(self):
+        self.write({'state': 'done'})
+
     def action_view_purchase_order(self):
         purchase_order_ids = self.env['purchase.order'].search([('x_construction_order_id', '=', self.id)]).ids
         action = self.env['ir.actions.act_window']._for_xml_id('purchase.purchase_rfq')
@@ -329,9 +332,10 @@ class Construction(models.Model):
         if self.construction_component_ids:
             new_po = []
             for rec in self.construction_component_ids:
-                po = rec._run_buy()
-                if po:
-                    new_po.append(po.id)
+                if rec.product_id.type != "consu" and self.partner_id:
+                    po = rec._run_buy()
+                    if po:
+                        new_po.append(po.id)
             if new_po:
                 action = self.env['ir.actions.act_window']._for_xml_id('purchase.purchase_rfq')
                 action['domain'] = [('id', 'in', new_po)]

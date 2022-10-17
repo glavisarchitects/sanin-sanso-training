@@ -41,6 +41,8 @@ class LPGasOrder(models.Model):
         branch_loss_location = self.env['stock.location'].search(
             [('usage', '=', 'inventory'), ('id', 'child_of', self.organization_id.warehouse_id.view_location_id.id), ],
             limit=1)
+        if not branch_loss_location:
+            raise UserError(_("ロケーションロスを設定してください。"))
         for line in self.lpgas_order_line_ids:
             if line.difference_qty == 0:
                 continue

@@ -38,6 +38,8 @@
                                 attrs="{'invisible':[('state','!=','draft')],}"/>
                         <button name="action_start" string="開始" class="oe_highlight" type="object"
                                 attrs="{'invisible':[('state','not in',['order_received'])],}"/>
+                        <button name="action_validate" string="検証" class="oe_highlight" type="object"
+                                attrs="{'invisible':[('state','not in',['progress'])],}"/>
                         <button name="action_purchase" string="購買発注" class="oe_highlight" type="object"
                                 attrs="{'invisible':[('state','not in',['order_received','progress'])],}"/>
                         <button name="%(action_view_construction_advance_payment_inv)d" string="請求書作成"
