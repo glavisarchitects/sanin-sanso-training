@@ -39,7 +39,7 @@
                         <button name="action_start" string="開始" class="oe_highlight" type="object"
                                 attrs="{'invisible':[('state','not in',['order_received'])],}"/>
                         <button name="action_validate" string="検証" class="oe_highlight" type="object"
-                                attrs="{'invisible':[('state','not in',['progress'])],}"/>
+                                attrs="{'invisible':['|',('state','not in',['progress']), ('validate_approval_status','!=','approved')],}"/>
                         <button name="action_purchase" string="購買発注" class="oe_highlight" type="object"
                                 attrs="{'invisible':[('state','not in',['order_received','progress'])],}"/>
                         <button name="%(action_view_construction_advance_payment_inv)d" string="請求書作成"
@@ -91,6 +91,8 @@
                         <group>
                             <group>
                                 <field name="construction_name" required="1"/>
+                                <field name="estimate_approval_status" invisible="1"/>
+                                <field name="validate_approval_status" invisible="1"/>
                                 <field name="partner_id" required="1"/>
                                 <field name="template_id" attrs="{'readonly':[('state','!=','draft')],}"
                                        domain="[('state', '=', 'approved')]"/>

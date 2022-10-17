@@ -10,6 +10,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='request_owner_id']" position="after">
                     <field name="has_construction_order_id" invisible="1"/>
+                    <field name="has_construction_order_id2" invisible="1"/>
                     <field name="has_construction_template_id" invisible="1"/>
                 </xpath>
                 <xpath expr="//group[@name='request_details']" position="inside">
@@ -19,7 +20,7 @@
                     'readonly':[('request_status','!=','new')]
                 }" options="{'no_quick_create': True}"
                            context="{'request_id': active_id}"
-                           domain="[('state', '=', 'draft')]"
+                           domain="[('state', '=', 'progress')]"
                     />
                     <field name="x_construction_template_id" attrs="{
                     'invisible': [('has_construction_template_id', '=', 'no')],
@@ -28,6 +29,14 @@
                 }" options="{'no_quick_create': True}"
                            context="{'request_id': active_id}"
                            domain="[('state', '=', 'new')]"
+                    />
+                    <field name="x_construction_order_id2" attrs="{
+                    'invisible': [('has_construction_order_id2', '=', 'no')],
+                    'required': [('has_construction_order_id2', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }" options="{'no_quick_create': True}"
+                           context="{'request_id': active_id}"
+                           domain="[('state', '=', 'draft')]"
                     />
                 </xpath>
             </field>
