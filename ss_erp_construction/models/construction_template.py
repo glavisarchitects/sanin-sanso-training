@@ -40,22 +40,24 @@ class ConstructionTemplate(models.Model):
 
     @api.depends('workcenter_line_ids.workcenter_id.component_ids')
     def _compute_component_line_ids(self):
-        self.component_line_ids = False
-        component_arr = [(6, 0, 0)]
-        if self.workcenter_line_ids:
-            for line in self.workcenter_line_ids:
-                if line.workcenter_id.component_ids:
-                    for component in line.workcenter_id.component_ids:
-                        data = {
-                            'template_id': self.id,
-                            'product_id': component.product_id.id,
-                            'product_uom_qty': component.product_uom_qty,
-                            'product_uom_id': component.product_uom_id.id,
-                            'workcenter_id': line.workcenter_id.id,
-                        }
-                        component_arr.append((0, 0, data))
-
-        self.component_line_ids = component_arr
+        for rec in self:
+            rec.component_line_ids = False
+            component_arr = []
+            # component_arr = [(5, 0, 0)]
+            if rec.workcenter_line_ids:
+                for line in rec.workcenter_line_ids:
+                    if line.workcenter_id.component_ids:
+                        for component in line.workcenter_id.component_ids:
+                            data = {
+                                'template_id': rec.id,
+                                'product_id': component.product_id.id,
+                                'product_uom_qty': component.product_uom_qty,
+                                'product_uom_id': component.product_uom_id.id,
+                                'workcenter_id': line.workcenter_id.id,
+                            }
+                            component_arr.append((0, 0, data))
+            if component_arr:
+                rec.component_line_ids = component_arr
 
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")
 
