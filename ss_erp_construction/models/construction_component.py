@@ -65,9 +65,6 @@ class ConstructionComponent(models.Model):
     #     self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
     #     self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
 
-    def _compute_margin(self):
-        for rec in self:
-
 
     def _compute_qty_to_invoice(self):
         for line in self:
