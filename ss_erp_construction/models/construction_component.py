@@ -75,7 +75,7 @@ class ConstructionComponent(models.Model):
             limit=1)
         return {
             'partner_id': self.partner_id.id,
-            'user_id': False,
+            'user_id': self.env.user.id,
             'x_construction_order_id': self.construction_id.id,
             'picking_type_id': picking_type_id.id,
             'company_id': company_id.id,
@@ -179,7 +179,7 @@ class ConstructionComponent(models.Model):
             po = self.env['purchase.order'].sudo().search(domain, limit=1)
             if not po:
                 vals = self._prepare_purchase_order()
-                po = self.env['purchase.order'].with_user(SUPERUSER_ID).create(vals)
+                po = self.env['purchase.order'].sudo().create(vals)
 
             po_line = po.order_line.filtered(
                 lambda
