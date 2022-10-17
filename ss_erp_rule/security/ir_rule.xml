@@ -405,7 +405,7 @@
 
         <record id="ss_erp_own_branch_orders_analysis_rule" model="ir.rule">
             <field name="name">SS Own Branch Orders Analysis</field>
-            <field name="model_id" ref="ss_erp_sale.model_sale_report"/>
+            <field name="model_id" ref="sale.model_sale_report"/>
             <field name="domain_force">
                 ['|',('x_organization_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
             </field>
@@ -420,7 +420,7 @@
 
         <record id="ss_erp_own_branch_orders_rule" model="ir.rule">
             <field name="name">SS Own Branch Orders</field>
-            <field name="model_id" ref="ss_erp_sale.model_sale_order"/>
+            <field name="model_id" ref="sale.model_sale_order"/>
             <field name="domain_force">
                 ['|',('x_organization_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
             </field>
@@ -435,7 +435,7 @@
 
         <record id="ss_erp_own_branch_orders_line_rule" model="ir.rule">
             <field name="name">SS Own Branch Order Lines</field>
-            <field name="model_id" ref="ss_erp_sale.model_sale_order_line"/>
+            <field name="model_id" ref="sale.model_sale_order_line"/>
             <field name="domain_force">
                 ['|',('salesman_id.organization_ids','in',user.organization_ids), ('salesman_id','=',user.id)]
             </field>
@@ -450,7 +450,7 @@
 
         <record id="ss_erp_own_branch_invoice_analysis_rule" model="ir.rule">
             <field name="name">SS Own Branch Invoices Analysis</field>
-            <field name="model_id" ref="ss_erp_accounting.model_account_invoice_report"/>
+            <field name="model_id" ref="sale.model_account_invoice_report"/>
             <field name="domain_force">
                 ['|',('salesman_id.organization_ids','in',user.organization_ids), ('salesman_id','=',user.id)]
             </field>
@@ -465,7 +465,7 @@
 
         <record id="ss_erp_own_branch_invoice_rule" model="ir.rule">
             <field name="name">SS Own Branch Invoices</field>
-            <field name="model_id" ref="ss_erp_accounting.model_account_move"/>
+            <field name="model_id" ref="account.model_account_move"/>
             <field name="domain_force">
                 [('move_type', 'in', ('out_invoice', 'out_refund','counstruction_out_invoice')), '|',
                 ('x_organization_id', '=', user.organization_ids.ids), ('invoice_user_id', '=', user.id)]
@@ -481,7 +481,7 @@
 
         <record id="ss_erp_own_branch_invoice_line_rule" model="ir.rule">
             <field name="name">SS Own Branch Invoice Lines</field>
-            <field name="model_id" ref="ss_erp_accounting.model_account_move_line"/>
+            <field name="model_id" ref="account.model_account_move_line"/>
             <field name="domain_force">
                 [('move_id.move_type', 'in', ('out_invoice', 'out_refund','counstruction_out_invoice')), '|',
                 ('move_id.x_organization_id', '=', user.organization_ids.ids), ('move_id.invoice_user_id', '=',
