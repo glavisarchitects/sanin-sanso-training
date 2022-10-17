@@ -39,7 +39,7 @@ class ConstructionComponent(models.Model):
 
     old_sale_price = fields.Monetary(string='古い販売価格', default=0)
 
-    @api.onchange('tax_id', 'standard_price', 'product_uom_qty','product_id','sale_price')
+    @api.onchange('tax_id', 'standard_price', 'product_uom_qty', 'product_id', 'sale_price')
     def _onchange_component(self):
         if self.old_sale_price == self.sale_price:
             self.margin_rate = self.construction_id.all_margin_rate
@@ -53,18 +53,6 @@ class ConstructionComponent(models.Model):
             self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
             self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
         self.old_sale_price = self.sale_price
-        # self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
-        # self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
-        # self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
-        # self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
-
-    # @api.onchange('sale_price')
-    # def _onchange_sale_price(self):
-    #     self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
-    #     self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
-    #     self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
-    #     self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
-
 
     def _compute_qty_to_invoice(self):
         for line in self:
@@ -174,7 +162,8 @@ class ConstructionComponent(models.Model):
                 ('payment_term_id', '=', self.payment_term_id.id),
                 ('x_construction_order_id', '=', self.construction_id.id),
             ]
-            po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(lambda x:x.product_id==self.product_id)
+            po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(
+                lambda x: x.product_id == self.product_id)
             return self.product_uom_qty - sum(po_ids.mapped('product_qty'))
         else:
             return 0
