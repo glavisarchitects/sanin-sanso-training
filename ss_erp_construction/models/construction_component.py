@@ -143,17 +143,15 @@ class ConstructionComponent(models.Model):
                         lambda l: l.product_id == self.product_id and l.product_uom_id == self.product_uom_id).mapped(
                         'qty_done'))
 
-                picking_type_id = self.env['stock.picking.type'].search(
-                    [('default_location_src_id.usage', '=', 'supplier'),
-                     ('default_location_dest_id.usage', '=', 'customer')],
-                    limit=1)
-
-                # 直送数量の計算
-                if picking.picking_type_id == picking_type_id:
-                    quantity += sum(picking.move_ids_without_package.filtered(
-                        lambda l: l.product_id == self.product_id and l.product_uom == self.product_uom_id).mapped(
-                        'product_uom_qty'))
-
+            domain = [
+                ('partner_id', '=', self.partner_id.id),
+                ('state', '!=', 'cancel'),
+                ('payment_term_id', '=', self.payment_term_id.id),
+                ('x_construction_order_id', '=', self.construction_id.id),
+            ]
+            po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(
+                lambda x: x.product_id == self.product_id)
+            quantity += sum(po_ids.mapped('product_qty'))
             return self.product_uom_qty - quantity
         elif self.product_id.type == "service":
             domain = [
