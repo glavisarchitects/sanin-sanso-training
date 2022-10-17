@@ -27,8 +27,8 @@ class ConstructionComponent(models.Model):
     sale_price = fields.Monetary(string='販売価格', tracking=True)
     margin = fields.Monetary(string='粗利益', store=True)
     margin_rate = fields.Float(string='マージン(%)', store=True)
-    subtotal_exclude_tax = fields.Monetary(string='小計（税別）', compute='_compute_margin', store=True)
-    subtotal = fields.Monetary(string='小計', compute='_compute_margin', store=True)
+    subtotal_exclude_tax = fields.Monetary(string='小計（税別）', store=True)
+    subtotal = fields.Monetary(string='小計', store=True)
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事', ondelete='cascade')
 
     is_downpayment = fields.Boolean(
@@ -64,6 +64,10 @@ class ConstructionComponent(models.Model):
     #     self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
     #     self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
     #     self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
+
+    def _compute_margin(self):
+        for rec in self:
+
 
     def _compute_qty_to_invoice(self):
         for line in self:
