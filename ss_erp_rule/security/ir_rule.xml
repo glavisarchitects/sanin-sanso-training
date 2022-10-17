@@ -94,7 +94,7 @@
         </record>
         <!--        Instruction Category Delete-->
         <record id="ss_erp_construction_category_rule" model="ir.rule">
-            <field name="name">Instruction Category Delete</field>
+            <field name="name">Counstruction Category Delete</field>
             <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction_category"/>
             <field name="domain_force">
                 [('user_id','=',user.id)]
@@ -112,7 +112,7 @@
         </record>
         <!--        Instruction Category Delete-->
         <record id="ss_erp_construction_template_rule" model="ir.rule">
-            <field name="name">Instruction Category Delete</field>
+            <field name="name">Construction Template Delete</field>
             <field name="model_id" ref="ss_erp_construction.model_construction_template"/>
             <field name="domain_force">
                 [('user_id','=',user.id)]
@@ -327,7 +327,7 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
-        <record id="ss_erp_propane_import_rule" model="ir.rule">
+        <record id="ss_erp_propane_import_rule_detail" model="ir.rule">
             <field name="name">SS:Propane Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_propane_sales_detail"/>
             <field name="domain_force">
