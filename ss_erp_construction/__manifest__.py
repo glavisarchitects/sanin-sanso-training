@@ -16,6 +16,7 @@
 
         # VIEWS
         'wizards/construction_make_invoice_advance_views.xml',
+        'wizards/construction_po_make_invoice_advance_views.xml',
         'views/construction_template.xml',
         'views/construction_view.xml',
         'views/construction_workcenter.xml',
@@ -25,11 +26,17 @@
         'views/stock_picking_views.xml',
         'views/construction_category_view.xml',
         'views/cost_structure_report.xml',
+        'views/res_partner_view.xml',
+        'views/product_template_view.xml',
+        'views/account_journal_view.xml',
+        'views/purchase_order_view.xml',
+        'views/account_move_view.xml',
         'menu/menu_item.xml',
 
         # DATA
         'data/ir_sequence_data.xml',
         'data/construction_product_data.xml',
+
         # 'data/parameter_config_data.xml',
     ],
     "application": False,

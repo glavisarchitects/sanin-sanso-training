@@ -452,8 +452,6 @@ class ApprovalRequest(models.Model):
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'approval'})
             elif self.request_status == 'approved':
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'approved'})
-                # Inventory Adjustment
-                self.x_lpgas_inventory_ids.sudo().make_inventory_adjustment()
             elif self.request_status == 'cancel':
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'cancel'})
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_construction_res_partner_form_inherit" model="ir.ui.view">
+            <field name="name">ss_erp_construction_res_partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="ss_erp_res_partner.ss_erp_res_partner_inherit_form"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='accounting_entries']" position="replace">
+                    <group>
+                        <group string="勘定科目設定" name="accounting_entries" modifiers="{}">
+                            <field name="currency_id" invisible="1" can_create="true" can_write="true"
+                                   modifiers="{'invisible':true,'readonly':true}" id="currency_id__11__"/>
+                            <field name="property_account_receivable_id" can_create="true" can_write="true"
+                                   modifiers="{'required':true}" id="property_account_receivable_id"/>
+                            <field name="property_account_payable_id" can_create="true" can_write="true"
+                                   modifiers="{'required':true}" id="property_account_payable_id"/>
+                        </group>
+                        <group string="工事勘定科目設定" name="construction_accounting_setting">
+                            <field name="x_construction_account_receivable_id"
+                                   attrs="{'required': [('x_transaction_categ', '=', 'construction')]}"/>
+                            <field name="x_construction_account_payable_id"
+                                   attrs="{'required': [('x_transaction_categ', '=', 'construction')]}"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
