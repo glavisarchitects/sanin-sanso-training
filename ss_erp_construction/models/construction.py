@@ -22,6 +22,18 @@ class Construction(models.Model):
         default=lambda self: self._get_default_x_responsible_dept_id()
     )
 
+    estimate_approval_status = fields.Selection([('new', '未申請'),
+                                        ('pending', '申請済'),
+                                        ('approved', '確認済'),
+                                        ('refused', '却下済'),
+                                        ('cancel', '取消')], string='承認ステータス', default='new')
+
+    validate_approval_status = fields.Selection([('new', '未申請'),
+                                        ('pending', '申請済'),
+                                        ('approved', '確認済'),
+                                        ('refused', '却下済'),
+                                        ('cancel', '取消')], string='承認ステータス', default='new')
+
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
@@ -84,7 +96,7 @@ class Construction(models.Model):
                 raise UserError(
                     "承認金額の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_estimate_report)")
             minium_value = float(minium_value)
-            rec.show_confirmation_button = True if 0 < rec.amount_total < minium_value else False
+            rec.show_confirmation_button = True if (0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
 
     def _compute_invoice_count(self):
         Invoice = self.env['account.move']
@@ -164,7 +176,7 @@ class Construction(models.Model):
             workorder_lines = self.env['ss.erp.construction.workorder'].create({
                 'construction_id': self.id,
                 'name': workcenter_line.workcenter_id.name,
-                'duration_expected':workcenter_line.spend_time,
+                'duration_expected': workcenter_line.spend_time,
                 'costs_hour': workcenter_line.costs_hour
             })
             workorder_lines.workorder_component_ids = components
@@ -272,15 +284,15 @@ class Construction(models.Model):
     expire_date = fields.Date(string='有効期限')
     estimation_note = fields.Char(string='備考')
 
-    # @api.onchange('all_margin_rate')
-    # def _onchange_all_margin_rate(self):
-    #     if self.construction_component_ids:
-    #         for line in self.construction_component_ids:
-    #             line.margin_rate = self.all_margin_rate
-    #             line.sale_price = line.standard_price / (1 - line.margin_rate)
-    #             line.margin = (line.sale_price - line.standard_price) * line.product_uom_qty
-    #             line.subtotal_exclude_tax = line.product_uom_qty * line.sale_price
-    #             line.subtotal = line.subtotal_exclude_tax * (1 + line.tax_id.amount / 100)
+    @api.onchange('all_margin_rate')
+    def _onchange_all_margin_rate(self):
+        if self.construction_component_ids and self.all_margin_rate:
+            for line in self.construction_component_ids:
+                line.margin_rate = self.all_margin_rate
+                line.sale_price = line.standard_price / (1 - line.margin_rate)
+                line.margin = (line.sale_price - line.standard_price) * line.product_uom_qty
+                line.subtotal_exclude_tax = line.product_uom_qty * line.sale_price
+                line.subtotal = line.subtotal_exclude_tax * (1 + line.tax_id.amount / 100)
 
     @api.onchange('is_tax_exclude')
     def _onchange_is_tax_exclude(self):
@@ -318,6 +330,9 @@ class Construction(models.Model):
     def action_cancel(self):
         self.write({'state': 'cancel'})
 
+    def action_validate(self):
+        self.write({'state': 'done'})
+
     def action_view_purchase_order(self):
         purchase_order_ids = self.env['purchase.order'].search([('x_construction_order_id', '=', self.id)]).ids
         action = self.env['ir.actions.act_window']._for_xml_id('purchase.purchase_rfq')
@@ -329,9 +344,10 @@ class Construction(models.Model):
         if self.construction_component_ids:
             new_po = []
             for rec in self.construction_component_ids:
-                po = rec._run_buy()
-                if po:
-                    new_po.append(po.id)
+                if rec.product_id.type != "consu" and self.partner_id:
+                    po = rec._run_buy()
+                    if po:
+                        new_po.append(po.id)
             if new_po:
                 action = self.env['ir.actions.act_window']._for_xml_id('purchase.purchase_rfq')
                 action['domain'] = [('id', 'in', new_po)]
@@ -375,7 +391,8 @@ class Construction(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        journal = self.env['account.move'].with_context(default_move_type='counstruction_out_invoice')._get_default_journal()
+        journal = self.env['account.move'].with_context(
+            default_move_type='counstruction_out_invoice')._get_default_journal()
         if not journal:
             raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
                 self.company_id.name, self.company_id.id))
@@ -471,7 +488,8 @@ class Construction(models.Model):
         if not invoice_vals_list:
             raise self._nothing_to_invoice_error()
 
-        moves = self.env['account.move'].sudo().with_context(default_move_type='construction_sale').create(invoice_vals_list)
+        moves = self.env['account.move'].sudo().with_context(default_move_type='construction_sale').create(
+            invoice_vals_list)
 
         if final:
             moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()

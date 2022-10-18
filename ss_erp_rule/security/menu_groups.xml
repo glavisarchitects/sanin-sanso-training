@@ -57,11 +57,11 @@
             (4, ref('group_branch_middle_manager')),
             (4, ref('group_branch_manager')),
             (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
+
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-        <record id="ss_erp_external_data_import.external_system_cooperation_imported_data_purchase" model="ir.ui.menu">
+        <record id="ss_erp_external_data_import.external_system_cooperation_importing_performance_purchase" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('group_branch_general')),
             (4, ref('group_branch_middle_manager')),
@@ -110,7 +110,7 @@
             (4, ref('group_branch_middle_manager')),
             (4, ref('group_branch_manager')),
             (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
+
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
@@ -172,7 +172,7 @@
             (4, ref('group_branch_middle_manager')),
             (4, ref('group_branch_manager')),
             (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
+
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
@@ -182,7 +182,7 @@
             (4, ref('group_branch_middle_manager')),
             (4, ref('group_branch_manager')),
             (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
+
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
@@ -192,7 +192,7 @@
             (4, ref('group_branch_middle_manager')),
             (4, ref('group_branch_manager')),
             (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
+
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
@@ -202,20 +202,11 @@
             (4, ref('group_branch_middle_manager')),
             (4, ref('group_branch_manager')),
             (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
+
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-        <record id="account_reports.account_reports_partners_reports_menu" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
-            (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
+
         <record id="ss_erp_svf_intergration.ss_erp_annual_monthly_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('group_branch_general')),
@@ -267,26 +258,13 @@
             ]"/>
         </record>
 
-        <record id="stock.all_picking" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
-            (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-
         <record id="account_reports.account_reports_partners_reports_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('group_branch_general')),
             (4, ref('group_branch_middle_manager')),
             (4, ref('group_branch_manager')),
             (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
-            (4, ref('group_head_quarter'))
+
             ]"/>
         </record>
 

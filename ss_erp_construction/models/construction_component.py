@@ -27,8 +27,8 @@ class ConstructionComponent(models.Model):
     sale_price = fields.Monetary(string='販売価格', tracking=True)
     margin = fields.Monetary(string='粗利益', store=True)
     margin_rate = fields.Float(string='マージン(%)', store=True)
-    subtotal_exclude_tax = fields.Monetary(string='小計（税別）', compute='_compute_margin', store=True)
-    subtotal = fields.Monetary(string='小計', compute='_compute_margin', store=True)
+    subtotal_exclude_tax = fields.Monetary(string='小計（税別）', store=True)
+    subtotal = fields.Monetary(string='小計', store=True)
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事', ondelete='cascade')
 
     is_downpayment = fields.Boolean(
@@ -39,7 +39,7 @@ class ConstructionComponent(models.Model):
 
     old_sale_price = fields.Monetary(string='古い販売価格', default=0)
 
-    @api.onchange('tax_id', 'standard_price', 'product_uom_qty','product_id','sale_price')
+    @api.onchange('tax_id', 'standard_price', 'product_uom_qty', 'product_id', 'sale_price')
     def _onchange_component(self):
         if self.old_sale_price == self.sale_price:
             self.margin_rate = self.construction_id.all_margin_rate
@@ -53,17 +53,6 @@ class ConstructionComponent(models.Model):
             self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
             self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
         self.old_sale_price = self.sale_price
-        # self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
-        # self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
-        # self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
-        # self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
-
-    # @api.onchange('sale_price')
-    # def _onchange_sale_price(self):
-    #     self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
-    #     self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
-    #     self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
-    #     self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
 
     def _compute_qty_to_invoice(self):
         for line in self:
@@ -86,7 +75,7 @@ class ConstructionComponent(models.Model):
             limit=1)
         return {
             'partner_id': self.partner_id.id,
-            'user_id': False,
+            'user_id': self.env.user.id,
             'x_construction_order_id': self.construction_id.id,
             'picking_type_id': picking_type_id.id,
             'company_id': company_id.id,
@@ -154,17 +143,15 @@ class ConstructionComponent(models.Model):
                         lambda l: l.product_id == self.product_id and l.product_uom_id == self.product_uom_id).mapped(
                         'qty_done'))
 
-                picking_type_id = self.env['stock.picking.type'].search(
-                    [('default_location_src_id.usage', '=', 'supplier'),
-                     ('default_location_dest_id.usage', '=', 'customer')],
-                    limit=1)
-
-                # 直送数量の計算
-                if picking.picking_type_id == picking_type_id:
-                    quantity += sum(picking.move_ids_without_package.filtered(
-                        lambda l: l.product_id == self.product_id and l.product_uom == self.product_uom_id).mapped(
-                        'product_uom_qty'))
-
+            domain = [
+                ('partner_id', '=', self.partner_id.id),
+                ('state', '!=', 'cancel'),
+                ('payment_term_id', '=', self.payment_term_id.id),
+                ('x_construction_order_id', '=', self.construction_id.id),
+            ]
+            po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(
+                lambda x: x.product_id == self.product_id)
+            quantity += sum(po_ids.mapped('product_qty'))
             return self.product_uom_qty - quantity
         elif self.product_id.type == "service":
             domain = [
@@ -173,7 +160,8 @@ class ConstructionComponent(models.Model):
                 ('payment_term_id', '=', self.payment_term_id.id),
                 ('x_construction_order_id', '=', self.construction_id.id),
             ]
-            po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(lambda x:x.product_id==self.product_id)
+            po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(
+                lambda x: x.product_id == self.product_id)
             return self.product_uom_qty - sum(po_ids.mapped('product_qty'))
         else:
             return 0
@@ -181,10 +169,7 @@ class ConstructionComponent(models.Model):
     @api.model
     def _run_buy(self):
         qty_to_buy = self.calculate_qty_to_buy()
-        if qty_to_buy != 0 and self.product_id.type != "consu":
-            if not self.partner_id:
-                raise UserError("%sのプロダクトに対して、仕入先は設定してください。" % self.product_id.name)
-
+        if qty_to_buy != 0 and self.product_id.type != "consu" and self.partner_id:
             domain = [
                 ('partner_id', '=', self.partner_id.id),
                 ('state', '=', 'draft'),
@@ -194,7 +179,7 @@ class ConstructionComponent(models.Model):
             po = self.env['purchase.order'].sudo().search(domain, limit=1)
             if not po:
                 vals = self._prepare_purchase_order()
-                po = self.env['purchase.order'].with_user(SUPERUSER_ID).create(vals)
+                po = self.env['purchase.order'].sudo().create(vals)
 
             po_line = po.order_line.filtered(
                 lambda
