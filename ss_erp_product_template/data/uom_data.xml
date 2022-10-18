@@ -5,6 +5,27 @@
         <record id="uom_category_data_electricity" model="uom.category">
             <field name="name">電気量</field>
         </record>
+        <record id="uom_category_data_base" model="uom.category">
+            <field name="name">台</field>
+        </record>
+        <record id="uom_category_data_sets" model="uom.category">
+            <field name="name">式</field>
+        </record>
+        <record id="uom_category_data_multiple" model="uom.category">
+            <field name="name">本</field>
+        </record>
+        <record id="uom_category_data_sheet" model="uom.category">
+            <field name="name">枚</field>
+        </record>
+        <record id="uom_category_data_box" model="uom.category">
+            <field name="name">箱</field>
+        </record>
+        <record id="uom_category_data_can" model="uom.category">
+            <field name="name">缶</field>
+        </record>
+        <record id="uom_category_data_etc" model="uom.category">
+            <field name="name">△</field>
+        </record>
 
         <!--                uom uom-->
         <record id="uom_uom_data_Wh" model="uom.uom">
@@ -13,56 +34,53 @@
             <field name="factor" eval="1.0"/>
             <field name="uom_type">reference</field>
         </record>
-
         <record id="uom_uom_data_kWh" model="uom.uom">
             <field name="name">kWh</field>
             <field name="category_id" ref="uom_category_data_electricity"/>
             <field name="uom_type">bigger</field>
             <field name="factor_inv">1000</field>
         </record>
-
-        <record id="uom_uom_data_1" model="uom.uom">
-            <field name="name">個</field>
-            <field name="category_id" ref="uom.product_uom_categ_unit"/>
-            <field name="uom_type">bigger</field>
-            <field name="factor_inv">1</field>
-        </record>
-        <record id="uom_uom_data_2" model="uom.uom">
+        <record id="uom_uom_data_base" model="uom.uom">
             <field name="name">台</field>
-            <field name="category_id" ref="uom.product_uom_categ_unit"/>
-            <field name="uom_type">bigger</field>
+            <field name="category_id" ref="uom_category_data_base"/>
+            <field name="uom_type">reference</field>
             <field name="factor_inv">1</field>
         </record>
-        <record id="uom_uom_data_3" model="uom.uom">
+        <record id="uom_uom_data_sets" model="uom.uom">
             <field name="name">式</field>
-            <field name="category_id" ref="uom.product_uom_categ_unit"/>
-            <field name="uom_type">bigger</field>
+            <field name="category_id" ref="uom_category_data_sets"/>
+            <field name="uom_type">reference</field>
             <field name="factor_inv">1</field>
         </record>
-        <record id="uom_uom_data_4" model="uom.uom">
+        <record id="uom_uom_data_multiple" model="uom.uom">
             <field name="name">本</field>
-            <field name="category_id" ref="uom.product_uom_categ_unit"/>
-            <field name="uom_type">bigger</field>
+            <field name="category_id" ref="uom_category_data_multiple"/>
+            <field name="uom_type">reference</field>
             <field name="factor_inv">1</field>
         </record>
-        <record id="uom_uom_data_5" model="uom.uom">
+        <record id="uom_uom_data_sheet" model="uom.uom">
             <field name="name">枚</field>
-            <field name="category_id" ref="uom.product_uom_categ_unit"/>
-            <field name="uom_type">bigger</field>
+            <field name="category_id" ref="uom_category_data_sheet"/>
+            <field name="uom_type">reference</field>
             <field name="factor_inv">1</field>
         </record>
-        <record id="uom_uom_data_6" model="uom.uom">
+        <record id="uom_uom_data_box" model="uom.uom">
             <field name="name">箱</field>
-            <field name="category_id" ref="uom.product_uom_categ_unit"/>
-            <field name="uom_type">bigger</field>
+            <field name="category_id" ref="uom_category_data_box"/>
+            <field name="uom_type">reference</field>
             <field name="factor_inv">1</field>
         </record>
-        <record id="uom_uom_data_7" model="uom.uom">
+        <record id="uom_uom_data_can" model="uom.uom">
             <field name="name">缶</field>
-            <field name="category_id" ref="uom.product_uom_categ_unit"/>
-            <field name="uom_type">bigger</field>
+            <field name="category_id" ref="uom_category_data_can"/>
+            <field name="uom_type">reference</field>
             <field name="factor_inv">1</field>
         </record>
-
+        <record id="uom_uom_data_etc" model="uom.uom">
+            <field name="name">△</field>
+            <field name="category_id" ref="uom_category_data_etc"/>
+            <field name="uom_type">reference</field>
+            <field name="factor_inv">1</field>
+        </record>
     </data>
 </odoo>

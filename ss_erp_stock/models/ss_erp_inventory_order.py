@@ -100,12 +100,12 @@ class InventoryOrder(models.Model):
         for stock_picking in stock_picking_order:
             stock_picking.action_cancel()
 
-    @api.constrains('scheduled_date')
-    def _check_scheduled_date(self):
-        for rec in self:
-            current_date = fields.Date.today()
-            if rec.scheduled_date < current_date:
-                raise ValidationError(_("予定日は現在より過去の日付は設定できません。"))
+    # @api.constrains('scheduled_date')
+    # def _check_scheduled_date(self):
+    #     for rec in self:
+    #         current_date = fields.Date.today()
+    #         if rec.scheduled_date < current_date:
+    #             raise ValidationError(_("予定日は現在より過去の日付は設定できません。"))
 
     @api.constrains('inventory_order_line_ids')
     def _check_inventory_order_line_ids(self):
