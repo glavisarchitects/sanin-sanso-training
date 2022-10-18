@@ -277,9 +277,8 @@ class ResPartner(models.Model):
                 self._commercial_sync_from_company()
             # 1b. Address fields: sync if parent or use_parent changed *and* both are now set
             if self.parent_id and self.type == 'contact' and self.x_contact_categ and self.x_contact_categ.id != kyoten:
-                if self.onchange_parent_id():
-                    onchange_vals = self.onchange_parent_id().get('value', {})
-                    self.update_address(onchange_vals)
+                onchange_vals = self.onchange_parent_id().get('value', {})
+                self.update_address(onchange_vals)
 
         # 2. To DOWNSTREAM: sync children
         self._children_sync(values)
@@ -291,23 +290,20 @@ class ResPartner(models.Model):
             update_partner_form = False
         res = super(ResPartner, self).write(vals)
         if update_partner_form and len(vals) > 0 and self._name != 'ss_erp.res.partner.form':
-            for rec in self:
-                values = {}
-                form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', rec.id)])
-                values.update({'source': 'res_partner'})
-                for field_name, field_value in vals.items():
-                    if field_name in ('parent_id','child_ids'):
-                        continue
-                    if type(rec._fields[field_name].compute) != str:
-                        if rec._fields[field_name].type in ['one2many', 'many2many']:
-                            value = getattr(rec, field_name, ())
-                            value = [(6, 0, value.ids)] if value else False
-                        else:
-                            value = getattr(rec, field_name)
-                            if rec._fields[field_name].type == 'many2one':
-                                value = value.id if value else False
-                        values.update({field_name: value})
-                form_id.write(values)
+            values = {}
+            form_id = self.env['ss_erp.res.partner.form'].search([('res_partner_id', '=', self.id)])
+            values.update({'source': 'res_partner'})
+            for field_name, field_value in vals.items():
+                if type(self._fields[field_name].compute) != str:
+                    if self._fields[field_name].type in ['one2many', 'many2many']:
+                        value = getattr(self, field_name, ())
+                        value = [(6, 0, value.ids)] if value else False
+                    else:
+                        value = getattr(self, field_name)
+                        if self._fields[field_name].type == 'many2one':
+                            value = value.id if value else False
+                values.update({field_name: value})
+            form_id.write(values)
         return res
 
     def check_condition_show_dialog(self, vals=False, data_changed=False):
