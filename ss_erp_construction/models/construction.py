@@ -23,16 +23,16 @@ class Construction(models.Model):
     )
 
     estimate_approval_status = fields.Selection([('new', '未申請'),
-                                        ('pending', '申請済'),
-                                        ('approved', '確認済'),
-                                        ('refused', '却下済'),
-                                        ('cancel', '取消')], string='承認ステータス', default='new')
+                                                 ('pending', '申請済'),
+                                                 ('approved', '確認済'),
+                                                 ('refused', '却下済'),
+                                                 ('cancel', '取消')], string='承認ステータス', default='new')
 
     validate_approval_status = fields.Selection([('new', '未申請'),
-                                        ('pending', '申請済'),
-                                        ('approved', '確認済'),
-                                        ('refused', '却下済'),
-                                        ('cancel', '取消')], string='承認ステータス', default='new')
+                                                 ('pending', '申請済'),
+                                                 ('approved', '確認済'),
+                                                 ('refused', '却下済'),
+                                                 ('cancel', '取消')], string='承認ステータス', default='new')
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
@@ -96,7 +96,8 @@ class Construction(models.Model):
                 raise UserError(
                     "承認金額の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_estimate_report)")
             minium_value = float(minium_value)
-            rec.show_confirmation_button = True if (0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
+            rec.show_confirmation_button = True if (
+                        0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
 
     def _compute_invoice_count(self):
         Invoice = self.env['account.move']
@@ -267,7 +268,7 @@ class Construction(models.Model):
         default='draft',
         required=False, )
 
-    # Estiamtion Tab 2022/09/28
+    # Estimation Tab 2022/09/28
     print_type = fields.Selection(string='帳票タイプ',
                                   selection=[('housing', 'ハウジング'),
                                              ('equipment', '設備'),
@@ -374,7 +375,7 @@ class Construction(models.Model):
             action = {'type': 'ir.actions.act_window_close'}
 
         context = {
-            'default_move_type': 'counstruction_out_invoice',
+            'default_move_type': 'out_invoice',
         }
         action['context'] = context
         return action
@@ -391,15 +392,13 @@ class Construction(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        journal = self.env['account.move'].with_context(
-            default_move_type='counstruction_out_invoice')._get_default_journal()
+        journal = self.env['account.journal'].sudo().search([('type', '=', 'sale'), ('is_construction', '=', True)])
         if not journal:
-            raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
-                self.company_id.name, self.company_id.id))
+            raise UserError('工事販売仕訳帳をご確認ください。')
 
         invoice_vals = {
             'ref': self.client_order_ref,
-            'move_type': 'counstruction_out_invoice',
+            'move_type': 'out_invoice',
             'invoice_origin': self.name,
             'x_organization_id': self.organization_id.id,
             'x_responsible_dept_id': self.responsible_dept_id.id,
@@ -410,6 +409,7 @@ class Construction(models.Model):
                 self.partner_id.id)).id,
             'partner_shipping_id': self.partner_id.id,
             'currency_id': self.currency_id.id,
+            'journal_id': journal.id,
             'invoice_payment_term_id': self.payment_term_id.id,
             'partner_bank_id': self.partner_id.bank_ids[:1].id,
             'invoice_line_ids': [],
@@ -418,7 +418,7 @@ class Construction(models.Model):
         return invoice_vals
 
     def _get_invoiceable_lines(self):
-        return self.construction_component_ids.filtered(lambda x: x.product_id.type == 'product')
+        return self.construction_component_ids
 
     @api.model
     def _prepare_down_payment_section_line(self, **optional_values):
@@ -475,11 +475,12 @@ class Construction(models.Model):
                 )
                 down_payment_section_added = True
                 invoice_item_sequence += 1
-            invoice_line_vals.append(
-                (0, 0, line._prepare_invoice_line(
-                    sequence=invoice_item_sequence,
-                )),
-            )
+            if line.qty_to_invoice != 0:
+                invoice_line_vals.append(
+                    (0, 0, line._prepare_invoice_line(
+                        sequence=invoice_item_sequence,
+                    )),
+                )
             invoice_item_sequence += 1
 
         invoice_vals['invoice_line_ids'] += invoice_line_vals
@@ -488,7 +489,7 @@ class Construction(models.Model):
         if not invoice_vals_list:
             raise self._nothing_to_invoice_error()
 
-        moves = self.env['account.move'].sudo().with_context(default_move_type='construction_sale').create(
+        moves = self.env['account.move'].sudo().with_context(default_move_type='out_invoice').create(
             invoice_vals_list)
 
         if final:

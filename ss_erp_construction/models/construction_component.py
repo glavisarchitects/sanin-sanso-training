@@ -13,6 +13,7 @@ class ConstructionComponent(models.Model):
     product_uom_qty = fields.Float(string='数量', tracking=True, default=1.0)
     qty_done = fields.Float(string='消費済み', store=True)
     qty_to_invoice = fields.Float(string='請求対象', compute='_compute_qty_to_invoice')
+    qty_invoiced = fields.Float(string='請求済み', compute='_get_invoice_qty')
     # qty_to_buy = fields.Float(string='購買対象', compute='_compute_qty_to_buy')
     product_uom_id = fields.Many2one(comodel_name='uom.uom', string='単位', tracking=True,
                                      domain="[('category_id', '=', product_uom_category_id)]")
@@ -38,6 +39,9 @@ class ConstructionComponent(models.Model):
         related='construction_id.state', string='工事ステータス', readonly=True, copy=False, store=True, default='draft')
 
     old_sale_price = fields.Monetary(string='古い販売価格', default=0)
+
+    invoice_lines = fields.Many2many('account.move.line', 'construction_order_line_invoice_rel', 'order_line_id',
+                                     'invoice_line_id', string='請求明細', copy=False)
 
     @api.onchange('tax_id', 'standard_price', 'product_uom_qty', 'product_id', 'sale_price')
     def _onchange_component(self):
@@ -214,8 +218,36 @@ class ConstructionComponent(models.Model):
             'product_uom_id': self.product_uom_id.id,
             'quantity': self.qty_to_invoice,
             'price_unit': self.sale_price,
+            'construction_line_ids': [(4, self.id)],
             'tax_ids': [(6, 0, [self.tax_id.id])] if self.tax_id else False,
         }
         if optional_values:
             res.update(optional_values)
         return res
+
+    @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity')
+    def _get_invoice_qty(self):
+        """
+        Compute the quantity invoiced. If case of a refund, the quantity invoiced is decreased. Note
+        that this is the case only if the refund is generated from the SO and that is intentional: if
+        a refund made would automatically decrease the invoiced quantity, then there is a risk of reinvoicing
+        it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
+        """
+        for line in self:
+            qty_invoiced = 0.0
+            for invoice_line in line.invoice_lines:
+                if invoice_line.move_id.state != 'cancel':
+                    if invoice_line.move_id.move_type == 'out_invoice':
+                        qty_invoiced += invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, line.product_uom_id)
+                    elif invoice_line.move_id.move_type == 'out_refund':
+                        qty_invoiced -= invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, line.product_uom_id)
+            line.qty_invoiced = qty_invoiced
+
+    @api.depends('qty_invoiced','product_uom_qty')
+    def _get_to_invoice_qty(self):
+        """
+        Compute the quantity to invoice. If the invoice policy is order, the quantity to invoice is
+        calculated from the ordered quantity. Otherwise, the quantity delivered is used.
+        """
+        for line in self:
+            line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
