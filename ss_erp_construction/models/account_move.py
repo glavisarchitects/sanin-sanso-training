@@ -10,7 +10,7 @@ class AccountMove(models.Model):
 
     def _recompute_payment_terms_lines(self):
         super()._recompute_payment_terms_lines()
-        if self.x_construction_order_id:
+        if self.journal_id.is_construction:
             if self.is_sale_document(include_receipts=True) and self.partner_id:
                 new_term_account = self.partner_id.x_construction_account_receivable_id
             elif self.is_purchase_document(include_receipts=True) and self.partner_id:

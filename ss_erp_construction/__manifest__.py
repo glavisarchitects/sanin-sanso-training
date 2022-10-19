@@ -27,15 +27,16 @@
         'views/construction_category_view.xml',
         'views/cost_structure_report.xml',
         'views/res_partner_view.xml',
+        'views/purchase_order_view.xml',
         'views/product_template_view.xml',
         'views/account_journal_view.xml',
-        'views/purchase_order_view.xml',
         'views/account_move_view.xml',
         'menu/menu_item.xml',
 
         # DATA
         'data/ir_sequence_data.xml',
         'data/construction_product_data.xml',
+        'data/ir_action_server_data.xml',
 
         # 'data/parameter_config_data.xml',
     ],
