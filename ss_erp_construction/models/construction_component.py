@@ -27,9 +27,9 @@ class ConstructionComponent(models.Model):
     tax_id = fields.Many2one(comodel_name='account.tax', string='税', tracking=True)
     sale_price = fields.Monetary(string='販売価格', tracking=True)
     margin = fields.Monetary(string='粗利益', store=True)
-    margin_rate = fields.Float(string='マージン(%)', store=True)
-    subtotal_exclude_tax = fields.Monetary(string='小計（税別）', store=True)
-    subtotal = fields.Monetary(string='小計', store=True)
+    margin_rate = fields.Float(string='マージン(%)', store=True, default=lambda self: self.construction_id.all_margin_rate)
+    subtotal_exclude_tax = fields.Monetary(string='小計（税別）', store=True, compute='_compute_subtotal')
+    subtotal = fields.Monetary(string='小計', store=True, compute='_compute_subtotal')
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事', ondelete='cascade')
 
     is_downpayment = fields.Boolean(
@@ -38,25 +38,38 @@ class ConstructionComponent(models.Model):
     state = fields.Selection(
         related='construction_id.state', string='工事ステータス', readonly=True, copy=False, store=True, default='draft')
 
-    old_sale_price = fields.Monetary(string='古い販売価格', default=0)
-
     invoice_lines = fields.Many2many('account.move.line', 'construction_order_line_invoice_rel', 'order_line_id',
                                      'invoice_line_id', string='請求明細', copy=False)
 
-    @api.onchange('tax_id', 'standard_price', 'product_uom_qty', 'product_id', 'sale_price')
-    def _onchange_component(self):
-        if self.old_sale_price == self.sale_price:
-            self.margin_rate = self.construction_id.all_margin_rate
+    onchange_sale_price = fields.Boolean(default=False)
+    onchange_margin = fields.Boolean(default=False)
+
+    @api.depends('product_uom_qty','tax_id', 'sale_price')
+    def _compute_subtotal(self):
+        for rec in self:
+            rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
+            rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
+
+    @api.onchange('margin_rate')
+    def _onchange_margin_rate(self):
+        if not self.onchange_sale_price:
             self.sale_price = self.standard_price / (1 - self.margin_rate)
             self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
-            self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
-            self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
+            self.onchange_margin = True
         else:
+            self.onchange_margin = False
+
+
+    @api.onchange('sale_price',)
+    def _onchange_sale_price(self):
+        if not self.onchange_margin:
             self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
             self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
-            self.subtotal_exclude_tax = self.product_uom_qty * self.sale_price
-            self.subtotal = self.subtotal_exclude_tax * (1 + self.tax_id.amount / 100)
-        self.old_sale_price = self.sale_price
+            self.onchange_sale_price = True
+        else:
+            self.onchange_sale_price = False
+
+
 
     def _compute_qty_to_invoice(self):
         for line in self:
