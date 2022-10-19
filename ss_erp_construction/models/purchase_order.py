@@ -9,6 +9,7 @@ from datetime import datetime
 import logging
 
 _logger = logging.getLogger(__name__)
+from itertools import groupby
 
 
 class PurchaseOrder(models.Model):
@@ -55,20 +56,24 @@ class PurchaseOrder(models.Model):
         overridden to implement custom invoice generation (making sure to call super() to establish
         a clean extension chain).
         """
+        invoice_vals = super(PurchaseOrder, self)._prepare_invoice()
         if self.x_bis_categ_id == 'gas_material':
-            return super()._prepare_invoice()
+            invoice_vals.update({
+                'invoice_type': 'gas_material'
+            })
         else:
 
             self.ensure_one()
-            journal = self.env['account.journal'].sudo().search([('type', '=', 'purchase'), ('is_construction', '=', True)],
-                                                                limit=1)
+            journal = self.env['account.journal'].sudo().search(
+                [('type', '=', 'purchase'), ('is_construction', '=', True)],
+                limit=1)
             if not journal:
                 raise UserError('工事購買の仕訳帳は設定していません。もう一度ご確認ください')
-            invoice_vals = super(PurchaseOrder, self)._prepare_invoice()
             invoice_vals.update({
                 'journal_id': journal.id,
+                'invoice_type': 'construction'
             })
-            return invoice_vals
+        return invoice_vals
 
     def _get_invoiceable_lines(self, final=False):
         """Return the invoiceable lines for order `self`."""
@@ -136,18 +141,49 @@ class PurchaseOrder(models.Model):
                     )
                     down_payment_section_added = True
                     invoice_item_sequence += 1
+
+                line_vals = line._prepare_account_move_line()
+                line_vals.update({'sequence': invoice_item_sequence})
                 invoice_line_vals.append(
-                    (0, 0, line._prepare_account_move_line(
-                        sequence=invoice_item_sequence,
-                    )),
+                    (0, 0, line_vals),
                 )
                 invoice_item_sequence += 1
 
-            invoice_vals['invoice_line_ids'] += invoice_line_vals
+            if invoice_line_vals is not None:
+                invoice_vals['invoice_line_ids'] += invoice_line_vals
             invoice_vals_list.append(invoice_vals)
 
         if not invoice_vals_list:
             raise self._nothing_to_invoice_error()
+
+        new_invoice_vals_list = []
+        for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
+            x.get('company_id'), x.get('partner_id'), x.get('currency_id'), x.get('invoice_type'))):
+            origins = set()
+            payment_refs = set()
+            refs = set()
+            ref_invoice_vals = None
+            for invoice_vals in invoices:
+                if not ref_invoice_vals:
+                    ref_invoice_vals = invoice_vals
+                else:
+                    ref_invoice_vals['invoice_line_ids'] += invoice_vals['invoice_line_ids']
+                origins.add(invoice_vals['invoice_origin'])
+                payment_refs.add(invoice_vals['payment_reference'])
+                refs.add(invoice_vals['ref'])
+            ref_invoice_vals.update({
+                'ref': ', '.join(refs)[:2000],
+                'invoice_origin': ', '.join(origins),
+                'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
+            })
+            new_invoice_vals_list.append(ref_invoice_vals)
+
+        invoice_vals_list = []
+
+        for ele in new_invoice_vals_list:
+            del ele['invoice_type']
+            invoice_vals_list.append(ele)
+        # invoice_vals_list = new_invoice_vals_list
 
         moves = self.env['account.move'].sudo().with_context(default_move_type='in_invoice').create(
             invoice_vals_list)
@@ -162,26 +198,3 @@ class PurchaseOrderLine(models.Model):
 
     is_downpayment = fields.Boolean(
         string="頭金であるか", help="Down payments are made when creating invoices from a construction order.")
-
-    # def _prepare_account_move_line(self, **optional_values):
-    #     """
-    #     Prepare the dict of values to create the new invoice line for a construction order line.
-    #
-    #     :param qty: float quantity to invoice
-    #     :param optional_values: any parameter that should be added to the returned invoice line
-    #     """
-    #     self.ensure_one()
-    #     res = {
-    #         'display_type': self.display_type,
-    #         'sequence': self.sequence,
-    #         'name': self.name,
-    #         'product_id': self.product_id.id,
-    #         'product_uom_id': self.product_uom.id,
-    #         'quantity': self.qty_to_invoice,
-    #         'price_unit': self.price_unit,
-    #         'tax_ids': [(6, 0, self.taxes_id.ids)],
-    #         'purchase_line_id': [(4, self.id)],
-    #     }
-    #     if optional_values:
-    #         res.update(optional_values)
-    #     return res

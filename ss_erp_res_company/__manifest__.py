@@ -12,7 +12,7 @@
         "security/ir.model.access.csv",
 
         # DATA
-        # "data/default_param_setting_data.xml",
+        "data/default_param_setting_data.xml",
     ],
     "application": False,
     "installable": True,

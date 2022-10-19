@@ -55,7 +55,7 @@
                             type="object"
                             context="{'open_invoices': True}" class="btn-primary"/>
                     <button name="create_invoices" id="create_invoice" string="請求書作成" type="object"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button string="取消" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>
