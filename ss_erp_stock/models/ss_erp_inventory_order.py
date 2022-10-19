@@ -38,7 +38,7 @@ class InventoryOrder(models.Model):
 
     location_id = fields.Many2one('stock.location', '移動元ロケーション', tracking=True)
     user_id = fields.Many2one('res.users', '担当者', tracking=True)
-    scheduled_date = fields.Date('予定日', copy=False, tracking=True)
+    scheduled_date = fields.Datetime('予定日', copy=False, tracking=True)
     shipping_method = fields.Selection(
         [('transport', '配車（移動元）'), ('pick_up', '配車（移動先）'), ('outsourcing', '宅配')],
         default='transport', string='配送方法', tracking=True)
@@ -100,12 +100,12 @@ class InventoryOrder(models.Model):
         for stock_picking in stock_picking_order:
             stock_picking.action_cancel()
 
-    @api.constrains('scheduled_date')
-    def _check_scheduled_date(self):
-        for rec in self:
-            current_date = fields.Date.today()
-            if rec.scheduled_date < current_date:
-                raise ValidationError(_("予定日は現在より過去の日付は設定できません。"))
+    # @api.constrains('scheduled_date')
+    # def _check_scheduled_date(self):
+    #     for rec in self:
+    #         current_date = fields.Date.today()
+    #         if rec.scheduled_date < current_date:
+    #             raise ValidationError(_("予定日は現在より過去の日付は設定できません。"))
 
     @api.constrains('inventory_order_line_ids')
     def _check_inventory_order_line_ids(self):

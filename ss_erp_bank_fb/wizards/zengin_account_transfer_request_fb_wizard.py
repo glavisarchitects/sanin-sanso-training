@@ -25,7 +25,7 @@ class AccountMoveWizard(models.TransientModel):
 
         organization_user = self.env.user.employee_id.organization_first.id
         domain = [('move_type', '=', 'out_invoice'), ('x_organization_id', '=', organization_user),
-                  ('x_receipt_type', '=', 'transfer'), ('x_is_fb_created', '=', False),
+                  ('x_receipt_type', '=', 'transfer'), ('x_is_fb_created', '=', False),('x_is_not_create_fb', '!=', True),
                   ('invoice_date', '<=', self.fb_end_date), ('invoice_date', '>=', self.fb_start_date),
                   ('state', '=', 'posted'), ('payment_state', '=', 'not_paid')]
         invoice_zengin_data = self.env['account.move'].search(domain)

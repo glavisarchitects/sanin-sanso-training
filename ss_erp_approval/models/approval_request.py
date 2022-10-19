@@ -452,8 +452,6 @@ class ApprovalRequest(models.Model):
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'approval'})
             elif self.request_status == 'approved':
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'approved'})
-                # Inventory Adjustment
-                self.x_lpgas_inventory_ids.sudo().make_inventory_adjustment()
             elif self.request_status == 'cancel':
                 self.x_lpgas_inventory_ids.sudo().write({'state': 'cancel'})
 
@@ -472,13 +470,13 @@ class ApprovalRequest(models.Model):
                 })
 
         # 工事
-        if self.x_construction_order_id:
-            if self.request_status == 'approved':
-                self.x_construction_order_id.sudo().write({'state': 'confirmed'})
-            elif self.request_status == 'pending':
-                self.x_construction_order_id.sudo().write({'state': 'request_approve'})
-            elif self.request_status == 'refused':
-                self.x_construction_order_id.sudo().write({'state': 'cancel'})
+        # if self.x_construction_order_id:
+        #     if self.request_status == 'approved':
+        #         self.x_construction_order_id.sudo().write({'state': 'confirmed'})
+        #     elif self.request_status == 'pending':
+        #         self.x_construction_order_id.sudo().write({'state': 'request_approve'})
+        #     elif self.request_status == 'refused':
+        #         self.x_construction_order_id.sudo().write({'state': 'cancel'})
 
         # 仕入先フォーム更新
         if self.x_contact_form_id:

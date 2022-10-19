@@ -13,6 +13,7 @@ class ConstructionComponent(models.Model):
     product_uom_qty = fields.Float(string='数量', tracking=True, default=1.0)
     qty_done = fields.Float(string='消費済み', store=True)
     qty_to_invoice = fields.Float(string='請求対象', compute='_compute_qty_to_invoice')
+    qty_invoiced = fields.Float(string='請求済み', compute='_get_invoice_qty')
     # qty_to_buy = fields.Float(string='購買対象', compute='_compute_qty_to_buy')
     product_uom_id = fields.Many2one(comodel_name='uom.uom', string='単位', tracking=True,
                                      domain="[('category_id', '=', product_uom_category_id)]")
@@ -25,10 +26,10 @@ class ConstructionComponent(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     tax_id = fields.Many2one(comodel_name='account.tax', string='税', tracking=True)
     sale_price = fields.Monetary(string='販売価格', tracking=True)
-    margin = fields.Monetary(string='粗利益', compute='_compute_margin', store=True)
-    margin_rate = fields.Float(string='マージン(%)', compute='_compute_margin', store=True)
-    subtotal_exclude_tax = fields.Monetary(string='小計（税別）', compute='_compute_margin', store=True)
-    subtotal = fields.Monetary(string='小計', compute='_compute_margin', store=True)
+    margin = fields.Monetary(string='粗利益', store=True)
+    margin_rate = fields.Float(string='マージン(%)', store=True, default=lambda self: self.construction_id.all_margin_rate)
+    subtotal_exclude_tax = fields.Monetary(string='小計（税別）', store=True, compute='_compute_subtotal')
+    subtotal = fields.Monetary(string='小計', store=True, compute='_compute_subtotal')
     construction_id = fields.Many2one(comodel_name='ss.erp.construction', string='工事', ondelete='cascade')
 
     is_downpayment = fields.Boolean(
@@ -37,18 +38,38 @@ class ConstructionComponent(models.Model):
     state = fields.Selection(
         related='construction_id.state', string='工事ステータス', readonly=True, copy=False, store=True, default='draft')
 
-    @api.depends('sale_price', 'construction_id.all_margin_rate', 'tax_id', 'standard_price', 'product_uom_qty')
-    def _compute_margin(self):
+    invoice_lines = fields.Many2many('account.move.line', 'construction_order_line_invoice_rel', 'order_line_id',
+                                     'invoice_line_id', string='請求明細', copy=False)
+
+    onchange_sale_price = fields.Boolean(default=False)
+    onchange_margin = fields.Boolean(default=False)
+
+    @api.depends('product_uom_qty','tax_id', 'sale_price')
+    def _compute_subtotal(self):
         for rec in self:
-            if rec.construction_id.all_margin_rate != 0:
-                rec.margin_rate = rec.construction_id.all_margin_rate
-                rec.sale_price = rec.standard_price / (1 - rec.margin_rate)
-                rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
-            else:
-                rec.margin_rate = abs(rec.standard_price / rec.sale_price - 1) if rec.sale_price != 0 else 0
-                rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
             rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
             rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
+
+    @api.onchange('margin_rate')
+    def _onchange_margin_rate(self):
+        if not self.onchange_sale_price:
+            self.sale_price = self.standard_price / (1 - self.margin_rate)
+            self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
+            self.onchange_margin = True
+        else:
+            self.onchange_margin = False
+
+
+    @api.onchange('sale_price',)
+    def _onchange_sale_price(self):
+        if not self.onchange_margin:
+            self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
+            self.margin = (self.sale_price - self.standard_price) * self.product_uom_qty
+            self.onchange_sale_price = True
+        else:
+            self.onchange_sale_price = False
+
+
 
     def _compute_qty_to_invoice(self):
         for line in self:
@@ -71,7 +92,7 @@ class ConstructionComponent(models.Model):
             limit=1)
         return {
             'partner_id': self.partner_id.id,
-            'user_id': False,
+            'user_id': self.env.user.id,
             'x_construction_order_id': self.construction_id.id,
             'picking_type_id': picking_type_id.id,
             'company_id': company_id.id,
@@ -102,25 +123,29 @@ class ConstructionComponent(models.Model):
         # 間接経費計算
         if self.product_id.id == indirect_expense_fee_product.id:
             self.product_uom_qty = 1
-            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
+            self.standard_price = sum(
+                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
 
         # 間接材料費計算
         if self.product_id.id == indirect_material_fee_product.id:
             self.product_uom_qty = 1
-            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                lambda line: line.product_id.type == 'product')) * 0.00
+            self.standard_price = sum(
+                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    lambda line: line.product_id.type == 'product')) * 0.00
 
         # 間接労務費計算
         if self.product_id.id == indirect_labo_fee_product.id:
             self.product_uom_qty = 1
-            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
+            self.standard_price = sum(
+                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
 
         if self.product_id.id == indirect_outsource_fee_product.id:
             self.product_uom_qty = 1
-            self.standard_price = sum(x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
+            self.standard_price = sum(
+                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
 
     def calculate_qty_to_buy(self):
         if self.product_id.type == "product":
@@ -135,37 +160,43 @@ class ConstructionComponent(models.Model):
                         lambda l: l.product_id == self.product_id and l.product_uom_id == self.product_uom_id).mapped(
                         'qty_done'))
 
-                picking_type_id = self.env['stock.picking.type'].search(
-                    [('default_location_src_id.usage', '=', 'supplier'),
-                     ('default_location_dest_id.usage', '=', 'customer')],
-                    limit=1)
-
-                # 直送数量の計算
-                if picking.picking_type_id == picking_type_id:
-                    quantity += sum(picking.move_ids_without_package.filtered(
-                        lambda l: l.product_id == self.product_id and l.product_uom == self.product_uom_id).mapped(
-                        'product_uom_qty'))
-
+            domain = [
+                ('partner_id', '=', self.partner_id.id),
+                ('state', '!=', 'cancel'),
+                ('payment_term_id', '=', self.payment_term_id.id),
+                ('x_construction_order_id', '=', self.construction_id.id),
+            ]
+            po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(
+                lambda x: x.product_id == self.product_id)
+            quantity += sum(po_ids.mapped('product_qty'))
             return self.product_uom_qty - quantity
+        elif self.product_id.type == "service":
+            domain = [
+                ('partner_id', '=', self.partner_id.id),
+                ('state', '!=', 'cancel'),
+                ('payment_term_id', '=', self.payment_term_id.id),
+                ('x_construction_order_id', '=', self.construction_id.id),
+            ]
+            po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(
+                lambda x: x.product_id == self.product_id)
+            return self.product_uom_qty - sum(po_ids.mapped('product_qty'))
         else:
             return 0
 
     @api.model
     def _run_buy(self):
         qty_to_buy = self.calculate_qty_to_buy()
-        if qty_to_buy != 0 and self.product_id.type == "product":
-            if not self.partner_id:
-                raise UserError("%sのプロダクトに対して、仕入先は設定してください。" % self.product_id.name)
-
+        if qty_to_buy != 0 and self.product_id.type != "consu" and self.partner_id:
             domain = [
                 ('partner_id', '=', self.partner_id.id),
                 ('state', '=', 'draft'),
+                ('payment_term_id', '=', self.payment_term_id.id),
                 ('x_construction_order_id', '=', self.construction_id.id),
             ]
             po = self.env['purchase.order'].sudo().search(domain, limit=1)
             if not po:
                 vals = self._prepare_purchase_order()
-                po = self.env['purchase.order'].with_user(SUPERUSER_ID).create(vals)
+                po = self.env['purchase.order'].sudo().create(vals)
 
             po_line = po.order_line.filtered(
                 lambda
@@ -179,7 +210,8 @@ class ConstructionComponent(models.Model):
                     'order_id': po.id,
                     'product_id': self.product_id.id,
                     'product_qty': qty_to_buy,
-                    'product_uom': self.product_uom_id.id
+                    'product_uom': self.product_uom_id.id,
+                    'price_unit': self.standard_price
                 }
                 self.env['purchase.order.line'].sudo().create(po_line_values)
             return po
@@ -199,8 +231,36 @@ class ConstructionComponent(models.Model):
             'product_uom_id': self.product_uom_id.id,
             'quantity': self.qty_to_invoice,
             'price_unit': self.sale_price,
+            'construction_line_ids': [(4, self.id)],
             'tax_ids': [(6, 0, [self.tax_id.id])] if self.tax_id else False,
         }
         if optional_values:
             res.update(optional_values)
         return res
+
+    @api.depends('invoice_lines.move_id.state', 'invoice_lines.quantity')
+    def _get_invoice_qty(self):
+        """
+        Compute the quantity invoiced. If case of a refund, the quantity invoiced is decreased. Note
+        that this is the case only if the refund is generated from the SO and that is intentional: if
+        a refund made would automatically decrease the invoiced quantity, then there is a risk of reinvoicing
+        it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
+        """
+        for line in self:
+            qty_invoiced = 0.0
+            for invoice_line in line.invoice_lines:
+                if invoice_line.move_id.state != 'cancel':
+                    if invoice_line.move_id.move_type == 'out_invoice':
+                        qty_invoiced += invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, line.product_uom_id)
+                    elif invoice_line.move_id.move_type == 'out_refund':
+                        qty_invoiced -= invoice_line.product_uom_id._compute_quantity(invoice_line.quantity, line.product_uom_id)
+            line.qty_invoiced = qty_invoiced
+
+    @api.depends('qty_invoiced','product_uom_qty')
+    def _get_to_invoice_qty(self):
+        """
+        Compute the quantity to invoice. If the invoice policy is order, the quantity to invoice is
+        calculated from the ordered quantity. Otherwise, the quantity delivered is used.
+        """
+        for line in self:
+            line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
