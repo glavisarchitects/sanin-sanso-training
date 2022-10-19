@@ -122,7 +122,7 @@
                                         <field name="tax_id"/>
                                         <field name="sale_price"/>
                                         <field name="margin" readonly="1"/>
-                                        <field name="margin_rate" readonly="1" widget="percentage"/>
+                                        <field name="margin_rate" widget="percentage"/>
                                         <!--                                        <field name="subtotal_exclude_tax" readonly="1"/>-->
                                         <field name="subtotal" readonly="1"/>
                                     </tree>
