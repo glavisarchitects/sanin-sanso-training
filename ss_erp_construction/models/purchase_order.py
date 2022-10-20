@@ -198,3 +198,7 @@ class PurchaseOrderLine(models.Model):
 
     is_downpayment = fields.Boolean(
         string="頭金であるか", help="Down payments are made when creating invoices from a construction order.")
+
+    construction_line = fields.Many2many('ss.erp.construction.component', 'construction_order_line_purchase_order_line_rel','po_line_id',
+                                            'order_line_id'
+                                            , string='購買明細', copy=False)
