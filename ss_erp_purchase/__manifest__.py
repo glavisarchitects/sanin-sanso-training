@@ -31,7 +31,7 @@
         'data/partner_rebate_sequence_data.xml',
         'data/bis_category_data.xml',
         'data/ir_sequence_data.xml',
-        # 'data/default_param_setting_data.xml',
+        'data/default_param_setting_data.xml',
     ],
     "application": False,
     "installable": True,
