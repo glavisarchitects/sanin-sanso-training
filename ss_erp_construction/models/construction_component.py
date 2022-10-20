@@ -17,7 +17,7 @@ class ConstructionComponent(models.Model):
     qty_bought = fields.Float(string='購買済み', compute='_compute_qty_bought')
     qty_reserved_from_warehouse = fields.Float(string='在庫出荷数', compute='_compute_qty_reserved_from_warehouse')
 
-    @api.constrains("qty_bought", 'qty_reserved_from_warehouse','product_uom_qty')
+    @api.constrains("qty_bought", 'qty_reserved_from_warehouse', 'product_uom_qty')
     def _check_same_employee_number(self):
         for rec in self:
             if rec.product_uom_qty < rec.qty_bought + rec.qty_reserved_from_warehouse:
@@ -34,6 +34,18 @@ class ConstructionComponent(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     tax_id = fields.Many2one(comodel_name='account.tax', string='税', tracking=True)
     sale_price = fields.Monetary(string='販売価格', tracking=True)
+
+    # @api.depends('margin_rate')
+    # def _compute_sale_price(self):
+    #     for rec in self:
+    #         if rec.margin_rate!=0:
+    #             rec.sale_price = rec.standard_price / (1 - rec.margin_rate)
+    #
+    # def _inverse_sale_price(self):
+    #     for rec in self:
+    #         if rec.sale_price:
+    #             rec.margin_rate = abs(rec.standard_price / rec.sale_price - 1)
+
     margin = fields.Monetary(string='粗利益', store=True, compute='_compute_subtotal')
     # all_margin_rate = fields.Float(string='一律マージン率', related='construction_id.all_margin_rate')
     margin_rate = fields.Float(string='マージン(%)', store=True, default=lambda self: self._default_margin())
@@ -115,28 +127,47 @@ class ConstructionComponent(models.Model):
             rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
             rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
 
+    def onchange(self, values, field_name, field_onchange):
+        # OVERRIDE
+        # As the dynamic lines in this model are quite complex, we need to ensure some computations are done exactly
+        # at the beginning / at the end of the onchange mechanism. So, the onchange recursivity is disabled.
+        return super(ConstructionComponent, self.with_context(recursive_onchanges=False)).onchange(values, field_name,
+                                                                                                   field_onchange)
+
     @api.onchange('margin_rate')
     def _onchange_margin_rate(self):
-        if not self.onchange_sale_price:
-            self.sale_price = self.standard_price / (1 - self.margin_rate)
-            self.onchange_margin = True
-        else:
-            self.onchange_margin = False
+        self.sale_price = self.standard_price / (1 - self.margin_rate)
 
     @api.onchange('sale_price', )
     def _onchange_sale_price(self):
-        if not self.onchange_margin:
-            self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
-            self.onchange_sale_price = True
-        else:
-            self.onchange_sale_price = False
+        if self.sale_price != 0 and self.standard_price!=0:
+            self.margin_rate = abs(self.standard_price / self.sale_price - 1)
 
     @api.onchange('standard_price')
     def _onchange_standard_price(self):
-        if self.margin_rate != 0:
-            self.sale_price = self.standard_price / (1 - self.margin_rate)
-            self.onchange_margin = True
-            self.onchange_sale_price = True
+        self.sale_price = self.standard_price / (1 - self.margin_rate)
+
+    # @api.onchange('margin_rate')
+    # def _onchange_margin_rate(self):
+    #     if not self.onchange_sale_price:
+    #         self.sale_price = self.standard_price / (1 - self.margin_rate)
+    #         self.onchange_margin = True
+    #     else:
+    #         self.onchange_margin = False
+    #
+    # @api.onchange('sale_price', )
+    # def _onchange_sale_price(self):
+    #     if not self.onchange_margin:
+    #         self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
+    #         self.onchange_sale_price = True
+    #     else:
+    #         self.onchange_sale_price = False
+    #
+    # @api.onchange('standard_price')
+    # def _onchange_standard_price(self):
+    #     self.sale_price = self.standard_price / (1 - self.margin_rate)
+    #     self.onchange_margin = True
+    #     self.onchange_sale_price = True
 
     def _compute_qty_to_invoice(self):
         for line in self:
