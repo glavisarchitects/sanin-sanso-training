@@ -8,7 +8,7 @@
             <field name="group_warning_stock" eval="False"/>
             <field name="module_stock_picking_batch" eval="False"/>
             <field name="module_procurement_jit">1</field>
-            <field name="default_picking_policy">one</field>
+            <field name="default_picking_policy">direct</field>
             <field name="module_stock_barcode" eval="False"/>
             <field name="stock_move_email_validation" eval="False"/>
             <field name="module_stock_sms" eval="False"/>

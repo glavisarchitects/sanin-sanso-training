@@ -23,7 +23,7 @@ class LPGasOrder(models.Model):
     inventory_type = fields.Selection([('cylinder', 'シリンダー'), ('minibulk', 'ミニバルク')], string='棚卸種別')
     accounting_date = fields.Date(string='会計日')
     aggregation_period = fields.Date(string='棚卸対象期間', copy=False)
-    month_aggregation_period = fields.Integer(string='month of aggregation period', store=True,
+    month_aggregation_period = fields.Integer(string='month of aggregation period', store=True, copy=False,
                                               compute='compute_month_aggregation_period')
     state = fields.Selection(
         [('draft', 'ドラフト'), ('confirm', '集計完了'), ('waiting', '承認待ち'), ('approval', '承認依頼中'), ('approved', '承認済み'),
@@ -79,7 +79,7 @@ class LPGasOrder(models.Model):
 
             return self.env['stock.move'].create(sm_value)
 
-    @api.depends('aggregation_period')
+    @api.depends('aggregation_period', 'lpgas_order_line_ids', 'state')
     def compute_month_aggregation_period(self):
         """ compute """
         for rec in self:

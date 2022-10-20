@@ -135,26 +135,40 @@ class YoukiKanri(models.Model):
         inventoryorder_dict = {}
         for line in exe_data:
             error_message = False
-            if int(line.customer_business_partner_code) not in partner_list:
+            if not line.customer_business_partner_code.isdigit():
                 error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
+            else:
+                if int(line.customer_business_partner_code) not in partner_list:
+                    error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
 
-            if int(line.customer_branch_code) not in organization_list:
+            if not line.customer_branch_code.isdigit():
                 if error_message:
                     error_message += '顧支店Ｃが連絡先マスタに存在しません。'
                 else:
                     error_message = '顧支店Ｃが連絡先マスタに存在しません。'
+            else:
+                if int(line.customer_branch_code) not in organization_list:
+                    if error_message:
+                        error_message += '顧支店Ｃが連絡先マスタに存在しません。'
+                    else:
+                        error_message = '顧支店Ｃが連絡先マスタに存在しません。'
 
             if not branch_dict.get(line.codeommercial_branch_code):
                 if error_message:
                     error_message += '商支店Ｃが組織マスタに存在しません。'
                 else:
                     error_message = '商支店Ｃが組織マスタに存在しません。'
-
-            if int(line.codeommercial_product_code) not in product_list:
+            if not line.codeommercial_product_code.isdigit():
                 if error_message:
                     error_message += '商商品Ｃがプロダクトマスタに存在しません。'
                 else:
                     error_message = '商商品Ｃがプロダクトマスタに存在しません。'
+            else:
+                if int(line.codeommercial_product_code) not in product_list:
+                    if error_message:
+                        error_message += '商商品Ｃがプロダクトマスタに存在しません。'
+                    else:
+                        error_message = '商商品Ｃがプロダクトマスタに存在しません。'
 
             if not uom_dict.get(line.unit_code):
                 if error_message:
