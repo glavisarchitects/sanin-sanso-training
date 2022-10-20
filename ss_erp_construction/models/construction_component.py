@@ -131,6 +131,15 @@ class ConstructionComponent(models.Model):
         else:
             self.onchange_sale_price = False
 
+    @api.onchange('standard_price')
+    def _onchange_standard_price(self):
+        if self.sale_price!=0:
+            self.margin_rate = abs(self.standard_price / self.sale_price - 1)
+            self.onchange_sale_price = False
+        else:
+            self.sale_price = self.standard_price / (1 - self.margin_rate)
+            self.onchange_margin = False
+
     def _compute_qty_to_invoice(self):
         for line in self:
             qty_invoiced = 0.0
