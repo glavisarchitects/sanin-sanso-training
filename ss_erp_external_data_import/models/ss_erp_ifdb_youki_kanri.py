@@ -225,13 +225,14 @@ class YoukiKanri(models.Model):
 
                     elif line.slip_processing_classification == '9':
                         order_line = {
+                            'organization_id':int(line.codeommercial_branch_code),
                             'product_id': int(line.codeommercial_product_code),
                             'product_uom_qty': float(line.quantity),
                             'product_uom': uom_dict.get(line.unit_code)
                         }
                         if not inventoryorder_dict.get(key, 0):
                             inv_order = {
-                                'organization_id': int(line.codeommercial_branch_code),
+                                'organization_id': int(line.customer_branch_code),
                                 'state': 'draft',
                                 'scheduled_date': datetime.strptime(line.slip_date, '%Y/%m/%d'),
                                 'inventory_order_line_ids': [(0, 0, order_line)],
