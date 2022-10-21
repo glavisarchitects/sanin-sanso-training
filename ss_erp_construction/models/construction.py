@@ -34,6 +34,23 @@ class Construction(models.Model):
                                                  ('refused', '却下済'),
                                                  ('cancel', '取消')], string='承認ステータス', default='new')
 
+    invoice_status = fields.Selection([('invoiced', '完全請求書'),
+                                       ('to_invoice', '請求対象'),
+                                       ('no', '請求対象なし')
+                                       ], string='請求書ステータス', compute='_compute_invoice_status')
+
+    @api.depends('construction_component_ids.qty_to_invoice', 'state')
+    def _compute_invoice_status(self):
+        for rec in self:
+            if rec.state not in ('order_received', 'progress', 'done'):
+                rec.invoice_status = 'no'
+            else:
+                invoice_lst = rec.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0)
+                if invoice_lst:
+                    rec.invoice_status = 'to_invoice'
+                else:
+                    rec.invoice_status = 'invoiced'
+
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
@@ -97,7 +114,7 @@ class Construction(models.Model):
                     "承認金額の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_estimate_report)")
             minium_value = float(minium_value)
             rec.show_confirmation_button = True if (
-                        0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
+                    0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
 
     def _compute_invoice_count(self):
         Invoice = self.env['account.move']
@@ -462,7 +479,7 @@ class Construction(models.Model):
         invoice_vals = self._prepare_invoice()
         invoiceable_lines = self._get_invoiceable_lines()
 
-        if not invoiceable_lines:
+        if not self.construction_component_ids.filtered(lambda x:x.qty_to_invoice!=0):
             raise self._nothing_to_invoice_error()
 
         invoice_line_vals = []
@@ -496,7 +513,7 @@ class Construction(models.Model):
             moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
         return moves
 
-    def write(self,vals):
+    def write(self, vals):
         super().write(vals)
         if not self.construction_component_ids:
             raise UserError('構成品の明細を追加してください。')
@@ -514,7 +531,7 @@ class Construction(models.Model):
         }
         move_live = []
         for component in self.construction_component_ids:
-            if component.product_id.type == 'product' and component.qty_to_buy>0:
+            if component.product_id.type == 'product' and component.qty_to_buy > 0:
                 move_live.append((0, 0, {
                     'name': component.product_id.name or '/',
                     'product_id': component.product_id.id,
