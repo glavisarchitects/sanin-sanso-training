@@ -536,7 +536,7 @@ class Construction(models.Model):
                     'name': component.product_id.name or '/',
                     'product_id': component.product_id.id,
                     'product_uom': component.product_uom_id.id,
-                    'product_uom_qty': component.qty_to_buy if component.qty_to_buy > component.qty_available else component.qty_available,
+                    'product_uom_qty': component.qty_to_buy if component.qty_to_buy < component.qty_available else component.qty_available,
                     'location_id': self.location_id.id,
                     'location_dest_id': self.location_dest_id.id,
                     'date': self.plan_date or datetime.now(),
