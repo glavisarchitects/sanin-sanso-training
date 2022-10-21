@@ -223,10 +223,10 @@ class Construction(models.Model):
         values['name'] = name
         return super(Construction, self).create(values)
 
-    def _prepare_stock_picking(self):
-        if self.construction_workorder_ids:
-            for workorder in self.construction_workorder_ids:
-                workorder._prepare_stock_picking()
+    # def _prepare_stock_picking(self):
+    #     if self.construction_workorder_ids:
+    #         for workorder in self.construction_workorder_ids:
+    #             workorder._prepare_stock_picking()
 
     def write(self, values):
         res = super(Construction, self).write(values)
@@ -495,3 +495,41 @@ class Construction(models.Model):
         if final:
             moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
         return moves
+
+    def write(self,vals):
+        super().write(vals)
+        if not self.construction_component_ids:
+            raise UserError('構成品の明細を追加してください。')
+
+    def _prepare_stock_picking(self):
+        picking = {
+            'partner_id': self.partner_id.id,
+            'x_organization_id': self.organization_id.id,
+            'x_responsible_dept_id': self.responsible_dept_id.id,
+            'picking_type_id': self.picking_type_id.id,
+            'location_id': self.location_id.id,
+            'location_dest_id': self.location_dest_id.id,
+            'scheduled_date': self.plan_date,
+            'x_construction_order_id': self.id,
+        }
+        move_live = []
+        for component in self.construction_component_ids:
+            if component.product_id.type == 'product':
+                move_live.append((0, 0, {
+                    'name': component.product_id.name or '/',
+                    'product_id': component.product_id.id,
+                    'product_uom': component.product_uom_id.id,
+                    'product_uom_qty': component.product_uom_qty,
+                    'location_id': self.location_id.id,
+                    'location_dest_id': self.location_dest_id.id,
+                    'date': self.plan_date or datetime.now(),
+                    'picking_type_id': self.picking_type_id.id,
+                    'x_construction_line_ids': [(4, component.id)],
+                }))
+
+        if move_live:
+            picking['move_ids_without_package'] = move_live
+
+            stock_picking = self.env['stock.picking'].create(picking)
+
+            stock_picking.action_assign()

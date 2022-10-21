@@ -3,6 +3,7 @@
     <data noupdate="1">
         <record id="ss_erp_hr_definition_param_settings" model="res.config.settings">
             <!-- Employee Param-->
+<!--            TODO-->
             <field name="hr_presence_control_login" eval="False"/>
             <field name="module_hr_skills" eval="False"/>
             <field name="module_hr_presence" eval="False"/>
