@@ -22,8 +22,8 @@ class ConstructionComponent(models.Model):
     def _get_qty_available(self):
         for rec in self:
             if rec.product_id.type == "product":
-                rec.qty_available = self.env['stock.quant']._get_available_quantity(product_id=self.product_id,
-                                                                                location_id=self.location_id)
+                rec.qty_available = self.env['stock.quant']._get_available_quantity(product_id=rec.product_id,
+                                                                                location_id=rec.location_id)
             else:
                 rec.qty_available = 0
 
