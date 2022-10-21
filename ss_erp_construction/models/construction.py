@@ -287,7 +287,7 @@ class Construction(models.Model):
 
     @api.onchange('all_margin_rate')
     def _onchange_all_margin_rate(self):
-        if self.construction_component_ids and self.all_margin_rate:
+        if self.construction_component_ids:
             for line in self.construction_component_ids:
                 line.margin_rate = self.all_margin_rate
                 line.sale_price = line.standard_price / (1 - line.margin_rate)
@@ -355,9 +355,9 @@ class Construction(models.Model):
                 action['view_mode'] = 'tree'
                 return action
             else:
-                raise UserError("購買対象のプロダクトはありません。")
+                raise UserError("購買対象のプロダクトがありません。")
         else:
-            raise UserError("購買対象のプロダクトはありません。")
+            raise UserError("購買対象のプロダクトがありません。")
 
     def action_view_invoice(self):
         invoices = self.env['account.move'].search([('x_construction_order_id', '=', self.id)])
