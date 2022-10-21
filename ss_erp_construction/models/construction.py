@@ -462,6 +462,9 @@ class Construction(models.Model):
         invoice_vals = self._prepare_invoice()
         invoiceable_lines = self._get_invoiceable_lines()
 
+        if not invoiceable_lines:
+            raise self._nothing_to_invoice_error()
+
         invoice_line_vals = []
         down_payment_section_added = False
         for line in invoiceable_lines:
@@ -485,9 +488,6 @@ class Construction(models.Model):
 
         invoice_vals['invoice_line_ids'] += invoice_line_vals
         invoice_vals_list.append(invoice_vals)
-
-        if not invoice_vals_list:
-            raise self._nothing_to_invoice_error()
 
         moves = self.env['account.move'].sudo().with_context(default_move_type='out_invoice').create(
             invoice_vals_list)
