@@ -64,7 +64,7 @@ class ConstructionComponent(models.Model):
         for rec in self:
             reserved_qty = 0
             for line in rec.stock_move_ids:
-                reserved_qty += line.reserved_availability + line.qty_done
+                reserved_qty += line.reserved_availability + line.quantity_done
             rec.qty_reserved_from_warehouse = reserved_qty
 
     is_downpayment = fields.Boolean(
