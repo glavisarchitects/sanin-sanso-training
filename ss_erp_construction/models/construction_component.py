@@ -212,7 +212,7 @@ class ConstructionComponent(models.Model):
             self.product_uom_id = self.product_id.uom_id.id
             self.standard_price = self.product_id.product_tmpl_id.standard_price
             if self.margin_rate:
-                self.sale_price = self.sale_price = self.standard_price / (1 - self.margin_rate)
+                self.sale_price = self.standard_price / (1 - self.margin_rate)
             else:
                 self.sale_price = self.product_id.product_tmpl_id.list_price
         direct_expense_fee_product = self.env.ref('ss_erp_construction.direct_expense_fee_product_data')
