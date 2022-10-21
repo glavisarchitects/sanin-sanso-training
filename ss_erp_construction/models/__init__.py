@@ -13,4 +13,5 @@ from . import construction_category
 from . import res_partner
 from . import product_template
 from . import account_journal
+from . import stock_move
 

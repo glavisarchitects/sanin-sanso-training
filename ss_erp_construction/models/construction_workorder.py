@@ -8,6 +8,7 @@ class ConstructionWorkorder(models.Model):
     _description = '工事の作業オーダー'
 
     name = fields.Char(string='工程')
+
     organization_id = fields.Many2one(
         comodel_name='ss_erp.organization',
         string='組織',
@@ -26,15 +27,6 @@ class ConstructionWorkorder(models.Model):
         string='作業区',
         ondelete='cascade',
         required=False)
-
-    picking_type_id = fields.Many2one('stock.picking.type', related='construction_id.picking_type_id',
-                                      store=True, string='オペレーションタイプ')
-    location_id = fields.Many2one('stock.location', related='construction_id.location_id', store=True,
-                                  string='構成品ロケーション')
-    location_dest_id = fields.Many2one('stock.location', related='construction_id.location_dest_id', store=True,
-                                       string='配送ロケーション')
-
-    partner_id = fields.Many2one(related='construction_id.partner_id', store=True)
 
     planned_labor_costs = fields.Monetary(string='[予定] 労務費')
     result_labor_costs = fields.Monetary(string='[実績] 労務費')
@@ -65,36 +57,6 @@ class ConstructionWorkorder(models.Model):
         required=False)
     user_id = fields.Many2one(
         comodel_name='res.users', default=lambda self: self.env.uid)
-
-    def _prepare_stock_picking(self):
-        picking = {
-            'partner_id': self.partner_id.id,
-            'x_organization_id': self.organization_id.id,
-            'x_responsible_dept_id': self.responsible_dept_id.id,
-            'picking_type_id': self.picking_type_id.id,
-            'location_id': self.location_id.id,
-            'location_dest_id': self.location_dest_id.id,
-            'scheduled_date': self.date_planned_start,
-            'x_construction_order_id': self.id,
-        }
-        move_live = []
-        for component in self.workorder_component_ids:
-            if component.product_id.type == 'product':
-                move_live.append((0, 0, {
-                    'name': component.product_id.name or '/',
-                    'product_id': component.product_id.id,
-                    'product_uom': component.product_uom_id.id,
-                    'product_uom_qty': component.product_uom_qty,
-                    'location_id': self.location_id.id,
-                    'location_dest_id': self.location_dest_id.id,
-                    'date': self.date_planned_start or datetime.now(),
-                    'picking_type_id': self.picking_type_id.id,
-                }))
-
-        if move_live:
-            picking['move_ids_without_package'] = move_live
-
-            self.env['stock.picking'].create(picking).action_assign()
 
 
 class ConstructionWorkorderComponent(models.Model):
