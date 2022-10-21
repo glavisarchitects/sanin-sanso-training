@@ -210,6 +210,8 @@ class ConstructionComponent(models.Model):
     def _onchange_component_product_id(self):
         if self.product_id:
             self.product_uom_id = self.product_id.uom_id.id
+            self.standard_price = self.product_id.product_tmpl_id.standard_price
+            self.sale_price = self.product_id.product_tmpl_id.list_price
         direct_expense_fee_product = self.env.ref('ss_erp_construction.direct_expense_fee_product_data')
         direct_labo_fee_product = self.env.ref('ss_erp_construction.direct_labo_fee_product_data')
         direct_outsource_fee_product = self.env.ref('ss_erp_construction.direct_outsource_fee_product_data')
