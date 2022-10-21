@@ -519,7 +519,7 @@ class Construction(models.Model):
                     'name': component.product_id.name or '/',
                     'product_id': component.product_id.id,
                     'product_uom': component.product_uom_id.id,
-                    'product_uom_qty': component.product_uom_qty,
+                    'product_uom_qty': component.qty_to_buy,
                     'location_id': self.location_id.id,
                     'location_dest_id': self.location_dest_id.id,
                     'date': self.plan_date or datetime.now(),
@@ -533,3 +533,6 @@ class Construction(models.Model):
             stock_picking = self.env['stock.picking'].create(picking)
 
             stock_picking.action_assign()
+
+    def action_picking_from_warehouse(self):
+        self._prepare_stock_picking()

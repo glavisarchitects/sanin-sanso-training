@@ -42,6 +42,8 @@
                                 attrs="{'invisible':['|',('state','not in',['progress']), ('validate_approval_status','!=','approved')],}"/>
                         <button name="action_purchase" string="購買発注" class="oe_highlight" type="object"
                                 attrs="{'invisible':[('state','not in',['order_received','progress'])],}"/>
+                        <button name="action_picking_from_warehouse" string="出荷" class="oe_highlight" type="object"
+                                attrs="{'invisible':[('state','not in',['order_received','progress'])],}"/>
                         <button name="%(action_view_construction_advance_payment_inv)d" string="請求書作成"
                                 type="action" class="btn-primary"
                                 attrs="{'invisible': [('state', 'not in', ['confirmed','order_received','progress','done'])]}"/>
