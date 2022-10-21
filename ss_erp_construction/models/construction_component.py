@@ -13,9 +13,19 @@ class ConstructionComponent(models.Model):
     product_uom_qty = fields.Float(string='数量', tracking=True, default=1.0)
     qty_to_invoice = fields.Float(string='請求対象', compute='_compute_qty_to_invoice')
     qty_invoiced = fields.Float(string='請求済み', compute='_get_invoice_qty')
+    qty_available = fields.Float(string='手持数量', compute='_get_qty_available')
     qty_to_buy = fields.Float(string='購買対象', compute='_compute_qty_to_buy')
     qty_bought = fields.Float(string='購買済み', compute='_compute_qty_bought')
     qty_reserved_from_warehouse = fields.Float(string='在庫出荷数', compute='_compute_qty_reserved_from_warehouse')
+
+    @api.depends('location_id', 'product_id')
+    def _get_qty_available(self):
+        for rec in self:
+            if rec.product_id.type == "product":
+                rec.qty_available = self.env['stock.quant']._get_available_quantity(product_id=self.product_id,
+                                                                                location_id=self.location_id)
+            else:
+                rec.qty_available = 0
 
     @api.constrains("qty_bought", 'qty_reserved_from_warehouse', 'product_uom_qty')
     def _check_same_employee_number(self):
@@ -34,17 +44,6 @@ class ConstructionComponent(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     tax_id = fields.Many2one(comodel_name='account.tax', string='税', tracking=True)
     sale_price = fields.Monetary(string='販売価格', tracking=True)
-
-    # @api.depends('margin_rate')
-    # def _compute_sale_price(self):
-    #     for rec in self:
-    #         if rec.margin_rate!=0:
-    #             rec.sale_price = rec.standard_price / (1 - rec.margin_rate)
-    #
-    # def _inverse_sale_price(self):
-    #     for rec in self:
-    #         if rec.sale_price:
-    #             rec.margin_rate = abs(rec.standard_price / rec.sale_price - 1)
 
     margin = fields.Monetary(string='粗利益', store=True, compute='_compute_subtotal')
     # all_margin_rate = fields.Float(string='一律マージン率', related='construction_id.all_margin_rate')
@@ -140,7 +139,7 @@ class ConstructionComponent(models.Model):
 
     @api.onchange('sale_price', )
     def _onchange_sale_price(self):
-        if self.sale_price != 0 and self.standard_price!=0:
+        if self.sale_price != 0 and self.standard_price != 0:
             self.margin_rate = abs(self.standard_price / self.sale_price - 1)
 
     @api.onchange('standard_price')
@@ -255,42 +254,6 @@ class ConstructionComponent(models.Model):
                 rec.qty_to_buy = rec.product_uom_qty - rec.qty_reserved_from_warehouse - rec.qty_bought
             else:
                 rec.qty_to_buy = 0
-
-    # def calculate_qty_to_buy(self):
-    #     if self.product_id.type == "product":
-    #         quantity = 0
-    #         for picking in self.construction_id.picking_ids:
-    #             # 在庫出荷の量の計算
-    #             if picking.picking_type_id.code == 'outgoing':
-    #                 quantity += sum(picking.move_line_ids_without_package.filtered(
-    #                     lambda l: l.product_id == self.product_id and l.product_uom_id == self.product_uom_id).mapped(
-    #                     'product_uom_qty')) \
-    #                             + sum(picking.move_line_ids_without_package.filtered(
-    #                     lambda l: l.product_id == self.product_id and l.product_uom_id == self.product_uom_id).mapped(
-    #                     'qty_done'))
-    #
-    #         domain = [
-    #             ('partner_id', '=', self.partner_id.id),
-    #             ('state', '!=', 'cancel'),
-    #             ('payment_term_id', '=', self.payment_term_id.id),
-    #             ('x_construction_order_id', '=', self.construction_id.id),
-    #         ]
-    #         po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(
-    #             lambda x: x.product_id == self.product_id)
-    #         quantity += sum(po_ids.mapped('product_qty'))
-    #         return self.product_uom_qty - quantity
-    #     elif self.product_id.type == "service":
-    #         domain = [
-    #             ('partner_id', '=', self.partner_id.id),
-    #             ('state', '!=', 'cancel'),
-    #             ('payment_term_id', '=', self.payment_term_id.id),
-    #             ('x_construction_order_id', '=', self.construction_id.id),
-    #         ]
-    #         po_ids = self.env['purchase.order'].sudo().search(domain).order_line.filtered(
-    #             lambda x: x.product_id == self.product_id)
-    #         return self.product_uom_qty - sum(po_ids.mapped('product_qty'))
-    #     else:
-    #         return 0
 
     @api.model
     def _run_buy(self):
