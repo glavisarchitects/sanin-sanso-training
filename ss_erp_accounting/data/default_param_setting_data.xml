@@ -13,6 +13,7 @@
             <field name="account_tax_periodicity_reminder_day" eval="False"/>
             <field name="account_tax_fiscal_country_id" search="[('code','=','JP')]" model="res.country"/>
             <field name="tax_exigibility" eval="False"/>
+            <field name="default_picking_policy">direct</field>
 
             <!--            You cannot change the currency of the company since some journal items already exist-->
             <field name="currency_id" ref="base.JPY"/>
