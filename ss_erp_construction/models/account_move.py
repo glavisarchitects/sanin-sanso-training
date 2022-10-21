@@ -7,6 +7,8 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダー')
+    invoice_type = fields.Selection([[('gas_material', 'ガス・器材'),
+                                      ('construction', '工事')], ])
 
     def _recompute_payment_terms_lines(self):
         super()._recompute_payment_terms_lines()
@@ -52,4 +54,3 @@ class AccountMoveLine(models.Model):
             elif self.move_id.is_purchase_document(include_receipts=True):
                 # In invoice.
                 return accounts['construction_expense'] or accounts['expense']
-
