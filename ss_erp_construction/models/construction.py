@@ -531,7 +531,7 @@ class Construction(models.Model):
         }
         move_live = []
         for component in self.construction_component_ids:
-            if component.product_id.type == 'product' and component.qty_to_buy > 0:
+            if component.product_id.type == 'product' and component.qty_to_buy > 0 and component.qty_available > 0:
                 move_live.append((0, 0, {
                     'name': component.product_id.name or '/',
                     'product_id': component.product_id.id,
