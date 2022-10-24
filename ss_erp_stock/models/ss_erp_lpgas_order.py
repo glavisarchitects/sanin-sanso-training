@@ -424,11 +424,13 @@ class LPGasOrder(models.Model):
         }
 
     def approval_request(self):
-        self.write({'state': 'waiting'})
+        if self.state == 'confirm':
+            self.write({'state': 'waiting'})
 
     def verify_lpgas_slip(self):
-        self.make_inventory_adjustment()
-        self.write({'state': 'done'})
+        if self.state == 'approved':
+            self.make_inventory_adjustment()
+            self.write({'state': 'done'})
 
     def cancel_lpgas_slip(self):
         self.write({'state': 'cancel'})
