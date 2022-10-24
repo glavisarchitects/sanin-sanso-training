@@ -550,8 +550,6 @@ class Construction(models.Model):
             stock_picking = self.env['stock.picking'].create(picking)
 
             stock_picking.action_assign()
-        else:
-            raise UserError('出荷するものは何もありません！')
 
     def action_picking_from_warehouse(self):
         if not self.construction_component_ids.filtered(lambda x:x.qty_to_buy !=0):
