@@ -14,4 +14,5 @@ from . import res_partner
 from . import product_template
 from . import account_journal
 from . import stock_move
+from . import product_product
 
