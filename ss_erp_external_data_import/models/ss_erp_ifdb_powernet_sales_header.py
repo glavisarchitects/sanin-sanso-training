@@ -119,6 +119,11 @@ class IFDBPowerNetSalesHeader(models.Model):
             if not uom_dict.get(uom['external_code']):
                 uom_dict[uom['external_code']] = uom['internal_code'].id
 
+        tax_dict = {}
+        tax_ids = self.env['ss_erp.code.convert'].search([]).filtered(lambda x:x.external_system.code == 'power_net' and x.convert_code_type.code =='tax')
+        for tax in tax_ids:
+            tax_dict[tax.external_code] = tax.internal_code.id
+
         product_product_ids = self.env['product.product'].search([]).mapped('id')
 
         failed_so = []
@@ -137,6 +142,13 @@ class IFDBPowerNetSalesHeader(models.Model):
                 else:
                     error_message = '単位コードの変換に失敗しました。コード変換マスタを確認してください。'
 
+            if not tax_dict.get(line.search_remarks_4):
+                line.status = 'error'
+                if error_message:
+                    error_message += '税コードの変換に失敗しました。コード変換マスタを確認してください。'
+                else:
+                    error_message = '税コードの変換に失敗しました。コード変換マスタを確認してください。'
+
             if not error_message:
                 if key in failed_so:
                     continue
@@ -147,6 +159,7 @@ class IFDBPowerNetSalesHeader(models.Model):
                         'product_id': int(line.product_code),
                         'product_uom_qty': quantity,
                         'product_uom': uom_dict[line.unit_code],
+                        'tax_id': [(4,tax_dict.get(line.search_remarks_4))]
                     }
 
                     # 2022/05/09 Add new client_order_ref
