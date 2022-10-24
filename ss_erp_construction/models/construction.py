@@ -74,6 +74,9 @@ class Construction(models.Model):
 
     picking_type_id = fields.Many2one('stock.picking.type', related='organization_id.warehouse_id.out_type_id',
                                       store=True, string='オペレーションタイプ')
+
+    warehouse_id = fields.Many2one('stock.warehouse', related='organization_id.warehouse_id',
+                                      store=True, string='倉庫')
     location_id = fields.Many2one('stock.location', related='organization_id.warehouse_id.lot_stock_id', store=True,
                                   string='構成品ロケーション')
     location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
