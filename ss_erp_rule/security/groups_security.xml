@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data noupdate="1">
+    <data>
 
         <!-- SS AUTHORITY GROUP -->
         <record model="ir.module.category" id="module_ss_authority_group">
@@ -32,7 +32,7 @@
         </record>
 
         <record id="group_branch_middle_manager" model="res.groups">
-            <field name="name">支店: 中間管理職</field>
+            <field name="name">支店:中間管理者</field>
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[(4, ref('ss_erp_rule.group_branch_general')),
                                             (4, ref('sales_team.group_sale_salesman_all_leads')),
@@ -115,8 +115,8 @@
         <record id="group_my_org_only_sale" model="res.groups">
             <field name="name">自分の組織のみ (販売)</field>
             <field name="category_id" ref="ss_erp_rule.module_ss_other_authority_group"/>
-            <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_salesman_all_leads')),
-                                             ]"/>
+<!--            <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_salesman_all_leads')),-->
+<!--                                             ]"/>-->
 
         </record>
         <record id="group_my_org_only_external_link" model="res.groups">
