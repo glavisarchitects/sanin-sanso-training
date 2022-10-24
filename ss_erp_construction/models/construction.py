@@ -552,7 +552,7 @@ class Construction(models.Model):
             stock_picking.action_assign()
 
     def action_picking_from_warehouse(self):
-        if not self.construction_component_ids.filtered(lambda x:x.qty_to_buy !=0):
+        if not self.construction_component_ids.filtered(lambda x:x.qty_to_buy !=0 and x.product_id.type == 'product'):
             raise UserError('出荷するものは何もありません！')
         else:
             self._prepare_stock_picking()
