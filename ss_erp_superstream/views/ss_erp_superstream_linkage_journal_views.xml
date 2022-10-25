@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ss_erp_superstream_linkage_journal_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.superstream.linkage.journal.form</field>
+        <field name="model">ss_erp.superstream.linkage.journal</field>
+        <field name="arch" type="xml">
+            <form string="SuperStream連携仕訳">
+                <sheet>
+                    <div>
+                        <label for="journal_id" style="font-size:2.0rem;margin-right: 80px;font-weight: normal;"/>
+                        <field name="journal_id" style="font-size: 2.0rem;"/>
+                    </div>
+                    <group>
+                        <group>
+
+                            <field name="journal_creation" required="True"/>
+                            <field name="merchandise_or_product" />
+                            <field name="sanhot_point" />
+
+                        </group>
+                        <group>
+                            <field name="slip_date_edit" required="True"/>
+                            <field name="materials_grouping" />
+
+                        </group>
+                    </group>
+                    <group string="借方">
+                        <group>
+                            <field name="debit_account" required="True"/>
+                            <field name="debit_related_org_except" />
+                            <field name="debit_accounting_department_code" />
+                            <field name="debit_application_edit_indicator" required="True"/>
+                            <field name="debit_account_employee_category" required="True"/>
+                            <field name="debit_application" required="True"/>
+
+                        </group>
+                        <group>
+                            <field name="debit_related_organization"/>
+                            <field name="debit_sub_account"/>
+                            <field name="debit_department_edit_classification" required="True"/>
+                            <field name="debit_tax_calculation" required="True"/>
+
+                        </group>
+                    </group>
+                    <group string="貸方">
+                        <group>
+                            <field name="credit_account" required="True"/>
+                            <field name="credit_related_org_except"/>
+                            <field name="credit_accounting_department_code" />
+                            <field name="credit_application_edit_indicator" required="True"/>
+                            <field name="credit_account_employee_category" required="True"/>
+                            <field name="credit_application" required="True"/>
+
+                        </group>
+                        <group>
+
+                            <field name="credit_related_organization"/>
+                            <field name="credit_sub_account"/>
+                            <field name="credit_department_editing_classification" required="True"/>
+                            <field name="credit_tax_calculation" required="True"/>
+                        </group>
+                    </group>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="ss_erp_superstream_linkage_journal_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.superstream.linkage.journal.tree</field>
+        <field name="model">ss_erp.superstream.linkage.journal</field>
+        <field name="arch" type="xml">
+            <tree string="拠点間移動">
+                <field name="journal_id"/>
+                <field name="debit_account"/>
+                <field name="debit_sub_account"/>
+                <field name="debit_accounting_department_code"/>
+                <field name="credit_account"/>
+                <field name="credit_sub_account"/>
+                <field name="credit_accounting_department_code"/>
+            </tree>
+        </field>
+    </record>
+    <record id="ss_erp_superstream_linkage_journal_action" model="ir.actions.act_window">
+        <field name="name">SuperStream連携仕訳</field>
+        <field name="res_model">ss_erp.superstream.linkage.journal</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
