@@ -13,10 +13,10 @@
                   parent="menu_ss_erp_superstream_linkage_journal_parent"
                   action="ss_erp_sstream_journal_entry_output_action" />
 
-        <menuitem id="menu_ss_erp_payment_journal_stream_export"
+        <menuitem id="menu_ss_erp_sstream_payment_journal_export"
                   name="入金支払仕訳伝票出力"
                   parent="menu_ss_erp_superstream_linkage_journal_parent"
-                  action="ss_erp_payment_journal_stream_export_action" />
+                  action="ss_erp_sstream_payment_journal_export_action" />
 
         <!--   Menu setting-->
         <menuitem id="menu_ss_erp_superstream_linkage_journal_parent_in_setting"

@@ -33,8 +33,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
         # p5 transfer between base  supper stream linkage
         p5_sstream_linkage_rec = self.env['ss_erp.superstream.linkage.journal'].search(
-            [('journal_creation', '=', 'transfer_between_bases')], limit=1)
-        if not sstream_linkage_recs:
+            [('journal_creation', '=', 'transfer_between_base')], limit=1)
+        if not p5_sstream_linkage_rec:
             raise UserError('一致するリンケージ ジャーナルが見つかりませんでした。')
 
         result = {
@@ -607,14 +607,18 @@ class SStreamJournalEntryOutput(models.TransientModel):
         end_period = datetime.combine(self.last_day_period, datetime.max.time())
 
         linkage_debit_account = param['p5_sstream_linkage_rec'].debit_account.code
-        linkage_debit_sub_account = param['p5_sstream_linkage_rec'].debit_account if linkage_debit_account.x_sub_account_ids else ''
+        linkage_debit_sub_account = param['p5_sstream_linkage_rec'].debit_sub_account.code if param['p5_sstream_linkage_rec'].debit_sub_account.code else ''
+        linkage_debit_organization_rec = param['p5_sstream_linkage_rec'].debit_related_organization
 
         linkage_credit_account = param['p5_sstream_linkage_rec'].credit_account.code
-        linkage_credit_sub_account = linkage_credit_account.x_sub_account_ids[0].code if linkage_credit_account.x_sub_account_ids else ''
+        linkage_credit_sub_account = param['p5_sstream_linkage_rec'].debit_sub_account.code if param['p5_sstream_linkage_rec'].debit_sub_account.code else ''
+        linkage_credit_organization_rec = param['p5_sstream_linkage_rec'].credit_related_organization
 
         _select_data = f"""
         select 						
-            code as department_code						
+            code as department_code	
+            , move_line_id -- 		just a column to shorten the code below						
+            , '{param['p5_sstream_linkage_rec'].journal_id.name}' as journal_item_label						
             , '3' as record_division						
             , '{param['sstream_company_code']}' as company_code						
             , '{param['sstream_slip_group']}' as slip_group						
@@ -623,7 +627,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
             , '0' as deb_cre_division						
             , '{linkage_debit_account}' as account_code						
             , '{linkage_debit_sub_account}' as sub_account_code						
-            , code || right(organization_code, 3) as organization_code						
+            , code || right(organization_code, 3) as depar_orga_code						
             , '0' as partner_employee_division						
             , '' as partner_employee_code						
             , sum(product_uom_qty * standard_price) as journal_amount /* 原価で計算 */						
@@ -635,6 +639,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 (						
                     select						
                         seo.organization_code						
+                        , iol.id move_line_id -- 		just a column to shorten the code below				
                         , serp.code						
                         , iol.product_uom_qty 						
                         , pt.list_price						
@@ -661,9 +666,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                                     left join ir_property prop on prop.res_id = 'product.product,' || pp.id						
                     where						
                         sp.state = 'done'  /* 完了を指定 */						
-                    BETWEEN '{start_period}' and '{end_period}'					
-                    and sp.x_organization_id = 8  /* 移動元組織（貸方関連組織を指定） */						
-                    and sp.x_organization_dest_id = 4 /* 移動先組織（借方関連組織を指定） */						
+                    and sp.date BETWEEN '{start_period}' and '{end_period}'					
+                    and sp.x_organization_id = '{linkage_credit_organization_rec.id}'  /* 移動元組織（貸方関連組織を指定） */						
+                    and sp.x_organization_dest_id = '{linkage_debit_organization_rec.id}' /* 移動先組織（借方関連組織を指定） */						
             --         group by  /* グルーピングして出荷と入荷を1レコードにまとめておく（使う情報に差はないのでOK） */						
             --             seo.organization_code						
             --             , rp.code						
@@ -675,13 +680,14 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD')						
                 , organization_code						
                 , code						
-                                    
-                                    
+                , move_line_id						
+                                                           
             union all						
-                                    
-                                    
+                                                          
             select 						
-                code as department_code						
+                code as department_code	
+                , move_line_id -- 		just a column to shorten the code below	
+                , '{param['p5_sstream_linkage_rec'].journal_id.name}' as journal_item_label						
                 , '3' as record_division						
             , '{param['sstream_company_code']}' as company_code						
             , '{param['sstream_slip_group']}' as slip_group						
@@ -690,7 +696,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , '1' as deb_cre_division						
                 , '{linkage_credit_account}' as account_code						
                 , '{linkage_credit_sub_account}' as sub_account_code						
-                , code || right(organization_code, 3) as organization_code						
+                , code || right(organization_code, 3) as depar_orga_code						
                 , '0' as partner_employee_division						
                 , '' as partner_employee_code						
                 , sum(product_uom_qty * standard_price) as journal_amount /* 原価で計算 */						
@@ -701,12 +707,13 @@ class SStreamJournalEntryOutput(models.TransientModel):
             from						
                 (						
                     select						
-                        seo.organization_code						
+                        seo.organization_code	
+                        , iol.id move_line_id					
                         , serp.code						
                         , iol.product_uom_qty 						
                         , pt.list_price						
                         , sp.date		
-                            , prop.value_float as	standard_price					
+                            , prop.value_float as standard_price					
                     from						
                         ss_erp_inventory_order io  /* 移動伝票 */						
                         inner join						
@@ -728,10 +735,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                                     left join ir_property prop on prop.res_id = 'product.product,' || pp.id						
                     where						
                         sp.state = 'done'  /* 完了を指定 */						
-                    and sp.date >= to_timestamp('20220901000000', 'YYYYMMDDHH24MISS') /* 画面で入力された期間From */						
-                    and sp.date <= to_timestamp('20220930235959', 'YYYYMMDDHH24MISS') /* 画面で入力された期間To */						
-                    and sp.x_organization_id = 8  /* 移動元組織（貸方関連組織を指定） */						
-                    and sp.x_organization_dest_id = 4 /* 移動先組織（借方関連組織を指定） */						
+                    and sp.date BETWEEN '{start_period}' and '{end_period}'							
+                    and sp.x_organization_id = '{linkage_credit_organization_rec.id}'  /* 移動元組織（貸方関連組織を指定） */						
+                    and sp.x_organization_dest_id = '{linkage_debit_organization_rec.id}' /* 移動先組織（借方関連組織を指定） */						
             --         group by  /* グルーピングして出荷と入荷を1レコードにまとめておく（使う情報に差はないのでOK） */						
             --             seo.organization_code						
             --             , rp.code						
@@ -743,6 +749,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD')						
                 , organization_code						
                 , code						
+                , move_line_id						
             order by						
                 department_code asc						
                 , deb_cre_division asc						
@@ -771,14 +778,17 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
         pattern1_data = self.query_pattern1(self.get_a007_param())
         for p1d in pattern1_data: p1d['pattern_type'] = 1
+
         pattern2_data = self.query_pattern2(self.get_a007_param())
         for p2d in pattern2_data: p2d['pattern_type'] = 2
+
         pattern3_data = self.query_pattern3(self.get_a007_param())
         for p3d in pattern3_data: p3d['pattern_type'] = 3
 
         pattern5_data = self.query_pattern5(self.get_a007_param())
+        for p5d in pattern5_data: p5d['pattern_type'] = 5
 
-        all_pattern_data = pattern1_data + pattern2_data
+        all_pattern_data = pattern1_data + pattern2_data + pattern3_data + pattern5_data
         debit_line_data = []
         credit_line_data = []
         for p1d in all_pattern_data:
@@ -806,6 +816,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
             # pattern 3
             elif de_line['pattern_type'] == 3:
                 linkage_journal_rec = param['sstream_linkage_recs'].filtered(lambda r: r.debit_account.id == int(de_line['account_id']))
+            # pattern 3
+            elif de_line['pattern_type'] == 5:
+                linkage_journal_rec = param['p5_sstream_linkage_rec']
 
             if len(linkage_journal_rec) != 1:
                 raise UserError(_('linkage.journal が見つからないか、一致するレコードが複数あります'))
@@ -839,10 +852,13 @@ class SStreamJournalEntryOutput(models.TransientModel):
                          str(de_line['tax_excluded_amount']) + ',' + str(
                 de_line['tax_amount']) + ',' + external_tax_code + ',' + \
                          de_line['tax_entry_division'] + ',' + summary1 + ',,,,,0,0,,,,,,,,,,,' + '\r\n'
+
             for cre_line in credit_line_data:
+
                 if cre_line['pattern_type'] == 3:
                     linkage_journal_rec = param['sstream_linkage_recs'].filtered(lambda r: r.credit_account.id == int(cre_line['account_id']))
                     summary1 = self.concatenate_summary(linkage_journal_rec, cre_line)
+
                 if cre_line['move_line_id'] == de_line['move_line_id']:
                     credit_line = cre_line['record_division'] + ',' + cre_line['company_code'] + ',' + cre_line[
                         'slip_group'] + ',,' + cre_line[

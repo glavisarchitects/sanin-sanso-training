@@ -170,17 +170,7 @@ class ConstructionComponent(models.Model):
 
     def _compute_qty_to_invoice(self):
         for line in self:
-            qty_invoiced = 0.0
-            invoice_lines = self.env['account.move.line'].search(
-                [('move_id.x_construction_order_id', '=', line.construction_id.id),
-                 ('product_id', '=', line.product_id.id), ('product_uom_id', '=', line.product_uom_id.id)])
-            for invoice_line in invoice_lines:
-                if invoice_line.move_id.state != 'cancel':
-                    if invoice_line.move_id.move_type == 'out_invoice':
-                        qty_invoiced += invoice_line.quantity
-                    elif invoice_line.move_id.move_type == 'out_refund':
-                        qty_invoiced -= invoice_line.quantity
-            line.qty_to_invoice = line.product_uom_qty - qty_invoiced
+            line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
 
     def _prepare_purchase_order(self):
         company_id = self.env.user.company_id
