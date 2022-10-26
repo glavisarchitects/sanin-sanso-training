@@ -46,7 +46,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
 
     @api.model
     def _default_deposit_taxes_id(self):
-        return self._default_product_id().taxes_id
+        return self._default_product_id().supplier_taxes_id
 
     @api.model
     def _default_has_down_payment(self):
