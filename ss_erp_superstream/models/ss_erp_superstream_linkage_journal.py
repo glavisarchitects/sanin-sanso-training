@@ -45,8 +45,8 @@ class SSSuperStreamLinkageJournal(models.Model):
                                                         ], string="借方取引先・社員区分")
     debit_application = fields.Char(string="借方適用")
     credit_account = fields.Many2one('account.account', string="貸方勘定科目")
-    credit_sub_account = fields.Many2one('ss_erp.organization', string="貸方補助科目")
-    credit_related_organization = fields.Many2one('ss_erp.account.subaccount', string="貸方関連組織")
+    credit_sub_account = fields.Many2one('ss_erp.account.subaccount', string="貸方補助科目")
+    credit_related_organization = fields.Many2one('ss_erp.organization', string="貸方関連組織")
     credit_related_org_except = fields.Boolean(string="貸方関連組織除外")
     credit_accounting_department_code = fields.Char(string="貸方経理部門コード")
     credit_department_editing_classification = fields.Selection([('no_edits', '編集なし'),

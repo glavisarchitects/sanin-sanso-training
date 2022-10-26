@@ -5,7 +5,7 @@
         山陰酸素工業　従業員管理カスタマイズ
     """,
     "depends": [
-        "hr", "ss_erp_organization",
+        "hr", "ss_erp_organization","hr_contract",
     ],
     "data": [
         # SECURITY

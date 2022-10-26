@@ -33,7 +33,7 @@ class PurchaseOrder(models.Model):
         """
         down_payments_section_line = {
             'display_type': 'line_section',
-            'name': _('前受金'),
+            'name': _('前払金'),
             'product_id': False,
             'product_uom_id': False,
             'quantity': 0,
