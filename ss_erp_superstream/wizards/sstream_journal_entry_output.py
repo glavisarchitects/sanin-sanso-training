@@ -26,10 +26,22 @@ class SStreamJournalEntryOutput(models.TransientModel):
         if not sstream_linkage_recs:
             raise UserError('一致するリンケージ ジャーナルが見つかりませんでした。')
 
+        sstream_linkage_recs = self.env['ss_erp.superstream.linkage.journal'].search(
+            [('journal_creation', '=', 'odoo_journal')])
+        if not sstream_linkage_recs:
+            raise UserError('一致するリンケージ ジャーナルが見つかりませんでした。')
+
+        # p5 transfer between base  supper stream linkage
+        p5_sstream_linkage_rec = self.env['ss_erp.superstream.linkage.journal'].search(
+            [('journal_creation', '=', 'transfer_between_bases')], limit=1)
+        if not sstream_linkage_recs:
+            raise UserError('一致するリンケージ ジャーナルが見つかりませんでした。')
+
         result = {
             'sstream_company_code': sstream_company_code,
             'sstream_slip_group': sstream_slip_group,
             'sstream_linkage_recs': sstream_linkage_recs,
+            'p5_sstream_linkage_rec': p5_sstream_linkage_rec,
         }
         return result
 
@@ -588,6 +600,158 @@ class SStreamJournalEntryOutput(models.TransientModel):
         data_pattern3 = self._cr.dictfetchall()
         return data_pattern3
 
+    # transfer between branch
+    def query_pattern5(self, param):
+
+        start_period = datetime.combine(self.first_day_period, datetime.min.time())
+        end_period = datetime.combine(self.last_day_period, datetime.max.time())
+
+        linkage_debit_account = param['p5_sstream_linkage_rec'].debit_account.code
+        linkage_debit_sub_account = param['p5_sstream_linkage_rec'].debit_account if linkage_debit_account.x_sub_account_ids else ''
+
+        linkage_credit_account = param['p5_sstream_linkage_rec'].credit_account.code
+        linkage_credit_sub_account = linkage_credit_account.x_sub_account_ids[0].code if linkage_credit_account.x_sub_account_ids else ''
+
+        _select_data = f"""
+        select 						
+            code as department_code						
+            , '3' as record_division						
+            , '{param['sstream_company_code']}' as company_code						
+            , '{param['sstream_slip_group']}' as slip_group						
+            , to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD') as slip_date						
+            , '1' as line_number 						
+            , '0' as deb_cre_division						
+            , '{linkage_debit_account}' as account_code						
+            , '{linkage_debit_sub_account}' as sub_account_code						
+            , code || right(organization_code, 3) as organization_code						
+            , '0' as partner_employee_division						
+            , '' as partner_employee_code						
+            , sum(product_uom_qty * standard_price) as journal_amount /* 原価で計算 */						
+            , sum(product_uom_qty * standard_price) as tax_excluded_amount /* 原価で計算 */						
+            , 0 as tax_amount						
+            , '000' as tax_id						
+            , '0' as tax_entry_division						
+            from						
+                (						
+                    select						
+                        seo.organization_code						
+                        , serp.code						
+                        , iol.product_uom_qty 						
+                        , pt.list_price						
+                        , sp.date						
+                        , prop.value_float as standard_price		 			
+                    from						
+                        ss_erp_inventory_order io  /* 移動伝票 */						
+                        inner join						
+                        ss_erp_inventory_order_line iol  /* 移動伝票明細 */						
+                        on io.id = iol.order_id						
+                        inner join						
+                        stock_picking sp  /* 運送 */						
+                        on io.id = sp.x_inventory_order_id						
+                        inner join						
+                        ss_erp_responsible_department serp /* 管轄部門 */						
+                        on sp.x_responsible_dept_id = serp.id						
+                        inner join						
+                        ss_erp_organization seo /* 組織 */						
+                        on sp.x_organization_id = seo.id						
+                        inner join						
+                        product_product pp  /* プロダクト */						
+                        on iol.product_id = pp.id
+                                    left join product_template pt on pp.product_tmpl_id = pt.id
+                                    left join ir_property prop on prop.res_id = 'product.product,' || pp.id						
+                    where						
+                        sp.state = 'done'  /* 完了を指定 */						
+                    BETWEEN '{start_period}' and '{end_period}'					
+                    and sp.x_organization_id = 8  /* 移動元組織（貸方関連組織を指定） */						
+                    and sp.x_organization_dest_id = 4 /* 移動先組織（借方関連組織を指定） */						
+            --         group by  /* グルーピングして出荷と入荷を1レコードにまとめておく（使う情報に差はないのでOK） */						
+            --             seo.organization_code						
+            --             , rp.code						
+            --             , iol.product_uom_qty 						
+            --             , pt.list_price						
+            --             , sp.date						
+                )result_debit						
+            group by						
+                to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD')						
+                , organization_code						
+                , code						
+                                    
+                                    
+            union all						
+                                    
+                                    
+            select 						
+                code as department_code						
+                , '3' as record_division						
+            , '{param['sstream_company_code']}' as company_code						
+            , '{param['sstream_slip_group']}' as slip_group						
+                , to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD') as slip_date						
+                , '2' as line_number 						
+                , '1' as deb_cre_division						
+                , '{linkage_credit_account}' as account_code						
+                , '{linkage_credit_sub_account}' as sub_account_code						
+                , code || right(organization_code, 3) as organization_code						
+                , '0' as partner_employee_division						
+                , '' as partner_employee_code						
+                , sum(product_uom_qty * standard_price) as journal_amount /* 原価で計算 */						
+                , sum(product_uom_qty * standard_price) as tax_excluded_amount /* 原価で計算 */						
+                , 0 as tax_amount						
+                , '000' as tax_id						
+                , '0' as tax_entry_division						
+            from						
+                (						
+                    select						
+                        seo.organization_code						
+                        , serp.code						
+                        , iol.product_uom_qty 						
+                        , pt.list_price						
+                        , sp.date		
+                            , prop.value_float as	standard_price					
+                    from						
+                        ss_erp_inventory_order io  /* 移動伝票 */						
+                        inner join						
+                        ss_erp_inventory_order_line iol  /* 移動伝票明細 */						
+                        on io.id = iol.order_id						
+                        inner join						
+                        stock_picking sp  /* 運送 */						
+                        on io.id = sp.x_inventory_order_id						
+                        inner join						
+                        ss_erp_responsible_department serp /* 管轄部門 */						
+                        on sp.x_responsible_dept_id = serp.id						
+                        inner join						
+                        ss_erp_organization seo /* 組織 */						
+                        on sp.x_organization_id = seo.id						
+                        inner join						
+                        product_product pp  /* プロダクト */						
+                        on iol.product_id = pp.id
+                                    left join product_template pt on pp.product_tmpl_id = pt.id
+                                    left join ir_property prop on prop.res_id = 'product.product,' || pp.id						
+                    where						
+                        sp.state = 'done'  /* 完了を指定 */						
+                    and sp.date >= to_timestamp('20220901000000', 'YYYYMMDDHH24MISS') /* 画面で入力された期間From */						
+                    and sp.date <= to_timestamp('20220930235959', 'YYYYMMDDHH24MISS') /* 画面で入力された期間To */						
+                    and sp.x_organization_id = 8  /* 移動元組織（貸方関連組織を指定） */						
+                    and sp.x_organization_dest_id = 4 /* 移動先組織（借方関連組織を指定） */						
+            --         group by  /* グルーピングして出荷と入荷を1レコードにまとめておく（使う情報に差はないのでOK） */						
+            --             seo.organization_code						
+            --             , rp.code						
+            --             , iol.product_uom_qty 						
+            --             , pt.list_price						
+            --             , sp.date						
+                )result_debit						
+            group by						
+                to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD')						
+                , organization_code						
+                , code						
+            order by						
+                department_code asc						
+                , deb_cre_division asc						
+                , line_number asc						
+"""
+        self._cr.execute(_select_data)
+        data_pattern5 = self._cr.dictfetchall()
+        return data_pattern5
+
     def concatenate_summary(self, linkage_journal_rec, line_data):
         summary1 = ''
         if linkage_journal_rec.credit_application_edit_indicator == 'month':
@@ -605,13 +769,14 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
         param = self.get_a007_param()
 
-
         pattern1_data = self.query_pattern1(self.get_a007_param())
         for p1d in pattern1_data: p1d['pattern_type'] = 1
         pattern2_data = self.query_pattern2(self.get_a007_param())
         for p2d in pattern2_data: p2d['pattern_type'] = 2
         pattern3_data = self.query_pattern3(self.get_a007_param())
         for p3d in pattern3_data: p3d['pattern_type'] = 3
+
+        pattern5_data = self.query_pattern5(self.get_a007_param())
 
         all_pattern_data = pattern1_data + pattern2_data
         debit_line_data = []

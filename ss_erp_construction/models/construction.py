@@ -37,7 +37,7 @@ class Construction(models.Model):
     invoice_status = fields.Selection([('invoiced', '完全請求書'),
                                        ('to_invoice', '請求対象'),
                                        ('no', '請求対象なし')
-                                       ], string='請求書ステータス', compute='_compute_invoice_status')
+                                       ], string='請求書ステータス', compute='_compute_invoice_status',store=True)
 
     @api.depends('construction_component_ids.qty_to_invoice', 'state')
     def _compute_invoice_status(self):
@@ -421,6 +421,7 @@ class Construction(models.Model):
             'move_type': 'out_invoice',
             'invoice_origin': self.name,
             'x_organization_id': self.organization_id.id,
+            'x_responsible_user_id': self.user_id.id,
             'x_responsible_dept_id': self.responsible_dept_id.id,
             'x_construction_order_id': self.id,
             'invoice_user_id': self.user_id.id,

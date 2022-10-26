@@ -189,7 +189,7 @@ class ConstructionComponent(models.Model):
             limit=1)
         return {
             'partner_id': self.partner_id.id,
-            'user_id': self.env.user.id,
+            'user_id': self.construction_id.user_id.id,
             'x_construction_order_id': self.construction_id.id,
             'picking_type_id': picking_type_id.id,
             'company_id': company_id.id,
