@@ -27,11 +27,11 @@ class ConstructionComponent(models.Model):
             else:
                 rec.qty_available = 0
 
-    @api.constrains("qty_bought", 'qty_reserved_from_warehouse', 'product_uom_qty')
-    def _check_same_employee_number(self):
-        for rec in self:
-            if rec.product_uom_qty < rec.qty_bought + rec.qty_reserved_from_warehouse:
-                raise ValidationError(_("消費数量が超過しています。構成品の数量が不足していないか確認してください。"))
+    # @api.constrains("qty_bought", 'qty_reserved_from_warehouse', 'product_uom_qty')
+    # def _check_same_employee_number(self):
+    #     for rec in self:
+    #         if rec.product_uom_qty < rec.qty_bought + rec.qty_reserved_from_warehouse:
+    #             raise ValidationError(_("消費数量が超過しています。構成品の数量が不足していないか確認してください。"))
 
     product_uom_id = fields.Many2one(comodel_name='uom.uom', string='単位', tracking=True,
                                      domain="[('category_id', '=', product_uom_category_id)]")
