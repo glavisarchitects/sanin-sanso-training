@@ -57,6 +57,10 @@ class PurchaseOrder(models.Model):
         a clean extension chain).
         """
         invoice_vals = super(PurchaseOrder, self)._prepare_invoice()
+        invoice_vals.update({
+            'x_organization_id': self.x_organization_id.id,
+            'x_responsible_dept_id': self.x_responsible_dept_id.id,
+        })
         if self.x_bis_categ_id == 'gas_material':
             invoice_vals.update({
                 'invoice_type': 'gas_material'
@@ -126,7 +130,7 @@ class PurchaseOrder(models.Model):
             pending_section = None
 
             invoice_vals = order._prepare_invoice()
-            invoiceable_lines = order._get_invoiceable_lines()
+            invoiceable_lines = order._get_invoiceable_lines(final)
 
             invoice_line_vals = []
             down_payment_section_added = False

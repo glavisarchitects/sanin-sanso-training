@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 
 from . import sstream_journal_entry_output
-from . import payment_journal_stream_export
+from . import sstream_payment_journal_export
 

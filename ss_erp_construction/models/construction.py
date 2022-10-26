@@ -37,7 +37,7 @@ class Construction(models.Model):
     invoice_status = fields.Selection([('invoiced', '完全請求書'),
                                        ('to_invoice', '請求対象'),
                                        ('no', '請求対象なし')
-                                       ], string='請求書ステータス', compute='_compute_invoice_status',store=True)
+                                       ], string='請求書ステータス', compute='_compute_invoice_status', store=True)
 
     @api.depends('construction_component_ids.qty_to_invoice', 'state')
     def _compute_invoice_status(self):
@@ -76,7 +76,7 @@ class Construction(models.Model):
                                       store=True, string='オペレーションタイプ')
 
     warehouse_id = fields.Many2one('stock.warehouse', related='organization_id.warehouse_id',
-                                      store=True, string='倉庫')
+                                   store=True, string='倉庫')
     location_id = fields.Many2one('stock.location', related='organization_id.warehouse_id.lot_stock_id', store=True,
                                   string='構成品ロケーション')
     location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
@@ -439,7 +439,7 @@ class Construction(models.Model):
         return invoice_vals
 
     def _get_invoiceable_lines(self):
-        return self.construction_component_ids
+        return self.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0)
 
     @api.model
     def _prepare_down_payment_section_line(self, **optional_values):
@@ -483,7 +483,7 @@ class Construction(models.Model):
         invoice_vals = self._prepare_invoice()
         invoiceable_lines = self._get_invoiceable_lines()
 
-        if not self.construction_component_ids.filtered(lambda x:x.qty_to_invoice!=0):
+        if not self.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0):
             raise self._nothing_to_invoice_error()
 
         invoice_line_vals = []
@@ -556,7 +556,7 @@ class Construction(models.Model):
             stock_picking.action_assign()
 
     def action_picking_from_warehouse(self):
-        if not self.construction_component_ids.filtered(lambda x:x.qty_to_buy !=0 and x.product_id.type == 'product'):
+        if not self.construction_component_ids.filtered(lambda x: x.qty_to_buy != 0 and x.product_id.type == 'product'):
             raise UserError('出荷するものは何もありません！')
         else:
             self._prepare_stock_picking()

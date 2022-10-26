@@ -74,6 +74,7 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
             'move_type': 'out_invoice',
             'invoice_origin': order.name,
             'x_organization_id': order.organization_id.id,
+            'x_responsible_user_id': order.user_id.id,
             'x_responsible_dept_id': order.responsible_dept_id.id,
             'x_construction_order_id': order.id,
             'invoice_user_id': order.user_id.id,
@@ -90,6 +91,7 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
                 'quantity': 1.0,
                 'product_id': self.product_id.id,
                 'product_uom_id': order_line.product_uom_id.id,
+                'construction_line_ids': [(4,order_line.id)],
                 'tax_ids': [(6, 0, order_line.tax_id.ids)],
             })],
         }
