@@ -46,12 +46,9 @@ class LPGasOrder(models.Model):
         for line in self.lpgas_order_line_ids:
             if line.difference_qty == 0:
                 continue
-            if line.difference_qty > 0:
-                location_id = line.location_id.id
-                location_dest_id = branch_loss_location.id
-            elif line.difference_qty < 0:
-                location_id = branch_loss_location.id
-                location_dest_id = line.location_id.id
+            location_id = line.location_id.id if line.difference_qty > 0 else branch_loss_location.id
+            location_dest_id = branch_loss_location.id if line.difference_qty > 0 else line.location_id.id
+
             sm_value = {
                 'name': _('INV:LP GAS ') + (str(self.inventory_type) or ''),
                 'product_id': lpgas_product_id.id,
@@ -67,7 +64,7 @@ class LPGasOrder(models.Model):
                     # 'lot_id': self.prod_lot_id.id,
                     'product_uom_qty': 0,  # bypass reservation here
                     'product_uom_id': lpgas_product_id.uom_id.id,
-                    'qty_done': line.difference_qty,
+                    'qty_done':  abs(line.difference_qty),
                     'state': 'done',
                     # 'package_id': out and self.package_id.id or False,
                     # 'result_package_id': (not out) and self.package_id.id or False,
