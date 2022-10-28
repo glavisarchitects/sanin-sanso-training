@@ -26,7 +26,7 @@ class Construction(models.Model):
                 concat ( '作成者 ', rp2.NAME ) AS author,
                 sec.construction_name,
                 '別途協議' AS finish_date,
-                apt.NAME AS transaction_type,
+                tb2.value AS transaction_type,
                 to_char( sec.expire_date, 'YYYY年MM月DD日' ) AS date_of_expiry,
                 sec.estimation_note AS remarks,
                 sec.construction_name AS product_name_head,
@@ -58,6 +58,7 @@ class Construction(models.Model):
                 LEFT JOIN product_product pp on scc.product_id = pp.id
                 LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id
                 LEFT JOIN uom_uom uu on scc.product_uom_id = uu.id
+                LEFT JOIN (SELECT * FROM ir_translation where name = 'account.payment.term,name')tb2 on tb2.res_id = apt.id
                 WHERE sec.id = '{self.id}' and (scc.display_type is NULL or scc.display_type = 'line_section')
         '''
         self.env.cr.execute(query)
