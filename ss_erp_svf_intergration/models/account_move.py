@@ -44,11 +44,10 @@ class AccountMove(models.Model):
         with org_bank as (
         select 
             rpb.organization_id,
-            concat("振込先口座　　" ,rb.name,rpb.x_bank_branch,"（",CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,"）",rpb.x_bank_branch_number) as payee_info	
-        -- 	'(',CASE When acc_type = 'bank' then '通常' ELSE '当座' END,')', rpb.acc_number）　as payee_info	
+            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,'）',rpb.x_bank_branch_number) as payee_info	
         from res_partner_bank rpb
         left join res_bank rb on rpb.bank_id = rb.id
-        where rpb.organization_id is not null
+        where rpb.organization_id is not null)
         ),
         -- SUM TAX REGION
             sum_tax_10 as (

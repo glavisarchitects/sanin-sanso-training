@@ -97,6 +97,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
             'invoice_user_id': order.user_id.id,
             'partner_id': order.partner_id.id,
             'purchase_id': order.id,
+            'x_responsible_user_id': order.user_id.id,
             'fiscal_position_id': (order.fiscal_position_id or order.fiscal_position_id.get_fiscal_position(
                 order.partner_id.id)).id,
             'partner_shipping_id': order.partner_id.id,
