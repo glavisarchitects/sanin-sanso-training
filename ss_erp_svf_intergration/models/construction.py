@@ -93,7 +93,7 @@ class Construction(models.Model):
                         data_line += '"0",'
                 else:
                     if count == len(data) and col == 'subtotal':
-                        data_line += '"' + "{:,}".format(self.amount_untaxed) + '",'
+                        data_line += '"' + "{:,}".format(int(self.amount_untaxed)) + '",'
                     else:
                         if row[col] is not None:
                             data_line += '"' + str(row[col]) + '",'
