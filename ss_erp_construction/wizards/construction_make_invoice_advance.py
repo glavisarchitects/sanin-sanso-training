@@ -135,8 +135,10 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
 
     def _prepare_construction_component(self, order, tax_ids, amount):
         context = {'lang': order.partner_id.lang}
+        sequence = max(list(set(order.construction_component_ids.mapped('sequence'))))+1
         construction_component_values = {
             'name': _('前受金: %s') % (time.strftime('%m %Y'),),
+            'sequence': sequence,
             'sale_price': amount,
             'product_uom_qty': 0.0,
             'construction_id': order.id,
