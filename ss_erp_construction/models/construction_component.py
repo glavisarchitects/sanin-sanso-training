@@ -211,24 +211,45 @@ class ConstructionComponent(models.Model):
 
             if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost').isdigit():
                 direct_labo_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost')))
+                if not direct_labo_fee_product:
+                    raise UserError(
+                        "直接労務費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_labor_cost)")
 
             if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost').isdigit():
                 direct_outsource_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost')))
+                if not direct_outsource_fee_product:
+                    raise UserError(
+                        "直接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_outsourcing_cost)")
 
             if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost').isdigit():
                 direct_expense_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost')))
+                if not direct_expense_fee_product:
+                    raise UserError(
+                        "直接経費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_expense_cost)")
 
             if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost').isdigit():
                 indirect_material_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost')))
+                if not indirect_material_fee_product:
+                    raise UserError(
+                        "間接材料費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_material_cost)")
 
             if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost').isdigit():
                 indirect_labo_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost')))
+                if not indirect_labo_fee_product:
+                    raise UserError(
+                        "間接労務費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_labor_cost)")
 
             if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost').isdigit():
                 indirect_outsource_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost')))
+                if not indirect_outsource_fee_product:
+                    raise UserError(
+                        "間接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_outsourcing_cost)")
 
             if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost').isdigit():
                 indirect_expense_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost')))
+                if not indirect_expense_fee_product:
+                    raise UserError(
+                        "間接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_expense_cost)")
 
             # 間接経費計算
             if self.product_id.id == indirect_expense_fee_product.id:
