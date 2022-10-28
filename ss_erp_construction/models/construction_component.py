@@ -7,6 +7,9 @@ from odoo.exceptions import UserError, ValidationError
 class ConstructionComponent(models.Model):
     _name = 'ss.erp.construction.component'
     _description = '構成品'
+    _order = 'construction_id, sequence, id'
+
+    sequence = fields.Integer(string='付番', default=10)
 
     name = fields.Text(string='説明')
     product_id = fields.Many2one(comodel_name='product.product', string='プロダクト', tracking=True)
@@ -18,6 +21,10 @@ class ConstructionComponent(models.Model):
     qty_bought = fields.Float(string='購買済み', compute='_compute_qty_bought')
     qty_reserved_from_warehouse = fields.Float(string='在庫出荷数', compute='_compute_qty_reserved_from_warehouse')
 
+    display_type = fields.Selection([
+        ('line_section', "Section"),
+        ('line_note', "Note")], default=False, help="Technical field for UX purpose.")
+
     @api.depends('location_id', 'product_id')
     def _get_qty_available(self):
         for rec in self:
@@ -27,20 +34,14 @@ class ConstructionComponent(models.Model):
             else:
                 rec.qty_available = 0
 
-    # @api.constrains("qty_bought", 'qty_reserved_from_warehouse', 'product_uom_qty')
-    # def _check_same_employee_number(self):
-    #     for rec in self:
-    #         if rec.product_uom_qty < rec.qty_bought + rec.qty_reserved_from_warehouse:
-    #             raise ValidationError(_("消費数量が超過しています。構成品の数量が不足していないか確認してください。"))
-
     product_uom_id = fields.Many2one(comodel_name='uom.uom', string='単位', tracking=True,
                                      domain="[('category_id', '=', product_uom_category_id)]")
-    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string='単位カテゴリ')
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', string='単位カテゴリ')
     partner_id = fields.Many2one(comodel_name='res.partner', domain=[('x_is_vendor', '=', True)], string='仕入先',
                                  tracking=True)
     payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件', tracking=True)
     standard_price = fields.Monetary(string='仕入価格', tracking=True)
-    currency_id = fields.Many2one('res.currency', '通貨', required=True,
+    currency_id = fields.Many2one('res.currency', '通貨',
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     tax_id = fields.Many2one(comodel_name='account.tax', string='税', tracking=True)
     sale_price = fields.Monetary(string='販売価格', tracking=True)
@@ -57,6 +58,12 @@ class ConstructionComponent(models.Model):
         'construction_order_line_stock_move_rel',
         'construction_line_id', 'stock_move_id',
         string='在庫移動', readonly=True, copy=False)
+
+    @api.onchange('product_id')
+    def onchange_update_name(self):
+        for rec in self:
+            if rec.product_id:
+                rec.name = rec.product_id.product_tmpl_id.name
 
     @api.depends('stock_move_ids.state')
     def _compute_qty_reserved_from_warehouse(self):
@@ -113,18 +120,50 @@ class ConstructionComponent(models.Model):
     @api.depends('purchase_order_lines.order_id.state', 'purchase_order_lines.product_qty')
     def _compute_qty_bought(self):
         for rec in self:
-            qty_bought = 0.0
-            for line in rec.purchase_order_lines:
-                if line.order_id.state != 'cancel':
-                    qty_bought += line.product_qty
-            rec.qty_bought = qty_bought
+            if not rec.display_type:
+                qty_bought = 0.0
+                for line in rec.purchase_order_lines:
+                    if line.order_id.state != 'cancel':
+                        qty_bought += line.product_qty
+                rec.qty_bought = qty_bought
+            else:
+                rec.qty_bought = 0
+
+    # @api.model_create_multi
+    # def create(self, vals_list):
+    #     for values in vals_list:
+    #         if values.get('display_type', self.default_get(['display_type'])['display_type']):
+    #             values.update(product_id=False, price_unit=0, product_uom_qty=0, product_uom_id=False)
+    #         else:
+    #             values.update(self._prepare_add_missing_fields(values))
+    #
+    #     lines = super().create(vals_list)
+    #     return lines
+    #
+    # @api.model
+    # def _prepare_add_missing_fields(self, values):
+    #     """ Deduce missing required fields from the onchange """
+    #     res = {}
+    #     onchange_fields = ['name', 'price_unit', 'product_qty', 'product_uom', ]
+    #     if values.get('product_id') and any(f not in values for f in onchange_fields):
+    #         line = self.new(values)
+    #         line.onchange_product_id()
+    #         for field in onchange_fields:
+    #             if field not in values:
+    #                 res[field] = line._fields[field].convert_to_write(line[field], line)
+    #     return res
 
     @api.depends('product_uom_qty', 'tax_id', 'sale_price', 'standard_price')
     def _compute_subtotal(self):
         for rec in self:
-            rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
-            rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
-            rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
+            if not rec.display_type:
+                rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
+                rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
+                rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
+            else:
+                rec.subtotal_exclude_tax = 0
+                rec.subtotal = 0
+                rec.margin = 0
 
     def onchange(self, values, field_name, field_onchange):
         # OVERRIDE
@@ -145,28 +184,6 @@ class ConstructionComponent(models.Model):
     @api.onchange('standard_price')
     def _onchange_standard_price(self):
         self.sale_price = self.standard_price / (1 - self.margin_rate)
-
-    # @api.onchange('margin_rate')
-    # def _onchange_margin_rate(self):
-    #     if not self.onchange_sale_price:
-    #         self.sale_price = self.standard_price / (1 - self.margin_rate)
-    #         self.onchange_margin = True
-    #     else:
-    #         self.onchange_margin = False
-    #
-    # @api.onchange('sale_price', )
-    # def _onchange_sale_price(self):
-    #     if not self.onchange_margin:
-    #         self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
-    #         self.onchange_sale_price = True
-    #     else:
-    #         self.onchange_sale_price = False
-    #
-    # @api.onchange('standard_price')
-    # def _onchange_standard_price(self):
-    #     self.sale_price = self.standard_price / (1 - self.margin_rate)
-    #     self.onchange_margin = True
-    #     self.onchange_sale_price = True
 
     def _compute_qty_to_invoice(self):
         for line in self:
@@ -240,8 +257,8 @@ class ConstructionComponent(models.Model):
     @api.depends('product_uom_qty', 'qty_reserved_from_warehouse', 'qty_bought', )
     def _compute_qty_to_buy(self):
         for rec in self:
-            if rec.product_id.type != 'consu':
-                rec.qty_to_buy = rec.product_uom_qty - rec.qty_reserved_from_warehouse - rec.qty_bought
+            if not rec.display_type and rec.product_id.type != 'consu':
+                    rec.qty_to_buy = rec.product_uom_qty - rec.qty_reserved_from_warehouse - rec.qty_bought
             else:
                 rec.qty_to_buy = 0
 
@@ -314,16 +331,17 @@ class ConstructionComponent(models.Model):
         it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
         """
         for line in self:
-            qty_invoiced = 0.0
-            for invoice_line in line.invoice_lines:
-                if invoice_line.move_id.state != 'cancel':
-                    if invoice_line.move_id.move_type == 'out_invoice':
-                        qty_invoiced += invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
-                                                                                      line.product_uom_id)
-                    elif invoice_line.move_id.move_type == 'out_refund':
-                        qty_invoiced -= invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
-                                                                                      line.product_uom_id)
-            line.qty_invoiced = qty_invoiced
+            if not line.display_type:
+                qty_invoiced = 0.0
+                for invoice_line in line.invoice_lines:
+                    if invoice_line.move_id.state != 'cancel':
+                        if invoice_line.move_id.move_type == 'out_invoice':
+                            qty_invoiced += invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
+                                                                                          line.product_uom_id)
+                        elif invoice_line.move_id.move_type == 'out_refund':
+                            qty_invoiced -= invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
+                                                                                          line.product_uom_id)
+                line.qty_invoiced = qty_invoiced
 
     @api.depends('qty_invoiced', 'product_uom_qty')
     def _get_to_invoice_qty(self):
@@ -332,4 +350,5 @@ class ConstructionComponent(models.Model):
         calculated from the ordered quantity. Otherwise, the quantity delivered is used.
         """
         for line in self:
-            line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
+            if not line.display_type:
+                sline.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
