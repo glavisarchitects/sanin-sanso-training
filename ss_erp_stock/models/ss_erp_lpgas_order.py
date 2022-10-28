@@ -23,7 +23,7 @@ class LPGasOrder(models.Model):
     inventory_type = fields.Selection([('cylinder', 'シリンダー'), ('minibulk', 'ミニバルク')], string='棚卸種別')
     accounting_date = fields.Date(string='会計日')
     aggregation_period = fields.Date(string='棚卸対象期間', copy=False)
-    month_aggregation_period = fields.Integer(string='month of aggregation period', store=True,
+    month_aggregation_period = fields.Integer(string='month of aggregation period', store=True, copy=False,
                                               compute='compute_month_aggregation_period')
     state = fields.Selection(
         [('draft', 'ドラフト'), ('confirm', '集計完了'), ('waiting', '承認待ち'), ('approval', '承認依頼中'), ('approved', '承認済み'),
@@ -46,17 +46,14 @@ class LPGasOrder(models.Model):
         for line in self.lpgas_order_line_ids:
             if line.difference_qty == 0:
                 continue
-            if line.difference_qty > 0:
-                location_id = line.location_id.id
-                location_dest_id = branch_loss_location.id
-            elif line.difference_qty < 0:
-                location_id = branch_loss_location.id
-                location_dest_id = line.location_id.id
+            location_id = line.location_id.id if line.difference_qty > 0 else branch_loss_location.id
+            location_dest_id = branch_loss_location.id if line.difference_qty > 0 else line.location_id.id
+
             sm_value = {
                 'name': _('INV:LP GAS ') + (str(self.inventory_type) or ''),
                 'product_id': lpgas_product_id.id,
                 'product_uom': lpgas_product_id.uom_id.id,
-                'product_uom_qty': line.difference_qty,
+                'product_uom_qty': abs(line.difference_qty),
                 'date': datetime.now(),
                 'company_id': self.env.user.company_id.id,
                 'state': 'done',
@@ -67,7 +64,7 @@ class LPGasOrder(models.Model):
                     # 'lot_id': self.prod_lot_id.id,
                     'product_uom_qty': 0,  # bypass reservation here
                     'product_uom_id': lpgas_product_id.uom_id.id,
-                    'qty_done': line.difference_qty,
+                    'qty_done':  abs(line.difference_qty),
                     'state': 'done',
                     # 'package_id': out and self.package_id.id or False,
                     # 'result_package_id': (not out) and self.package_id.id or False,
@@ -79,7 +76,7 @@ class LPGasOrder(models.Model):
 
             return self.env['stock.move'].create(sm_value)
 
-    @api.depends('aggregation_period')
+    @api.depends('aggregation_period', 'lpgas_order_line_ids', 'state')
     def compute_month_aggregation_period(self):
         """ compute """
         for rec in self:
@@ -110,13 +107,12 @@ class LPGasOrder(models.Model):
         warehouse_location = branch_warehouse.lot_stock_id
         period_last_date = self.aggregation_period + relativedelta(months=-1)
         period_last_month = period_last_date.month
-        # update condition new design 03/10/22
-        if self.inventory_type == 'cylinder':
-            domain_location = [('id', 'child_of', warehouse_location.id),
-                               ('x_inventory_type', '=', self.inventory_type)]
-        else:
-            domain_location = [('id', 'child_of', warehouse_location.id), ('usage', '=', 'customer'),
-                               ('x_inventory_type', '=', self.inventory_type)]
+        # update condition new design 18/10/22
+        # if self.inventory_type == 'cylinder':
+        #     domain_location = [('id', 'child_of', warehouse_location.id),
+        #                        ('x_inventory_type', '=', self.inventory_type)]
+        # else:
+        domain_location = [('id', 'child_of', warehouse_location.id), ('x_inventory_type', '=', self.inventory_type)]
         customer_location = self.env['stock.location'].search(domain_location).ids
 
         customer_location = f"({','.join(map(str, customer_location))})"
@@ -397,7 +393,8 @@ class LPGasOrder(models.Model):
         for da in data_lqgas_result:
             create_data.append((0, 0, da))
 
-        self.env["ss_erp.lpgas.order.line"].search([('lpgas_order_id', '=', self.id)]).sudo().unlink()
+        # self.env["ss_erp.lpgas.order.line"].search([('lpgas_order_id', '=', self.id)]).sudo().unlink()
+        self.lpgas_order_line_ids = False
         self.lpgas_order_line_ids = create_data
         # self.state = 'confirm'
         return self.show_lpgas_report()
@@ -424,10 +421,13 @@ class LPGasOrder(models.Model):
         }
 
     def approval_request(self):
-        self.write({'state': 'waiting'})
+        if self.state == 'confirm':
+            self.write({'state': 'waiting'})
 
     def verify_lpgas_slip(self):
-        self.write({'state': 'done'})
+        if self.state == 'approved':
+            self.make_inventory_adjustment()
+            self.write({'state': 'done'})
 
     def cancel_lpgas_slip(self):
         self.write({'state': 'cancel'})
@@ -483,9 +483,14 @@ class LPGasOrderLine(models.Model):
     # uom_id = fields.Many2one('uom.uom', string='単位')
     # unified_quantity_unit = fields.Many2one('uom.uom', string='統一数量単位')
     theoretical_inventory = fields.Float(string='理論的な月末在庫')
-    difference_qty = fields.Float(string='棚卸差異')
+    difference_qty = fields.Float(string='棚卸差異', compute='_compute_difference_qty')
 
     def write(self, vals):
         self.lpgas_order_id.state = 'confirm'
         res = super(LPGasOrderLine, self).write(vals)
         return res
+
+    @api.depends('theoretical_inventory', 'this_month_inventory')
+    def _compute_difference_qty(self):
+        for line in self:
+            line.difference_qty = line.this_month_inventory - line.theoretical_inventory

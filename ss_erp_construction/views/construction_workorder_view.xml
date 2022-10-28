@@ -31,8 +31,6 @@
                                 <field name="date_end"/>
                                 <field name="duration_expected"/>
                                 <field name="duration"/>
-                                <field name="location_id" invisible="1"/>
-                                <field name="location_dest_id" invisible="1"/>
                                 <field name="costs_hour"/>
 
                             </group>

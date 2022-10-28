@@ -28,7 +28,7 @@
         'data/ir_action_server_data.xml',
         'data/ir_sequence_data.xml',
         'data/parameter_config_data.xml',
-        # 'data/default_param_setting_data.xml',
+        'data/default_param_setting_data.xml',
     ],
     "application": False,
     "installable": True,

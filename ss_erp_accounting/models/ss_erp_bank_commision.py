@@ -11,9 +11,9 @@ class BankCommission (models.Model):
         comodel_name='res.bank',
         string='振込利用銀行',
         required=False)
-    netbanking_service = fields.Char(
-        string='利用サービス',
-        required=False)
+    # netbanking_service = fields.Char(
+    #     string='利用サービス',
+    #     required=False)
 
     paid_amount = fields.Monetary(store=True, string='振込金額')
     range = fields.Selection(

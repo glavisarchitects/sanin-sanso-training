@@ -68,9 +68,9 @@
                     </div>
                 </div>
             </xpath>
-            <xpath expr="//field[@name='company_id']" position="before">
-                <field name="x_supply_fixed_cost" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-            </xpath>
+<!--            <xpath expr="//field[@name='company_id']" position="before">-->
+<!--                <field name="x_supply_fixed_cost" widget='monetary' options="{'currency_field': 'currency_id'}"/>-->
+<!--            </xpath>-->
             <xpath expr="//notebook/page[@name='general_information']/group" position="after">
                 <group string="代替数量">
                     <field name="x_product_unit_measure_ids" nolabel="1">

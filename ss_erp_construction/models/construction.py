@@ -23,16 +23,33 @@ class Construction(models.Model):
     )
 
     estimate_approval_status = fields.Selection([('new', '未申請'),
-                                        ('pending', '申請済'),
-                                        ('approved', '確認済'),
-                                        ('refused', '却下済'),
-                                        ('cancel', '取消')], string='承認ステータス', default='new')
+                                                 ('pending', '申請済'),
+                                                 ('approved', '確認済'),
+                                                 ('refused', '却下済'),
+                                                 ('cancel', '取消')], string='承認ステータス', default='new')
 
     validate_approval_status = fields.Selection([('new', '未申請'),
-                                        ('pending', '申請済'),
-                                        ('approved', '確認済'),
-                                        ('refused', '却下済'),
-                                        ('cancel', '取消')], string='承認ステータス', default='new')
+                                                 ('pending', '申請済'),
+                                                 ('approved', '確認済'),
+                                                 ('refused', '却下済'),
+                                                 ('cancel', '取消')], string='承認ステータス', default='new')
+
+    invoice_status = fields.Selection([('invoiced', '完全請求書'),
+                                       ('to_invoice', '請求対象'),
+                                       ('no', '請求対象なし')
+                                       ], string='請求書ステータス', compute='_compute_invoice_status', store=True)
+
+    @api.depends('construction_component_ids.qty_to_invoice', 'state')
+    def _compute_invoice_status(self):
+        for rec in self:
+            if rec.state not in ('order_received', 'progress', 'done'):
+                rec.invoice_status = 'no'
+            else:
+                invoice_lst = rec.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0)
+                if invoice_lst:
+                    rec.invoice_status = 'to_invoice'
+                else:
+                    rec.invoice_status = 'invoiced'
 
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
@@ -57,6 +74,9 @@ class Construction(models.Model):
 
     picking_type_id = fields.Many2one('stock.picking.type', related='organization_id.warehouse_id.out_type_id',
                                       store=True, string='オペレーションタイプ')
+
+    warehouse_id = fields.Many2one('stock.warehouse', related='organization_id.warehouse_id',
+                                   store=True, string='倉庫')
     location_id = fields.Many2one('stock.location', related='organization_id.warehouse_id.lot_stock_id', store=True,
                                   string='構成品ロケーション')
     location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
@@ -96,7 +116,8 @@ class Construction(models.Model):
                 raise UserError(
                     "承認金額の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_estimate_report)")
             minium_value = float(minium_value)
-            rec.show_confirmation_button = True if (0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
+            rec.show_confirmation_button = True if (
+                    0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
 
     def _compute_invoice_count(self):
         Invoice = self.env['account.move']
@@ -222,10 +243,10 @@ class Construction(models.Model):
         values['name'] = name
         return super(Construction, self).create(values)
 
-    def _prepare_stock_picking(self):
-        if self.construction_workorder_ids:
-            for workorder in self.construction_workorder_ids:
-                workorder._prepare_stock_picking()
+    # def _prepare_stock_picking(self):
+    #     if self.construction_workorder_ids:
+    #         for workorder in self.construction_workorder_ids:
+    #             workorder._prepare_stock_picking()
 
     def write(self, values):
         res = super(Construction, self).write(values)
@@ -267,7 +288,7 @@ class Construction(models.Model):
         default='draft',
         required=False, )
 
-    # Estiamtion Tab 2022/09/28
+    # Estimation Tab 2022/09/28
     print_type = fields.Selection(string='帳票タイプ',
                                   selection=[('housing', 'ハウジング'),
                                              ('equipment', '設備'),
@@ -286,7 +307,7 @@ class Construction(models.Model):
 
     @api.onchange('all_margin_rate')
     def _onchange_all_margin_rate(self):
-        if self.construction_component_ids and self.all_margin_rate:
+        if self.construction_component_ids:
             for line in self.construction_component_ids:
                 line.margin_rate = self.all_margin_rate
                 line.sale_price = line.standard_price / (1 - line.margin_rate)
@@ -354,9 +375,9 @@ class Construction(models.Model):
                 action['view_mode'] = 'tree'
                 return action
             else:
-                raise UserError("購買対象のプロダクトはありません。")
+                raise UserError("購買対象のプロダクトがありません。")
         else:
-            raise UserError("購買対象のプロダクトはありません。")
+            raise UserError("購買対象のプロダクトがありません。")
 
     def action_view_invoice(self):
         invoices = self.env['account.move'].search([('x_construction_order_id', '=', self.id)])
@@ -374,7 +395,7 @@ class Construction(models.Model):
             action = {'type': 'ir.actions.act_window_close'}
 
         context = {
-            'default_move_type': 'counstruction_out_invoice',
+            'default_move_type': 'out_invoice',
         }
         action['context'] = context
         return action
@@ -391,17 +412,16 @@ class Construction(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        journal = self.env['account.move'].with_context(
-            default_move_type='counstruction_out_invoice')._get_default_journal()
+        journal = self.env['account.journal'].sudo().search([('type', '=', 'sale'), ('is_construction', '=', True)])
         if not journal:
-            raise UserError(_('Please define an accounting sales journal for the company %s (%s).') % (
-                self.company_id.name, self.company_id.id))
+            raise UserError('工事販売仕訳帳をご確認ください。')
 
         invoice_vals = {
             'ref': self.client_order_ref,
-            'move_type': 'counstruction_out_invoice',
+            'move_type': 'out_invoice',
             'invoice_origin': self.name,
             'x_organization_id': self.organization_id.id,
+            'x_responsible_user_id': self.user_id.id,
             'x_responsible_dept_id': self.responsible_dept_id.id,
             'x_construction_order_id': self.id,
             'invoice_user_id': self.user_id.id,
@@ -410,6 +430,7 @@ class Construction(models.Model):
                 self.partner_id.id)).id,
             'partner_shipping_id': self.partner_id.id,
             'currency_id': self.currency_id.id,
+            'journal_id': journal.id,
             'invoice_payment_term_id': self.payment_term_id.id,
             'partner_bank_id': self.partner_id.bank_ids[:1].id,
             'invoice_line_ids': [],
@@ -418,7 +439,7 @@ class Construction(models.Model):
         return invoice_vals
 
     def _get_invoiceable_lines(self):
-        return self.construction_component_ids.filtered(lambda x: x.product_id.type == 'product')
+        return self.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0)
 
     @api.model
     def _prepare_down_payment_section_line(self, **optional_values):
@@ -462,6 +483,9 @@ class Construction(models.Model):
         invoice_vals = self._prepare_invoice()
         invoiceable_lines = self._get_invoiceable_lines()
 
+        if not self.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0):
+            raise self._nothing_to_invoice_error()
+
         invoice_line_vals = []
         down_payment_section_added = False
         for line in invoiceable_lines:
@@ -475,22 +499,64 @@ class Construction(models.Model):
                 )
                 down_payment_section_added = True
                 invoice_item_sequence += 1
-            invoice_line_vals.append(
-                (0, 0, line._prepare_invoice_line(
-                    sequence=invoice_item_sequence,
-                )),
-            )
+            if line.qty_to_invoice != 0:
+                invoice_line_vals.append(
+                    (0, 0, line._prepare_invoice_line(
+                        sequence=invoice_item_sequence,
+                    )),
+                )
             invoice_item_sequence += 1
 
         invoice_vals['invoice_line_ids'] += invoice_line_vals
         invoice_vals_list.append(invoice_vals)
 
-        if not invoice_vals_list:
-            raise self._nothing_to_invoice_error()
-
-        moves = self.env['account.move'].sudo().with_context(default_move_type='construction_sale').create(
+        moves = self.env['account.move'].sudo().with_context(default_move_type='out_invoice').create(
             invoice_vals_list)
 
         if final:
             moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
         return moves
+
+    def write(self, vals):
+        super().write(vals)
+        if not self.construction_component_ids:
+            raise UserError('構成品の明細を追加してください。')
+
+    def _prepare_stock_picking(self):
+        picking = {
+            'partner_id': self.partner_id.id,
+            'x_organization_id': self.organization_id.id,
+            'x_responsible_dept_id': self.responsible_dept_id.id,
+            'picking_type_id': self.picking_type_id.id,
+            'location_id': self.location_id.id,
+            'location_dest_id': self.location_dest_id.id,
+            'scheduled_date': self.plan_date,
+            'x_construction_order_id': self.id,
+        }
+        move_live = []
+        for component in self.construction_component_ids:
+            if component.product_id.type == 'product' and component.qty_to_buy > 0 and component.qty_available > 0:
+                move_live.append((0, 0, {
+                    'name': component.product_id.name or '/',
+                    'product_id': component.product_id.id,
+                    'product_uom': component.product_uom_id.id,
+                    'product_uom_qty': component.qty_to_buy if component.qty_to_buy < component.qty_available else component.qty_available,
+                    'location_id': self.location_id.id,
+                    'location_dest_id': self.location_dest_id.id,
+                    'date': self.plan_date or datetime.now(),
+                    'picking_type_id': self.picking_type_id.id,
+                    'x_construction_line_ids': [(4, component.id)],
+                }))
+
+        if move_live:
+            picking['move_ids_without_package'] = move_live
+
+            stock_picking = self.env['stock.picking'].create(picking)
+
+            stock_picking.action_assign()
+
+    def action_picking_from_warehouse(self):
+        if not self.construction_component_ids.filtered(lambda x: x.qty_to_buy != 0 and x.product_id.type == 'product'):
+            raise UserError('出荷するものは何もありません！')
+        else:
+            self._prepare_stock_picking()

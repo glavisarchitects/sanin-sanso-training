@@ -25,7 +25,7 @@ class AccountMove(models.Model):
         first_day_last_month = datetime.combine(current_date_last_month.replace(day=1), datetime.min.time())
         last_day_last_month = datetime.combine(current_date_last_month.replace(
             day=calendar.monthrange(current_date_last_month.year, current_date_last_month.month)[1]),
-                                               datetime.max.time())
+            datetime.max.time())
 
         r002_tax10_id = self.env['ir.config_parameter'].sudo().get_param('R002_tax10_id')
         r002_tax8_id = self.env['ir.config_parameter'].sudo().get_param('R002_tax8_id')
@@ -35,11 +35,16 @@ class AccountMove(models.Model):
         if not r002_tax10_id or not r002_tax8_id or not r002_reduction_tax8_id or not r002_tax_exempt_id:
             raise UserError('パラメータで税勘定を設定してください')
 
+        customer_payment_recs = self.env['account.payment'].search(
+            [('state', '=', 'posted'), ('reconciled_invoice_ids', '!=', []), ])
+        payment_records = customer_payment_recs.filtered(lambda cpr: self.id in cpr.reconciled_invoice_ids.ids).ids
+        payment_record_ids = f"({','.join(map(str, payment_records))})"
+
         query = f'''
         with org_bank as (
         select 
             rpb.organization_id,
-            concat(rb.name,rpb.x_bank_branch,rpb.x_bank_branch_number) as payee_info	
+            concat("振込先口座　　" ,rb.name,rpb.x_bank_branch,"（",CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,"）",rpb.x_bank_branch_number) as payee_info	
         -- 	'(',CASE When acc_type = 'bank' then '通常' ELSE '当座' END,')', rpb.acc_number）　as payee_info	
         from res_partner_bank rpb
         left join res_bank rb on rpb.bank_id = rb.id
@@ -75,7 +80,106 @@ class AccountMove(models.Model):
                     GROUP BY am.id, amlat.account_tax_id
         )
         -- END
-
+        
+            (
+        Select
+        '' invoice_no
+        , '' zip
+        , '' address
+        ,'' customer_name
+        , '' output_date
+        , '{registration_number}' as registration_number
+        , '' as name
+        , '' responsible_person
+        , '' organization_zip
+        , '' organization_address
+        , '' organization_phone
+        , '' organization_fax
+        , 0 as this_month_amount
+        , to_char(jour_am.date, 'YYYY年MM月DD日') invoice_date_due 
+        , 0 previous_month_amount
+        , 0 deposit_amount
+        , 0 previous_month_balance
+        , 0 this_month_purchase
+        , 0 consumption_tax
+        ,  to_char(jour_am.date, 'MM/DD') date
+        , jour_am.name slip_number 
+        , 0 detail_number 
+        , COALESCE(ap.x_receipt_type, '') product_name	
+        , 0 quantity	
+        , '' unit	
+        , 0 unit_price	
+        , ap.amount AS price	
+        , '' tax_rate	
+        , '' summary
+        , 0 price_total_tax_rate10
+        , 0 price_total_tax_rate8
+        , 0 price_total_reduced_tax_rate8
+        , 0 price_total_no_tax
+        , 0 tax_amount_rate10
+        , 0 tax_amount_rate8
+        , 0 tax_amount_reduced_tax_rate8
+        , 0 tax_amount_no_tax
+        , 0 price_total
+        , 0 price_total_tax
+        , '' payee_info
+         
+        FROM account_payment ap
+        left join account_move jour_am on jour_am.id = ap.move_id 
+        Where ap.id IN {payment_record_ids}
+        )
+        UNION ALL
+        
+        (
+        Select
+        '' invoice_no
+        , '' zip
+        , '' address
+        ,'' customer_name
+        , '' output_date
+        , '{registration_number}' as registration_number
+        , '' as name
+        , '' responsible_person
+        , '' organization_zip
+        , '' organization_address
+        , '' organization_phone
+        , '' organization_fax
+        , 0 as this_month_amount
+        , to_char(jour_am.date, 'YYYY年MM月DD日') invoice_date_due 
+        , 0 previous_month_amount
+        , 0 deposit_amount
+        , 0 previous_month_balance
+        , 0 this_month_purchase
+        , 0 consumption_tax
+        ,  to_char(jour_am.date, 'MM/DD') date
+        , '*** 入　金　計 ***' slip_number 
+        , 0 detail_number 
+        , '*** 入　金　計 ***' as product_name	
+        , 0 quantity	
+        , '' unit	
+        , 0 unit_price	
+        , sum(ap.amount) OVER (PARTITION BY jour_am.ref) AS price	
+        , '' tax_rate	
+        , '' summary
+        , 0 price_total_tax_rate10
+        , 0 price_total_tax_rate8
+        , 0 price_total_reduced_tax_rate8
+        , 0 price_total_no_tax
+        , 0 tax_amount_rate10
+        , 0 tax_amount_rate8
+        , 0 tax_amount_reduced_tax_rate8
+        , 0 tax_amount_no_tax
+        , 0 price_total
+        , 0 price_total_tax
+        , '' payee_info
+         
+        FROM account_payment ap
+        left join account_move jour_am on jour_am.id = ap.move_id 
+        Where ap.id IN {payment_record_ids}
+        limit 1
+        )
+        UNION ALL
+        (
         select
          am.name as invoice_no
          , rp.zip as zip
@@ -214,7 +318,8 @@ class AccountMove(models.Model):
                 am.name,
                 so.name,
             sol.product_id 	
-            , to_char(sp.date_done, 'MM/DD') 	             	
+            , to_char(sp.date_done, 'MM/DD') 
+            )	             	
         '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
@@ -290,14 +395,26 @@ class AccountMove(models.Model):
             raise UserError(_("出力対象のデータがありませんでした。"))
 
         seq_number = 1
+        slip_num = data_query[0]['slip_number']
         for daq in data_query:
             one_line_data = ""
+            if slip_num != daq['slip_number']:
+                seq_number = 1
+            slip_num = daq['slip_number']
             for da in daq:
                 if da is not None:
-                    if da in ['this_month_amount', 'previous_month_amount', 'deposit_amount', 'previous_month_balance', 'this_month_purchase', 'consumption_tax']:
+                    if da in ['this_month_amount', 'previous_month_amount', 'deposit_amount', 'previous_month_balance',
+                              'this_month_purchase', 'consumption_tax', 'price_total_tax_rate10',
+                              'price_total_tax_rate8', 'price_total_reduced_tax_rate8', 'price_total_no_tax',
+                              'tax_amount_rate10', 'tax_amount_rate8', 'tax_amount_reduced_tax_rate8',
+                              'tax_amount_no_tax', 'price_total', 'price_total_tax']:
                         one_line_data += '"' + "￥" + "{:,}".format(int(daq[da])) + '",'
                     elif da == 'detail_number':
                         one_line_data += '"' + str(seq_number) + '",'
+                    elif da == 'product_name' and daq[da] in ['bank', 'transfer', 'bills', 'cash', 'paycheck',
+                                                              'branch_receipt', 'offset']:
+                        dict_receipt_select = dict(self._fields['x_receipt_type'].selection)
+                        one_line_data += '"' + str(dict_receipt_select[daq[da]]) + '",'
                     else:
                         one_line_data += '"' + str(daq[da]) + '",'
                 else:
