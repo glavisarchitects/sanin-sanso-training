@@ -30,7 +30,7 @@ class ConstructionComponent(models.Model):
         for rec in self:
             if rec.product_id.type == "product":
                 rec.qty_available = self.env['stock.quant']._get_available_quantity(product_id=rec.product_id,
-                                                                                location_id=rec.location_id)
+                                                                                    location_id=rec.location_id)
             else:
                 rec.qty_available = 0
 
@@ -209,80 +209,91 @@ class ConstructionComponent(models.Model):
             indirect_outsource_fee_product = False
             direct_expense_fee_product = False
 
-            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost').isdigit():
-                direct_labo_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost')))
-                if not direct_labo_fee_product:
-                    raise UserError(
-                        "直接労務費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_labor_cost)")
+            if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost'):
+                raise UserError(
+                    "直接労務費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_labor_cost)")
+            else:
+                direct_labo_fee_product = self.env['product.product'].browse(
+                    int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost')))
 
-            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost').isdigit():
-                direct_outsource_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost')))
-                if not direct_outsource_fee_product:
-                    raise UserError(
-                        "直接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_outsourcing_cost)")
+            if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost'):
+                raise UserError(
+                    "直接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_outsourcing_cost)")
+            else:
+                direct_outsource_fee_product = self.env['product.product'].browse(int(
+                    self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost')))
 
-            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost').isdigit():
-                direct_expense_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost')))
-                if not direct_expense_fee_product:
-                    raise UserError(
-                        "直接経費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_expense_cost)")
+            if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost'):
+                raise UserError(
+                    "直接経費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_expense_cost)")
+            else:
+                direct_expense_fee_product = self.env['product.product'].browse(
+                    int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost')))
 
-            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost').isdigit():
-                indirect_material_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost')))
-                if not indirect_material_fee_product:
-                    raise UserError(
-                        "間接材料費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_material_cost)")
+            if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost'):
+                raise UserError(
+                    "間接材料費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_material_cost)")
+            else:
+                indirect_material_fee_product = self.env['product.product'].browse(
+                    int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost')))
 
-            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost').isdigit():
-                indirect_labo_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost')))
-                if not indirect_labo_fee_product:
-                    raise UserError(
-                        "間接労務費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_labor_cost)")
+            if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost'):
+                raise UserError(
+                    "間接労務費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_labor_cost)")
+            else:
+                indirect_labo_fee_product = self.env['product.product'].browse(
+                    int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost')))
 
-            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost').isdigit():
-                indirect_outsource_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost')))
-                if not indirect_outsource_fee_product:
-                    raise UserError(
-                        "間接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_outsourcing_cost)")
+            if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost'): \
+                raise UserError(
+                    "間接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_outsourcing_cost)")
+            else:
+                indirect_outsource_fee_product = self.env['product.product'].browse(int(
+                    self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost')))
 
-            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost').isdigit():
-                indirect_expense_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost')))
-                if not indirect_expense_fee_product:
-                    raise UserError(
-                        "間接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_expense_cost)")
+            if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost'):
+                raise UserError(
+                    "間接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_expense_cost)")
+            else:
+                indirect_expense_fee_product = self.env['product.product'].browse(
+                    int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost')))
 
             # 間接経費計算
             if self.product_id.id == indirect_expense_fee_product.id:
                 self.product_uom_qty = 1
                 self.standard_price = sum(
-                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    x.product_uom_qty * x.standard_price for x in
+                    self.construction_id.construction_component_ids.filtered(
                         lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
 
             # 間接材料費計算
             if self.product_id.id == indirect_material_fee_product.id:
                 self.product_uom_qty = 1
                 self.standard_price = sum(
-                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    x.product_uom_qty * x.standard_price for x in
+                    self.construction_id.construction_component_ids.filtered(
                         lambda line: line.product_id.type == 'product')) * 0.00
 
             # 間接労務費計算
             if self.product_id.id == indirect_labo_fee_product.id:
                 self.product_uom_qty = 1
                 self.standard_price = sum(
-                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    x.product_uom_qty * x.standard_price for x in
+                    self.construction_id.construction_component_ids.filtered(
                         lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
 
             if self.product_id.id == indirect_outsource_fee_product.id:
                 self.product_uom_qty = 1
                 self.standard_price = sum(
-                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                    x.product_uom_qty * x.standard_price for x in
+                    self.construction_id.construction_component_ids.filtered(
                         lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
 
     @api.depends('product_uom_qty', 'qty_reserved_from_warehouse', 'qty_bought', )
     def _compute_qty_to_buy(self):
         for rec in self:
             if not rec.display_type and rec.product_id.type != 'consu':
-                    rec.qty_to_buy = rec.product_uom_qty - rec.qty_reserved_from_warehouse - rec.qty_bought
+                rec.qty_to_buy = rec.product_uom_qty - rec.qty_reserved_from_warehouse - rec.qty_bought
             else:
                 rec.qty_to_buy = 0
 
