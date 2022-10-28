@@ -7,6 +7,9 @@ from odoo.exceptions import UserError, ValidationError
 class ConstructionComponent(models.Model):
     _name = 'ss.erp.construction.component'
     _description = '構成品'
+    _order = 'construction_id, sequence, id'
+
+    sequence = fields.Integer(string='付番', default=10)
 
     name = fields.Text(string='説明')
     product_id = fields.Many2one(comodel_name='product.product', string='プロダクト', tracking=True)
@@ -18,6 +21,10 @@ class ConstructionComponent(models.Model):
     qty_bought = fields.Float(string='購買済み', compute='_compute_qty_bought')
     qty_reserved_from_warehouse = fields.Float(string='在庫出荷数', compute='_compute_qty_reserved_from_warehouse')
 
+    display_type = fields.Selection([
+        ('line_section', "Section"),
+        ('line_note', "Note")], default=False, help="Technical field for UX purpose.")
+
     @api.depends('location_id', 'product_id')
     def _get_qty_available(self):
         for rec in self:
@@ -27,20 +34,14 @@ class ConstructionComponent(models.Model):
             else:
                 rec.qty_available = 0
 
-    # @api.constrains("qty_bought", 'qty_reserved_from_warehouse', 'product_uom_qty')
-    # def _check_same_employee_number(self):
-    #     for rec in self:
-    #         if rec.product_uom_qty < rec.qty_bought + rec.qty_reserved_from_warehouse:
-    #             raise ValidationError(_("消費数量が超過しています。構成品の数量が不足していないか確認してください。"))
-
     product_uom_id = fields.Many2one(comodel_name='uom.uom', string='単位', tracking=True,
                                      domain="[('category_id', '=', product_uom_category_id)]")
-    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True, string='単位カテゴリ')
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', string='単位カテゴリ')
     partner_id = fields.Many2one(comodel_name='res.partner', domain=[('x_is_vendor', '=', True)], string='仕入先',
                                  tracking=True)
     payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件', tracking=True)
     standard_price = fields.Monetary(string='仕入価格', tracking=True)
-    currency_id = fields.Many2one('res.currency', '通貨', required=True,
+    currency_id = fields.Many2one('res.currency', '通貨',
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     tax_id = fields.Many2one(comodel_name='account.tax', string='税', tracking=True)
     sale_price = fields.Monetary(string='販売価格', tracking=True)
@@ -58,13 +59,22 @@ class ConstructionComponent(models.Model):
         'construction_line_id', 'stock_move_id',
         string='在庫移動', readonly=True, copy=False)
 
+    @api.onchange('product_id')
+    def onchange_update_name(self):
+        for rec in self:
+            if rec.product_id:
+                rec.name = rec.product_id.product_tmpl_id.name
+
     @api.depends('stock_move_ids.state')
     def _compute_qty_reserved_from_warehouse(self):
         for rec in self:
-            reserved_qty = 0
-            for line in rec.stock_move_ids:
-                reserved_qty += line.reserved_availability + line.quantity_done
-            rec.qty_reserved_from_warehouse = reserved_qty
+            if not rec.display_type:
+                reserved_qty = 0
+                for line in rec.stock_move_ids:
+                    reserved_qty += line.reserved_availability + line.quantity_done
+                rec.qty_reserved_from_warehouse = reserved_qty
+            else:
+                rec.qty_reserved_from_warehouse = 0
 
     is_downpayment = fields.Boolean(
         string="頭金であるか", help="Down payments are made when creating invoices from a construction order.")
@@ -113,18 +123,26 @@ class ConstructionComponent(models.Model):
     @api.depends('purchase_order_lines.order_id.state', 'purchase_order_lines.product_qty')
     def _compute_qty_bought(self):
         for rec in self:
-            qty_bought = 0.0
-            for line in rec.purchase_order_lines:
-                if line.order_id.state != 'cancel':
-                    qty_bought += line.product_qty
-            rec.qty_bought = qty_bought
+            if not rec.display_type:
+                qty_bought = 0.0
+                for line in rec.purchase_order_lines:
+                    if line.order_id.state != 'cancel':
+                        qty_bought += line.product_qty
+                rec.qty_bought = qty_bought
+            else:
+                rec.qty_bought = 0
 
     @api.depends('product_uom_qty', 'tax_id', 'sale_price', 'standard_price')
     def _compute_subtotal(self):
         for rec in self:
-            rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
-            rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
-            rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
+            if not rec.display_type:
+                rec.subtotal_exclude_tax = rec.product_uom_qty * rec.sale_price
+                rec.subtotal = rec.subtotal_exclude_tax * (1 + rec.tax_id.amount / 100)
+                rec.margin = (rec.sale_price - rec.standard_price) * rec.product_uom_qty
+            else:
+                rec.subtotal_exclude_tax = 0
+                rec.subtotal = 0
+                rec.margin = 0
 
     def onchange(self, values, field_name, field_onchange):
         # OVERRIDE
@@ -146,31 +164,12 @@ class ConstructionComponent(models.Model):
     def _onchange_standard_price(self):
         self.sale_price = self.standard_price / (1 - self.margin_rate)
 
-    # @api.onchange('margin_rate')
-    # def _onchange_margin_rate(self):
-    #     if not self.onchange_sale_price:
-    #         self.sale_price = self.standard_price / (1 - self.margin_rate)
-    #         self.onchange_margin = True
-    #     else:
-    #         self.onchange_margin = False
-    #
-    # @api.onchange('sale_price', )
-    # def _onchange_sale_price(self):
-    #     if not self.onchange_margin:
-    #         self.margin_rate = abs(self.standard_price / self.sale_price - 1) if self.sale_price != 0 else 0
-    #         self.onchange_sale_price = True
-    #     else:
-    #         self.onchange_sale_price = False
-    #
-    # @api.onchange('standard_price')
-    # def _onchange_standard_price(self):
-    #     self.sale_price = self.standard_price / (1 - self.margin_rate)
-    #     self.onchange_margin = True
-    #     self.onchange_sale_price = True
-
     def _compute_qty_to_invoice(self):
         for line in self:
-            line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
+            if not line.display_type:
+                line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
 
     def _prepare_purchase_order(self):
         company_id = self.env.user.company_id
@@ -202,46 +201,88 @@ class ConstructionComponent(models.Model):
             self.standard_price = self.product_id.product_tmpl_id.standard_price
             self.sale_price = self.standard_price / (1 - self.margin_rate)
 
-        direct_expense_fee_product = self.env.ref('ss_erp_construction.direct_expense_fee_product_data')
-        direct_labo_fee_product = self.env.ref('ss_erp_construction.direct_labo_fee_product_data')
-        direct_outsource_fee_product = self.env.ref('ss_erp_construction.direct_outsource_fee_product_data')
-        indirect_expense_fee_product = self.env.ref('ss_erp_construction.indirect_expense_fee_product_data')
-        indirect_material_fee_product = self.env.ref('ss_erp_construction.indirect_material_fee_product_data')
-        indirect_labo_fee_product = self.env.ref('ss_erp_construction.indirect_labo_fee_product_data')
-        indirect_outsource_fee_product = self.env.ref('ss_erp_construction.indirect_outsource_fee_product_data')
+            direct_labo_fee_product = False
+            direct_outsource_fee_product = False
+            indirect_expense_fee_product = False
+            indirect_material_fee_product = False
+            indirect_labo_fee_product = False
+            indirect_outsource_fee_product = False
+            direct_expense_fee_product = False
 
-        # 間接経費計算
-        if self.product_id.id == indirect_expense_fee_product.id:
-            self.product_uom_qty = 1
-            self.standard_price = sum(
-                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                    lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost').isdigit():
+                direct_labo_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost')))
+                if not direct_labo_fee_product:
+                    raise UserError(
+                        "直接労務費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_labor_cost)")
 
-        # 間接材料費計算
-        if self.product_id.id == indirect_material_fee_product.id:
-            self.product_uom_qty = 1
-            self.standard_price = sum(
-                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                    lambda line: line.product_id.type == 'product')) * 0.00
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost').isdigit():
+                direct_outsource_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost')))
+                if not direct_outsource_fee_product:
+                    raise UserError(
+                        "直接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_outsourcing_cost)")
 
-        # 間接労務費計算
-        if self.product_id.id == indirect_labo_fee_product.id:
-            self.product_uom_qty = 1
-            self.standard_price = sum(
-                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                    lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost').isdigit():
+                direct_expense_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost')))
+                if not direct_expense_fee_product:
+                    raise UserError(
+                        "直接経費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_direct_expense_cost)")
 
-        if self.product_id.id == indirect_outsource_fee_product.id:
-            self.product_uom_qty = 1
-            self.standard_price = sum(
-                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                    lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost').isdigit():
+                indirect_material_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost')))
+                if not indirect_material_fee_product:
+                    raise UserError(
+                        "間接材料費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_material_cost)")
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost').isdigit():
+                indirect_labo_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost')))
+                if not indirect_labo_fee_product:
+                    raise UserError(
+                        "間接労務費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_labor_cost)")
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost').isdigit():
+                indirect_outsource_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost')))
+                if not indirect_outsource_fee_product:
+                    raise UserError(
+                        "間接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_outsourcing_cost)")
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost').isdigit():
+                indirect_expense_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost')))
+                if not indirect_expense_fee_product:
+                    raise UserError(
+                        "間接外注費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_indirect_expense_cost)")
+
+            # 間接経費計算
+            if self.product_id.id == indirect_expense_fee_product.id:
+                self.product_uom_qty = 1
+                self.standard_price = sum(
+                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                        lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
+
+            # 間接材料費計算
+            if self.product_id.id == indirect_material_fee_product.id:
+                self.product_uom_qty = 1
+                self.standard_price = sum(
+                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                        lambda line: line.product_id.type == 'product')) * 0.00
+
+            # 間接労務費計算
+            if self.product_id.id == indirect_labo_fee_product.id:
+                self.product_uom_qty = 1
+                self.standard_price = sum(
+                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                        lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
+
+            if self.product_id.id == indirect_outsource_fee_product.id:
+                self.product_uom_qty = 1
+                self.standard_price = sum(
+                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                        lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
 
     @api.depends('product_uom_qty', 'qty_reserved_from_warehouse', 'qty_bought', )
     def _compute_qty_to_buy(self):
         for rec in self:
-            if rec.product_id.type != 'consu':
-                rec.qty_to_buy = rec.product_uom_qty - rec.qty_reserved_from_warehouse - rec.qty_bought
+            if not rec.display_type and rec.product_id.type != 'consu':
+                    rec.qty_to_buy = rec.product_uom_qty - rec.qty_reserved_from_warehouse - rec.qty_bought
             else:
                 rec.qty_to_buy = 0
 
@@ -314,16 +355,19 @@ class ConstructionComponent(models.Model):
         it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
         """
         for line in self:
-            qty_invoiced = 0.0
-            for invoice_line in line.invoice_lines:
-                if invoice_line.move_id.state != 'cancel':
-                    if invoice_line.move_id.move_type == 'out_invoice':
-                        qty_invoiced += invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
-                                                                                      line.product_uom_id)
-                    elif invoice_line.move_id.move_type == 'out_refund':
-                        qty_invoiced -= invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
-                                                                                      line.product_uom_id)
-            line.qty_invoiced = qty_invoiced
+            if not line.display_type:
+                qty_invoiced = 0.0
+                for invoice_line in line.invoice_lines:
+                    if invoice_line.move_id.state != 'cancel':
+                        if invoice_line.move_id.move_type == 'out_invoice':
+                            qty_invoiced += invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
+                                                                                          line.product_uom_id)
+                        elif invoice_line.move_id.move_type == 'out_refund':
+                            qty_invoiced -= invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
+                                                                                          line.product_uom_id)
+                line.qty_invoiced = qty_invoiced
+            else:
+                line.qty_invoiced = 0
 
     @api.depends('qty_invoiced', 'product_uom_qty')
     def _get_to_invoice_qty(self):
@@ -332,4 +376,7 @@ class ConstructionComponent(models.Model):
         calculated from the ordered quantity. Otherwise, the quantity delivered is used.
         """
         for line in self:
-            line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
+            if not line.display_type:
+                line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
