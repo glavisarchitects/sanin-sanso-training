@@ -117,20 +117,34 @@
                         </group>
                         <notebook>
                             <page name="construction_component" string="構成品">
-                                <field name="construction_component_ids" widget="one2many" nolabel="1"
+                                <field name="construction_component_ids"
+                                       widget="section_and_note_one2many"
                                        context="{'default_margin_rate':all_margin_rate,}"
+                                       mode="tree"
+                                       default_order="sequence"
                                        attrs="{'readonly':[('state','in',('done','lost','cancel'))],}">
                                     <tree editable="bottom">
-                                        <field name="product_id" required="1" context="{'construction_component':True,'warehouse_id':parent.warehouse_id}"/>
-                                        <field name="product_uom_qty" required="1"/>
-                                        <field name="product_uom_id" required="1"/>
+                                        <field name="display_type" invisible="1"/>
+                                        <control>
+                                            <create name="add_line_control" string="プロダクト追加"/>
+                                            <create name="add_section_control" string="セクション追加"
+                                                    context="{'default_display_type': 'line_section'}"/>
+                                            <create name="add_note_control" string="ノート追加"
+                                                    context="{'default_display_type': 'line_note'}"/>
+                                        </control>
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="product_id" attrs="{'required': [('display_type', '=', False)],}"
+                                               context="{'construction_component':True,'warehouse_id':parent.warehouse_id}"/>
+                                        <field name="name" widget="section_and_note_text" optional="show"/>
+                                        <field name="product_uom_qty" attrs="{'required': [('display_type', '=', False)],}"/>
+                                        <field name="product_uom_id" attrs="{'required': [('display_type', '=', False)],}"/>
                                         <field name="partner_id"/>
                                         <field name="payment_term_id"/>
                                         <field name="product_uom_category_id" attrs="{'column_invisible':1}"/>
                                         <field name="standard_price"/>
                                         <field name="currency_id" attrs="{'column_invisible':1}"/>
                                         <field name="tax_id"/>
-                                        <field name="sale_price" required="1"/>
+                                        <field name="sale_price" attrs="{'required': [('display_type', '=', False)],}"/>
                                         <field name="margin" readonly="1"/>
                                         <field name="margin_rate" widget="percentage"/>
                                         <!--                                        <field name="subtotal_exclude_tax" readonly="1"/>-->
