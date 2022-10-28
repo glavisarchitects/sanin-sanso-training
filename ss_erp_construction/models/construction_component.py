@@ -132,30 +132,6 @@ class ConstructionComponent(models.Model):
             else:
                 rec.qty_bought = 0
 
-    # @api.model_create_multi
-    # def create(self, vals_list):
-    #     for values in vals_list:
-    #         if values.get('display_type', self.default_get(['display_type'])['display_type']):
-    #             values.update(product_id=False, price_unit=0, product_uom_qty=0, product_uom_id=False)
-    #         else:
-    #             values.update(self._prepare_add_missing_fields(values))
-    #
-    #     lines = super().create(vals_list)
-    #     return lines
-    #
-    # @api.model
-    # def _prepare_add_missing_fields(self, values):
-    #     """ Deduce missing required fields from the onchange """
-    #     res = {}
-    #     onchange_fields = ['name', 'price_unit', 'product_qty', 'product_uom', ]
-    #     if values.get('product_id') and any(f not in values for f in onchange_fields):
-    #         line = self.new(values)
-    #         line.onchange_product_id()
-    #         for field in onchange_fields:
-    #             if field not in values:
-    #                 res[field] = line._fields[field].convert_to_write(line[field], line)
-    #     return res
-
     @api.depends('product_uom_qty', 'tax_id', 'sale_price', 'standard_price')
     def _compute_subtotal(self):
         for rec in self:
@@ -225,13 +201,34 @@ class ConstructionComponent(models.Model):
             self.standard_price = self.product_id.product_tmpl_id.standard_price
             self.sale_price = self.standard_price / (1 - self.margin_rate)
 
-            direct_expense_fee_product = self.env.ref('ss_erp_construction.direct_expense_fee_product_data')
-            direct_labo_fee_product = self.env.ref('ss_erp_construction.direct_labo_fee_product_data')
-            direct_outsource_fee_product = self.env.ref('ss_erp_construction.direct_outsource_fee_product_data')
-            indirect_expense_fee_product = self.env.ref('ss_erp_construction.indirect_expense_fee_product_data')
-            indirect_material_fee_product = self.env.ref('ss_erp_construction.indirect_material_fee_product_data')
-            indirect_labo_fee_product = self.env.ref('ss_erp_construction.indirect_labo_fee_product_data')
-            indirect_outsource_fee_product = self.env.ref('ss_erp_construction.indirect_outsource_fee_product_data')
+            direct_labo_fee_product = False
+            direct_outsource_fee_product = False
+            indirect_expense_fee_product = False
+            indirect_material_fee_product = False
+            indirect_labo_fee_product = False
+            indirect_outsource_fee_product = False
+            direct_expense_fee_product = False
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost').isdigit():
+                direct_labo_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost')))
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost').isdigit():
+                direct_outsource_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost')))
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost').isdigit():
+                direct_expense_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost')))
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost').isdigit():
+                indirect_material_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost')))
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost').isdigit():
+                indirect_labo_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost')))
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost').isdigit():
+                indirect_outsource_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost')))
+
+            if self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost').isdigit():
+                indirect_expense_fee_product = self.env['product.product'].browse(int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost')))
 
             # 間接経費計算
             if self.product_id.id == indirect_expense_fee_product.id:
