@@ -68,7 +68,7 @@ class ConstructionComponent(models.Model):
     @api.depends('stock_move_ids.state')
     def _compute_qty_reserved_from_warehouse(self):
         for rec in self:
-            if not rec.display_type:
+            if not rec.display_type and rec.product_id:
                 reserved_qty = 0
                 for line in rec.stock_move_ids:
                     reserved_qty += line.reserved_availability + line.quantity_done
@@ -123,7 +123,7 @@ class ConstructionComponent(models.Model):
     @api.depends('purchase_order_lines.order_id.state', 'purchase_order_lines.product_qty')
     def _compute_qty_bought(self):
         for rec in self:
-            if not rec.display_type:
+            if not rec.display_type and rec.product_id:
                 qty_bought = 0.0
                 for line in rec.purchase_order_lines:
                     if line.order_id.state != 'cancel':
@@ -166,7 +166,7 @@ class ConstructionComponent(models.Model):
 
     def _compute_qty_to_invoice(self):
         for line in self:
-            if not line.display_type:
+            if not line.display_type and line.product_id:
                 line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
             else:
                 line.qty_to_invoice = 0
@@ -292,7 +292,7 @@ class ConstructionComponent(models.Model):
     @api.depends('product_uom_qty', 'qty_reserved_from_warehouse', 'qty_bought', )
     def _compute_qty_to_buy(self):
         for rec in self:
-            if not rec.display_type and rec.product_id.type != 'consu':
+            if not rec.display_type and rec.product_id and rec.product_id.type != 'consu':
                 rec.qty_to_buy = rec.product_uom_qty - rec.qty_reserved_from_warehouse - rec.qty_bought
             else:
                 rec.qty_to_buy = 0
@@ -366,7 +366,7 @@ class ConstructionComponent(models.Model):
         it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
         """
         for line in self:
-            if not line.display_type:
+            if not line.display_type and line.product_id:
                 qty_invoiced = 0.0
                 for invoice_line in line.invoice_lines:
                     if invoice_line.move_id.state != 'cancel':
@@ -387,7 +387,7 @@ class ConstructionComponent(models.Model):
         calculated from the ordered quantity. Otherwise, the quantity delivered is used.
         """
         for line in self:
-            if not line.display_type:
+            if not line.display_type and line.product_id:
                 line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
             else:
                 line.qty_to_invoice = 0
