@@ -364,7 +364,7 @@ class Construction(models.Model):
     def action_purchase(self):
         if self.construction_component_ids:
             new_po = []
-            for rec in self.construction_component_ids:
+            for rec in self.construction_component_ids.filtered(lambda x: x.display_type == False):
                 if rec.product_id.type != "consu" and self.partner_id:
                     po = rec._run_buy()
                     if po:
@@ -439,7 +439,7 @@ class Construction(models.Model):
         return invoice_vals
 
     def _get_invoiceable_lines(self):
-        return self.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0)
+        return self.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0 and not x.display_type)
 
     @api.model
     def _prepare_down_payment_section_line(self, **optional_values):

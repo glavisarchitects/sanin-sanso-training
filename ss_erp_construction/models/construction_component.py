@@ -68,10 +68,13 @@ class ConstructionComponent(models.Model):
     @api.depends('stock_move_ids.state')
     def _compute_qty_reserved_from_warehouse(self):
         for rec in self:
-            reserved_qty = 0
-            for line in rec.stock_move_ids:
-                reserved_qty += line.reserved_availability + line.quantity_done
-            rec.qty_reserved_from_warehouse = reserved_qty
+            if not rec.display_type:
+                reserved_qty = 0
+                for line in rec.stock_move_ids:
+                    reserved_qty += line.reserved_availability + line.quantity_done
+                rec.qty_reserved_from_warehouse = reserved_qty
+            else:
+                rec.qty_reserved_from_warehouse = 0
 
     is_downpayment = fields.Boolean(
         string="頭金であるか", help="Down payments are made when creating invoices from a construction order.")
@@ -187,7 +190,10 @@ class ConstructionComponent(models.Model):
 
     def _compute_qty_to_invoice(self):
         for line in self:
-            line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
+            if not line.display_type:
+                line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
 
     def _prepare_purchase_order(self):
         company_id = self.env.user.company_id
@@ -219,40 +225,40 @@ class ConstructionComponent(models.Model):
             self.standard_price = self.product_id.product_tmpl_id.standard_price
             self.sale_price = self.standard_price / (1 - self.margin_rate)
 
-        direct_expense_fee_product = self.env.ref('ss_erp_construction.direct_expense_fee_product_data')
-        direct_labo_fee_product = self.env.ref('ss_erp_construction.direct_labo_fee_product_data')
-        direct_outsource_fee_product = self.env.ref('ss_erp_construction.direct_outsource_fee_product_data')
-        indirect_expense_fee_product = self.env.ref('ss_erp_construction.indirect_expense_fee_product_data')
-        indirect_material_fee_product = self.env.ref('ss_erp_construction.indirect_material_fee_product_data')
-        indirect_labo_fee_product = self.env.ref('ss_erp_construction.indirect_labo_fee_product_data')
-        indirect_outsource_fee_product = self.env.ref('ss_erp_construction.indirect_outsource_fee_product_data')
+            direct_expense_fee_product = self.env.ref('ss_erp_construction.direct_expense_fee_product_data')
+            direct_labo_fee_product = self.env.ref('ss_erp_construction.direct_labo_fee_product_data')
+            direct_outsource_fee_product = self.env.ref('ss_erp_construction.direct_outsource_fee_product_data')
+            indirect_expense_fee_product = self.env.ref('ss_erp_construction.indirect_expense_fee_product_data')
+            indirect_material_fee_product = self.env.ref('ss_erp_construction.indirect_material_fee_product_data')
+            indirect_labo_fee_product = self.env.ref('ss_erp_construction.indirect_labo_fee_product_data')
+            indirect_outsource_fee_product = self.env.ref('ss_erp_construction.indirect_outsource_fee_product_data')
 
-        # 間接経費計算
-        if self.product_id.id == indirect_expense_fee_product.id:
-            self.product_uom_qty = 1
-            self.standard_price = sum(
-                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                    lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
+            # 間接経費計算
+            if self.product_id.id == indirect_expense_fee_product.id:
+                self.product_uom_qty = 1
+                self.standard_price = sum(
+                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                        lambda line: line.product_id.id == direct_expense_fee_product.id)) * 0.05
 
-        # 間接材料費計算
-        if self.product_id.id == indirect_material_fee_product.id:
-            self.product_uom_qty = 1
-            self.standard_price = sum(
-                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                    lambda line: line.product_id.type == 'product')) * 0.00
+            # 間接材料費計算
+            if self.product_id.id == indirect_material_fee_product.id:
+                self.product_uom_qty = 1
+                self.standard_price = sum(
+                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                        lambda line: line.product_id.type == 'product')) * 0.00
 
-        # 間接労務費計算
-        if self.product_id.id == indirect_labo_fee_product.id:
-            self.product_uom_qty = 1
-            self.standard_price = sum(
-                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                    lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
+            # 間接労務費計算
+            if self.product_id.id == indirect_labo_fee_product.id:
+                self.product_uom_qty = 1
+                self.standard_price = sum(
+                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                        lambda line: line.product_id.id == direct_labo_fee_product.id)) * 0.05
 
-        if self.product_id.id == indirect_outsource_fee_product.id:
-            self.product_uom_qty = 1
-            self.standard_price = sum(
-                x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
-                    lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
+            if self.product_id.id == indirect_outsource_fee_product.id:
+                self.product_uom_qty = 1
+                self.standard_price = sum(
+                    x.product_uom_qty * x.standard_price for x in self.construction_id.construction_component_ids.filtered(
+                        lambda line: line.product_id.id == direct_outsource_fee_product.id)) * 0.05
 
     @api.depends('product_uom_qty', 'qty_reserved_from_warehouse', 'qty_bought', )
     def _compute_qty_to_buy(self):
@@ -342,6 +348,8 @@ class ConstructionComponent(models.Model):
                             qty_invoiced -= invoice_line.product_uom_id._compute_quantity(invoice_line.quantity,
                                                                                           line.product_uom_id)
                 line.qty_invoiced = qty_invoiced
+            else:
+                line.qty_invoiced = 0
 
     @api.depends('qty_invoiced', 'product_uom_qty')
     def _get_to_invoice_qty(self):
@@ -351,4 +359,6 @@ class ConstructionComponent(models.Model):
         """
         for line in self:
             if not line.display_type:
-                sline.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
+                line.qty_to_invoice = line.product_uom_qty - line.qty_invoiced
+            else:
+                line.qty_to_invoice = 0
