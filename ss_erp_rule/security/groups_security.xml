@@ -25,7 +25,7 @@
         <record id="group_my_org_only_sale" model="res.groups">
             <field name="name">自分の組織のみ (販売)</field>
             <field name="category_id" ref="ss_erp_rule.module_ss_other_authority_group"/>
-            <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_salesman')),]"/>
+            <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_salesman_all_leads')),]"/>
         </record>
 
         <record id="group_my_org_only_external_link" model="res.groups">
@@ -41,10 +41,14 @@
             <field name="name">支店: 一般</field>
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[
+                        (4, ref('sales_team.group_sale_salesman_all_leads')),
                         (4, ref('purchase.group_purchase_user')),
                         (4, ref('stock.group_stock_user')),
                         (4, ref('account.group_account_user')),
-                        (4, ref('mrp.group_mrp_user'))]"/>
+                        (4, ref('mrp.group_mrp_user')),
+                        (4, ref('ss_erp_rule.group_my_org_only_sale')),
+                        (4, ref('ss_erp_rule.group_my_org_only_external_link')),
+                        (4, ref('base.group_user'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
 
         </record>
@@ -52,13 +56,18 @@
         <record id="group_branch_middle_manager" model="res.groups">
             <field name="name">支店:中間管理者</field>
             <field name="category_id" ref="category_authority"/>
-            <field name="implied_ids" eval="[(4, ref('ss_erp_rule.group_branch_general')),
-                                            (4, ref('ss_erp_rule.group_my_org_only_sale')),
+            <field name="implied_ids" eval="[
+                                            (4, ref('ss_erp_rule.group_branch_general')),
+                                            (4, ref('sales_team.group_sale_salesman_all_leads')),
                                             (4, ref('purchase.group_purchase_user')),
                                             (4, ref('stock.group_stock_user')),
                                             (4, ref('account.group_account_user')),
                                             (4, ref('mrp.group_mrp_user')),
-                                            (4,ref('approvals.group_approval_user'))]"/>
+                                            (4, ref('approvals.group_approval_user')),
+                                            (4, ref('ss_erp_rule.group_my_org_only_sale')),
+                                            (4, ref('ss_erp_rule.group_my_org_only_external_link')),
+                                            (4, ref('base.group_user'))
+                                            ]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
 
         </record>
@@ -66,14 +75,18 @@
         <record id="group_branch_manager" model="res.groups">
             <field name="name">支店:管理者</field>
             <field name="category_id" ref="category_authority"/>
-            <field name="implied_ids" eval="[(4, ref('ss_erp_rule.group_branch_general')),
+            <field name="implied_ids" eval="[
+                                            (4, ref('ss_erp_rule.group_branch_general')),
                                             (4, ref('ss_erp_rule.group_branch_middle_manager')),
                                             (4, ref('sales_team.group_sale_salesman_all_leads')),
                                             (4, ref('purchase.group_purchase_user')),
                                             (4, ref('stock.group_stock_user')),
                                             (4, ref('account.group_account_user')),
                                             (4, ref('mrp.group_mrp_user')),
-                                            (4,ref('approvals.group_approval_manager'))]"/>
+                                            (4,ref('approvals.group_approval_user')),
+                                            (4, ref('ss_erp_rule.group_my_org_only_sale')),
+                                            (4, ref('ss_erp_rule.group_my_org_only_external_link')),
+                                            (4, ref('base.group_user'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
 
@@ -82,13 +95,15 @@
             <field name="name">本社:一般</field>
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[
-                                             (4, ref('ss_erp_rule.group_branch_manager')),
-                                             (4, ref('sales_team.group_sale_salesman_all_leads')),
+                                            (4, ref('sales_team.group_sale_salesman_all_leads')),
                                             (4, ref('purchase.group_purchase_user')),
                                             (4, ref('stock.group_stock_user')),
-                                            (4, ref('account.group_account_manager')),
-                                            (4, ref('hr.group_hr_user')),
-                                            (4, ref('mrp.group_mrp_user'))]"/>
+                                            (4, ref('account.group_account_user')),
+                                            (4, ref('mrp.group_mrp_user')),
+                                            (4, ref('ss_erp_rule.group_my_org_only_sale')),
+                                            (4, ref('ss_erp_rule.group_my_org_only_external_link')),
+                                            (4, ref('base.group_user'))
+                                            ]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
 
         </record>
@@ -103,7 +118,7 @@
                                             (4, ref('account.group_account_manager')),
                                             (4, ref('mrp.group_mrp_manager')),
                                             (4, ref('approvals.group_approval_user')),
-                                            (4, ref('hr.group_hr_user')),
+                                            (4, ref('base.group_user'))
                                              ]"/>
             <field name="users" eval="[(4, ref('base.user_root')),(4, ref('base.user_admin'))]"/>
 
@@ -118,12 +133,60 @@
                                             (4, ref('account.group_account_manager')),
                                             (4, ref('mrp.group_mrp_manager')),
                                             (4, ref('approvals.group_approval_manager')),
-                                            (4, ref('hr.group_hr_user')),
+                                            (4, ref('hr.group_hr_manager')),
                                             (4, ref('hr_contract.group_hr_contract_manager')),
-                                            (4, ref('base.group_system'))]"/>
+                                            (4, ref('base.group_system')),
+                                            (4, ref('base.group_user'))
+                                            ]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
 
         </record>
+    <!--  update AR001 27/10/2022    -->
+        <!--   SS OTHER AUTHORITY GROUP     -->
+        <record id="module_ss_approvers_group" model="ir.module.category">
+            <field name="name">SS 承認者グループ</field>
+            <field name="sequence">47</field>
+        </record>
+        <record id="group_approver_1" model="res.groups">
+            <field name="name">支店業務責任</field>
+            <field name="category_id" ref="module_ss_approvers_group"/>
+        </record>
+        <record id="group_approver_2" model="res.groups">
+            <field name="name">支店棚卸責任</field>
+            <field name="category_id" ref="module_ss_approvers_group"/>
+        </record>
+        <record id="group_approver_3" model="res.groups">
+            <field name="name">支店経理責任</field>
+            <field name="category_id" ref="module_ss_approvers_group"/>
+        </record>
+        <record id="group_approver_4" model="res.groups">
+            <field name="name">支店長</field>
+            <field name="category_id" ref="module_ss_approvers_group"/>
+        </record>
+        <record id="group_approver_5" model="res.groups">
+            <field name="name">本社営業本部責任</field>
+            <field name="category_id" ref="module_ss_approvers_group"/>
+        </record>
+        <record id="group_approver_6" model="res.groups">
+            <field name="name">本社技術本部責任</field>
+            <field name="category_id" ref="module_ss_approvers_group"/>
+        </record>
+        <record id="group_approver_7" model="res.groups">
+            <field name="name">本社工事部門責任</field>
+            <field name="category_id" ref="module_ss_approvers_group"/>
+        </record>
+        <record id="group_approver_8" model="res.groups">
+            <field name="name">本社経理責任</field>
+            <field name="category_id" ref="module_ss_approvers_group"/>
+        </record>
+
+
+
+
+
+
+
+
 
 
     </data>
