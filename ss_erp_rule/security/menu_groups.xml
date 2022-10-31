@@ -185,7 +185,7 @@
             ]"/>
         </record>
 
-        <record id="ss_erp_accounting.ss_erp_partner_rebate_finance_action_menu" model="ir.ui.menu">
+        <record id="ss_erp_purchase.ss_erp_partner_rebate_finance_action_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('group_branch_general')),
             (4, ref('group_branch_middle_manager')),
