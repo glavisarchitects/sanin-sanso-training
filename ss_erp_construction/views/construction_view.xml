@@ -184,7 +184,7 @@
                                     <div class="oe_clear" modifiers="{}"/>
                                 </group>
                             </page>
-                            <page name="construction_workorder" string="作業オーダー">
+                            <page name="construction_workorder" string="作業オーダ">
                                 <field name="construction_workorder_ids" widget="one2many" nolabel="1"
                                        attrs="{'readonly':[('state','in',('done','lost','cancel'))],}">
                                     <tree>
@@ -302,7 +302,7 @@
 
 
         <record id="ss_erp_construction_act_window" model="ir.actions.act_window">
-            <field name="name">工事オーダー</field>
+            <field name="name">工事オーダ</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">ss.erp.construction</field>
             <field name="view_mode">tree,form</field>
