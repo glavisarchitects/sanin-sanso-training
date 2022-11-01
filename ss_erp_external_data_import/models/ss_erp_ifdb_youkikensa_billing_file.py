@@ -52,7 +52,7 @@ class YoukiKensaBilling(models.Model):
     def _compute_status(self):
         for record in self:
             if record.youki_kensa_detail_ids:
-                status_list = record.youki_kensa_detail_ids.filtered(lambda x: not x.field_3).mapped('status')
+                status_list = record.youki_kensa_detail_ids.filtered(lambda x: len(x.slip_no) != 0).mapped('status')
                 record.status = "success"
                 if "error" in status_list:
                     record.status = "error"
