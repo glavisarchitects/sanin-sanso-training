@@ -47,12 +47,6 @@ class SStreamJournalEntryOutput(models.TransientModel):
         if not sstream_linkage_recs:
             raise UserError('Odoo仕訳が見つかりませんでした。')
 
-        # # p5 transfer between base  supper stream linkage
-        # p5_sstream_linkage_rec = self.env['ss_erp.superstream.linkage.journal'].search(
-        #     [('journal_creation', '=', 'transfer_between_base')], limit=1)
-        # if not p5_sstream_linkage_rec:
-        #     raise UserError('一致するリンケージ ジャーナルが見つかりませんでした。')
-
         result = {
             'sstream_company_code': sstream_company_code,
             'sstream_slip_group': sstream_slip_group,
@@ -61,7 +55,6 @@ class SStreamJournalEntryOutput(models.TransientModel):
             'product_ctg_material': product_ctg_material,
             'product_ctg_stock': product_ctg_stock,
             'sanhot_point_product_id': sanhot_point_product_id,
-            # 'p5_sstream_linkage_rec': p5_sstream_linkage_rec,
         }
         return result
 
@@ -854,171 +847,244 @@ class SStreamJournalEntryOutput(models.TransientModel):
         start_period = datetime.combine(self.first_day_period, datetime.min.time())
         end_period = datetime.combine(self.last_day_period, datetime.max.time())
 
-        linkage_debit_account = param['p5_sstream_linkage_rec'].debit_account.code
-        linkage_debit_sub_account = param['p5_sstream_linkage_rec'].debit_sub_account.code if param['p5_sstream_linkage_rec'].debit_sub_account.code else ''
-        linkage_debit_organization_rec = param['p5_sstream_linkage_rec'].debit_related_organization
-
-        linkage_credit_account = param['p5_sstream_linkage_rec'].credit_account.code
-        linkage_credit_sub_account = param['p5_sstream_linkage_rec'].debit_sub_account.code if param['p5_sstream_linkage_rec'].debit_sub_account.code else ''
-        linkage_credit_organization_rec = param['p5_sstream_linkage_rec'].credit_related_organization
-
         _select_data = f"""
         select 						
-            code as department_code	
-            , move_line_id -- 		just a column to shorten the code below						
-            , '{param['p5_sstream_linkage_rec'].journal}' as journal_item_label						
-            , '3' as record_division						
-            , '{param['sstream_company_code']}' as company_code						
-            , '{param['sstream_slip_group']}' as slip_group						
-            , to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD') as slip_date						
-            , '1' as line_number 						
-            , '0' as deb_cre_division						
-            , '{linkage_debit_account}' as account_code						
-            , '{linkage_debit_sub_account}' as sub_account_code						
-            , code || right(organization_code, 3) as depar_orga_code						
-            , '0' as partner_employee_division						
-            , '' as partner_employee_code						
-            , sum(product_uom_qty * standard_price) as journal_amount /* 原価で計算 */						
-            , sum(product_uom_qty * standard_price) as tax_excluded_amount /* 原価で計算 */						
-            , 0 as tax_amount						
-            , '000' as tax_id						
-            , '0' as tax_entry_division						
-            from						
-                (						
-                    select						
-                        seo.organization_code						
-                        , iol.id move_line_id -- 		just a column to shorten the code below				
-                        , serp.code						
-                        , iol.product_uom_qty 						
-                        , pt.list_price						
-                        , sp.date						
-                        , prop.value_float as standard_price		 			
-                    from						
-                        ss_erp_inventory_order io  /* 移動伝票 */						
-                        inner join						
-                        ss_erp_inventory_order_line iol  /* 移動伝票明細 */						
-                        on io.id = iol.order_id						
-                        inner join						
-                        stock_picking sp  /* 運送 */						
-                        on io.id = sp.x_inventory_order_id						
-                        inner join						
-                        ss_erp_responsible_department serp /* 管轄部門 */						
-                        on sp.x_responsible_dept_id = serp.id						
-                        inner join						
-                        ss_erp_organization seo /* 組織 */						
-                        on sp.x_organization_id = seo.id						
-                        inner join						
-                        product_product pp  /* プロダクト */						
-                        on iol.product_id = pp.id
-                        left join product_template pt on pp.product_tmpl_id = pt.id
-                        left join ir_property prop on prop.res_id = 'product.product,' || pp.id						
-                    where						
+            move_line_id								
+            ,record_division								
+            , company_code								
+            , slip_group
+            , '' as slip_number
+            , slip_date								
+            , line_number								
+            , deb_cre_division								
+            , account_code								
+            , sub_account_code								
+            , depar_orga_code	
+            , '' as function_code1								
+            , '' as function_code2								
+            , '' as function_code3								
+            , '' as function_code4								
+            , '' as project_code1	
+            , partner_employee_division								
+            , partner_employee_code								
+            , journal_amount								
+            , tax_excluded_amount								
+            , tax_amount								
+            , case when deb_cre_division = '1' then '000'								
+            else tax_id								
+            end as tax_id								
+            , tax_entry_division								
+            , summery1
+            ,'' summery2	
+            , '' as partner_ref_code								
+            , '' as transaction_currency_code								
+            , '' as rate_type								
+            , '0' as exchange_rate								
+            , 0 as transaction_currency_amount								
+            , '' as spare_character_item1								
+            , '' as spare_character_item2								
+            , '' as spare_character_item3								
+            , '' as spare_character_item4								
+            , '' as spare_character_item5								
+            , '' as spare_character_item6								
+            , '' as spare_character_item7								
+            , '' as spare_character_item8								
+            , '' as reserved_numeric_item1								
+            , '' as reserved_numeric_item2								
+            , '' as reserved_numeric_item3					
+            from (
+            WITH odoo_journal_linkage AS (
+                SELECT * FROM ss_erp_superstream_linkage_journal where journal_creation = 'transfer_between_bases'								
+                )
+                    select
+                        move_line_id 					
+                        , organization_code								
+                        , department_code								
+                        , record_division								
+                        , company_code								
+                        , slip_group								
+                        , slip_date								
+                        , line_number								
+                        , deb_cre_division								
+                        , account_code								
+                        , sub_account_code								
+                        , depar_orga_code								
+                        , partner_employee_division								
+                        , partner_employee_code								
+                        , journal_amount								
+                        , tax_excluded_amount								
+                        , tax_amount								
+                        , tax_id								
+                        , tax_entry_division								
+                        , summery1		
+                    from					
+                    (						
+                        select								
+                            iol.id move_line_id -- 		just a column to shorten the code below	
+                            ,'3' as record_division								
+                            , '{param['sstream_company_code']}' as company_code								
+                            , '{param['sstream_slip_group']}' as slip_group
+                            , CASE WHEN ojl.slip_date_edit = 'first_day' THEN
+                            to_char(date_trunc('month', sp.date) + '-1 month', 'YYYY/MM/DD')
+                            ELSE
+                            to_char(date_trunc('month', sp.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
+                            END  as slip_date			
+                            , '1' as line_number 								
+                            , '0' as deb_cre_division	
+                            , de_ojl.code as account_code								
+                            , COALESCE(sub_de_ojl.code, '') as sub_account_code	
+                            ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
+                            when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                            else ojl.debit_accounting_department_code								
+                            end as depar_orga_code	
+                            ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
+                            when ojl.debit_account_employee_category = 'custmer' then '1'				
+                            when ojl.debit_account_employee_category = 'vendor' then '2'				
+                            else '3'							
+                            end as partner_employee_division			
+                            , case when ojl.debit_account_employee_category != 'no_used' then rpad(right(seo.organization_code, 3), 13, '0')
+                            ElSE '' END as partner_employee_code	
+                            ,seo.organization_code as organization_code	
+                            , serd.code as department_code
+                            ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) as journal_amount		
+                            ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) as tax_excluded_amount	
+                            , 0 as tax_amount						
+                            , '000' as tax_id						
+                            , '0' as tax_entry_division	
+                            , case when ojl.debit_application_edit_indicator = 'month' then de_ojl.name || ' ' || to_char(sp.date, 'MM') || '月分'
+                                when ojl.debit_application_edit_indicator = 'month_and_branch' then de_ojl.name || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
+                                when ojl.debit_application_edit_indicator = 'org_from_to_month' then de_ojl.name || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                                when ojl.debit_application_edit_indicator = 'dept_from_to_month' then de_ojl.name || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                                ELSE de_ojl.name || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
+                                END
+                                as summery1
+                        from						
+                            ss_erp_inventory_order io  /* 移動伝票 */						
+                            inner join						
+                            ss_erp_inventory_order_line iol  /* 移動伝票明細 */						
+                            on io.id = iol.order_id						
+                            inner join						
+                            stock_picking sp  /* 運送 */						
+                            on io.id = sp.x_inventory_order_id						
+                            inner join	
+                            ss_erp_responsible_department serd /* 管轄部門 */						
+                            on sp.x_responsible_dept_id = serd.id						
+                            inner join						
+                            ss_erp_organization seo /* 組織 */						
+                            on sp.x_organization_id = seo.id						
+                            inner join						
+                            product_product pp  /* プロダクト */						
+                            on iol.product_id = pp.id
+                            left join product_template pt on pp.product_tmpl_id = pt.id
+                            left join ir_property prop on prop.res_id = 'product.product,' || pp.id		
+            
+                            left join odoo_journal_linkage ojl 
+                            on io.organization_id = ojl.credit_related_organization and iol.organization_id = ojl.debit_related_organization
+                            left join account_account de_ojl 
+                            on ojl.debit_account = de_ojl.id	
+                            left join ss_erp_account_subaccount sub_de_ojl 
+                            on ojl.debit_sub_account = sub_de_ojl.id
+                            
+                            left join ss_erp_organization source_seo
+                            on ojl.debit_related_organization = source_seo.id
+                            left join ss_erp_organization dest_seo
+                            on ojl.credit_related_organization = dest_seo.id
+
+                        where						
                         sp.state = 'done'  /* 完了を指定 */						
-                    and sp.date BETWEEN '{start_period}' and '{end_period}'					
-                    and sp.x_organization_id = '{linkage_credit_organization_rec.id}'  /* 移動元組織（貸方関連組織を指定） */						
-                    and sp.x_organization_dest_id = '{linkage_debit_organization_rec.id}' /* 移動先組織（借方関連組織を指定） */	
-                    and io.is_super_stream_linked = False					
-            --         group by  /* グルーピングして出荷と入荷を1レコードにまとめておく（使う情報に差はないのでOK） */						
-            --             seo.organization_code						
-            --             , rp.code						
-            --             , iol.product_uom_qty 						
-            --             , pt.list_price						
-            --             , sp.date						
-                )result_debit						
-            group by						
-                to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD')						
-                , organization_code						
-                , code						
-                , move_line_id						
-                                                           
+                        and sp.date BETWEEN '{start_period}' and '{end_period}'					
+                        and sp.x_organization_id = ojl.credit_related_organization  /* 移動元組織（貸方関連組織を指定） */						
+                        and sp.x_organization_dest_id = ojl.debit_related_organization /* 移動先組織（借方関連組織を指定） */	
+                        and io.is_super_stream_linked = False																			
+                                                                                                         
             union all						
-                                                          
-            select 						
-                code as department_code	
-                , move_line_id -- 		just a column to shorten the code below	
-                , '{param['p5_sstream_linkage_rec'].journal}' as journal_item_label						
-                , '3' as record_division						
-            , '{param['sstream_company_code']}' as company_code						
-            , '{param['sstream_slip_group']}' as slip_group						
-                , to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD') as slip_date						
-                , '2' as line_number 						
-                , '1' as deb_cre_division						
-                , '{linkage_credit_account}' as account_code						
-                , '{linkage_credit_sub_account}' as sub_account_code						
-                , code || right(organization_code, 3) as depar_orga_code						
-                , '0' as partner_employee_division						
-                , '' as partner_employee_code						
-                , sum(product_uom_qty * standard_price) as journal_amount /* 原価で計算 */						
-                , sum(product_uom_qty * standard_price) as tax_excluded_amount /* 原価で計算 */						
-                , 0 as tax_amount						
-                , '000' as tax_id						
-                , '0' as tax_entry_division						
-            from						
-                (						
-                    select						
-                        seo.organization_code	
-                        , iol.id move_line_id					
-                        , serp.code						
-                        , iol.product_uom_qty 						
-                        , pt.list_price						
-                        , sp.date		
-                            , prop.value_float as standard_price					
-                    from						
-                        ss_erp_inventory_order io  /* 移動伝票 */						
-                        inner join						
-                        ss_erp_inventory_order_line iol  /* 移動伝票明細 */						
-                        on io.id = iol.order_id						
-                        inner join						
-                        stock_picking sp  /* 運送 */						
-                        on io.id = sp.x_inventory_order_id						
-                        inner join						
-                        ss_erp_responsible_department serp /* 管轄部門 */						
-                        on sp.x_responsible_dept_id = serp.id						
-                        inner join						
-                        ss_erp_organization seo /* 組織 */						
-                        on sp.x_organization_id = seo.id						
-                        inner join						
-                        product_product pp  /* プロダクト */						
-                        on iol.product_id = pp.id
-                                    left join product_template pt on pp.product_tmpl_id = pt.id
-                                    left join ir_property prop on prop.res_id = 'product.product,' || pp.id						
-                    where						
-                        sp.state = 'done'  /* 完了を指定 */						
-                    and sp.date BETWEEN '{start_period}' and '{end_period}'							
-                    and sp.x_organization_id = '{linkage_credit_organization_rec.id}'  /* 移動元組織（貸方関連組織を指定） */						
-                    and sp.x_organization_dest_id = '{linkage_debit_organization_rec.id}' /* 移動先組織（借方関連組織を指定） */	
-                    and io.is_super_stream_linked = False					
-            --         group by  /* グルーピングして出荷と入荷を1レコードにまとめておく（使う情報に差はないのでOK） */						
-            --             seo.organization_code						
-            --             , rp.code						
-            --             , iol.product_uom_qty 						
-            --             , pt.list_price						
-            --             , sp.date						
-                )result_debit						
-            group by						
-                to_char(date_trunc('month', date) + '1 month' + '-1 Day', 'YYYY/MM/DD')						
-                , organization_code						
-                , code						
-                , move_line_id						
-            order by						
+        
+                select								
+                    iol.id move_line_id -- 		just a column to shorten the code below	
+                    ,'3' as record_division								
+                    , '{param['sstream_company_code']}' as company_code								
+                    , '{param['sstream_slip_group']}' as slip_group
+                    , CASE WHEN ojl.slip_date_edit = 'first_day' THEN
+                    to_char(date_trunc('month', sp.date) + '-1 month', 'YYYY/MM/DD')
+                    ELSE
+                    to_char(date_trunc('month', sp.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
+                    END  as slip_date			
+                    , '1' as line_number 								
+                    , '0' as deb_cre_division	
+                    , cre_ojl.code as account_code								
+                    , COALESCE(sub_cre_ojl.code, '') as sub_account_code	
+                    ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    else ojl.credit_accounting_department_code								
+                    end as depar_orga_code	
+                    ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
+                    when ojl.credit_account_employee_category = 'custmer' then '1'				
+                    when ojl.credit_account_employee_category = 'vendor' then '2'				
+                    else '3'							
+                    end as partner_employee_division			
+                    , case when ojl.debit_account_employee_category != 'no_used' then rpad(right(seo.organization_code, 3), 13, '0')
+                    ElSE '' END as partner_employee_code	
+                    ,seo.organization_code as organization_code	
+                    , serd.code as department_code
+                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) as journal_amount		
+                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) as tax_excluded_amount	
+                    , 0 as tax_amount						
+                    , '000' as tax_id						
+                    , '0' as tax_entry_division	
+                    , case when ojl.debit_application_edit_indicator = 'month' then cre_ojl.name || ' ' || to_char(sp.date, 'MM') || '月分'
+                        when ojl.debit_application_edit_indicator = 'month_and_branch' then cre_ojl.name || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
+                        when ojl.debit_application_edit_indicator = 'org_from_to_month' then cre_ojl.name || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                        when ojl.debit_application_edit_indicator = 'dept_from_to_month' then cre_ojl.name || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                        ELSE cre_ojl.name || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
+                        END
+                        as summery1									
+                from						
+                    ss_erp_inventory_order io  /* 移動伝票 */						
+                    inner join						
+                    ss_erp_inventory_order_line iol  /* 移動伝票明細 */						
+                    on io.id = iol.order_id						
+                    inner join						
+                    stock_picking sp  /* 運送 */						
+                    on io.id = sp.x_inventory_order_id						
+                    inner join						
+                    ss_erp_responsible_department serd /* 管轄部門 */						
+                    on sp.x_responsible_dept_id = serd.id						
+                    inner join						
+                    ss_erp_organization seo /* 組織 */						
+                    on sp.x_organization_id = seo.id						
+                    inner join						
+                    product_product pp  /* プロダクト */						
+                    on iol.product_id = pp.id
+                    left join product_template pt on pp.product_tmpl_id = pt.id
+                    left join ir_property prop on prop.res_id = 'product.product,' || pp.id		
+                            
+                    left join odoo_journal_linkage ojl 
+                    on io.organization_id = ojl.credit_related_organization and iol.organization_id = ojl.debit_related_organization	
+                    left join account_account cre_ojl 
+                    on ojl.credit_account = cre_ojl.id	
+                    left join ss_erp_account_subaccount sub_cre_ojl 
+                    on ojl.credit_sub_account = sub_cre_ojl.id	
+                    
+                    left join ss_erp_organization source_seo
+                    on ojl.debit_related_organization = source_seo.id
+                    left join ss_erp_organization dest_seo
+                    on ojl.credit_related_organization = dest_seo.id			
+                where						
+                sp.state = 'done'  /* 完了を指定 */						
+                and sp.date BETWEEN '{start_period}' and '{end_period}'							
+                and sp.x_organization_id = ojl.credit_related_organization  /* 移動元組織（貸方関連組織を指定） */						
+                and sp.x_organization_dest_id = ojl.debit_related_organization /* 移動先組織（借方関連組織を指定） */	
+                and io.is_super_stream_linked = False	
+            ) result				
+                order by						
                 department_code asc						
                 , deb_cre_division asc						
-                , line_number asc						
+                , line_number asc	
+                )pattern5										
 """
         self._cr.execute(_select_data)
         data_pattern5 = self._cr.dictfetchall()
         return data_pattern5
-
-    def concatenate_summary(self, linkage_journal_rec, line_data):
-        summary1 = ''
-        if linkage_journal_rec.credit_application_edit_indicator == 'month':
-            summary1 = line_data['journal_item_label'] + " " + line_data['slip_date'][5:6] + "月分"
-        elif linkage_journal_rec.credit_application_edit_indicator == 'month_and_branch':
-            organization = self.env['ss_erp.organization'].search(
-                [('organization_code', '=', line_data['organization_code'])], limit=1)
-
-            summary1 = line_data['journal_item_label'] + " " + line_data['slip_date'][5:6] + "月分" + "/" + organization.name
-        return summary1
 
     def export_sstream_journal_entry(self):
         # Captured data start record
@@ -1031,12 +1097,10 @@ class SStreamJournalEntryOutput(models.TransientModel):
         pattern2_data = self.query_pattern2(self.get_a007_param())
         #
         pattern3_data = self.query_pattern3(self.get_a007_param())
-        # for p3d in pattern3_data: p3d['pattern_type'] = 3
         #
-        # pattern5_data = self.query_pattern5(self.get_a007_param())
-        # for p5d in pattern5_data: p5d['pattern_type'] = 5
+        pattern5_data = self.query_pattern5(self.get_a007_param())
 
-        all_pattern_data = pattern1_data + pattern2_data + pattern3_data
+        all_pattern_data = pattern1_data + pattern2_data + pattern3_data + pattern5_data
         debit_line_data = []
         credit_line_data = []
         for pd in all_pattern_data:
