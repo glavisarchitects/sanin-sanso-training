@@ -57,7 +57,7 @@ class PurchaseOrder(models.Model):
     x_is_construction = fields.Boolean(
         "工事であるか", compute='_compute_show_construction', compute_sudo=True)
     x_construction_name = fields.Char("工事名称")
-    x_construction_sopt = fields.Char("工事場所")
+    x_construction_spot = fields.Char("工事場所")
     x_construction_period_start = fields.Date(
         "予定工期開始")
     x_construction_period_end = fields.Date(
