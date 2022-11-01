@@ -16,4 +16,7 @@ def post_init_hook(cr, registry):
 
     # if this line doesn't work write like above
     default_user.groups_id = False
+    # add default user to some group here
+    default_user.write({'groups_id': [(4, env.ref('base.group_user').id),
+                                      ]})
 

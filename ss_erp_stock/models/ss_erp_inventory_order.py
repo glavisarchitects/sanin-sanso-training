@@ -115,8 +115,6 @@ class InventoryOrder(models.Model):
             for line in rec.inventory_order_line_ids:
                 if not line.organization_id:
                     raise ValidationError(_("移動先組織をご選択ください。"))
-                if not line.responsible_dept_id:
-                    raise ValidationError(_("移動先管轄部門をご選択ください。"))
                 if not line.location_dest_id:
                     raise ValidationError(_("移動先ロケーションをご選択ください。"))
                 if not line.product_id:
@@ -255,7 +253,7 @@ class InventoryOrderLine(models.Model):
     move_ids = fields.One2many('stock.move', 'x_inventory_order_line_id')
     organization_id = fields.Many2one('ss_erp.organization', '移動先組織', required=True, tracking=True)
     order_id_organization_id = fields.Many2one('ss_erp.organization', related='order_id.organization_id')
-    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動先管轄部門', required=True,
+    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', '移動先管轄部門',
                                           tracking=True)
     location_dest_id = fields.Many2one('stock.location', '移動先ロケーション', required=True, tracking=True)
     product_id = fields.Many2one('product.product', 'プロダクト', required=True, tracking=True)

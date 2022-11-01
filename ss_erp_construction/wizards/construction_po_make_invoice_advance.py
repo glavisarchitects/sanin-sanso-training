@@ -7,6 +7,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from datetime import datetime
 
+
 class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
     _name = "ss_erp.construction.po.advance.payment.inv"
     _description = "Construction Purchase Advance Payment Invoice"
@@ -17,18 +18,35 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
 
     @api.model
     def _default_product_id(self):
-        downpayment_product_id = self.env['ir.config_parameter'].sudo().get_param('ss_erp_po_downpayment_default_product_id')
-        if not downpayment_product_id:
-            raise UserError("工事用の前受プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_po_downpayment_default_product_id)")
-        return self.env['product.product'].browse(int(downpayment_product_id))
+        po_ids = self.env['purchase.order'].browse(self._context.get('active_ids', []))
+        if len(po_ids.filtered(lambda x: x.x_bis_categ_id == 'construction')) > 0:
+            downpayment_product_id = self.env['ir.config_parameter'].sudo().get_param(
+                'ss_erp_po_construction_downpayment_default_product_id')
+            if not downpayment_product_id:
+                raise UserError(
+                    "工事用の前払プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_po_construction_downpayment_default_product_id)")
+            return self.env['product.product'].browse(int(downpayment_product_id))
+        else:
+            downpayment_product_id = self.env['ir.config_parameter'].sudo().get_param(
+                'ss_erp_po_downpayment_default_product_id')
+            if not downpayment_product_id:
+                raise UserError(
+                    "前払プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_po_downpayment_default_product_id)")
+            return self.env['product.product'].browse(int(downpayment_product_id))
 
     @api.model
     def _default_deposit_account_id(self):
-        return self._default_product_id()._get_product_accounts()['construction_expense']
+        po_ids = self.env['purchase.order'].browse(self._context.get('active_ids', []))
+        product_id = self._default_product_id()
+
+        if len(po_ids.filtered(lambda x: x.x_bis_categ_id == 'construction')) > 0:
+            return product_id._get_product_accounts()['construction_expense']
+        else:
+            return product_id._get_product_accounts()['expense']
 
     @api.model
     def _default_deposit_taxes_id(self):
-        return self._default_product_id().taxes_id
+        return self._default_product_id().supplier_taxes_id
 
     @api.model
     def _default_has_down_payment(self):
@@ -45,8 +63,8 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
 
     advance_payment_method = fields.Selection([
         ('delivered', '通常の請求書'),
-        ('percentage', '前受金 (パーセント)'),
-        ('fixed', '前受金 (固定金額)')
+        ('percentage', '前払金 (パーセント)'),
+        ('fixed', '前払金 (固定金額)')
     ], string='請求書作成', default='delivered', required=True, )
     deduct_down_payments = fields.Boolean('頭金を差し引く', default=True)
     has_down_payments = fields.Boolean('頭金がある', default=_default_has_down_payment, readonly=True)
@@ -79,6 +97,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
             'invoice_user_id': order.user_id.id,
             'partner_id': order.partner_id.id,
             'purchase_id': order.id,
+            'x_responsible_user_id': order.user_id.id,
             'fiscal_position_id': (order.fiscal_position_id or order.fiscal_position_id.get_fiscal_position(
                 order.partner_id.id)).id,
             'partner_shipping_id': order.partner_id.id,
@@ -91,6 +110,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
                 'quantity': 1.0,
                 'product_id': self.product_id.id,
                 'product_uom_id': order_line.product_uom.id,
+                'purchase_line_id': order_line.id,
                 'tax_ids': [(6, 0, order_line.taxes_id.ids)],
             })],
         }
@@ -103,15 +123,16 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
                 amount = order.amount_total * self.amount / 100
             else:
                 amount = order.amount_untaxed * self.amount / 100
-            name = _("%s%% の前受金") % (self.amount)
+            name = _("%s%% の前払金") % (self.amount)
         else:
             amount = self.fixed_amount
-            name = _('前受金')
+            name = _('前払金')
 
         return amount, name
 
     def _create_invoice(self, order, order_line, amount):
-        journal = self.env['account.journal'].search([('type', '=', 'purchase'), ('is_construction', '=', True)], limit=1)
+        journal = self.env['account.journal'].search([('type', '=', 'purchase'), ('is_construction', '=', True)],
+                                                     limit=1)
         if not journal:
             raise UserError('工事購買の仕訳帳は設定していません。もう一度ご確認ください')
 
@@ -135,7 +156,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
     def _prepare_po_line(self, order, analytic_tag_ids, tax_ids, amount):
         context = {'lang': order.partner_id.lang}
         po_values = {
-            'name': _('Down Payment: %s') % (time.strftime('%Y年%m月%d日'),),
+            'name': _('前払金: %s') % (time.strftime('%Y年%m月%d日'),),
             'price_unit': amount,
             'product_qty': 0.0,
             'order_id': order.id,
@@ -160,8 +181,10 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
             for purchase_order in purchase_order_ids:
                 amount, name = self._get_advance_details(purchase_order)
 
-                taxes = self.product_id.taxes_id.filtered(lambda r: not purchase_order.company_id or r.company_id == purchase_order.company_id)
-                tax_ids = purchase_order.fiscal_position_id.map_tax(taxes, self.product_id, purchase_order.partner_id).ids
+                taxes = self.product_id.taxes_id.filtered(
+                    lambda r: not purchase_order.company_id or r.company_id == purchase_order.company_id)
+                tax_ids = purchase_order.fiscal_position_id.map_tax(taxes, self.product_id,
+                                                                    purchase_order.partner_id).ids
                 analytic_tag_ids = []
                 for line in purchase_order.order_line:
                     analytic_tag_ids = [(4, analytic_tag.id, None) for analytic_tag in line.analytic_tag_ids]

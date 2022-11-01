@@ -5,14 +5,25 @@
         山陰酸素工業　SuperStream連携カスタマイズ
     """,
     "depends": [
-        "base"
+        "base", "ss_erp_stock"
     ],
     "data": [
         # SECURITY
         "security/ir.model.access.csv",
 
+        # DATA
+        'data/param_data.xml',
+
         # VIEWS
-        'menu/menu_item.xml'
+
+        'views/ss_erp_inventory_order_views.xml',
+        'views/ss_erp_account_move_line_views.xml',
+        'views/ss_erp_superstream_linkage_journal_views.xml',
+        'wizards/sstream_journal_entry_output_views.xml',
+        'wizards/sstream_payment_journal_export_views.xml',
+
+        # Menu
+        'menu/menu_item.xml',
     ],
     "application": False,
     "installable": True,

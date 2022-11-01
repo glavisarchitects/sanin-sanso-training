@@ -33,7 +33,7 @@ class PurchaseOrder(models.Model):
         """
         down_payments_section_line = {
             'display_type': 'line_section',
-            'name': _('前受金'),
+            'name': _('前払金'),
             'product_id': False,
             'product_uom_id': False,
             'quantity': 0,
@@ -57,6 +57,10 @@ class PurchaseOrder(models.Model):
         a clean extension chain).
         """
         invoice_vals = super(PurchaseOrder, self)._prepare_invoice()
+        invoice_vals.update({
+            'x_organization_id': self.x_organization_id.id,
+            'x_responsible_dept_id': self.x_responsible_dept_id.id,
+        })
         if self.x_bis_categ_id == 'gas_material':
             invoice_vals.update({
                 'invoice_type': 'gas_material'
@@ -126,7 +130,7 @@ class PurchaseOrder(models.Model):
             pending_section = None
 
             invoice_vals = order._prepare_invoice()
-            invoiceable_lines = order._get_invoiceable_lines()
+            invoiceable_lines = order._get_invoiceable_lines(final)
 
             invoice_line_vals = []
             down_payment_section_added = False
@@ -198,3 +202,7 @@ class PurchaseOrderLine(models.Model):
 
     is_downpayment = fields.Boolean(
         string="頭金であるか", help="Down payments are made when creating invoices from a construction order.")
+
+    construction_line = fields.Many2many('ss.erp.construction.component', 'construction_order_line_purchase_order_line_rel','po_line_id',
+                                            'order_line_id'
+                                            , string='購買明細', copy=False)
