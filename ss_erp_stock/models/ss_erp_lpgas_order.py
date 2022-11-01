@@ -119,6 +119,7 @@ class LPGasOrder(models.Model):
         customer_location = f"({','.join(map(str, customer_location))})"
         start_period_measure = datetime.combine(period_last_date.replace(day=19), datetime.min.time())
         end_period_measure = datetime.combine(self.aggregation_period.replace(day=18), datetime.max.time())
+        day_after_end_period_measure = datetime.combine(self.aggregation_period.replace(day=19), datetime.min.time())
 
         start_period_datetime = datetime.combine(self.aggregation_period.replace(day=1), datetime.min.time())
         end_period_datetime = datetime.combine(self.aggregation_period, datetime.max.time())
@@ -141,6 +142,60 @@ class LPGasOrder(models.Model):
             if customer_location == '()':
                 raise UserError(_("棚卸対象の組織にシリンダーの顧客ロケーションが適切に設定されていません。"))
             _select_data = f""" 
+                WITH tiq as (
+                SELECT id, x_total_installation_quantity install_quantity from stock_location where id IN {customer_location}
+                ),
+                cmu as (
+                    SELECT sml.location_id, sum(sml.qty_done) cm_use from stock_move_line sml  -- 2-3-2 Current Month Use
+                    LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
+                    LEFT JOIN sale_order so ON so.id = sp.sale_id
+                    WHERE sml.state = 'done'
+                    And sml.product_id = '{lpgas_product_id}'
+                    And sml.location_id IN {customer_location}
+                    and (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                            interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_measure}' and '{end_period_measure}'
+                    GROUP BY sml.location_id
+                ),
+                ndm as (
+                    SELECT DISTINCT ON (tb.location_id) location_id, tb.num_day_measure
+                    FROM
+                    (
+                    SELECT sml.location_dest_id location_id, ('{current_month_measure_date}'::date - sml.date::date) num_day_measure FROM stock_move_line sml -- 2-3-4 Số ngày đo
+                    LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
+                    WHERE sml.location_dest_id IN {customer_location}
+                    AND sml.product_id = '{lpgas_product_id}'
+                    AND (sml.date + interval '1 hour' * '8' + interval '1 minute' * '59' +
+                                            interval '1 second' * '59') <=  '{current_month_measure_date}'
+                    AND sml.state = 'done') tb order by tb.location_id, tb.num_day_measure asc
+                ),
+                fam as (
+                SELECT sml.location_dest_id location_id, (Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) fill_after_measure FROM stock_move_line sml  --2-4-1 Lượng bơm thêm sau khi đo
+                Left join stock_picking sp ON sp.id = sml.picking_id
+                where sml.state = 'done'
+                AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                                        interval '1 second' * '{seconds_diff}') BETWEEN '{day_after_end_period_measure}' and '{end_period_datetime}'
+                And sml.product_id = '{lpgas_product_id}'
+                And sml.location_dest_id IN {customer_location}
+                GROUP BY sml.location_dest_id
+                ), 
+                ftm as (
+                SELECT sml.location_dest_id location_id, sum(sml.qty_done) fill_this_month FROM stock_move_line sml -- 2-5-1 this_month_filling
+                Left join stock_picking sp ON sp.id = sml.picking_id
+                where sml.state = 'done'
+                AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
+                    interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
+                And sml.product_id = '{lpgas_product_id}'
+                And sml.location_dest_id IN {customer_location}
+                GROUP BY sml.location_dest_id),
+                lmi as 
+                (SELECT lp.organization_id, sl.id location_id, lpl.this_month_inventory lm_inventory from stock_location sl -- 2-2
+                LEFT JOIN ss_erp_lpgas_order_line lpl ON lpl.location_id = sl.id
+                LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
+                WHERE lp.month_aggregation_period = '{period_last_month}' AND
+                sl.x_inventory_type = 'cylinder' AND
+                lp.state = 'done' AND
+                lp.organization_id = '{self.organization_id.id}' 
+                AND sl.id IN {customer_location})
                 SELECT 
                     '{self.organization_id.id}' organization_id, 
                     tiq.id location_id, 
@@ -151,73 +206,34 @@ class LPGasOrder(models.Model):
                     fam.fill_after_measure filling_after_meter_reading,
                     lmi.lm_inventory previous_last_inventory,
                     ftm.fill_this_month this_month_filling,
-                    (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure) this_month_inventory, -- 2-4-2
+                    (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + (Case When fam.fill_after_measure is NULL then 0 ELSE fam.fill_after_measure END)) this_month_inventory, -- 2-4-2
                     ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - (Case When cmu.cm_use is NULL then 0 ELSE cmu.cm_use END)) theoretical_inventory, -- 2-5-2
-                    ((tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) + fam.fill_after_measure is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + fam.fill_after_measure)- 
+                    (tiq.install_quantity - (Case When (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) is NULL then 0 ELSE (cmu.cm_use/('{numbers_day_inventory_in_month.days}')*ndm.num_day_measure) END) + (Case When fam.fill_after_measure is NULL then 0 ELSE fam.fill_after_measure END)- 
                     ((Case When lmi.lm_inventory is NULL then 0 ELSE lmi.lm_inventory END) + (Case When ftm.fill_this_month is NULL then 0 ELSE ftm.fill_this_month END) - (Case When cmu.cm_use is NULL then 0 ELSE cmu.cm_use END))) difference_qty -- 2-5-2
                 FROM 
                 -- 
-
-                (SELECT id, x_total_installation_quantity install_quantity from stock_location where id IN {customer_location}) tiq  -- 2-3-1 Total set in location
-
-                LEFT JOIN
-
-                (SELECT sml.location_id, sum(sml.qty_done) cm_use from stock_move_line sml  -- 2-3-2 Current Month Use
-                LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
-                LEFT JOIN sale_order so ON so.id = sp.sale_id
-                WHERE sml.state = 'done'
-                And sml.product_id = '{lpgas_product_id}'
-                And sml.location_id IN {customer_location}
-                and (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
-                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_measure}' and '{end_period_measure}'
-                GROUP BY sml.location_id) cmu ON tiq.id =  cmu.location_id
+                -- 2-3-1 Total set in location
+                tiq   
 
                 LEFT JOIN
 
-                (SELECT sml.location_dest_id location_id, ROUND(AVG('{current_month_measure_date}::date- sml.date::date)) num_day_measure FROM stock_move_line sml -- 2-3-4 Số ngày đo
-                --LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
-                WHERE (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
-                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
-                AND sml.location_dest_id IN {customer_location}
-                AND sml.product_id = '{lpgas_product_id}'
-                AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
-                                        interval '1 second' * '{seconds_diff}') <=  '{current_month_measure_date}'
-                AND sml.state = 'done' GROUP BY sml.location_dest_id) ndm ON ndm.location_id = tiq.id
-
+                cmu ON tiq.id =  cmu.location_id
 
                 LEFT JOIN
 
-                (SELECT sml.location_dest_id location_id, (Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) fill_after_measure FROM stock_move_line sml  --2-4-1 Lượng bơm thêm sau khi đo
-                Left join stock_picking sp ON sp.id = sml.picking_id
-                where sml.state = 'done'
-                AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
-                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_measure}' and '{end_period_datetime}'
-                And sml.product_id = '{lpgas_product_id}'
-                And sml.location_dest_id IN {customer_location}
-                GROUP BY sml.location_dest_id
-                ) fam ON fam.location_id = tiq.id
+                ndm ON ndm.location_id = tiq.id
 
                 LEFT JOIN
 
-                (SELECT sml.location_dest_id location_id, sum(sml.qty_done) fill_this_month FROM stock_move_line sml -- 2-5-1 this_month_filling
-                Left join stock_picking sp ON sp.id = sml.picking_id
-                where sml.state = 'done'
-                AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
-                                        interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
-                And sml.product_id = '{lpgas_product_id}'
-                And sml.location_dest_id IN {customer_location}
-                GROUP BY sml.location_dest_id) ftm ON ftm.location_id = tiq.id
+                fam ON fam.location_id = tiq.id
 
                 LEFT JOIN
 
-                (SELECT lp.organization_id, sl.id location_id, lpl.this_month_inventory lm_inventory from stock_location sl -- 2-2
-                LEFT JOIN ss_erp_lpgas_order_line lpl ON lpl.location_id = sl.id
-                LEFT JOIN ss_erp_lpgas_order lp ON lpl.lpgas_order_id = lp.id
-                WHERE lp.month_aggregation_period = '{period_last_month}' AND
-                sl.x_inventory_type = 'cylinder' AND
-                lp.state = 'done' AND
-                lp.organization_id = '{self.organization_id.id}' 
-                AND sl.id IN {customer_location})lmi ON lmi.location_id = tiq.id				
+                ftm ON ftm.location_id = tiq.id
+
+                LEFT JOIN
+
+                lmi ON lmi.location_id = tiq.id				
                 ;
             """
         else:
