@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="ss_erp_stock.ss_erp_inventory_order_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//sheet/group/group[1]" position="inside">
-                <field name="is_super_stream_linked"/>
+                <field name="is_super_stream_linked" groups="base.group_no_one"/>
             </xpath>
         </field>
     </record>
