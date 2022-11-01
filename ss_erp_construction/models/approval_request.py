@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class ApprovalRequest(models.Model):
     _inherit = 'approval.request'
 
-    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダー', )
+    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダ', )
     has_construction_order_id = fields.Selection(
         related='category_id.has_construction_order_id', store=True)
 

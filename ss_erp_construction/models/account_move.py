@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダー')
+    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダ')
     invoice_type = fields.Char()
 
     def _recompute_payment_terms_lines(self):

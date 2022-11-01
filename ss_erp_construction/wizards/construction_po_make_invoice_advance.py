@@ -77,7 +77,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
                                          help="預金用口座", default=_default_deposit_account_id)
     deposit_taxes_id = fields.Many2many("account.tax", string="顧客税", help="預金に使用される税金",
                                         default=_default_deposit_taxes_id)
-    count = fields.Integer(default=_count, string='オーダー数')
+    count = fields.Integer(default=_count, string='オーダ数')
 
     @api.onchange('advance_payment_method')
     def onchange_advance_payment_method(self):

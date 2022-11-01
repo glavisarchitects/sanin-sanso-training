@@ -15,7 +15,7 @@ from itertools import groupby
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダー')
+    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダ')
 
     def _prepare_picking(self):
         res = super(PurchaseOrder, self)._prepare_picking()
