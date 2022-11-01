@@ -67,15 +67,12 @@ class LPGasOrder(models.Model):
                     'product_uom_id': lpgas_product_id.uom_id.id,
                     'qty_done': abs(line.difference_qty),
                     'state': 'done',
-                    # 'package_id': out and self.package_id.id or False,
-                    # 'result_package_id': (not out) and self.package_id.id or False,
                     'location_id': line.location_id.id,
                     'location_dest_id': branch_loss_location.id,
-                    # 'owner_id': self.partner_id.id,
                 })]
             }
 
-            return self.env['stock.move'].create(sm_value)
+            self.env['stock.move'].create(sm_value)
 
     @api.depends('aggregation_period', 'lpgas_order_line_ids', 'state')
     def compute_month_aggregation_period(self):
