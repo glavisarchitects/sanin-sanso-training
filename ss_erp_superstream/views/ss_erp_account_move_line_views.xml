@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ss_erp_sstream_account_move_line_form_inherit" model="ir.ui.view">
+        <field name="name">ss_erp_sstream_account_move_line_form</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='information']/group/group[5]" position="after">
+                <group string="会計システム連動">
+                    <field name="is_super_stream_linked" groups="base.group_no_one"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
