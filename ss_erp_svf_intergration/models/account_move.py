@@ -13,7 +13,11 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     def _get_data_svf_r002(self):
-        registration_number = self.env['ir.config_parameter'].sudo().get_param('invoice_report.registration_number')
+        registration_number = self.env['ir.config_parameter'].sudo().get_param('invoice_report.registration_number') if \
+            self.env['ir.config_parameter'].sudo().get_param('invoice_report.registration_number') else ''
+
+        last_invoice = self.env['account.move'].search(
+            [('state', '=', 'posted'), ('partner_id', '=', self.partner_id.id)], order='id desc', limit=1)
 
         now = datetime.now()
 
@@ -27,6 +31,9 @@ class AccountMove(models.Model):
             day=calendar.monthrange(current_date_last_month.year, current_date_last_month.month)[1]),
             datetime.max.time())
 
+        str_due_date_start = first_day_last_month.strftime("%Y年%m月%d日")
+        str_due_date_end = last_day_last_month.strftime("%Y年%m月%d日")
+
         r002_tax10_id = self.env['ir.config_parameter'].sudo().get_param('R002_tax10_id')
         r002_tax8_id = self.env['ir.config_parameter'].sudo().get_param('R002_tax8_id')
         r002_reduction_tax8_id = self.env['ir.config_parameter'].sudo().get_param('R002_reduction_tax8_id')
@@ -35,360 +42,362 @@ class AccountMove(models.Model):
         if not r002_tax10_id or not r002_tax8_id or not r002_reduction_tax8_id or not r002_tax_exempt_id:
             raise UserError('パラメータで税勘定を設定してください')
 
-        customer_payment_recs = self.env['account.payment'].search(
-            [('state', '=', 'posted'), ('reconciled_invoice_ids', '!=', []), ])
-        payment_records = customer_payment_recs.filtered(lambda cpr: self.id in cpr.reconciled_invoice_ids.ids).ids
-        payment_record_ids = f"({','.join(map(str, payment_records))})"
-
+        #
         query = f'''
-        with org_bank as (
+        
+        WITH x_payment_type AS (
+        SELECT * FROM (VALUES('bank', '振込'),
+            ('transfer', '振替'),
+            ('bills', '手形'),
+            ('cash', '現金'),
+            ('paycheck', '小切手'),
+            ('branch_receipt', '他店入金'),
+            ('offset', '相殺')) AS t (x_type,x_value)
+        )	,
+        deposit_amount AS (
+        select ap.partner_id, ap.x_organization_id, sum(ap.amount) deposit_amount from account_payment ap
+            left join account_move am on am.id = ap.move_id
+            where am.date BETWEEN '{first_day_current_month}' 
+            and '{last_day_current_month}' and ap.payment_type = 'inbound'
+            and ap.partner_id = '{self.partner_id.id}' and ap.x_organization_id = '{self.x_organization_id.id}'
+            GROUP BY ap.partner_id, ap.x_organization_id),
+            
+        -- PREVIOUS MONTH AMOUNT
+        previous_month_invoice AS (
+        SELECT
+            tb1.partner_id,
+            tb1.x_organization_id,
+            ABS(SUM ( tb1.amount )) AS previous_month_amount
+        FROM
+        (
+        SELECT
+            am.partner_id,
+            am.x_organization_id,
+            CASE WHEN am.move_type = 'out_invoice' THEN am.amount_total ELSE -am.amount_total END AS amount 
+        FROM
+        account_move am 
+        WHERE
+        am.STATE = 'posted' 
+        AND am.move_type IN ( 'out_invoice', 'out_refund' )
+        AND am.x_organization_id = {self.x_organization_id.id}
+        AND am.partner_id = {self.partner_id.id}
+        AND am.x_construction_order_id IS NOT NULL
+        AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}'
+        ) tb1 
+        GROUP BY
+                tb1.partner_id,
+                tb1.x_organization_id 
+        ),         
+         
+        -- PREVIOUS MONTH BALANCE   
+        previous_month_balance AS (
+            SELECT
+                tb3.partner_id,
+                tb3.x_organization_id,
+                ABS(SUM ( tb3.amount )) AS previous_month_balance
+            FROM
+            (
+                    SELECT
+                        am.partner_id,
+                        am.x_organization_id,
+                        CASE WHEN am.move_type = 'out_invoice' THEN am.amount_total ELSE -am.amount_total END AS amount 
+                    FROM
+                    account_move am 
+                    WHERE
+                    am.STATE = 'posted' 
+                    AND am.move_type IN ( 'out_invoice', 'out_refund' )
+                    AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 		
+                    AND am.x_organization_id = {self.x_organization_id.id}
+                    AND am.partner_id = {self.partner_id.id}
+                    AND am.x_construction_order_id IS NOT NULL
+                    UNION ALL
+                        SELECT
+                        ap.partner_id,
+                        ap.x_organization_id,
+                        CASE WHEN ap.payment_type = 'inbound' THEN- ap.amount ELSE ap.amount END 
+                    FROM
+                    account_payment ap
+                    LEFT JOIN account_move am ON ap.move_id = am.ID 
+                    WHERE
+                    ap.payment_type IN ( 'inbound', 'outbound' ) 
+                    AND ap.move_id IS NOT NULL
+                    AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 		
+                    AND am.x_organization_id = {self.x_organization_id.id}
+                    AND am.x_construction_order_id IS NOT NULL
+                    AND ap.partner_id = {self.partner_id.id}
+                    ) tb3 
+                    GROUP BY
+                            tb3.partner_id,
+                            tb3.x_organization_id 
+            ), 
+        -- PREVIOUS DEPOSIT LIST         
+        
+        previous_month_money_collect_list AS (
+            SELECT						
+            to_char(am.date,'MM/DD') AS date,
+            am.name AS slip_number,
+            NULL AS detail_number,
+            NULL AS product_id,
+            xpt.x_value AS product_name,
+            NULL AS quantity,
+            NULL AS unit,
+            NULL AS unit_price,
+            CASE WHEN ap.payment_type = 'inbound' THEN ap.amount ELSE -ap.amount END AS price,
+            NULL AS tax_rate,
+            NULL AS summary
+            FROM
+            account_payment ap
+            LEFT JOIN account_move am ON ap.move_id = am.ID
+            LEFT JOIN x_payment_type xpt ON ap.x_receipt_type = xpt.x_type
+            WHERE
+                    ap.payment_type IN ( 'inbound', 'outbound' ) 
+                    AND ap.move_id IS NOT NULL 
+                    AND ap.partner_id IS NOT NULL
+                    AND ap.partner_id = {self.partner_id.id}
+                    AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 		
+                    AND am.x_organization_id = {self.x_organization_id.id}
+                    AND am.x_construction_order_id IS NOT NULL
+            ),
+
+        previous_month_money_collect_sum AS (
+            SELECT
+                NULL, 																	-- date
+                NULL,																		-- slip_number
+                NULL,																		-- detail_number
+                NULL,																		-- product_id
+                '*** 入　金　計 ***' AS product_name,			-- product_name
+                NULL,																		-- quantity
+                NULL,																		-- unit
+                NULL,																		-- unit_price
+                ABS(sum(tb4.amount)) AS price,					-- quantity
+                NULL,																		-- price
+                NULL      															-- tax_rate             	    
+            FROM 
+                (
+                SELECT
+                ap.partner_id,
+                ap.x_organization_id,
+                CASE WHEN ap.payment_type = 'inbound' THEN ap.amount ELSE -ap.amount END AS amount
+                FROM
+                        account_payment ap
+                        LEFT JOIN account_move am ON ap.move_id = am.ID 
+                WHERE
+                        ap.payment_type IN ( 'inbound', 'outbound' ) 
+                        AND ap.move_id IS NOT NULL 
+                        AND ap.partner_id = {self.partner_id.id}
+                        AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 	
+                        AND am.x_organization_id = {self.x_organization_id.id}
+                        AND am.x_construction_order_id IS NOT NULL
+                )tb4
+                GROUP BY
+                            tb4.partner_id,
+                            tb4.x_organization_id 
+            ),                         
+        -- END        
+            
+        org_bank as (
         select 
             rpb.organization_id,
             concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,'）',rpb.x_bank_branch_number) as payee_info	
         from res_partner_bank rpb
         left join res_bank rb on rpb.bank_id = rb.id
-        where rpb.organization_id is not null)
+        where rpb.organization_id is not null
         ),
         -- SUM TAX REGION
-            sum_tax_10 as (
-        select am.id move_id,amlat.account_tax_id tax_id, sum(quantity * price_unit) sum from account_move_line aml
+        sum_tax_10 as (
+        select am.id move_id,
+        amlat.account_tax_id tax_id, 
+        ROUND(sum(aml.price_subtotal/10)) tax_amount_rate10, 
+        ROUND(sum(aml.price_subtotal)) price_total_tax_rate10 
+        from account_move_line aml
         left join account_move am ON am.id = aml.move_id
-        left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
-                    where amlat.account_tax_id = '{int(r002_tax10_id)}'
-                    GROUP BY am.id, amlat.account_tax_id
+        left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id        
+        where amlat.account_tax_id = {r002_tax10_id} and am.id = {self.id}
+        GROUP BY am.id, amlat.account_tax_id
         ),
-            sum_tax_8 as (
-        select am.id move_id,amlat.account_tax_id tax_id, sum(quantity * price_unit) sum from account_move_line aml
+        sum_tax_8 as (
+        select am.id move_id,
+        amlat.account_tax_id tax_id, 
+        ROUND(sum(aml.price_subtotal/8)) tax_amount_rate8, 
+        ROUND(sum(aml.price_subtotal)) price_total_tax_rate8 
+        from account_move_line aml
         left join account_move am ON am.id = aml.move_id
         left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
-                    where amlat.account_tax_id = '{int(r002_tax8_id)}'
-                    GROUP BY am.id, amlat.account_tax_id
+        where amlat.account_tax_id = {r002_tax8_id} and am.id = {self.id}
+        GROUP BY am.id, amlat.account_tax_id
         ),
-            sum_reduce_tax_8 as (
-        select am.id move_id,amlat.account_tax_id tax_id, sum(quantity * price_unit ) sum from account_move_line aml
+        sum_reduce_tax_8 as (
+        select am.id move_id,
+        amlat.account_tax_id tax_id, 
+        ROUND(sum(aml.price_subtotal/8)) price_total_reduced_tax_rate8, 
+        ROUND(sum(aml.price_subtotal)) tax_amount_reduced_tax_rate8 
+        from account_move_line aml
         left join account_move am ON am.id = aml.move_id
         left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
-                    where amlat.account_tax_id = '{int(r002_reduction_tax8_id)}'
-                    GROUP BY am.id, amlat.account_tax_id
+        where amlat.account_tax_id = {r002_reduction_tax8_id} and am.id = {self.id}
+        GROUP BY am.id, amlat.account_tax_id
         ),
-            sum_no_tax as (
-        select am.id move_id,amlat.account_tax_id tax_id, sum(quantity * price_unit ) sum from account_move_line aml
+        sum_no_tax as (
+        select 
+        am.id move_id,
+        amlat.account_tax_id tax_id, 
+        sum(aml.price_subtotal) price_total_no_tax, 
+        0 tax_amount_no_tax 
+        from account_move_line aml
         left join account_move am ON am.id = aml.move_id
         left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
-                    where amlat.account_tax_id = '{int(r002_tax_exempt_id)}'
-                    GROUP BY am.id, amlat.account_tax_id
-        )
-        -- END
-        
-            (
-        Select
-        '' invoice_no
-        , '' zip
-        , '' address
-        ,'' customer_name
-        , '' output_date
-        , '{registration_number}' as registration_number
-        , '' as name
-        , '' responsible_person
-        , '' organization_zip
-        , '' organization_address
-        , '' organization_phone
-        , '' organization_fax
-        , 0 as this_month_amount
-        , to_char(jour_am.date, 'YYYY年MM月DD日') invoice_date_due 
-        , 0 previous_month_amount
-        , 0 deposit_amount
-        , 0 previous_month_balance
-        , 0 this_month_purchase
-        , 0 consumption_tax
-        ,  to_char(jour_am.date, 'MM/DD') date
-        , jour_am.name slip_number 
-        , 0 detail_number 
-        , COALESCE(ap.x_receipt_type, '') product_name	
-        , 0 quantity	
-        , '' unit	
-        , 0 unit_price	
-        , ap.amount AS price	
-        , '' tax_rate	
-        , '' summary
-        , 0 price_total_tax_rate10
-        , 0 price_total_tax_rate8
-        , 0 price_total_reduced_tax_rate8
-        , 0 price_total_no_tax
-        , 0 tax_amount_rate10
-        , 0 tax_amount_rate8
-        , 0 tax_amount_reduced_tax_rate8
-        , 0 tax_amount_no_tax
-        , 0 price_total
-        , 0 price_total_tax
-        , '' payee_info
-         
-        FROM account_payment ap
-        left join account_move jour_am on jour_am.id = ap.move_id 
-        Where ap.id IN {payment_record_ids}
-        )
+        where amlat.account_tax_id = {r002_tax_exempt_id} and am.id = {self.id}
+        GROUP BY am.id, amlat.account_tax_id
+        ),
+        sale_tax AS (
+        SELECT atsol.sale_order_line_id as order_line_id, string_agg(atx.name,', ') AS tax_account FROM account_tax_sale_order_line_rel atsol
+        LEFT JOIN account_tax atx ON atsol.account_tax_id = atx.id
+        GROUP BY atsol.sale_order_line_id
+        ),                
+        -- PRODUCT TRANSACTION DETAIL
+        product_transaction AS 
+        (                
+        SELECT
+            to_char(sp.date, 'MM/DD') AS date,
+            sp.name AS slip_number,
+            NULL,
+            sml.product_id::text,
+            pt.name AS product_name,            
+            sum(sml.qty_done)::text AS quantity,
+            uu.name AS unit,
+            sol.price_unit::text AS unit_price,
+            sol.price_subtotal AS price,
+            st.tax_account AS tax_rate,
+            COALESCE(sol.x_remarks, '') summary
+        FROM stock_move_line sml
+        LEFT JOIN stock_move sm ON sml.move_id = sm.id
+        LEFT JOIN stock_picking sp on sm.picking_id = sp.id
+        LEFT JOIN sale_order so ON sp.sale_id = so.id
+        LEFT JOIN sale_order_line sol ON sol.order_id = so.id AND sol.product_id = sml.product_id AND sml.product_uom_id = sol.product_uom
+        LEFT JOIN sale_order_line_invoice_rel solr ON solr.order_line_id  = sol.id 
+        LEFT JOIN account_move_line aml ON aml.id = solr.invoice_line_id
+        LEFT JOIN account_move am ON aml.move_id = am.id
+        LEFT JOIN stock_picking_type spt ON sp.picking_type_id = spt.id
+        LEFT JOIN product_product pp ON sml.product_id = pp.id
+        LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
+        LEFT JOIN uom_uom uu ON sml.product_uom_id = uu.id
+        LEFT JOIN sale_tax st ON sol.id = st.order_line_id 
+        WHERE sml.state = 'done' AND am.id = {self.id} AND spt.code = 'outgoing'
+        GROUP BY
+            sp.date,
+            sp.name,
+                        sml.product_id,
+            pt.name,
+            uu.name,
+            sol.price_unit,
+            sol.price_subtotal,
+            st.tax_account,
+            sol.x_remarks
+        ),
+    
+        -- PRODUCT SUM 
+        invoice_product_group AS (
+            SELECT
+            NULL,            -- date
+            NULL,            -- slip_number
+            NULL,            -- detail_number
+            pt1.product_id::text,									
+            '***' || pt.name || '計***' AS product_name,
+            NULL,            -- quantity
+            NULL,            -- unit
+            NULL,            -- unit_price
+            SUM(price) AS price,
+            NULL,            -- tax_rate
+            NULL             -- summary
+            FROM product_transaction pt1
+                LEFT JOIN product_product pp ON pt1.product_id::int = pp.id
+                LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                GROUP BY pt1.product_id,pt.name
+        ),
+        transaction_detail AS 
+        (SELECT {self.id} AS invoice_move_id,* FROM 
+        previous_month_money_collect_list
+        UNION ALL 
+        SELECT {self.id},* FROM previous_month_money_collect_sum				
         UNION ALL
+        SELECT {self.id},* FROM (
+        SELECT * FROM product_transaction
+        UNION ALL 
+        SELECT * FROM invoice_product_group
+        ORDER BY product_id, date asc) tb10)
         
-        (
-        Select
-        '' invoice_no
-        , '' zip
-        , '' address
-        ,'' customer_name
-        , '' output_date
-        , '{registration_number}' as registration_number
-        , '' as name
-        , '' responsible_person
-        , '' organization_zip
-        , '' organization_address
-        , '' organization_phone
-        , '' organization_fax
-        , 0 as this_month_amount
-        , to_char(jour_am.date, 'YYYY年MM月DD日') invoice_date_due 
-        , 0 previous_month_amount
-        , 0 deposit_amount
-        , 0 previous_month_balance
-        , 0 this_month_purchase
-        , 0 consumption_tax
-        ,  to_char(jour_am.date, 'MM/DD') date
-        , '*** 入　金　計 ***' slip_number 
-        , 0 detail_number 
-        , '*** 入　金　計 ***' as product_name	
-        , 0 quantity	
-        , '' unit	
-        , 0 unit_price	
-        , sum(ap.amount) OVER (PARTITION BY jour_am.ref) AS price	
-        , '' tax_rate	
-        , '' summary
-        , 0 price_total_tax_rate10
-        , 0 price_total_tax_rate8
-        , 0 price_total_reduced_tax_rate8
-        , 0 price_total_no_tax
-        , 0 tax_amount_rate10
-        , 0 tax_amount_rate8
-        , 0 tax_amount_reduced_tax_rate8
-        , 0 tax_amount_no_tax
-        , 0 price_total
-        , 0 price_total_tax
-        , '' payee_info
-         
-        FROM account_payment ap
-        left join account_move jour_am on jour_am.id = ap.move_id 
-        Where ap.id IN {payment_record_ids}
-        limit 1
-        )
-        UNION ALL
-        (
-        select
-         am.name as invoice_no
-         , rp.zip as zip
-         , concat(rcs.name,rp.city,rp.street,rp.street2) as address
-         , concat(rp.name,'様') as customer_name
-         , to_char(now(), 'YYYY年MM月DD日')  as output_date
-         , '{registration_number}' as registration_number
-         , seo.name
-         , concat(he.job_title,':',he.name) as responsible_person
-         , seo.organization_zip as organization_zip
-         , concat(rcs2.name,seo.organization_city,seo.organization_street,seo.organization_street2) as organization_address
-         , concat('TEL:', seo.organization_phone) as organization_phone
-         , concat('FAX:', seo.organization_fax) as organization_fax
-         , COALESCE(am.amount_total,0) + COALESCE(oi_pma.oi_previous_amount, 0) - COALESCE(or_pma.or_previous_amount, 0) - COALESCE(da.amount, 0) as this_month_amount -- TODO 8
-         , to_char(am.invoice_date_due, 'YYYY年MM月DD日') invoice_date_due 
-         , COALESCE(oi_pma.oi_previous_amount, 0) - COALESCE(or_pma.or_previous_amount, 0) as previous_month_amount
-         , COALESCE(da.amount, 0) as deposit_amount
-         , COALESCE(oi_pma.oi_previous_amount, 0) - COALESCE(or_pma.or_previous_amount, 0) - COALESCE(da.amount, 0) as previous_month_balance
-         , COALESCE(oi_tmp.oi_tmp_amount, 0) - COALESCE(or_tmp.or_tmp_amount, 0) as this_month_purchase
-         , am.amount_tax as consumption_tax
-         ,  to_char(sp.date_done, 'MM/DD') as date
-         , so.name as slip_number 
-         , 0 as detail_number 
-         , pt.name as product_name	
-         , sol.product_uom_qty as quantity	
-         , uu.name as unit	
-         , sol.price_unit as unit_price	
-         , sol.price_subtotal as price	
-         , COALESCE(at.name, '') as tax_rate	
-         , COALESCE(sol.x_remarks, '') as summary
-         , COALESCE(st10.sum, 0) as price_total_tax_rate10
-         , COALESCE(st8.sum, 0) as price_total_tax_rate8
-         , COALESCE(srt8.sum, 0) as price_total_reduced_tax_rate8
-         , COALESCE(snt.sum, 0) as price_total_no_tax
-         , COALESCE(st10.sum * 0.1, 0) as tax_amount_rate10
-         , COALESCE(st8.sum * 0.08, 0) as tax_amount_rate8
-         , COALESCE(srt8.sum * 0.08, 0) as tax_amount_reduced_tax_rate8
-         , 0 as tax_amount_no_tax
-         -- , NULL as tax_amount_no_tax
-         , COALESCE(st10.sum + st8.sum + srt8.sum + snt.sum, 0) as price_total
-         , COALESCE(st10.sum * 0.1 + st8.sum * 0.08 + srt8.sum * 0.08, 0) as price_total_tax
-         , ob.payee_info
-         from
-            account_move am  /* 仕訳 */	
-            left join	
-            account_move_line aml /* 仕訳項目 */	
-            on am.id = aml.move_id	
-            left join	
-            sale_order_line_invoice_rel solir /* 販売明細と請求の関連 */	
-            on aml.id = solir.invoice_line_id	
-            left join	
-            sale_order_line sol /* 販売オーダ明細 */	
-            on solir.order_line_id = sol.id	
-            left join	
-            stock_picking sp /* 運送 */	
-            on sol.order_id = sp.sale_id and sp.backorder_id is NULL
-            left join	
-            product_template pt /* プロダクトテンプレート */	
-            on sol.product_id = pt.id	
-            left join	
-            uom_uom uu  /* 単位 */	
-            on sol.product_uom = uu.id	
-            left join	
-            account_tax_sale_order_line_rel atsol  /* 販売オーダ明細と税の関連 */	
-            on sol.id = atsol.sale_order_line_id	
-            left join	
-            account_tax at  /* 税 */	
-            on atsol.account_tax_id = at.id	
-            left join	
-            sale_order so /* 販売オーダ */	
-            on sol.order_id = so.id	
-            left join	
-            res_partner rp /* 連絡先 */	
-            on am.partner_id = rp.id	
-                left join 
-                res_country_state rcs
-                on rp.state_id = rcs.id
-                left join 
-                ss_erp_organization seo
-                on am.x_organization_id = seo.id
-                left join 
-                hr_employee he
-                on seo.responsible_person = he.id
-                left join res_country_state rcs2
-                on seo.organization_state_id = rcs2.id
-                left join org_bank ob 
-                on ob.organization_id = am.x_organization_id
-
-            left join 
-            ( select partner_id,x_organization_id, sum(amount_total) oi_previous_amount from account_move
-            where invoice_date BETWEEN '{first_day_last_month}'
-            and '{last_day_last_month}' and move_type = 'out_invoice' and state='posted'
-            GROUP BY partner_id, x_organization_id
-            ) oi_pma on oi_pma.partner_id = rp.id -- 10
-            
-            left join 
-            ( select partner_id,x_organization_id, sum(amount_total) or_previous_amount from account_move
-            where invoice_date BETWEEN '{first_day_last_month}' 
-            and '{last_day_last_month}' and move_type = 'out_refund'
-            GROUP BY partner_id, x_organization_id
-            ) or_pma on or_pma.partner_id = am.partner_id and or_pma.x_organization_id = am.x_organization_id -- 10
-            
-            left join 
-            ( select da_ap.partner_id,da_ap.x_organization_id, sum(da_ap.amount) amount from account_payment da_ap
-            left join account_move da_jour on da_jour.id = da_ap.move_id
-            where da_jour.date BETWEEN '{first_day_current_month}' 
-            and '{last_day_current_month}' and move_type = 'out_refund'
-            GROUP BY da_ap.partner_id, da_ap.x_organization_id
-            ) da on da.partner_id = am.partner_id and da.x_organization_id = am.x_organization_id -- 11
-            
-            left join 
-            ( select partner_id,x_organization_id, sum(amount_total) oi_tmp_amount from account_move
-            where invoice_date BETWEEN '{first_day_current_month}' 
-            and '{last_day_current_month}' and move_type = 'out_invoice'
-            GROUP BY partner_id, x_organization_id
-            ) oi_tmp on oi_tmp.partner_id = am.partner_id and oi_tmp.x_organization_id = am.x_organization_id --13
-            
-            left join 
-            ( select partner_id,x_organization_id, sum(amount_total) or_tmp_amount from account_move
-            where invoice_date BETWEEN '{first_day_current_month}'
-            and '{last_day_current_month}' and move_type = 'out_refund'
-            GROUP BY partner_id, x_organization_id
-            ) or_tmp on or_tmp.partner_id = am.partner_id and or_tmp.x_organization_id = am.x_organization_id -- 13
-            
-            left join sum_tax_10 st10
-            on st10.move_id = am.id
-            left join sum_tax_8 st8
-            on st8.move_id = am.id
-            left join sum_reduce_tax_8 srt8
-            on srt8.move_id = am.id
-            left join sum_no_tax snt
-            on snt.move_id = am.id
-            
-        where sp.state = 'done' and am.id = '{self.id}'
-        order by
-                am.name,
-                so.name,
-            sol.product_id 	
-            , to_char(sp.date_done, 'MM/DD') 
-            )	             	
+        SELECT 
+                am.name AS invoice_no
+              , rp.zip as zip
+                , concat(rcs.name,rp.city,rp.street,rp.street2) as address
+                , concat(rp.name,'様') as customer_name
+                , to_char(now(), 'YYYY年MM月DD日')  as output_date
+                , '{registration_number}' as registration_number
+                , seo.name
+                , concat(he.job_title,':',he.name) as responsible_person
+                , seo.organization_zip as organization_zip
+                , concat(rcs2.name,seo.organization_city,seo.organization_street,seo.organization_street2) as organization_address
+                , concat('TEL:', seo.organization_phone) as organization_phone
+                , concat('FAX:', seo.organization_fax) as organization_fax
+                , COALESCE(am.amount_total, 0) AS this_month_amount
+                , to_char(am.invoice_date_due, 'YYYY年MM月DD日')  as invoice_date_due
+                , COALESCE(pmi.previous_month_amount, 0) AS previous_month_amount
+                , COALESCE(da.deposit_amount, 0) AS deposit_amount
+                , COALESCE(pmb.previous_month_balance, 0) AS previous_month_balance
+                , am.amount_untaxed AS this_month_purchase
+                , am.amount_tax AS consumption_tax
+                , concat('{str_due_date_start}','~','{str_due_date_end}','締切') as due_date
+                , td.date
+                , td.slip_number
+                , td.detail_number
+                , td.product_name
+                , td.quantity
+                , td.unit
+                , td.unit_price
+                , td.price
+                , td.tax_rate
+                , td.summary
+                , st10.price_total_tax_rate10
+                , st8.price_total_tax_rate8
+                , srt8.price_total_reduced_tax_rate8
+                , snt.price_total_no_tax
+                , st10.tax_amount_rate10
+                , st8.tax_amount_rate8
+                , srt8.tax_amount_reduced_tax_rate8
+                , snt.tax_amount_no_tax
+                , am.amount_untaxed AS price_total
+                , am.amount_tax AS price_total_tax
+                , ob.payee_info
+        FROM transaction_detail td
+        LEFT JOIN account_move am ON td.invoice_move_id = am.id
+        LEFT JOIN deposit_amount da ON am.x_organization_id = da.x_organization_id AND am.partner_id = da.partner_id
+        LEFT JOIN res_partner rp ON am.partner_id = rp.id
+        LEFT JOIN res_country_state rcs ON rp.state_id = rcs.id
+        LEFT JOIN ss_erp_organization seo ON am.x_organization_id = seo.id
+        LEFT JOIN hr_employee he ON seo.responsible_person = he.id
+        LEFT JOIN res_country_state rcs2 ON seo.organization_state_id = rcs2.id
+        LEFT JOIN previous_month_invoice pmi ON am.x_organization_id = pmi.x_organization_id AND am.partner_id = pmi.partner_id
+        LEFT JOIN previous_month_balance pmb ON am.x_organization_id = pmb.x_organization_id AND am.partner_id = pmb.partner_id
+        LEFT JOIN sum_tax_10 st10 ON st10.move_id = am.id
+        LEFT JOIN sum_tax_8 st8 ON st8.move_id = am.id
+        LEFT JOIN sum_reduce_tax_8 srt8 ON srt8.move_id = am.id
+        LEFT JOIN sum_no_tax snt ON snt.move_id = am.id
+        LEFT JOIN org_bank ob ON am.x_organization_id = ob.organization_id
+        WHERE am.id = {self.id}				
         '''
+
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 
     def svf_template_export(self):
 
         data_send = [
-            '''"invoice_no","zip","address","customer_name","output_date","registration_number","name","responsible_person","organization_zip","organization_address","organization_phone","organization_fax","this_month_amount","invoice_date_due","previous_month_amount","deposit_amount","previous_month_balance","this_month_purchase","consumption_tax","date","slip_number","detail_number","product_name","quantity","unit","unit_price","price","tax_rate","summary","price_total_tax_rate10","price_total_tax_rate8","price_total_reduced_tax_rate8","price_total_no_tax","tax_amount_rate10","tax_amount_rate8","tax_amount_reduced_tax_rate8","tax_amount_no_tax","price_total","price_total_tax","payee_info"''']
-        #
-        # # data_file = '''"invoice_no","zip","address","customer_name","output_date","registration_number","name","responsible_person","organization_zip","organization_address","organization_phone","organization_fax","this_month_amount","invoice_date_due","previous_month_amount","deposit_amount","previous_month_balance","this_month_purchase","consumption_tax","date","slip_number","detail_number","product_name","quantity","unit","unit_price","price","tax_rate","summary","price_total_tax_rate10","price_total_tax_rate8","price_total_reduced_tax_rate8","price_total_no_tax","tax_amount_rate10","tax_amount_rate8","tax_amount_reduced_tax_rate8","tax_amount_no_tax","price_total","price_total_tax","payee_info"
-        # # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/31","000001","00001","振込","","","","100,000","","","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
-        # # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/31","000001","00001","現金","","","","200,000","","","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
-        # # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","","","","*** 入　金　計 ***","","","","300,000","","","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
-        # # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/3","000002","00002","プロパン／サプライ","9,992.10","Kg","112.80","1,127,109","課税10%","配送センター991","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
-        # # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/8","000003","00003","プロパン／サプライ","2,295.00","ｍ3","225.60","517,752","課税10%","配送センター991","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
-        # # "1234567890","〒060-0010","札幌市中央区９条西２１丁目１番地１１号","大槻食材株式会社　札幌店　様","2020年9月20日","T1234567890123","山陰酸素工業　出雲支店","支店長：山陰　太郎","〒693-0043","2020年9月20日　現在","TEL：0853-28-2866","FAX：0853-28-2870","\3,712,740","2021年10月31日","\100,000","\100,000","\0","\3,404,451","\308,289","10/10","000004","00004","プロパン／サプライ","345.60","Kg","112.80","38,984","課税10%","配送センター991","1,796,645","0","1,607,806","0","179,663","0","128,624","0","3,404,451","308,289","山陰合同銀行出雲支店（当座）1002529"
-        # # '''
-        #
-        # # 詳細（入金）Payment Data  16,17(1)
-        # payment_data_1 = payment_record.date.strftime(
-        #     "%Y年%m月%d日") + payment_record.name + "" + payment_record.x_receipt_type + "" + "" + "" + "{:,}".format(
-        #     int(payment_record.amount)) + "" + ""
-        #
-        # # ＜入金小計＞ 16,17(2)
-        # payment_data_2 = "" + "" + "" + "" + "" + "" + "{:,}".format(int(payment_record.amount)) + "" + ""
-        #
-        # # for so in so_records:
-        # #     picking_records = so.picking_ids
-        # #     for pic in picking_records:
-        # #         mov_line = pic.move_line_ids
-        # #         for ml in mov_line:
-        # #             am_data = ml.move_id.date.strftime("%Y年%m月%d日") + ml.move_id.name + '' + ml.product_id.name
-        #
-        # for so in so_records:
-        #     for line in so.order_line:
-        #         for sm in line.move_ids:
-        #             # ＜請求明細＞ 16,17(3)
-        #             product_detail_data_1 = sm.date.strftime(
-        #                 "%Y年%m月%d日") + sm.name + '' + line.product_id.name + line.product_uom_qty + line.product_uom_id.name + line.price_unit + line.price_subtotal + line.tax_id.name + line.x_remarks
-        #             data_send.append(product_detail_data_1)
-        #
-        #             # ＜請求明細＞ 16,17(4)
-        #             product_detail_data_2 = sm.date.strftime(
-        #                 "%Y年%m月%d日") + sm.name + '' + line.product_id.name + line.product_uom_qty + line.product_uom_id.name + line.price_unit + line.price_subtotal + line.tax_id.name + line.x_remarks
-        #             data_send.append(product_detail_data_1)
-        #
-        # r002_svf_registration_number = self.env['ir.config_parameter'].sudo().get_param(
-        #     'invoice_report.registration_number')
-        # for so in so_records:
-        #     customer_address = so.partner_invoice_id.street + '' if so.partner_invoice_id.street else ''
-        #     customer_address += so.partner_invoice_id.street2 + '' if so.partner_invoice_id.street2 else ''
-        #     customer_address += so.partner_invoice_id.city + '' if so.partner_invoice_id.city else ''
-        #     customer_address += so.partner_invoice_id.state_id.name + '' if so.partner_invoice_id.state_id.name else ''
-        #     customer_address += so.partner_invoice_id.country_id.name + '' if so.partner_invoice_id.country_id.name else ''
-        #
-        #     organization_address = self.x_organization_id.organization_state_id.name + '' if self.x_organization_id.organization_state_id.name else ''
-        #     organization_address += self.x_organization_id.organization_city + '' if self.x_organization_id.organization_city else ''
-        #     organization_address += self.x_organization_id.organization_street + '' if self.x_organization_id.organization_street else ''
-        #     organization_address += self.x_organization_id.organization_street2 + '' if self.x_organization_id.organization_street2 else ''
-        #
-        #     output_date = fields.Datetime.now().strftime("%Y年%m月%d日")
-        #     invoice_data = ['"' + self.name, so.partner_invoice_id.zip, customer_address,
-        #                     so.partner_invoice_id.name + '様', output_date, r002_svf_registration_number,
-        #                     self.x_organization_id.name, self.x_organization_id.organization_zip, organization_address,
-        #                     self.x_organization_id.organization_fax, '下記の通りご請求申し上げます。', 'x' + '"']
-        #
-        # data_send.append(payment_data_1)
-        # data_file = "\n".join(data_send)
-
-        # *** use query in file design :))****
+            '"invoice_no","zip","address","customer_name","output_date","registration_number",' + \
+            '"name","responsible_person","organization_zip","organization_address","organization_phone",' + \
+            '"organization_fax","this_month_amount","invoice_date_due","previous_month_amount","deposit_amount","previous_month_balance",' + \
+            '"this_month_purchase","consumption_tax","due_date","date","slip_number","detail_number","product_name","quantity","unit","unit_price",' + \
+            '"price","tax_rate","summary","price_total_tax_rate10","price_total_tax_rate8","price_total_reduced_tax_rate8",' + \
+            '"price_total_no_tax","tax_amount_rate10","tax_amount_rate8","tax_amount_reduced_tax_rate8","tax_amount_no_tax","price_total","price_total_tax","payee_info"']
         data_query = self._get_data_svf_r002()
         if not data_query:
             raise UserError(_("出力対象のデータがありませんでした。"))
@@ -401,7 +410,7 @@ class AccountMove(models.Model):
                 seq_number = 1
             slip_num = daq['slip_number']
             for da in daq:
-                if da is not None:
+                if daq[da] is not None:
                     if da in ['this_month_amount', 'previous_month_amount', 'deposit_amount', 'previous_month_balance',
                               'this_month_purchase', 'consumption_tax', 'price_total_tax_rate10',
                               'price_total_tax_rate8', 'price_total_reduced_tax_rate8', 'price_total_no_tax',
@@ -410,10 +419,6 @@ class AccountMove(models.Model):
                         one_line_data += '"' + "￥" + "{:,}".format(int(daq[da])) + '",'
                     elif da == 'detail_number':
                         one_line_data += '"' + str(seq_number) + '",'
-                    elif da == 'product_name' and daq[da] in ['bank', 'transfer', 'bills', 'cash', 'paycheck',
-                                                              'branch_receipt', 'offset']:
-                        dict_receipt_select = dict(self._fields['x_receipt_type'].selection)
-                        one_line_data += '"' + str(dict_receipt_select[daq[da]]) + '",'
                     else:
                         one_line_data += '"' + str(daq[da]) + '",'
                 else:
