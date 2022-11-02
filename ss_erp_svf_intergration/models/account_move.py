@@ -141,7 +141,7 @@ class AccountMove(models.Model):
             xpt.x_value AS product_name,
             NULL AS quantity,
             NULL AS unit,
-            NULL AS unit_price,
+            0 AS unit_price,
             CASE WHEN ap.payment_type = 'inbound' THEN ap.amount ELSE -ap.amount END AS price,
             NULL AS tax_rate,
             NULL AS summary
@@ -168,7 +168,7 @@ class AccountMove(models.Model):
                 '*** 入　金　計 ***' AS product_name,			-- product_name
                 NULL,																		-- quantity
                 NULL,																		-- unit
-                NULL,																		-- unit_price
+                0,																		-- unit_price
                 ABS(sum(tb4.amount)) AS price,					-- quantity
                 NULL,																		-- price
                 NULL      															-- tax_rate             	    
@@ -264,8 +264,8 @@ class AccountMove(models.Model):
             sml.product_id::text,
             pt.name AS product_name,            
             sum(sml.qty_done)::text AS quantity,
-            uu.name AS unit,
-            sol.price_unit::text AS unit_price,
+            tb.value AS unit,
+            sol.price_unit AS unit_price,
             sol.price_subtotal AS price,
             st.tax_account AS tax_rate,
             COALESCE(sol.x_remarks, '') summary
@@ -280,15 +280,15 @@ class AccountMove(models.Model):
         LEFT JOIN stock_picking_type spt ON sp.picking_type_id = spt.id
         LEFT JOIN product_product pp ON sml.product_id = pp.id
         LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
-        LEFT JOIN uom_uom uu ON sml.product_uom_id = uu.id
-        LEFT JOIN sale_tax st ON sol.id = st.order_line_id 
+        LEFT JOIN sale_tax st ON sol.id = st.order_line_id
+        LEFT JOIN (SELECT * FROM ir_translation where name = 'uom.uom,name')tb on tb.res_id = sml.product_uom_id
         WHERE sml.state = 'done' AND am.id = {self.id} AND spt.code = 'outgoing'
         GROUP BY
             sp.date,
             sp.name,
-                        sml.product_id,
+            sml.product_id,
             pt.name,
-            uu.name,
+            tb.value,
             sol.price_unit,
             sol.price_subtotal,
             st.tax_account,
@@ -305,7 +305,7 @@ class AccountMove(models.Model):
             '***' || pt.name || '計***' AS product_name,
             NULL,            -- quantity
             NULL,            -- unit
-            NULL,            -- unit_price
+            0,            -- unit_price
             SUM(price) AS price,
             NULL,            -- tax_rate
             NULL             -- summary
@@ -412,11 +412,16 @@ class AccountMove(models.Model):
             for da in daq:
                 if daq[da] is not None:
                     if da in ['this_month_amount', 'previous_month_amount', 'deposit_amount', 'previous_month_balance',
-                              'this_month_purchase', 'consumption_tax', 'price_total_tax_rate10',
+                              'this_month_purchase', 'consumption_tax', 'price_total_tax_rate10',"price",
                               'price_total_tax_rate8', 'price_total_reduced_tax_rate8', 'price_total_no_tax',
                               'tax_amount_rate10', 'tax_amount_rate8', 'tax_amount_reduced_tax_rate8',
                               'tax_amount_no_tax', 'price_total', 'price_total_tax']:
                         one_line_data += '"' + "￥" + "{:,}".format(int(daq[da])) + '",'
+                    elif da == "unit_price":
+                        if int(daq[da]) == 0:
+                            one_line_data += '"",'
+                        else:
+                            one_line_data += '"' + "{:,}".format(int(daq[da])) + '",'
                     elif da == 'detail_number':
                         one_line_data += '"' + str(seq_number) + '",'
                     else:
