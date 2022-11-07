@@ -219,6 +219,11 @@ class Construction(models.Model):
         welfare = 0
 
         for line in self.construction_component_ids:
+            x_name_specification = ""
+            if line.product_id:
+                if line.product_id.product_tmpl_id.x_name_specification:
+                    x_name_specification = line.product_id.product_tmpl_id.x_name_specification
+
             if line.product_id and line.product_id.id in fee_product_list:
                 fee += line.subtotal
             elif line.product_id and line.product_id.id == ss_erp_construction_discount_price_product.id:
@@ -251,7 +256,7 @@ class Construction(models.Model):
                     self.red_notice if self.red_notice else "",
                     "1 " + construction_name,
                     line.product_id.product_tmpl_id.name if line.product_id else line.name,
-                    line.product_id.product_tmpl_id.x_name_specification if line.product_id else "",
+                    x_name_specification,
                     "{:,}".format(int(line.product_uom_qty)) if line.product_id else "",
                     line.product_uom_id.name if line.product_id else "",
                     "{:,}".format(int(line.sale_price)) if line.product_id else "",
