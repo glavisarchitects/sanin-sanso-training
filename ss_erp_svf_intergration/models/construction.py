@@ -226,12 +226,11 @@ class Construction(models.Model):
             elif line.product_id and line.product_id.id == ss_erp_construction_legal_welfare_expenses_product.id:
                 welfare = line.subtotal
             else:
-                data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
-                    self.partner_id.display_name,
-                    self.name,
-                    output_date_str,
-                    "{:,}".format(int(self.amount_total)),
-                    self.organization_id.display_name,
+                data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+                    self.partner_id.display_name,        # customer_name
+                    self.name,                           # department_id
+                    output_date_str,                     # output_date
+                    "{:,}".format(int(self.amount_total)),#total
                     organization_address,
                     organization_phone,
                     organization_fax,
@@ -261,12 +260,11 @@ class Construction(models.Model):
                 new_data.append(data_line)
 
         if fee != 0:
-            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
                 self.partner_id.display_name,
                 self.name,
                 output_date_str,
                 "{:,}".format(int(self.amount_total)),
-                self.organization_id.display_name,
                 organization_address,
                 organization_phone,
                 organization_fax,
@@ -292,16 +290,16 @@ class Construction(models.Model):
                 "式",
                 "",
                 "{:,}".format(int(fee)),
-                "")
+                "{:,}".format(int(self.amount_untaxed)) if (discount == 0 and welfare == 0) else ""
+            )
             new_data.append(data_line)
 
         if discount != 0:
-            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
                 self.partner_id.display_name,
                 self.name,
                 output_date_str,
                 "{:,}".format(int(self.amount_total)),
-                self.organization_id.display_name,
                 organization_address,
                 organization_phone,
                 organization_fax,
@@ -327,7 +325,8 @@ class Construction(models.Model):
                 "式",
                 "",
                 "{:,}".format(int(discount)),
-                "")
+                "{:,}".format(int(self.amount_untaxed)) if (welfare == 0) else ""
+            )
             new_data.append(data_line)
 
         if welfare != 0:
@@ -362,7 +361,7 @@ class Construction(models.Model):
                 "式",
                 "",
                 "{:,}".format(int(welfare)),
-                "")
+                "{:,}".format(int(self.amount_untaxed)))
             new_data.append(data_line)
 
         file_data = "\n".join(new_data)
