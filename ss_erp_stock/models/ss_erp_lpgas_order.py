@@ -53,7 +53,6 @@ class LPGasOrder(models.Model):
             sm_value = {
                 'name': _('INV:LP GAS ') + (str(self.inventory_type) or ''),
                 'x_organization_id': self.organization_id.id,
-
                 'product_id': lpgas_product_id.id,
                 'product_uom': lpgas_product_id.uom_id.id,
                 'product_uom_qty': abs(line.difference_qty),
@@ -70,8 +69,8 @@ class LPGasOrder(models.Model):
                     'product_uom_id': lpgas_product_id.uom_id.id,
                     'qty_done': abs(line.difference_qty),
                     'state': 'done',
-                    'location_id': line.location_id.id,
-                    'location_dest_id': branch_loss_location.id,
+                    'location_id': location_id,
+                    'location_dest_id': location_dest_id,
                 })]
             }
 
