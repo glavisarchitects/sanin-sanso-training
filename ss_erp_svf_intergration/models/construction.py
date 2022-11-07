@@ -213,6 +213,7 @@ class Construction(models.Model):
         construction_name = self.construction_name
         transaction_type = self.payment_term_id.name
         date_of_expiry_str = self.expire_date.strftime("%Y年%m月%d日") if self.expire_date else ''
+        remarks = self.estimation_note if self.estimation_note else ''
 
         fee = 0
         discount = 0
@@ -244,7 +245,7 @@ class Construction(models.Model):
                     "別途協議",
                     transaction_type if transaction_type else "",
                     date_of_expiry_str if date_of_expiry_str else "",
-                    construction_name,
+                    remarks,
                     "",
                     "1",
                     "式",
@@ -278,7 +279,7 @@ class Construction(models.Model):
                 "別途協議",
                 transaction_type if transaction_type else "",
                 date_of_expiry_str if date_of_expiry_str else "",
-                construction_name,
+                remarks,
                 "",
                 "1",
                 "式",
@@ -313,7 +314,7 @@ class Construction(models.Model):
                 "別途協議",
                 transaction_type if transaction_type else "",
                 date_of_expiry_str if date_of_expiry_str else "",
-                construction_name,
+                remarks,
                 "",
                 "1",
                 "式",
@@ -349,7 +350,7 @@ class Construction(models.Model):
                 "別途協議",
                 transaction_type if transaction_type else "",
                 date_of_expiry_str if date_of_expiry_str else "",
-                construction_name,
+                remarks,
                 "",
                 "1",
                 "式",
