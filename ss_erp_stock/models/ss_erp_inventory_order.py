@@ -115,8 +115,6 @@ class InventoryOrder(models.Model):
             for line in rec.inventory_order_line_ids:
                 if not line.organization_id:
                     raise ValidationError(_("移動先組織をご選択ください。"))
-                if not line.responsible_dept_id:
-                    raise ValidationError(_("移動先管轄部門をご選択ください。"))
                 if not line.location_dest_id:
                     raise ValidationError(_("移動先ロケーションをご選択ください。"))
                 if not line.product_id:

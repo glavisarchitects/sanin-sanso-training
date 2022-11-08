@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="sstream_journal_entry_output_form" model="ir.ui.view">
+            <field name="name">sstream_journal_entry_output.form.inherit</field>
+            <field name="model">sstream.journal.entry.output</field>
+            <field name="arch" type="xml">
+                <form>
+                    <button name="export_sstream_journal_entry" string="仕訳伝票出力" type="object" class="oe_highlight"/>
+                    <group>
+                        <label for="first_day_period" string="対象期間："/>
+                        <div name="filter_period" class="o_row">
+                            <field name="first_day_period" required="1"/>
+                            <h2>~</h2>
+                            <field name="last_day_period" required="1"/>
+                        </div>
+                    </group>
+                    <footer>
+                        <button string="取消" class="oe_link" special="cancel"/>
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+
+        <record id="ss_erp_sstream_journal_entry_output_action" model="ir.actions.act_window">
+            <field name="name">仕訳伝票出力</field>
+            <field name="res_model">sstream.journal.entry.output</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

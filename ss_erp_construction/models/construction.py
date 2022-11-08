@@ -34,6 +34,23 @@ class Construction(models.Model):
                                                  ('refused', '却下済'),
                                                  ('cancel', '取消')], string='承認ステータス', default='new')
 
+    invoice_status = fields.Selection([('invoiced', '完全請求書'),
+                                       ('to_invoice', '請求対象'),
+                                       ('no', '請求対象なし')
+                                       ], string='請求書ステータス', compute='_compute_invoice_status', store=True)
+
+    @api.depends('construction_component_ids.qty_to_invoice', 'state')
+    def _compute_invoice_status(self):
+        for rec in self:
+            if rec.state not in ('order_received', 'progress', 'done'):
+                rec.invoice_status = 'no'
+            else:
+                invoice_lst = rec.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0)
+                if invoice_lst:
+                    rec.invoice_status = 'to_invoice'
+                else:
+                    rec.invoice_status = 'invoiced'
+
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
@@ -57,6 +74,9 @@ class Construction(models.Model):
 
     picking_type_id = fields.Many2one('stock.picking.type', related='organization_id.warehouse_id.out_type_id',
                                       store=True, string='オペレーションタイプ')
+
+    warehouse_id = fields.Many2one('stock.warehouse', related='organization_id.warehouse_id',
+                                   store=True, string='倉庫')
     location_id = fields.Many2one('stock.location', related='organization_id.warehouse_id.lot_stock_id', store=True,
                                   string='構成品ロケーション')
     location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
@@ -97,7 +117,7 @@ class Construction(models.Model):
                     "承認金額の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_estimate_report)")
             minium_value = float(minium_value)
             rec.show_confirmation_button = True if (
-                        0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
+                    0 < rec.amount_total < minium_value or rec.estimate_approval_status == 'approved') else False
 
     def _compute_invoice_count(self):
         Invoice = self.env['account.move']
@@ -239,7 +259,7 @@ class Construction(models.Model):
                                                  inverse_name='construction_id', string='構成品',
                                                  tracking=True)
     construction_workorder_ids = fields.One2many(comodel_name='ss.erp.construction.workorder', ondelete="cascade",
-                                                 inverse_name='construction_id', string='作業オーダー',
+                                                 inverse_name='construction_id', string='作業オーダ',
                                                  tracking=True)
 
     fiscal_position_id = fields.Many2one('account.fiscal.position', string='会計ポジション')
@@ -344,7 +364,7 @@ class Construction(models.Model):
     def action_purchase(self):
         if self.construction_component_ids:
             new_po = []
-            for rec in self.construction_component_ids:
+            for rec in self.construction_component_ids.filtered(lambda x: x.display_type == False):
                 if rec.product_id.type != "consu" and self.partner_id:
                     po = rec._run_buy()
                     if po:
@@ -392,7 +412,7 @@ class Construction(models.Model):
         a clean extension chain).
         """
         self.ensure_one()
-        journal = self.env['account.journal'].sudo().search([('type', '=', 'sale'), ('is_construction', '=', True)])
+        journal = self.env['account.journal'].sudo().search([('type', '=', 'sale'), ('x_is_construction', '=', True)])
         if not journal:
             raise UserError('工事販売仕訳帳をご確認ください。')
 
@@ -401,6 +421,7 @@ class Construction(models.Model):
             'move_type': 'out_invoice',
             'invoice_origin': self.name,
             'x_organization_id': self.organization_id.id,
+            'x_responsible_user_id': self.user_id.id,
             'x_responsible_dept_id': self.responsible_dept_id.id,
             'x_construction_order_id': self.id,
             'invoice_user_id': self.user_id.id,
@@ -418,7 +439,7 @@ class Construction(models.Model):
         return invoice_vals
 
     def _get_invoiceable_lines(self):
-        return self.construction_component_ids
+        return self.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0 and not x.display_type)
 
     @api.model
     def _prepare_down_payment_section_line(self, **optional_values):
@@ -462,6 +483,9 @@ class Construction(models.Model):
         invoice_vals = self._prepare_invoice()
         invoiceable_lines = self._get_invoiceable_lines()
 
+        if not self.construction_component_ids.filtered(lambda x: x.qty_to_invoice != 0):
+            raise self._nothing_to_invoice_error()
+
         invoice_line_vals = []
         down_payment_section_added = False
         for line in invoiceable_lines:
@@ -486,9 +510,6 @@ class Construction(models.Model):
         invoice_vals['invoice_line_ids'] += invoice_line_vals
         invoice_vals_list.append(invoice_vals)
 
-        if not invoice_vals_list:
-            raise self._nothing_to_invoice_error()
-
         moves = self.env['account.move'].sudo().with_context(default_move_type='out_invoice').create(
             invoice_vals_list)
 
@@ -496,7 +517,7 @@ class Construction(models.Model):
             moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
         return moves
 
-    def write(self,vals):
+    def write(self, vals):
         super().write(vals)
         if not self.construction_component_ids:
             raise UserError('構成品の明細を追加してください。')
@@ -514,12 +535,12 @@ class Construction(models.Model):
         }
         move_live = []
         for component in self.construction_component_ids:
-            if component.product_id.type == 'product':
+            if component.product_id.type == 'product' and component.qty_to_buy > 0 and component.qty_available > 0:
                 move_live.append((0, 0, {
                     'name': component.product_id.name or '/',
                     'product_id': component.product_id.id,
                     'product_uom': component.product_uom_id.id,
-                    'product_uom_qty': component.product_uom_qty,
+                    'product_uom_qty': component.qty_to_buy if component.qty_to_buy < component.qty_available else component.qty_available,
                     'location_id': self.location_id.id,
                     'location_dest_id': self.location_dest_id.id,
                     'date': self.plan_date or datetime.now(),
@@ -533,3 +554,9 @@ class Construction(models.Model):
             stock_picking = self.env['stock.picking'].create(picking)
 
             stock_picking.action_assign()
+
+    def action_picking_from_warehouse(self):
+        if not self.construction_component_ids.filtered(lambda x: x.qty_to_buy != 0 and x.product_id.type == 'product'):
+            raise UserError('出荷するものは何もありません！')
+        else:
+            self._prepare_stock_picking()

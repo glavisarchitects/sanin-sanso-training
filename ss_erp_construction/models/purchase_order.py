@@ -15,7 +15,7 @@ from itertools import groupby
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダー')
+    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダ')
 
     def _prepare_picking(self):
         res = super(PurchaseOrder, self)._prepare_picking()
@@ -33,7 +33,7 @@ class PurchaseOrder(models.Model):
         """
         down_payments_section_line = {
             'display_type': 'line_section',
-            'name': _('前受金'),
+            'name': _('前払金'),
             'product_id': False,
             'product_uom_id': False,
             'quantity': 0,
@@ -57,6 +57,10 @@ class PurchaseOrder(models.Model):
         a clean extension chain).
         """
         invoice_vals = super(PurchaseOrder, self)._prepare_invoice()
+        invoice_vals.update({
+            'x_organization_id': self.x_organization_id.id,
+            'x_responsible_dept_id': self.x_responsible_dept_id.id,
+        })
         if self.x_bis_categ_id == 'gas_material':
             invoice_vals.update({
                 'invoice_type': 'gas_material'
@@ -65,7 +69,7 @@ class PurchaseOrder(models.Model):
 
             self.ensure_one()
             journal = self.env['account.journal'].sudo().search(
-                [('type', '=', 'purchase'), ('is_construction', '=', True)],
+                [('type', '=', 'purchase'), ('x_is_construction', '=', True)],
                 limit=1)
             if not journal:
                 raise UserError('工事購買の仕訳帳は設定していません。もう一度ご確認ください')
@@ -126,7 +130,7 @@ class PurchaseOrder(models.Model):
             pending_section = None
 
             invoice_vals = order._prepare_invoice()
-            invoiceable_lines = order._get_invoiceable_lines()
+            invoiceable_lines = order._get_invoiceable_lines(final)
 
             invoice_line_vals = []
             down_payment_section_added = False

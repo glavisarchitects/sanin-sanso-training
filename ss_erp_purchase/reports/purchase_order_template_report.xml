@@ -140,7 +140,7 @@
                                     <tr>
                                         <td><b>工事場所</b></td>
                                         <td></td>
-                                        <td><span t-field="o.x_construction_sopt"/></td>
+                                        <td><span t-field="o.x_construction_spot"/></td>
                                     </tr>
                                     <tr>
                                         <td><b>工事概要・工法</b></td>

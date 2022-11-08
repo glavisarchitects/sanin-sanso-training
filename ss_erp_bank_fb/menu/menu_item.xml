@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <menuitem name="請求書" id="ss_erp_invoices" parent="account.menu_finance_receivables" sequence="0"/>
+        <menuitem name="請求書" id="ss_erp_invoices" parent="account.menu_finance_receivables" sequence="1000"/>
 <!--        <menuitem-->
 <!--                name="全銀口座振替依頼FB作成"-->
 <!--                id="ss_erp_account_transfer_request_fb_menu"-->

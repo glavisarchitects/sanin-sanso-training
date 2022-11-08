@@ -18,7 +18,7 @@ class ProductTemplate(models.Model):
         required=False)
 
     x_fixed_cost = fields.Float("仕入定価", default=0, tracking=True)
-    x_supply_fixed_cost = fields.Float("仕入定価", default=0, tracking=True)
+    # x_supply_fixed_cost = fields.Float("仕入定価", default=0, tracking=True)
     x_product_unit_measure_ids = fields.One2many('ss_erp.product.units.measure',"product_template_id",string='代替単位', tracking=True)
     x_product_unit_measure_id = fields.Many2one('ss_erp.product.units.measure', '代替単位ID', tracking=True)
     x_alternative_uom_id = fields.Many2one(related='x_product_unit_measure_id.alternative_uom_id', string='代替単位', tracking=True)

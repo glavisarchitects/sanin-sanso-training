@@ -205,7 +205,7 @@
                     <group>
                         <group name="construction_info">
                             <field name="x_construction_name"/>
-                            <field name="x_construction_sopt"/>
+                            <field name="x_construction_spot"/>
                             <label for="x_construction_period_start"/>
                             <div name="construction_period_div" class="o_row">
                                 <field name="x_construction_period_start"/>

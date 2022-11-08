@@ -6,7 +6,7 @@
             <field name="name">ss.erp.construction.workorder.form</field>
             <field name="model">ss.erp.construction.workorder</field>
             <field name="arch" type="xml">
-                <form string="作業オーダー詳細">
+                <form string="作業オーダ詳細">
                     <header>
                         <field name="state" widget="statusbar"/>
                     </header>
@@ -62,7 +62,7 @@
             <field name="name">ss.erp.construction.workorder.tree</field>
             <field name="model">ss.erp.construction.workorder</field>
             <field name="arch" type="xml">
-                <tree string="作業オーダー" create="0" >
+                <tree string="作業オーダ" create="0" >
                     <field name="construction_id"/>
                     <field name="organization_id"/>
                     <field name="responsible_dept_id"/>
@@ -85,14 +85,14 @@
             <field name="name">ss.erp.construction.workorder.search</field>
             <field name="model">ss.erp.construction.workorder</field>
             <field name="arch" type="xml">
-                <search string="作業オーダー">
+                <search string="作業オーダ">
                     <field name="name"/>
                 </search>
             </field>
         </record>
 
         <record id="ss_erp_construction_workorder_act_window" model="ir.actions.act_window">
-            <field name="name">作業オーダー詳細</field>
+            <field name="name">作業オーダ詳細</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">ss.erp.construction.workorder</field>
             <field name="view_mode">tree,form</field>

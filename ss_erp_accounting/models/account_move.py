@@ -180,8 +180,6 @@ class AccountMove(models.Model):
                 'out_receipt': _('Draft Sales Receipt'),
                 'in_receipt': _('Draft Purchase Receipt'),
                 'entry': _('Draft Entry'),
-                'construction_out_invoice': _('工事販売請求書ドラフト'),
-                'construction_in_invoice': _('工事購買請求書ドラフト'),
             }[self.move_type]
             if not self.name or self.name == '/':
                 draft_name += ' (* %s)' % str(self.id)
