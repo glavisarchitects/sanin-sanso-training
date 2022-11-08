@@ -28,10 +28,10 @@ class AccountPaymentWizard(models.TransientModel):
             [('property_supplier_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
         domain = [('payment_type', '=', 'outbound'), ('x_is_fb_created', '=', False),
                   ('x_is_not_create_fb','=',False),
-                  ('date', '<=', self.to_date), ('date', '>=', self.from_date),
+                  # ('date', '<=', self.to_date), ('date', '>=', self.from_date),
                   ('partner_id', 'in', partner_match_payment_term.ids),
                   ('x_payment_type', '=', 'bank')]
-        payment_zengin_data = self.env['account.payment'].search(domain)
+        payment_zengin_data = self.env['account.payment'].search(domain).filtered(lambda x: x.move_id.date == self.transfer_date)
         if not payment_zengin_data:
             raise UserError('有効なデータが見つかりません。')
 
