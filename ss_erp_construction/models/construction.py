@@ -259,7 +259,7 @@ class Construction(models.Model):
                                                  inverse_name='construction_id', string='構成品',
                                                  tracking=True)
     construction_workorder_ids = fields.One2many(comodel_name='ss.erp.construction.workorder', ondelete="cascade",
-                                                 inverse_name='construction_id', string='作業オーダー',
+                                                 inverse_name='construction_id', string='作業オーダ',
                                                  tracking=True)
 
     fiscal_position_id = fields.Many2one('account.fiscal.position', string='会計ポジション')

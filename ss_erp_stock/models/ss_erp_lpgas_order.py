@@ -47,15 +47,17 @@ class LPGasOrder(models.Model):
         for line in self.lpgas_order_line_ids:
             if line.difference_qty == 0:
                 continue
-            location_id = line.location_id.id if line.difference_qty > 0 else branch_loss_location.id
-            location_dest_id = branch_loss_location.id if line.difference_qty > 0 else line.location_id.id
+            location_id = line.location_id.id if line.difference_qty < 0 else branch_loss_location.id
+            location_dest_id = branch_loss_location.id if line.difference_qty < 0 else line.location_id.id
 
             sm_value = {
                 'name': _('INV:LP GAS ') + (str(self.inventory_type) or ''),
+                'x_organization_id': self.organization_id.id,
                 'product_id': lpgas_product_id.id,
                 'product_uom': lpgas_product_id.uom_id.id,
                 'product_uom_qty': abs(line.difference_qty),
                 'date': datetime.now(),
+                'lpgas_adjustment': True,
                 'company_id': self.env.user.company_id.id,
                 'state': 'done',
                 'location_id': location_id,
@@ -67,15 +69,12 @@ class LPGasOrder(models.Model):
                     'product_uom_id': lpgas_product_id.uom_id.id,
                     'qty_done': abs(line.difference_qty),
                     'state': 'done',
-                    # 'package_id': out and self.package_id.id or False,
-                    # 'result_package_id': (not out) and self.package_id.id or False,
-                    'location_id': line.location_id.id,
-                    'location_dest_id': branch_loss_location.id,
-                    # 'owner_id': self.partner_id.id,
+                    'location_id': location_id,
+                    'location_dest_id': location_dest_id,
                 })]
             }
 
-            return self.env['stock.move'].create(sm_value)
+            self.env['stock.move'].create(sm_value)
 
     @api.depends('aggregation_period', 'lpgas_order_line_ids', 'state')
     def compute_month_aggregation_period(self):
