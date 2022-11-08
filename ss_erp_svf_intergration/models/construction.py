@@ -41,7 +41,7 @@ class Construction(models.Model):
 
         if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price'):
             raise UserError(
-                "法定福利費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_discount_price)")
+                "値引きプロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_discount_price)")
         else:
             ss_erp_construction_discount_price_product = self.env['product.product'].browse(
                 int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price')))
@@ -186,7 +186,7 @@ class Construction(models.Model):
 
         if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price'):
             raise UserError(
-                "法定福利費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_discount_price)")
+                "値引きプロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_discount_price)")
         else:
             ss_erp_construction_discount_price_product = self.env['product.product'].browse(
                 int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price')))
