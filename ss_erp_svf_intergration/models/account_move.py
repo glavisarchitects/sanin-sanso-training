@@ -660,7 +660,7 @@ class AccountMove(models.Model):
         LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
         LEFT JOIN invoice_tax it ON aml.id = it.move_line_id
         LEFT JOIN (SELECT * FROM ir_translation where name = 'uom.uom,name' and state='translated')tb on tb.res_id = aml.product_uom_id
-        WHERE am.id = {self.id}
+        WHERE am.id = {self.id} and aml.product_id is not null
         ),
 
         transaction_detail AS 
