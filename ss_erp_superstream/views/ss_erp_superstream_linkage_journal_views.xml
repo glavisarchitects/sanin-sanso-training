@@ -7,8 +7,8 @@
             <form string="SuperStream連携仕訳">
                 <sheet>
                     <div>
-                        <label for="journal" required="1" style="font-size:2.0rem;margin-right: 80px;font-weight: normal;"/>
-                        <field name="journal" style="font-size: 2.0rem;"/>
+                        <label for="journal" style="font-size:2.0rem;margin-right: 80px;font-weight: normal;"/>
+                        <field name="journal" required="1"  style="font-size: 2.0rem;"/>
 <!--                        <field name="journal_id" style="font-size: 2.0rem;"/>-->
                     </div>
                     <group>
