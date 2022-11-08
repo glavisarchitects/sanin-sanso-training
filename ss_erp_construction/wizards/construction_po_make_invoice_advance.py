@@ -131,7 +131,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
         return amount, name
 
     def _create_invoice(self, order, order_line, amount):
-        journal = self.env['account.journal'].search([('type', '=', 'purchase'), ('is_construction', '=', True)],
+        journal = self.env['account.journal'].search([('type', '=', 'purchase'), ('x_is_construction', '=', True)],
                                                      limit=1)
         if not journal:
             raise UserError('工事購買の仕訳帳は設定していません。もう一度ご確認ください')

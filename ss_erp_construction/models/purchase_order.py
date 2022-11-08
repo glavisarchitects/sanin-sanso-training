@@ -69,7 +69,7 @@ class PurchaseOrder(models.Model):
 
             self.ensure_one()
             journal = self.env['account.journal'].sudo().search(
-                [('type', '=', 'purchase'), ('is_construction', '=', True)],
+                [('type', '=', 'purchase'), ('x_is_construction', '=', True)],
                 limit=1)
             if not journal:
                 raise UserError('工事購買の仕訳帳は設定していません。もう一度ご確認ください')

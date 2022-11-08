@@ -64,7 +64,7 @@
                 <group expand="0" string="Group By">
                     <filter string='ステータス' name="status_group" domain="[]" context="{'group_by': 'status'}"/>
                     <filter string='ヘッダ' name="header_group" domain="[]" context="{'group_by': 'propane_sales_header_id'}"/>
-                    <filter string='販売オーダー' name="sale_order_group" domain="[]" context="{'group_by': 'sale_id'}"/>
+                    <filter string='販売オーダ' name="sale_order_group" domain="[]" context="{'group_by': 'sale_id'}"/>
                 </group>
             </search>
         </field>

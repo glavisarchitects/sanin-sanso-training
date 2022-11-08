@@ -5,7 +5,7 @@
         山陰酸素工業　SuperStream連携カスタマイズ
     """,
     "depends": [
-        "base", "ss_erp_stock"
+        "base", "ss_erp_stock", "ss_erp_accounting"
     ],
     "data": [
         # SECURITY
