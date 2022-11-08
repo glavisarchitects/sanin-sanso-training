@@ -7,7 +7,7 @@
             <form>
                 <group>
                     <field name="property_supplier_payment_term_id" required="1"/>
-                    <label for="from_date" string="日付"/>
+<!--                    <label for="from_date" string="日付"/>-->
 <!--                    <div name="filter_period" class="o_row">-->
 <!--                        <field name="from_date" required="1"/>-->
 <!--                        <h2>~</h2>-->
