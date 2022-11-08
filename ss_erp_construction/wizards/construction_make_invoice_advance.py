@@ -123,7 +123,7 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
         if order.fiscal_position_id:
             invoice_vals['fiscal_position_id'] = order.fiscal_position_id.id
 
-        journal = self.env['account.journal'].sudo().search([('type', '=', 'sale'), ('is_construction', '=', True)])
+        journal = self.env['account.journal'].sudo().search([('type', '=', 'sale'), ('x_is_construction', '=', True)])
         if not journal:
             raise UserError('工事販売仕訳帳をご確認ください。')
 

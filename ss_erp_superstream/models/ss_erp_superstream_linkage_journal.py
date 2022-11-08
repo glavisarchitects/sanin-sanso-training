@@ -23,8 +23,8 @@ class SSSuperStreamLinkageJournal(models.Model):
                                     ('product', '製品'),
                                     ('stock', '製品'),
                                     ], string="商品・貯蔵品")
-    materials_grouping = fields.Boolean(string="原材料グルーピング")
-    sanhot_point = fields.Boolean(string="さんほっとポイント")
+    materials_grouping = fields.Boolean(string="原材料グルーピング", default=False)
+    sanhot_point = fields.Boolean(string="さんほっとポイント", default=False)
     debit_account = fields.Many2one('account.account', string="借方勘定科目")
     debit_related_organization = fields.Many2one('ss_erp.organization', string="借方関連組織")
     debit_related_org_except = fields.Boolean(string='借方関連組織除外')
@@ -81,6 +81,7 @@ class SSSuperStreamLinkageJournal(models.Model):
                 product_ctg_merchandise = categ_product_id or rec.env['ir.config_parameter'].sudo().get_param(
                     'A007_product_ctg_merchandise')
                 if not product_ctg_merchandise:
+                    rec.categ_product_id_char = ''
                     raise UserError(
                         'プロダクトカテゴリ（商品）の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_product_ctg_merchandise)')
                 rec.categ_product_id_char = product_ctg_merchandise
@@ -95,17 +96,10 @@ class SSSuperStreamLinkageJournal(models.Model):
             if rec.sanhot_point:
                 product_sanhot = sanhot_point_product_id or rec.env['ir.config_parameter'].sudo().get_param('A007_sanhot_point_product_id')
                 if not product_sanhot:
+                    rec.sanhot_product_id_char = ''
                     raise UserError(
                         'プロダクトカテゴリ（商品）の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_product_ctg_merchandise)')
                 rec.sanhot_product_id_char = product_sanhot
             else:
                 rec.sanhot_product_id_char = string_all_product
 
-    # @api.depends('name', 'journal')
-    # def _compute_complete_name(self):
-    #     for jour in self:
-    #         if jour:
-    #             jour.journal = '%s / %s' % (
-    #                 jour.journal, jour.name)
-    #         else:
-    #             jour.journal = jour.name

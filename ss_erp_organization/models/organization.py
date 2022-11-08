@@ -48,6 +48,18 @@ class Organization(models.Model):
         '組織名称', compute='_compute_complete_name',
         store=True)
 
+    organization_address = fields.Char(string='住所', compute='_compute_organization_address',store=True)
+
+    @api.depends('organization_state_id', 'organization_city','organization_street','organization_street2')
+    def _compute_organization_address(self):
+        for rec in self:
+            full_address = ''
+            full_address += rec.organization_state_id.name or ''
+            full_address += rec.organization_city or ''
+            full_address += rec.organization_street or ''
+            full_address += rec.organization_street2 or ''
+            rec.organization_address = full_address
+
     # TuyenTN 2022/07/15
     bank_ids = fields.One2many('res.partner.bank', string='銀行口座', inverse_name='organization_id')
     responsible_person = fields.Many2one('hr.employee', string='責任者')
