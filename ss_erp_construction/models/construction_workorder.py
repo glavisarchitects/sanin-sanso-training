@@ -5,7 +5,7 @@ from datetime import datetime
 class ConstructionWorkorder(models.Model):
     _name = 'ss.erp.construction.workorder'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = '工事の作業オーダー'
+    _description = '工事の作業オーダ'
 
     name = fields.Char(string='工程')
 
@@ -43,7 +43,7 @@ class ConstructionWorkorder(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     state = fields.Selection([
-        ('pending', '他の作業オーダー待ち'),
+        ('pending', '他の作業オーダ待ち'),
         ('ready', '準備完了'),
         ('progress', '進行中'),
         ('done', '完了'),
@@ -62,11 +62,11 @@ class ConstructionWorkorder(models.Model):
 class ConstructionWorkorderComponent(models.Model):
     _name = 'ss.erp.construction.workorder.component'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = '作業オーダーの構成品'
+    _description = '作業オーダの構成品'
 
     workorder_id = fields.Many2one(
         comodel_name='ss.erp.construction.workorder',
-        string='作業オーダー',
+        string='作業オーダ',
         required=False)
 
     product_id = fields.Many2one(
@@ -85,6 +85,6 @@ class ConstructionWorkorderComponent(models.Model):
 
 class ConstructionWorkorderTimesheet(models.Model):
     _name = 'ss.erp.construction.workorder.timesheet'
-    _description = '作業オーダーのタイムシート'
+    _description = '作業オーダのタイムシート'
 
     name = fields.Char()

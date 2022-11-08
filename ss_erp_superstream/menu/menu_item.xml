@@ -20,7 +20,7 @@
 
         <!--   Menu setting-->
         <menuitem id="menu_ss_erp_superstream_linkage_journal_parent_in_setting"
-                  name="Superstream 連携"
+                  name="SuperStream連携"
                   parent="account.menu_finance_configuration"
                   sequence="6"
         />

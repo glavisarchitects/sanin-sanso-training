@@ -468,8 +468,8 @@
             <field name="name">SS Own Branch Invoices</field>
             <field name="model_id" ref="account.model_account_move"/>
             <field name="domain_force">
-                [('move_type', 'in', ('out_invoice', 'out_refund','counstruction_out_invoice')), '|',
-                ('x_organization_id', '=', [organization.id for organization in user.organization_ids]), ('invoice_user_id', '=', user.id)]
+                [('move_type', 'in', ('out_invoice', 'out_refund')),'|',('x_organization_id', '=', [organization.id for
+                organization in user.organization_ids]), ('invoice_user_id', '=', user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -484,9 +484,8 @@
             <field name="name">SS Own Branch Invoice Lines</field>
             <field name="model_id" ref="account.model_account_move_line"/>
             <field name="domain_force">
-                [('move_id.move_type', 'in', ('out_invoice', 'out_refund','counstruction_out_invoice')), '|',
-                ('move_id.x_organization_id', '=', [organization.id for organization in user.organization_ids]), ('move_id.invoice_user_id', '=',
-                user.id)]
+                [('move_id.move_type', 'in', ('out_invoice', 'out_refund')), '|',('move_id.x_organization_id', '=',
+                [organization.id for organization in user.organization_ids]), ('move_id.invoice_user_id', '=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),

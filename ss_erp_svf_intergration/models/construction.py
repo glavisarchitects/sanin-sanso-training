@@ -1,64 +1,126 @@
 from odoo import fields, models, api
 from odoo.exceptions import UserError
+import base64
+from datetime import datetime
 
 
 class Construction(models.Model):
     _inherit = 'ss.erp.construction'
 
     def action_print_estimation(self):
-        data_file = self._prepare_data_file()
-        if not data_file:
-            raise UserError("出力対象のデータがありませんでした。")
-        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_file, type_report='R002')
+        return self._prepare_data_file()
+        # data_file = self._prepare_data_file()
+        # if not data_file:
+        #     raise UserError("出力対象のデータがありませんでした。")
+        # return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_file, type_report='R002')
 
     def _get_estimation_detail(self):
+
+        fee_product_list = [
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_material_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost')),
+        ]
+
+        fee_product_list_str = f"({','.join(map(str, fee_product_list))})"
+
+        not_com_list = fee_product_list
+
+        if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_legal_welfare_expenses'):
+            raise UserError(
+                "法定福利費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_legal_welfare_expenses)")
+        else:
+            ss_erp_construction_legal_welfare_expenses_product = self.env['product.product'].browse(
+                int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_legal_welfare_expenses')))
+            not_com_list.append(ss_erp_construction_legal_welfare_expenses_product.id)
+
+        if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price'):
+            raise UserError(
+                "法定福利費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_discount_price)")
+        else:
+            ss_erp_construction_discount_price_product = self.env['product.product'].browse(
+                int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price')))
+            not_com_list.append(ss_erp_construction_discount_price_product.id)
+
+        not_com_list_str = f"({','.join(map(str, not_com_list))})"
+
         query = f'''
-            WITH construction_work_order AS (
-                    SELECT 
-                    tb1.*
-                    , cc.sale_price AS unit_price
-                    , tb1.quantity * cc.sale_price AS amount_of_money
-                    FROM 
-                    (SELECT
-                        sw.id as workorder_id
-                        , NULL AS product_id
-                        , sw.name AS product_name
-                        ,NULL as specification
-                        ,NULL as uom
-                        ,NULL as unit		
-                        ,NULL as quantity					
-                    FROM ss_erp_construction_workorder sw
-                    WHERE sw.construction_id = '{self.id}'
+               WITH exp AS (
+               SELECT 
+                    scc.construction_id,
+                    '法定福利費' AS product_name,
+                    NULL AS specification,
+                    1 AS quantity,
+                    '式' AS unit,
+                    NULL AS unit_price,
+                    scc.subtotal AS amount_of_money,
+                    NULL AS subtotal
+                FROM ss_erp_construction_component scc
+                WHERE scc.product_id = '{ss_erp_construction_legal_welfare_expenses_product.id}' and scc.construction_id = '{self.id}'        
+                ),
+                fee AS (
+                SELECT
+                    scc.construction_id,
+                    '諸経費' AS product_name,
+                    NULL AS specification,
+                    1 AS quantity,
+                    '式' AS unit,
+                    NULL AS unit_price,
+                    SUM(scc.subtotal) AS amount_of_money,
+                    NULL AS subtotal
+                FROM ss_erp_construction_component scc
+                WHERE scc.product_id in {fee_product_list_str}
+                GROUP BY scc.construction_id
+                ),
+                dis AS (
+                SELECT 
+                    scc.construction_id,
+                    '値引き' AS product_name,
+                    NULL AS specification,
+                    1 AS quantity,
+                    '式' AS unit,
+                    NULL AS unit_price,
+                    scc.subtotal AS amount_of_money,
+                    NULL AS subtotal
+                FROM ss_erp_construction_component scc
+                WHERE scc.product_id = '{ss_erp_construction_discount_price_product.id}' and scc.construction_id = '{self.id}'
+                ),
+                com AS (
+                SELECT
+                    scc.construction_id,
+                    (CASE WHEN scc.product_id is NULL THEN scc.name ELSE pt.name END) as product_name,
+                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE pt.x_name_specification END) as specification,
+                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE scc.product_uom_qty END) as quantity,
+                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE uu.name END) as unit,
+                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE scc.sale_price END) as unit_price,
+                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE scc.subtotal END) as amount_of_money,
+                    sec.amount_total AS subtotal                    
+                FROM ss_erp_construction_component scc
+                LEFT JOIN ss_erp_construction sec ON sec.id = scc.construction_id
+                LEFT JOIN product_product pp ON scc.product_id = pp.id
+                LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
+                LEFT JOIN uom_uom uu on scc.product_uom_id = uu.id                
+                WHERE (scc.product_id is NULL) or (scc.product_id not in {not_com_list_str}) and scc.construction_id = '{self.id}'
+                ),
+                detail AS 
+                (
+                    SELECT * FROM com
                     UNION ALL 
-                    SELECT
-                        sw.id as workorder_id
-                        , swc.product_id AS product_id
-                        , pt.name as product_name
-                        ,pt.x_name_specification as specification
-                        ,swc.product_uom_id as uom
-                        ,uu.name as unit					
-                        ,swc.product_uom_qty as quantity							
-                    FROM ss_erp_construction_workorder_component swc
-                    LEFT JOIN product_product pp ON swc.product_id = pp.id
-                    LEFT JOIN uom_uom uu ON swc.product_uom_id = uu.id
-                    LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
-                    LEFT JOIN ss_erp_construction_workorder sw on swc.workorder_id = sw.id
-                    WHERE sw.construction_id = '{self.id}') tb1
-                    LEFT JOIN ( 
-                    SELECT 
-                        product_id
-                        ,product_uom_id
-                        ,sale_price
-                    FROM ss_erp_construction_component
-                    WHERE construction_id = 16
-                    ) AS cc
-                    ON cc.product_id = tb1.product_id AND tb1.uom = cc.product_uom_id
-                    ORDER BY tb1.workorder_id ASC, tb1.product_id DESC
-                    )				
-                    
+                    SELECT * FROM fee
+                    UNION ALL 
+                    SELECT * FROM dis
+                    UNION ALL 
+                    SELECT * FROM exp
+                )
+                
                 SELECT
                 rp.NAME AS customer_name,
-                sec.sequence_number AS department_id,
+                sec.name AS department_id,
                 to_char( sec.output_date, 'YYYY年MM月DD日' ),
                 sec.amount_total AS total,
                 concat ( seo.organization_city, seo.organization_street, seo.organization_street2 ) AS address,
@@ -67,7 +129,7 @@ class Construction(models.Model):
                 concat ( '作成者 ', rp2.NAME ) AS author,
                 sec.construction_name,
                 '別途協議' AS finish_date,
-                apt.NAME AS transaction_type,
+                tb2.value AS transaction_type,
                 to_char( sec.expire_date, 'YYYY年MM月DD日' ) AS date_of_expiry,
                 sec.estimation_note AS remarks,
                 sec.construction_name AS product_name_head,
@@ -81,30 +143,54 @@ class Construction(models.Model):
                 sec.amount_total as total_head,
                 sec.red_notice as comment_text,
                 '' as page_title,
-                pt.name as product_name,
-                pt.x_name_specification as specification,
-                scc.product_uom_qty as quantity,
-                uu.name as unit,
-                scc.sale_price as unit_price,
-                scc.subtotal as amount_of_money,
-                '' as subtotal                
+                detail.product_name,
+                detail.specification,
+                detail.quantity,
+                detail.unit,
+                detail.unit_price,
+                detail.amount_of_money,
+                detail.subtotal                
             FROM
-                ss_erp_construction sec
-                            INNER JOIN ss_erp_construction_component scc ON sec.id = scc.construction_id
+                detail 
+                LEFT JOIN ss_erp_construction sec ON detail.construction_id = sec.id
                 LEFT JOIN res_partner rp ON sec.partner_id = rp.ID 
-                            LEFT JOIN ss_erp_organization seo ON sec.organization_id = seo.ID 
-                            LEFT JOIN res_users ru ON sec.printed_user = ru.ID 
-                            LEFT JOIN res_partner rp2 ON ru.partner_id = rp2.ID 
-                            LEFT JOIN account_payment_term apt ON sec.payment_term_id = apt.ID
-                            LEFT JOIN product_product pp on scc.product_id = pp.id
-                            LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id
-                            LEFT JOIN uom_uom uu on scc.product_uom_id = uu.id
-            WHERE sec.id = '{self.id}' and scc.display_type != 'line_note'
+                LEFT JOIN ss_erp_organization seo ON sec.organization_id = seo.ID 
+                LEFT JOIN res_users ru ON sec.printed_user = ru.ID 
+                LEFT JOIN res_partner rp2 ON ru.partner_id = rp2.ID 
+                LEFT JOIN account_payment_term apt ON sec.payment_term_id = apt.ID
+                LEFT JOIN (SELECT * FROM ir_translation where name = 'account.payment.term,name')tb2 on tb2.res_id = apt.id
+                WHERE sec.id = '{self.id}'
         '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
 
     def _prepare_data_file(self):
+
+        fee_product_list = [
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_material_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost')),
+        ]
+
+        if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_legal_welfare_expenses'):
+            raise UserError(
+                "法定福利費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_legal_welfare_expenses)")
+        else:
+            ss_erp_construction_legal_welfare_expenses_product = self.env['product.product'].browse(
+                int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_legal_welfare_expenses')))
+
+        if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price'):
+            raise UserError(
+                "法定福利費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_discount_price)")
+        else:
+            ss_erp_construction_discount_price_product = self.env['product.product'].browse(
+                int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price')))
+
         # ヘッダ
         new_data = [
             '"customer_name","department_id","output_date","total","address","tel","fax","author",' + \
@@ -112,4 +198,193 @@ class Construction(models.Model):
             '"product_name_head","specification_head","quantity_head","unit_head","unit_price_head",' + \
             '"amount_of_money_head","subtotal_head","tax_of_money_head","total_head","comment_text",' + \
             '"page_title","product_name","specification","quantity","unit","unit_price","amount_of_money","subtotal"']
-        return False
+
+        output_date_str = self.output_date.strftime("%Y年%m月%d日") if self.output_date else datetime.now().strftime(
+            "%Y年%m月%d日")
+        organization_state_name = self.organization_id.organization_state_id.name or ''
+        organization_address = organization_state_name + (
+                self.organization_id.organization_city or '') + (
+                                       self.organization_id.organization_street or '') + (
+                                           self.organization_id.organization_street2 or '')
+
+        organization_phone = "TEL　" + (self.organization_id.organization_phone or '')
+        organization_fax = "FAX　" + (self.organization_id.organization_fax or '')
+        author = "作成者　" + (self.user_id.partner_id.name or '')
+        construction_name = self.construction_name
+        transaction_type = self.payment_term_id.name
+        date_of_expiry_str = self.expire_date.strftime("%Y年%m月%d日") if self.expire_date else ''
+        remarks = self.estimation_note if self.estimation_note else ''
+
+        fee = 0
+        discount = 0
+        welfare = 0
+
+        for line in self.construction_component_ids:
+            x_name_specification = ""
+            if line.product_id:
+                if line.product_id.product_tmpl_id.x_name_specification:
+                    x_name_specification = line.product_id.product_tmpl_id.x_name_specification
+
+            if line.product_id and line.product_id.id in fee_product_list:
+                fee += line.subtotal
+            elif line.product_id and line.product_id.id == ss_erp_construction_discount_price_product.id:
+                discount = line.subtotal
+            elif line.product_id and line.product_id.id == ss_erp_construction_legal_welfare_expenses_product.id:
+                welfare = line.subtotal
+            else:
+                data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+                    self.partner_id.display_name,        # customer_name
+                    self.name,                           # department_id
+                    output_date_str,                     # output_date
+                    "{:,}".format(int(self.amount_total)),#total
+                    organization_address,
+                    organization_phone,
+                    organization_fax,
+                    author,
+                    construction_name,
+                    "別途協議",
+                    transaction_type if transaction_type else "",
+                    date_of_expiry_str if date_of_expiry_str else "",
+                    remarks,
+                    "",
+                    "1",
+                    "式",
+                    "",
+                    "{:,}".format(int(self.amount_untaxed)),
+                    "{:,}".format(int(self.amount_untaxed)),
+                    "{:,}".format(int(self.amount_tax)),
+                    "{:,}".format(int(self.amount_total)),
+                    self.red_notice if self.red_notice else "",
+                    "1 " + construction_name,
+                    line.product_id.product_tmpl_id.name if line.product_id else line.name,
+                    x_name_specification,
+                    "{:,}".format(int(line.product_uom_qty)) if line.product_id else "",
+                    line.product_uom_id.name if line.product_id else "",
+                    "{:,}".format(int(line.sale_price)) if line.product_id else "",
+                    "{:,}".format(int(line.subtotal)) if line.product_id else "",
+                    "")
+                new_data.append(data_line)
+
+        if fee != 0:
+            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+                self.partner_id.display_name,
+                self.name,
+                output_date_str,
+                "{:,}".format(int(self.amount_total)),
+                organization_address,
+                organization_phone,
+                organization_fax,
+                author,
+                construction_name,
+                "別途協議",
+                transaction_type if transaction_type else "",
+                date_of_expiry_str if date_of_expiry_str else "",
+                remarks,
+                "",
+                "1",
+                "式",
+                "",
+                "{:,}".format(int(self.amount_untaxed)),
+                "{:,}".format(int(self.amount_untaxed)),
+                "{:,}".format(int(self.amount_tax)),
+                "{:,}".format(int(self.amount_total)),
+                self.red_notice if self.red_notice else "",
+                "2 " + construction_name,
+                "諸経費",
+                "",
+                "1",
+                "式",
+                "",
+                "{:,}".format(int(fee)),
+                "{:,}".format(int(self.amount_untaxed)) if (discount == 0 and welfare == 0) else ""
+            )
+            new_data.append(data_line)
+
+        if discount != 0:
+            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+                self.partner_id.display_name,
+                self.name,
+                output_date_str,
+                "{:,}".format(int(self.amount_total)),
+                organization_address,
+                organization_phone,
+                organization_fax,
+                author,
+                construction_name,
+                "別途協議",
+                transaction_type if transaction_type else "",
+                date_of_expiry_str if date_of_expiry_str else "",
+                remarks,
+                "",
+                "1",
+                "式",
+                "",
+                "{:,}".format(int(self.amount_untaxed)),
+                "{:,}".format(int(self.amount_untaxed)),
+                "{:,}".format(int(self.amount_tax)),
+                "{:,}".format(int(self.amount_total)),
+                self.red_notice if self.red_notice else "",
+                "2 " + construction_name,
+                "値引き",
+                "",
+                "1",
+                "式",
+                "",
+                "{:,}".format(int(discount)),
+                "{:,}".format(int(self.amount_untaxed)) if (welfare == 0) else ""
+            )
+            new_data.append(data_line)
+
+        if welfare != 0:
+            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+                self.partner_id.display_name,
+                self.name,
+                output_date_str,
+                "{:,}".format(int(self.amount_total)),
+                self.organization_id.display_name,
+                organization_address,
+                organization_phone,
+                organization_fax,
+                author,
+                construction_name,
+                "別途協議",
+                transaction_type if transaction_type else "",
+                date_of_expiry_str if date_of_expiry_str else "",
+                remarks,
+                "",
+                "1",
+                "式",
+                "",
+                "{:,}".format(int(self.amount_untaxed)),
+                "{:,}".format(int(self.amount_untaxed)),
+                "{:,}".format(int(self.amount_tax)),
+                "{:,}".format(int(self.amount_total)),
+                self.red_notice if self.red_notice else "",
+                "2 " + construction_name,
+                "法定福利費",
+                "",
+                "1",
+                "式",
+                "",
+                "{:,}".format(int(welfare)),
+                "{:,}".format(int(self.amount_untaxed)))
+            new_data.append(data_line)
+
+        file_data = "\n".join(new_data)
+
+        b = file_data.encode('shift-jis')
+        vals = {
+        'name': '工事見積書' '.csv',
+        'datas': base64.b64encode(b).decode('shift-jis'),
+        'type': 'binary',
+        'res_model': 'ir.ui.view',
+        'res_id': False,
+        }
+
+        file_txt = self.env['ir.attachment'].create(vals)
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/' + str(file_txt.id) + '?download=true',
+            'target': 'new',
+        }

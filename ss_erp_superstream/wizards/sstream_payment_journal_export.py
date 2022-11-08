@@ -16,10 +16,10 @@ class StreamPaymentJournalExport(models.TransientModel):
     def get_a007_payment_journal_param(self):
         sstream_company_code = self.env['ir.config_parameter'].sudo().get_param('A007_super_stream_company_code')
         if not sstream_company_code:
-            raise UserError('SuperStream連携用の会社コードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+            raise UserError('SuperStream連携用の会社コードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_super_stream_company_code)')
         sstream_slip_group = self.env['ir.config_parameter'].sudo().get_param('A007_super_stream_slip_group')
         if not sstream_slip_group:
-            raise UserError('SuperStream連携用の伝票グループの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+            raise UserError('SuperStream連携用の伝票グループの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_super_stream_slip_group)')
 
         result = {
             'sstream_company_code': sstream_company_code,
@@ -115,7 +115,8 @@ class StreamPaymentJournalExport(models.TransientModel):
         and ap.x_receipt_type in ('bank', 'transfer', 'bills', 'cash', 'paycheck', 'branch_receipt', 'offset')								
         and ap.payment_type = 'inbound'  /* 入金 */								
         and ap.partner_type = 'customer'  /* 顧客 */								
-        and am.x_organization_id = '{self.branch_id.id}'							
+        and am.x_organization_id = '{self.branch_id.id}'
+        and aml.is_super_stream_linked = False							
                                         
         UNION ALL								
                                         
@@ -194,7 +195,8 @@ class StreamPaymentJournalExport(models.TransientModel):
         and ap.x_receipt_type in ('bank', 'transfer', 'bills', 'cash', 'paycheck', 'branch_receipt', 'offset')								
         and ap.payment_type = 'inbound'  /* 入金 */								
         and ap.partner_type = 'customer'  /* 顧客 */								
-        and am.x_organization_id = '{self.branch_id.id}'								
+        and am.x_organization_id = '{self.branch_id.id}'
+        and aml.is_super_stream_linked = False								
         order by 								
             slip_date asc								
             , partner_name asc								

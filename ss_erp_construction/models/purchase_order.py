@@ -15,7 +15,7 @@ from itertools import groupby
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダー')
+    x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダ')
 
     def _prepare_picking(self):
         res = super(PurchaseOrder, self)._prepare_picking()
@@ -69,7 +69,7 @@ class PurchaseOrder(models.Model):
 
             self.ensure_one()
             journal = self.env['account.journal'].sudo().search(
-                [('type', '=', 'purchase'), ('is_construction', '=', True)],
+                [('type', '=', 'purchase'), ('x_is_construction', '=', True)],
                 limit=1)
             if not journal:
                 raise UserError('工事購買の仕訳帳は設定していません。もう一度ご確認ください')

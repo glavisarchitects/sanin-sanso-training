@@ -77,7 +77,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
                                          help="預金用口座", default=_default_deposit_account_id)
     deposit_taxes_id = fields.Many2many("account.tax", string="顧客税", help="預金に使用される税金",
                                         default=_default_deposit_taxes_id)
-    count = fields.Integer(default=_count, string='オーダー数')
+    count = fields.Integer(default=_count, string='オーダ数')
 
     @api.onchange('advance_payment_method')
     def onchange_advance_payment_method(self):
@@ -97,6 +97,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
             'invoice_user_id': order.user_id.id,
             'partner_id': order.partner_id.id,
             'purchase_id': order.id,
+            'x_responsible_user_id': order.user_id.id,
             'fiscal_position_id': (order.fiscal_position_id or order.fiscal_position_id.get_fiscal_position(
                 order.partner_id.id)).id,
             'partner_shipping_id': order.partner_id.id,
@@ -130,7 +131,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
         return amount, name
 
     def _create_invoice(self, order, order_line, amount):
-        journal = self.env['account.journal'].search([('type', '=', 'purchase'), ('is_construction', '=', True)],
+        journal = self.env['account.journal'].search([('type', '=', 'purchase'), ('x_is_construction', '=', True)],
                                                      limit=1)
         if not journal:
             raise UserError('工事購買の仕訳帳は設定していません。もう一度ご確認ください')
