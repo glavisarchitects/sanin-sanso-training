@@ -91,13 +91,13 @@ class AccountTransferResultHeader(models.Model):
         # 普通預金
         journal_account_1122 = journal_ids[1]
 
-        normal_receivable = self.env['ir.config_parameter'].sudo().get_param('ss_erp_autopayment_in_accounts_receivable_id')
+        normal_receivable = self.env['ir.config_parameter'].sudo().get_param('ss_erp_created_byFB_accounts_receivable_id')
         if not normal_receivable:
-            raise UserError('勘定科目情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。ss_erp_autopayment_in_accounts_receivable_id')
+            raise UserError('勘定科目情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。ss_erp_created_byFB_accounts_receivable_id')
 
-        construction_receivable = self.env['ir.config_parameter'].sudo().get_param('ss_erp_autopayment_in_con_accounts_receivable_id')
+        construction_receivable = self.env['ir.config_parameter'].sudo().get_param('ss_erp_created_byFB_con_accounts_receivable_id')
         if not construction_receivable:
-            raise UserError('勘定科目情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。ss_erp_autopayment_in_con_accounts_receivable_id')
+            raise UserError('勘定科目情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。ss_erp_created_byFB_con_accounts_receivable_id')
 
         # account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
         # journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)], limit=1)
@@ -143,7 +143,7 @@ class AccountTransferResultHeader(models.Model):
             if int(tl.withdrawal_amount) == sum(partner_invoice.mapped('amount_residual')):
                 payment_ids = []
                 for invoice in partner_invoice:
-                    in_accounts_receivable = construction_receivable if invoice.journal_id.x_is_construction else normal_receivable
+                    in_accounts_receivable = int(construction_receivable) if invoice.journal_id.x_is_construction else int(normal_receivable)
                     register_payment = self.env['account.payment.register'].with_context(
                         active_model='account.move',
                         active_ids=[invoice.id],
@@ -206,7 +206,7 @@ class AccountTransferResultHeader(models.Model):
                     credit_line.with_context({
                         'from_zengin_create': True,
                     }).write({
-                        'account_id': in_accounts_receivable.id,
+                        'account_id': in_accounts_receivable,
                         'x_sub_account_id': receivable_line.x_sub_account_id,
                         'date_maturity': self.upload_date,
                     })

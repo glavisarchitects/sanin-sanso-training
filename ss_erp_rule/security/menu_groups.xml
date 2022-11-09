@@ -429,11 +429,20 @@
 <!--            ]"/>-->
 <!--        </record>-->
 
+        <!--        update AR004_メニューグループ 08/11/22-->
+        <record id="ss_erp_superstream.menu_ss_erp_superstream_linkage_journal_parent_in_setting" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),
+                                                (4, ref('group_head_quarter'))]"/>
+        </record>
+        <record id="ss_erp_superstream.menu_ss_erp_superstream_linkage_journal_setting" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),
+                                                (4, ref('group_head_quarter'))]"/>
+        </record>
 
-<!--        <record id="ss_erp_superstream.menu_ss_erp_superstream_linkage_journal_parent_in_setting" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),-->
-<!--                                                (4, ref('group_head_quarter'))]"/>-->
-<!--        </record>-->
+        <record id="ss_erp_superstream.menu_ss_erp_superstream_linkage_journal_parent" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),
+                                                (4, ref('group_head_quarter'))]"/>
+        </record>
 
 
 
