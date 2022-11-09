@@ -143,7 +143,7 @@ class AccountTransferResultHeader(models.Model):
             if int(tl.withdrawal_amount) == sum(partner_invoice.mapped('amount_residual')):
                 payment_ids = []
                 for invoice in partner_invoice:
-                    in_accounts_receivable = construction_receivable if invoice.journal_id.x_is_construction else normal_receivable
+                    in_accounts_receivable = int(construction_receivable) if invoice.journal_id.x_is_construction else int(normal_receivable)
                     register_payment = self.env['account.payment.register'].with_context(
                         active_model='account.move',
                         active_ids=[invoice.id],
@@ -206,7 +206,7 @@ class AccountTransferResultHeader(models.Model):
                     credit_line.with_context({
                         'from_zengin_create': True,
                     }).write({
-                        'account_id': in_accounts_receivable.id,
+                        'account_id': in_accounts_receivable,
                         'x_sub_account_id': receivable_line.x_sub_account_id,
                         'date_maturity': self.upload_date,
                     })
