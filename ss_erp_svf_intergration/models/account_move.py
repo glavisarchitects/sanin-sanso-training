@@ -420,7 +420,33 @@ class AccountMove(models.Model):
         if not r002_tax10_id or not r002_tax8_id or not r002_reduction_tax8_id or not r002_tax_exempt_id:
             raise UserError('パラメータで税勘定を設定してください')
 
-        #
+        if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_legal_welfare_expenses'):
+            raise UserError(
+                "法定福利費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_legal_welfare_expenses)")
+        else:
+            ss_erp_construction_legal_welfare_expenses_product = self.env['product.product'].browse(
+                int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_legal_welfare_expenses')))
+
+        if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price'):
+            raise UserError(
+                "値引きプロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_discount_price)")
+        else:
+            ss_erp_construction_discount_price_product = self.env['product.product'].browse(
+                int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price')))
+
+        fee_product_list = [
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_material_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost')),
+            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost')),
+        ]
+
+        fee_product_list_str = f"({','.join(map(str, fee_product_list))})"
+
         query = f'''
 
         WITH x_payment_type AS (
@@ -660,7 +686,34 @@ class AccountMove(models.Model):
         LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
         LEFT JOIN invoice_tax it ON aml.id = it.move_line_id
         LEFT JOIN (SELECT * FROM ir_translation where name = 'uom.uom,name' and state='translated')tb on tb.res_id = aml.product_uom_id
-        WHERE am.id = {self.id} and aml.product_id is not null
+        WHERE am.id = {self.id} and aml.product_id is not null and aml.exclude_from_invoice_tab = False and aml.product_id not in {fee_product_list_str}
+        ),
+        product_transaction_fee AS 
+        (                
+        SELECT
+            to_char(am.invoice_date, 'MM/DD') AS date,
+            am.name AS slip_number,
+            NULL,
+            '' AS product_id,
+            '諸経費' AS product_name,            
+            '1' AS quantity,
+            '式' AS unit,
+            SUM(aml.price_subtotal) AS unit_price,
+            SUM(aml.price_subtotal) AS price,
+            it.tax_account AS tax_rate,
+            '' AS summary
+        FROM account_move_line aml
+        LEFT JOIN account_move am ON aml.move_id = am.id
+        LEFT JOIN product_product pp ON aml.product_id = pp.id
+        LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
+        LEFT JOIN invoice_tax it ON aml.id = it.move_line_id
+        LEFT JOIN (SELECT * FROM ir_translation where name = 'uom.uom,name' and state='translated')tb on tb.res_id = aml.product_uom_id
+        WHERE am.id = {self.id} and aml.product_id is not null and aml.exclude_from_invoice_tab = False and aml.product_id in {fee_product_list_str}
+        GROUP BY 
+            am.invoice_date,
+            am.name,
+            am.invoice_date,
+            it.tax_account            
         ),
 
         transaction_detail AS 
@@ -671,7 +724,9 @@ class AccountMove(models.Model):
         UNION ALL
         SELECT {self.id},* FROM (
         SELECT * FROM product_transaction
-        ORDER BY product_id, date asc) tb10)
+        UNION ALL 
+        SELECT * FROM product_transaction_fee
+        ORDER BY product_id desc, date asc) tb10)
 
         SELECT 
                 am.name AS invoice_no
