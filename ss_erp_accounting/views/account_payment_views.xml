@@ -26,6 +26,9 @@
                     <field name="x_organization_id"/>
                     <field name="x_responsible_dept_id"/>
                 </xpath>
+                <xpath expr="//field[@name='partber_bank_id']" position="attributes">
+                    <attribute name="create">false</attribute>
+                </xpath>
             </field>
         </record>
 
