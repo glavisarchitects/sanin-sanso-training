@@ -333,8 +333,8 @@ class Construction(models.Model):
         self._prepare_stock_picking()
         self.write({'state': 'order_received'})
 
-    def action_print_estimation(self):
-        print("estimation")
+    # def action_print_estimation(self):
+    #     print("estimation")
 
     def action_mark_lost(self):
         self.write({'state': 'lost'})

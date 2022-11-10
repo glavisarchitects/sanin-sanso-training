@@ -232,7 +232,7 @@ class Construction(models.Model):
             elif line.product_id and line.product_id.id == ss_erp_construction_legal_welfare_expenses_product.id:
                 welfare = line.subtotal
             else:
-                data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+                data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
                     self.partner_id.display_name,        # customer_name
                     self.name,                           # department_id
                     output_date_str,                     # output_date
@@ -246,6 +246,7 @@ class Construction(models.Model):
                     transaction_type if transaction_type else "",
                     date_of_expiry_str if date_of_expiry_str else "",
                     remarks,
+                    construction_name,
                     "",
                     "1",
                     "式",
@@ -266,7 +267,7 @@ class Construction(models.Model):
                 new_data.append(data_line)
 
         if fee != 0:
-            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
                 self.partner_id.display_name,
                 self.name,
                 output_date_str,
@@ -280,6 +281,7 @@ class Construction(models.Model):
                 transaction_type if transaction_type else "",
                 date_of_expiry_str if date_of_expiry_str else "",
                 remarks,
+                construction_name,
                 "",
                 "1",
                 "式",
@@ -301,7 +303,7 @@ class Construction(models.Model):
             new_data.append(data_line)
 
         if discount != 0:
-            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
                 self.partner_id.display_name,
                 self.name,
                 output_date_str,
@@ -315,6 +317,7 @@ class Construction(models.Model):
                 transaction_type if transaction_type else "",
                 date_of_expiry_str if date_of_expiry_str else "",
                 remarks,
+                construction_name,
                 "",
                 "1",
                 "式",
@@ -336,7 +339,7 @@ class Construction(models.Model):
             new_data.append(data_line)
 
         if welfare != 0:
-            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+            data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
                 self.partner_id.display_name,
                 self.name,
                 output_date_str,
@@ -351,6 +354,7 @@ class Construction(models.Model):
                 transaction_type if transaction_type else "",
                 date_of_expiry_str if date_of_expiry_str else "",
                 remarks,
+                construction_name,
                 "",
                 "1",
                 "式",
