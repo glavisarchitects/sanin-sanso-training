@@ -26,9 +26,7 @@
                     <field name="x_organization_id"/>
                     <field name="x_responsible_dept_id"/>
                 </xpath>
-                <xpath expr="//field[@name='partber_bank_id']" position="attributes">
-                    <attribute name="create">false</attribute>
-                </xpath>
+
             </field>
         </record>
 
@@ -40,6 +38,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='is_internal_transfer']" position="before">
                     <field name="x_sub_account_id"/>
+                </xpath>
+                <xpath expr="//field[@name='partber_bank_id']" position="attributes">
+                    <attribute name="create">false</attribute>
                 </xpath>
                 <xpath expr="//field[@name='move_id']" position="after">
                     <field name="x_payment_type" attrs="{'invisible': [('payment_type', '=', 'inbound')]}"/>
