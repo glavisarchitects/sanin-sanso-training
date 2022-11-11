@@ -41,7 +41,7 @@ class ResPartner(models.Model):
         ('noting', '該当なし'),
     ], string='取引基本契約書', index=True, default='contract', tracking=True,
         help='”新規取引、BtoB取引、継続的取引(スポットではない)、月間取引税込30万円以上” すべて該当する場合は必ず締結にする')
-    x_contract_memo = fields.Text(string="変動理由", tracking=True)
+    x_contract_memo = fields.Text(string="契約変動理由", tracking=True)
     x_found_year = fields.Char(string='創立年度', tracking=True)
     x_capital = fields.Float(string='資本金', tracking=True)
     x_purchase_user_id = fields.Many2one(
@@ -268,6 +268,8 @@ class ResPartner(models.Model):
             'has_x_purchase_user_id',
             'has_x_receipts_term',
             'has_x_responsible_stamp',
+            'invoice_ids',
+            'is_company',
         ]
         res = super(ResPartner, self).fields_get(allfields, attributes=attributes)
         for field in fields_to_hide:
