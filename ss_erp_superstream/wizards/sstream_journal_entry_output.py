@@ -11,8 +11,8 @@ import calendar
 class SStreamJournalEntryOutput(models.TransientModel):
     _name = 'sstream.journal.entry.output'
 
-    first_day_period = fields.Date(string='First Day')
-    last_day_period = fields.Date(string='Last Day')
+    first_day_period = fields.Date(string='対象期間From')
+    last_day_period = fields.Date(string='対象期間To')
 
     def get_a007_param(self):
         sstream_company_code = self.env['ir.config_parameter'].sudo().get_param('A007_super_stream_company_code')

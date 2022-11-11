@@ -9,8 +9,8 @@ import base64
 class StreamPaymentJournalExport(models.TransientModel):
     _name = 'sstream.payment.journal.export'
 
-    first_day_period = fields.Date(string='First Day')
-    last_day_period = fields.Date(string='Last Day')
+    first_day_period = fields.Date(string='対象期間From')
+    last_day_period = fields.Date(string='対象期間To')
     branch_id = fields.Many2one('ss_erp.organization', string='支店')
 
     def get_a007_payment_journal_param(self):
