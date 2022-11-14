@@ -88,7 +88,7 @@ class AccountMove(models.Model):
         account_move_ids = self.browse(self.ids)
 
         org_list = list(set(account_move_ids.mapped('x_organization_id')))
-        dep_list = list(set(account_move_ids.mapped('default_x_responsible_dept_id')))
+        dep_list = list(set(account_move_ids.mapped('x_responsible_dept_id')))
         receipt_type = list(set(account_move_ids.mapped('x_receipt_type')))
         payment_type = list(set(account_move_ids.mapped('x_payment_type')))
         if len(org_list) >1 or len(receipt_type) > 1 or len(payment_type) > 1 or len(dep_list) > 1:
