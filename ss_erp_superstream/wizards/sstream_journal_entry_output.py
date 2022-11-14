@@ -115,9 +115,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , '' as project_code1	
                 , partner_employee_division								
                 , partner_employee_code								
-                , journal_amount								
-                , tax_excluded_amount								
-                , tax_amount								
+                , journal_amount :: INTEGER								
+                , tax_excluded_amount :: INTEGER							
+                , tax_amount :: INTEGER								
                 , case when deb_cre_division = '1' then '000'								
                 else tax_id								
                 end as tax_id								
@@ -175,11 +175,11 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         
                         , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                         sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                        ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END)	as journal_amount		
+                        ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as journal_amount		
                         
                         , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                         sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                        ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) as tax_excluded_amount	
+                        ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as tax_excluded_amount	
                         
                         , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                         sum(aml.price_total - aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
@@ -271,11 +271,11 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         
                     , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                     sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                    ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END)	as journal_amount		
+                    ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as journal_amount		
                     
                     , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                     sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                    ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) as tax_excluded_amount							
+                    ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as tax_excluded_amount							
                     
                     , 0 as tax_amount								
                     , '000' as tax_id								
@@ -366,11 +366,11 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , serd.code as department_code
                         , (CASE WHEN ojl.materials_grouping = TRUE THEN 								
                         sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                        ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END)	as journal_amount		
+                        ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as journal_amount		
                         
                         , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                         sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                        ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) as tax_excluded_amount								
+                        ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as tax_excluded_amount								
                         , 0 as tax_amount								
                         , aml_atr.account_tax_id as tax_id								
                         , '2' as tax_entry_division								
@@ -462,11 +462,11 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , serd.code as department_code								
                     , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                     sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                    ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END)	as journal_amount		
+                    ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as journal_amount		
                     
                     , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                     sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                    ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) as tax_excluded_amount								
+                    ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as tax_excluded_amount								
                     , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                     sum(aml.price_total - aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                     ELSE sum(aml.price_total - aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) as tax_amount									
@@ -556,11 +556,11 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , serd.code as department_code								
                         , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                         sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                        ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END)	as journal_amount		
+                        ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as journal_amount		
                         
                         , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                         sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                        ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) as tax_excluded_amount							
+                        ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as tax_excluded_amount							
                         , 0 as tax_amount								
                         , aml_atr.account_tax_id as tax_id								
                         , '2' as tax_entry_division								
@@ -647,11 +647,11 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , serd.code as department_code								
                         , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                         sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                        ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END)	as journal_amount		
+                        ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as journal_amount		
                         
                         , (CASE WHEN ojl.materials_grouping = TRUE THEN 
                         sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
-                        ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) as tax_excluded_amount								
+                        ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: INTEGER as tax_excluded_amount								
                     , 0 as tax_amount								
                     , '000' as tax_id								
                     , '0' as tax_entry_division								
@@ -754,9 +754,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , '' as project_code1	
                     , partner_employee_division								
                     , partner_employee_code								
-                    , journal_amount								
-                    , tax_excluded_amount								
-                    , tax_amount								
+                    , journal_amount :: INTEGER							
+                    , tax_excluded_amount :: INTEGER							
+                    , tax_amount :: INTEGER			
                     , case when deb_cre_division = '1' then '000'								
                     else tax_id								
                     end as tax_id								
@@ -810,8 +810,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ElSE '' END as partner_employee_code	
                         ,seo.organization_code as organization_code	
                         , serd.code as department_code
-                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) as journal_amount		
-                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) as tax_excluded_amount	
+                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) :: INTEGER as journal_amount		
+                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) :: INTEGER as tax_excluded_amount	
                         , 0 as tax_amount						
                         , '000' as tax_id						
                         , '0' as tax_entry_division	
@@ -892,8 +892,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ElSE '' END as partner_employee_code	
                     ,seo.organization_code as organization_code	
                     , serd.code as department_code
-                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) as journal_amount		
-                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) as tax_excluded_amount	
+                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) :: INTEGER as journal_amount		
+                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) :: INTEGER as tax_excluded_amount	
                     , 0 as tax_amount						
                     , '000' as tax_id						
                     , '0' as tax_entry_division	
@@ -964,6 +964,14 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
         all_pattern_data = pattern123_data + pattern5_data
 
+        for all_data in all_pattern_data:
+            if all_data.get('move_line_id'):
+                move_line_rec = self.env['account.move.line'].browse(all_data['move_line_id'])
+                move_line_rec.is_super_stream_linked = True
+            if all_data.get('inventory_order_line_id'):
+                iol_rec = self.env['ss_erp.inventory.order.line'].browse(all_data['inventory_order_line_id'])
+                iol_rec.order_id.is_super_stream_linked = True
+
         debit_line_data = []
         credit_line_data = []
         for pd in all_pattern_data:
@@ -980,12 +988,6 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 else:
                     list_group = [de_line['slip_date'], de_line['depar_orga_code'], de_line['account_code'], de_line['sub_account_code'], de_line['product_id'] ]
 
-            if de_line.get('move_line_id'):
-                move_line_rec = self.env['account.move.line'].browse(de_line['move_line_id'])
-                move_line_rec.is_super_stream_linked = True
-            if de_line.get('inventory_order_line_id'):
-                iol_rec = self.env['ss_erp.inventory.order.line'].browse(de_line['inventory_order_line_id'])
-                iol_rec.order_id.is_super_stream_linked = True
 
             # Document data header record
             doc_header = "1" + '\r\n'

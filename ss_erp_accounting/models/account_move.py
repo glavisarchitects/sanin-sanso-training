@@ -92,7 +92,7 @@ class AccountMove(models.Model):
         receipt_type = list(set(account_move_ids.mapped('x_receipt_type')))
         payment_type = list(set(account_move_ids.mapped('x_payment_type')))
         if len(org_list) >1 or len(receipt_type) > 1 or len(payment_type) > 1 or len(dep_list) > 1:
-            raise UserError('組織と管轄部門と支払/入金手段が同じの同レコードのみ選択し、再度実行してください')
+            raise UserError('組織、管轄部門、支払または入金手段が同じであるレコードを選択してください。')
 
         res = super().action_register_payment()
         res['context']['default_x_organization_id'] = account_move_ids[0].x_organization_id.id

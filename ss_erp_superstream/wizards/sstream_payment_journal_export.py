@@ -6,6 +6,10 @@ from datetime import datetime
 import base64
 
 
+def get_multi_character(n, key='0'):
+    return key * n
+
+
 class StreamPaymentJournalExport(models.TransientModel):
     _name = 'sstream.payment.journal.export'
 
@@ -16,10 +20,12 @@ class StreamPaymentJournalExport(models.TransientModel):
     def get_a007_payment_journal_param(self):
         sstream_company_code = self.env['ir.config_parameter'].sudo().get_param('A007_super_stream_company_code')
         if not sstream_company_code:
-            raise UserError('SuperStream連携用の会社コードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_super_stream_company_code)')
+            raise UserError(
+                'SuperStream連携用の会社コードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_super_stream_company_code)')
         sstream_slip_group = self.env['ir.config_parameter'].sudo().get_param('A007_super_stream_slip_group')
         if not sstream_slip_group:
-            raise UserError('SuperStream連携用の伝票グループの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_super_stream_slip_group)')
+            raise UserError(
+                'SuperStream連携用の伝票グループの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_super_stream_slip_group)')
 
         result = {
             'sstream_company_code': sstream_company_code,
@@ -44,13 +50,13 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '0' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , serd.code || right(seo.organization_code, 3) as depar_orga_code								
+            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
             , '' as function_code4								
             , '' as project_code1								
-            , '0' as partner_employee_division								
+            , '1' as partner_employee_division								
             , '' as partner_employee_code							
             , aml.debit as journal_amount								
             , aml.debit as tax_excluded_amount								
@@ -132,14 +138,14 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '1' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , serd.code || right(seo.organization_code, 3) as depar_orga_code								
+            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
             , '' as function_code4								
             , '' as project_code1									
             , '0' as partner_employee_division								
-            , '' as partner_employee_code								
+            , rpad(right(seo.organization_code, 3), 13, '0') as partner_employee_code								
             , aml.credit as journal_amount								
             , aml.credit as tax_excluded_amount								
             , 0 as tax_amount								
@@ -226,13 +232,13 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '0' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , serd.code || right(seo.organization_code, 3) as depar_orga_code								
+            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
             , '' as function_code4								
             , '' as project_code1								
-            , '0' as partner_employee_division								
+            , '2' as partner_employee_division								
             , rpad(right(seo.organization_code, 3), 13, '0') as partner_employee_code							
             , aml.debit as journal_amount								
             , aml.debit as tax_excluded_amount								
@@ -289,7 +295,8 @@ class StreamPaymentJournalExport(models.TransientModel):
         and ap.x_payment_type in ('bank', 'bills', 'cash')							
         and ap.payment_type = 'outbound'  /* 入金 */								
         and ap.partner_type = 'supplier'  /* 顧客 */								
-        and am.x_organization_id = '{self.branch_id.id}'							
+        and am.x_organization_id = '{self.branch_id.id}'
+        and aml.is_super_stream_linked = False							
                                         
         UNION ALL								
                                         
@@ -305,7 +312,7 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '1' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , serd.code || right(seo.organization_code, 3) as depar_orga_code								
+            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
@@ -372,7 +379,8 @@ class StreamPaymentJournalExport(models.TransientModel):
         and ap.x_payment_type in ('bank', 'bills', 'cash')							
         and ap.payment_type = 'outbound'  /* 入金 */								
         and ap.partner_type = 'supplier'  /* 顧客 */								
-        and am.x_organization_id = '{self.branch_id.id}'								
+        and am.x_organization_id = '{self.branch_id.id}'
+        and aml.is_super_stream_linked = False								
         order by 								
             slip_date asc								
             , partner_name asc								
@@ -396,6 +404,12 @@ class StreamPaymentJournalExport(models.TransientModel):
 
         #
         all_pattern_data = data_receipt_payment_p6 + data_outbound_payment_p6
+
+        for all_data in all_pattern_data:
+            payment_rec = self.env['account.payment'].search([('id', '=', all_data['payment_id'])])
+            journal_entry_rec = payment_rec.move_id
+            journal_item_recs = journal_entry_rec.line_ids
+            journal_item_recs.is_super_stream_linked = True
         debit_line_data = []
         credit_line_data = []
         for all_data in all_pattern_data:
@@ -409,16 +423,21 @@ class StreamPaymentJournalExport(models.TransientModel):
             doc_header = "1" + '\r\n'
             file_data += doc_header
 
-        #     # journal entry header region
+            other_system_slip_number_int = 1
+            other_system_slip_number_str = str(other_system_slip_number_int)
+            other_system_slip_number = get_multi_character(
+                7 - len(other_system_slip_number_str)) + other_system_slip_number_str
+            other_system_slip_number_int += 1
+            #     # journal entry header region
             journal_header = "2," + param['sstream_company_code'] + "," + param['sstream_slip_group'] + ",," + de_line[
-                'slip_date'] + ',,0,1,,,,,0,0,,,,,,,,,,,,,' + '\r\n'
+                'slip_date'] + ',,0,1,,,,' + other_system_slip_number + ',0,0,,,,,,,,,,,,,' + '\r\n'
             file_data += journal_header
             # End region
 
             debit_line = ''
             credit_line = ''
 
-        #
+            #
             clean_dict_data = deepcopy(de_line)
             clean_dict_data.pop('payment_id')
             clean_dict_data.pop('partner_name')

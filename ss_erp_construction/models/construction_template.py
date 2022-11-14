@@ -7,7 +7,7 @@ class ConstructionTemplate(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'display_name'
 
-    name = fields.Char(string='テンプレート名')
+    name = fields.Char(string='テンプレート名', copy=True)
     state = fields.Selection(
         string='ステータス',
         selection=[('new', '未申請'),
@@ -16,8 +16,8 @@ class ConstructionTemplate(models.Model):
                    ('refused', '却下済み'),
                    ('cancel', '取消'),
                    ],default='new',
-        required=False, )
-    code = fields.Char(string='コード')
+        required=False )
+    code = fields.Char(string='コード', copy=True)
 
     display_name = fields.Char(string='名称', compute='_compute_display_name', store=True)
     user_id = fields.Many2one(
@@ -35,7 +35,8 @@ class ConstructionTemplate(models.Model):
         compute='_compute_component_line_ids',
         required=False,
         ondelete='cascade',
-        store=True
+        store=True,
+        copy = True
     )
 
     @api.depends('workcenter_line_ids.workcenter_id.component_ids')
@@ -59,13 +60,13 @@ class ConstructionTemplate(models.Model):
             if component_arr:
                 rec.component_line_ids = component_arr
 
-    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社")
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True, string="会社", copy=True)
 
     workcenter_line_ids = fields.Many2many(
         comodel_name='construction.template.workcenter',
         string='工事構成品',
         required=False,
-        store=True
+        store=True, copy=True
     )
 
 
