@@ -22,6 +22,11 @@
             ]"/>
         </record>
 
+        <record id="sale.menu_sale_invoicing" model="ir.ui.menu">
+             <field name="groups_id" eval="[
+            (4, ref('base.group_no_one')),]"/>
+        </record>
+
         <record id="ss_erp_external_data_import.external_system_cooperation_importing_performance" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('group_branch_general')),
