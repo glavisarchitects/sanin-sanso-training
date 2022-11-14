@@ -9,16 +9,16 @@ class Construction(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='シーケンス', default='新規')
-    construction_name = fields.Char(string='工事名')
-    sequence = fields.Char(string='シーケンス')
+    construction_name = fields.Char(string='工事名', copy=True)
+    # sequence = fields.Char(string='シーケンス')
     organization_id = fields.Many2one(
         comodel_name='ss_erp.organization',
         string='組織',
         default=lambda self: self._get_default_x_organization_id(),
-        required=False)
+        required=False, copy=True)
     responsible_dept_id = fields.Many2one(
         comodel_name='ss_erp.responsible.department',
-        string='管轄部門',
+        string='管轄部門', copy=True,
         default=lambda self: self._get_default_x_responsible_dept_id()
     )
 
@@ -65,22 +65,22 @@ class Construction(models.Model):
         else:
             return False
 
-    company_id = fields.Many2one('res.company', string='会社', default=lambda self: self.env.user.company_id.id)
+    company_id = fields.Many2one('res.company', string='会社', default=lambda self: self.env.user.company_id.id, copy=True)
 
     currency_id = fields.Many2one('res.currency', '通貨', required=True,
-                                  default=lambda self: self.env.user.company_id.currency_id.id)
+                                  default=lambda self: self.env.user.company_id.currency_id.id, copy=True)
 
-    partner_id = fields.Many2one('res.partner', string='顧客', domain=[('x_is_customer', '=', True)], )
+    partner_id = fields.Many2one('res.partner', string='顧客', domain=[('x_is_customer', '=', True)], copy=True, )
 
     picking_type_id = fields.Many2one('stock.picking.type', related='organization_id.warehouse_id.out_type_id',
-                                      store=True, string='オペレーションタイプ')
+                                      store=True, string='オペレーションタイプ', copy=True)
 
     warehouse_id = fields.Many2one('stock.warehouse', related='organization_id.warehouse_id',
-                                   store=True, string='倉庫')
+                                   store=True, string='倉庫', copy=True)
     location_id = fields.Many2one('stock.location', related='organization_id.warehouse_id.lot_stock_id', store=True,
-                                  string='構成品ロケーション')
+                                  string='構成品ロケーション', copy=True)
     location_dest_id = fields.Many2one('stock.location', related='partner_id.property_stock_customer', store=True,
-                                       string='配送ロケーション')
+                                       string='配送ロケーション', copy=True)
 
     amount_untaxed = fields.Monetary(string='税抜金額', compute='_compute_amount', store=True)
     amount_tax = fields.Monetary(string='税', compute='_compute_amount', store=True)
@@ -91,7 +91,7 @@ class Construction(models.Model):
     template_id = fields.Many2one(
         comodel_name='construction.template',
         string='工事テンプレート',
-        required=False
+        required=False, copy=True
     )
 
     picking_ids = fields.One2many('stock.picking', 'x_construction_order_id', string='配送')
@@ -103,7 +103,7 @@ class Construction(models.Model):
 
     invoice_count = fields.Integer(compute='_compute_invoice_count')
 
-    category_id = fields.Many2one("ss_erp.construction.category", string="工事種別")
+    category_id = fields.Many2one("ss_erp.construction.category", string="工事種別", copy=True)
 
     show_confirmation_button = fields.Boolean(compute='_compute_show_confirmation_button')
 
@@ -252,19 +252,19 @@ class Construction(models.Model):
         res = super(Construction, self).write(values)
         return res
 
-    plan_date = fields.Date(string='予定日')
-    user_id = fields.Many2one(comodel_name='res.users', string='担当者', default=lambda self: self.env.user)
-    all_margin_rate = fields.Float(string='一律マージン率')
+    plan_date = fields.Date(string='予定日', copy=True)
+    user_id = fields.Many2one(comodel_name='res.users', string='担当者', default=lambda self: self.env.user, copy=True)
+    all_margin_rate = fields.Float(string='一律マージン率', copy=True)
     construction_component_ids = fields.One2many(comodel_name='ss.erp.construction.component',
                                                  inverse_name='construction_id', string='構成品',
-                                                 tracking=True)
+                                                 tracking=True, copy=True)
     construction_workorder_ids = fields.One2many(comodel_name='ss.erp.construction.workorder', ondelete="cascade",
                                                  inverse_name='construction_id', string='作業オーダ',
-                                                 tracking=True)
+                                                 tracking=True, copy=True)
 
-    fiscal_position_id = fields.Many2one('account.fiscal.position', string='会計ポジション')
+    fiscal_position_id = fields.Many2one('account.fiscal.position', string='会計ポジション', copy=True)
 
-    payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件', tracking=True)
+    payment_term_id = fields.Many2one(comodel_name='account.payment.term', string='支払条件', tracking=True, copy=True)
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -292,18 +292,18 @@ class Construction(models.Model):
     print_type = fields.Selection(string='帳票タイプ',
                                   selection=[('housing', 'ハウジング'),
                                              ('equipment', '設備'),
-                                             ], )
+                                             ], copy=True, )
 
     is_tax_exclude = fields.Selection(string='消費税',
                                       selection=[('included', '税込'),
                                                  ('exclude', '税抜'),
-                                                 ], )
+                                                 ], copy=True, )
 
-    printed_user = fields.Many2one('res.users', string='作成者')
+    printed_user = fields.Many2one('res.users', string='作成者', copy=True)
     sequence_number = fields.Char(string='文書番号')
-    output_date = fields.Date(string='出力日付')
-    expire_date = fields.Date(string='有効期限')
-    estimation_note = fields.Char(string='備考')
+    output_date = fields.Date(string='出力日付', copy=True)
+    expire_date = fields.Date(string='有効期限', copy=True)
+    estimation_note = fields.Char(string='備考', copy=True)
 
     @api.onchange('all_margin_rate')
     def _onchange_all_margin_rate(self):

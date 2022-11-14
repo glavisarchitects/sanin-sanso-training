@@ -48,7 +48,7 @@ class ResPartner(models.Model):
         'res.users', string='購買担当者', index=True)
     x_other_payment_reason = fields.Text(string='変動理由', tracking=True)
     x_minimum_cost = fields.Monetary(string='最低仕入価格', tracking=True)
-    x_payment_terms = fields.Html(
+    x_payment_terms = fields.Text(
         related='company_id.x_payment_terms', string='支払条件の当社規定', tracking=True)
 
     x_contract_route = fields.Text(string='取引動機', tracking=True)
