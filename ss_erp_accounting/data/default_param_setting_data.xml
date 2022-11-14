@@ -21,7 +21,6 @@
             <field name="invoice_is_email" eval="True"/>
             <field name="module_snailmail_account" eval="False"/>
             <field name="show_line_subtotals_tax_selection">tax_excluded</field>
-            <field name="default_picking_policy">direct</field>
             <field name="use_invoice_terms" eval="False"/>
             <field name="group_warning_account" eval="False"/>
             <field name="group_cash_rounding" eval="False"/>
