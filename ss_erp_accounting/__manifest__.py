@@ -32,6 +32,7 @@
 
         # 'data/default_param_setting_data.xml',
         # 'data/account_tax.xml',
+	#dummy row
     ],
     "application": False,
     "installable": True,
