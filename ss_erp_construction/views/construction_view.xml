@@ -143,7 +143,7 @@
                                         <field name="product_uom_category_id" attrs="{'column_invisible':1}"/>
                                         <field name="standard_price"/>
                                         <field name="currency_id" attrs="{'column_invisible':1}"/>
-                                        <field name="tax_id"/>
+                                        <field name="tax_id" required="1"/>
                                         <field name="sale_price" attrs="{'required': [('display_type', '=', False)],}"/>
                                         <field name="margin" readonly="1"/>
                                         <field name="margin_rate" widget="percentage"/>
