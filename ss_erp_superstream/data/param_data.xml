@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="a007_super_stream_company_code" model="ir.config_parameter">
+            <field name="key">A007_super_stream_company_code</field>
+            <field name="value"></field>
+        </record>
+
+        <record id="a007_super_stream_slip_group" model="ir.config_parameter">
+            <field name="key">A007_super_stream_slip_group</field>
+            <field name="value"></field>
+        </record>
+
+        <record id="a007_product_ctg_merchandise" model="ir.config_parameter">
+            <field name="key">A007_product_ctg_merchandise</field>
+            <field name="value"></field>
+        </record>
+
+        <record id="a007_product_ctg_product" model="ir.config_parameter">
+            <field name="key">A007_product_ctg_product</field>
+            <field name="value"></field>
+        </record>
+
+        <record id="a007_product_ctg_material" model="ir.config_parameter">
+            <field name="key">A007_product_ctg_material</field>
+            <field name="value"></field>
+        </record>
+
+        <record id="a007_sanhot_point_product_id" model="ir.config_parameter">
+            <field name="key">A007_sanhot_point_product_id</field>
+            <field name="value"></field>
+        </record>
+    </data>
+</odoo>

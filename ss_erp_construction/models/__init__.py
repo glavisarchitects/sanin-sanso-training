@@ -10,4 +10,9 @@ from . import stock_picking
 from . import purchase_order
 from . import account_move
 from . import construction_category
+from . import res_partner
+from . import product_template
+from . import account_journal
+from . import stock_move
+from . import product_product
 

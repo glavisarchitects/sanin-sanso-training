@@ -5,7 +5,19 @@
             <field name="model">stock.inventory</field>
             <field name="inherit_id" ref="stock.view_inventory_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//form" position="attributes">
+                    <attribute name="create">0</attribute>
+                </xpath>
                 <xpath expr="//field[@name='product_ids']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_print']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_validate'][1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_validate'][2]" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//button[@name='action_cancel_draft'][2]" position="replace">
@@ -30,6 +42,9 @@
             <field name="model">stock.inventory</field>
             <field name="inherit_id" ref="stock.view_inventory_tree"/>
             <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
                 <xpath expr="//field[@name='name']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>

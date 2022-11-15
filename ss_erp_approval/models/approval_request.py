@@ -37,14 +37,15 @@ class ApprovalRequest(models.Model):
     x_product_template_form_id = fields.Many2one(
         'ss_erp.product.template.form', string='プロダクト申請フォーム')
     x_inventory_order_ids = fields.Many2many(
-        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票')
+        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票', store=True, )
     x_sale_order_ids = fields.Many2many(
-        'sale.order', 'ss_erp_sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票')
-    x_lpgas_inventory_ids = fields.Many2many('ss_erp.lpgas.order', string='LPガス棚卸伝票')
+        'sale.order', 'ss_erp_sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票', store=True, )
+    x_lpgas_inventory_ids = fields.Many2many('ss_erp.lpgas.order', store=True, string='LPガス棚卸伝票')
     x_account_move_ids = fields.Many2many(
-        'account.move', 'ss_erp_account_move_request_rel', 'move_id', 'request_id', string='仕入請求伝票')
+        'account.move', 'ss_erp_account_move_request_rel', 'move_id', 'request_id', store=True, string='仕入請求伝票', )
     x_purchase_order_ids = fields.Many2many(
-        'purchase.order', 'ss_erp_purchase_request_rel', 'purchase_id', 'request_id', string='見積依頼伝票')
+        'purchase.order', 'ss_erp_purchase_request_rel', 'purchase_id', 'request_id', store=True,
+        string='見積依頼伝票', )
     x_payment_date = fields.Date('請求書締日')
     x_purchase_material = fields.Text('仕入商材')
     x_cash_amount = fields.Float('現金仕入額')
@@ -62,7 +63,7 @@ class ApprovalRequest(models.Model):
     multi_approvers_ids = fields.One2many(
         'ss_erp.multi.approvers', 'x_request_id', string='多段階承認', readonly=True, copy=False)
     x_inventory_instruction_ids = fields.Many2many(
-        'ss_erp.instruction.order', 'ss_erp_instruction_request_rel', 'instruction_id', 'request_id',
+        'ss_erp.instruction.order', 'ss_erp_instruction_request_rel', 'instruction_id', 'request_id', store=True,
         string='指示伝票')
 
     x_approval_date = fields.Date('申請日', default=datetime.now())
@@ -257,18 +258,16 @@ class ApprovalRequest(models.Model):
     def _create_activity_for_approver(self):
         approvers = self.mapped('approver_ids').filtered(lambda approver: approver.status == 'new')
         approvers.write({'status': 'pending'})
-        # approvers._create_activity()
 
     def _change_request_state(self):
-        if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
-            if self.x_inventory_order_ids:
-                self.x_inventory_order_ids.write({
-                    'state': 'approval'
-                })
-            if self.x_inventory_instruction_ids:
-                self.x_inventory_instruction_ids.write({
-                    'state': 'approval'
-                })
+        if self.x_inventory_order_ids:
+            self.x_inventory_order_ids.write({
+                'state': 'approval'
+            })
+        if self.x_inventory_instruction_ids:
+            self.x_inventory_instruction_ids.write({
+                'state': 'approval'
+            })
 
         if self.x_contact_form_id:
             self.x_contact_form_id.write(
@@ -278,16 +277,17 @@ class ApprovalRequest(models.Model):
             self.x_product_template_form_id.write(
                 {'approval_id': self.id, 'approval_state': self.request_status})
 
+        if self.x_lpgas_inventory_ids:
+            self.x_lpgas_inventory_ids.write(
+                {'state': 'approval'})
+
     # Override
     def action_confirm(self):
         self._validate_before_confirm()
-
+        self._change_request_state()
         if self.x_is_multiple_approval:
             self._generate_approver_ids()
             self.multi_approvers_ids.write({'x_user_status': 'pending'})
-
-        # self._create_activity_for_approver()
-            self._change_request_state()
 
             # Send email to all member
             notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
@@ -333,12 +333,12 @@ class ApprovalRequest(models.Model):
                     user_ids = list(dict.fromkeys(approve_partner_ids))
                     self.with_user(SUPERUSER_ID).sudo().notify_approve_request(partner_ids=approve_partner_ids)
                 # 最終ステップである場合、申請者及び関係者を全員に最終通知する
-                else:
-                    notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
-                        "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
-                    notify_parner_ids.append(self.request_owner_id.partner_id.id)
-                    notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
-                    self.with_user(SUPERUSER_ID).sudo().notify_final(partner_ids=notify_parner_ids)
+                # else:
+                #     notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
+                #         "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
+                #     notify_parner_ids.append(self.request_owner_id.partner_id.id)
+                #     notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+                #     self.with_user(SUPERUSER_ID).sudo().notify_final(partner_ids=notify_parner_ids)
 
     def action_approve(self, approver=None):
         super(ApprovalRequest, self).action_approve(approver=approver)
@@ -389,6 +389,7 @@ class ApprovalRequest(models.Model):
     def action_temporary_approve(self):
         if self.x_is_multiple_approval:
             self.action_approve()
+            # self._approve_multi_approvers(self.env.user)
             curren_multi_approvers = self.multi_approvers_ids.filtered(lambda p: self.env.user in p.x_approval_user_ids)
 
             # 前のステップのステータスを承認に変更
@@ -438,6 +439,13 @@ class ApprovalRequest(models.Model):
             request.request_status = status
             request._validate_request()
 
+            if status == 'approved':
+                notify_parner_ids = self.multi_approvers_ids.x_approval_user_ids.mapped(
+                    "partner_id").ids + self.multi_approvers_ids.x_related_user_ids.mapped("partner_id").ids
+                notify_parner_ids.append(self.request_owner_id.partner_id.id)
+                notify_parner_ids = list(dict.fromkeys(notify_parner_ids))
+                self.with_user(SUPERUSER_ID).sudo().notify_final(partner_ids=notify_parner_ids)
+
     def _validate_request(self):
         # LPガス棚卸伝票
         if self.x_lpgas_inventory_ids:
@@ -450,27 +458,26 @@ class ApprovalRequest(models.Model):
 
         # 棚卸更新
         if self.request_status == 'approved':
-            if self.category_id.approval_type in ['inventory_request', 'inventory_request_manager']:
-                if self.x_inventory_order_ids:
-                    self.x_inventory_order_ids.write({
-                        'state': 'done'
-                    })
-                    self.x_inventory_order_ids.mapped('instruction_order_id').write({
-                        'state': 'waiting'
-                    })
-                if self.x_inventory_instruction_ids:
-                    self.x_inventory_instruction_ids.write({
-                        'state': 'approved'
-                    })
+            if self.x_inventory_order_ids:
+                self.x_inventory_order_ids.write({
+                    'state': 'done'
+                })
+                self.x_inventory_order_ids.mapped('instruction_order_id').write({
+                    'state': 'waiting'
+                })
+            if self.x_inventory_instruction_ids:
+                self.x_inventory_instruction_ids.write({
+                    'state': 'approved'
+                })
 
         # 工事
-        if self.x_construction_order_id:
-            if self.request_status == 'approved':
-                self.x_construction_order_id.sudo().write({'state': 'confirmed'})
-            elif self.request_status == 'pending':
-                self.x_construction_order_id.sudo().write({'state': 'request_approve'})
-            elif self.request_status == 'refused':
-                self.x_construction_order_id.sudo().write({'state': 'cancel'})
+        # if self.x_construction_order_id:
+        #     if self.request_status == 'approved':
+        #         self.x_construction_order_id.sudo().write({'state': 'confirmed'})
+        #     elif self.request_status == 'pending':
+        #         self.x_construction_order_id.sudo().write({'state': 'request_approve'})
+        #     elif self.request_status == 'refused':
+        #         self.x_construction_order_id.sudo().write({'state': 'cancel'})
 
         # 仕入先フォーム更新
         if self.x_contact_form_id:
@@ -525,11 +532,32 @@ class ApprovalRequest(models.Model):
         self = self.with_context(lang=self.env.user.lang)
         body_template = body_template.with_context(lang=self.env.user.lang)
         model_description = self.env['ir.model']._get('approval.request').display_name
+
+        approve_dic = {
+            1: '一次承認済み',
+            2: '二次承認済み',
+            3: '三次承認済み',
+            4: '四次承認済み',
+            5: '五次承認済み',
+            6: '六次承認済み',
+            7: '七次承認済み',
+            8: '八次承認済み',
+            9: '九次承認済み',
+            10: '十次承認済み',
+        }
+        stage_num = len(self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'approved'))
+        message = approve_dic[stage_num]
+        # if len(self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'approved')) == 1:
+        #     message = '一次承認済み'
+        # else:
+        #     message = '二次承認済み'
+
         subject = _('【新販売基幹システムOdoo】%(name)s 承認ステータス進捗', name=self.name)
         body = body_template._render(
             dict(
                 request=self,
                 model_description=model_description,
+                message=message,
                 access_link=self.env['mail.thread']._notify_get_action_link(
                     'view', model=self._name, res_id=self.id),
             ),

@@ -4,6 +4,7 @@
     "summary": """
         山陰酸素工業　連絡先カスタマイズ
     """,
+    "version": "14.0.1.1",
     "depends": [
         "base", "contacts", "calendar", "delivery", "mail", "mrp_subcontracting"
     ],
@@ -24,6 +25,7 @@
         'views/webclient_templates.xml',
 
     ],
+    "post_init_hook": "post_init_hook",
     "application": False,
     "installable": True,
 }

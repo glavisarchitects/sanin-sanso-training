@@ -7,3 +7,5 @@ class ConstructionCategory(models.Model):
 
     name = fields.Char(string="工事種別")
     memo = fields.Char("備考")
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)

@@ -17,12 +17,14 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
 
     @api.model
     def _default_product_id(self):
-        product_id = self.env.ref("ss_erp_product_template.down_payment_product_product_data")
-        return product_id
+        downpayment_product_id = self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_downpayment_default_product_id')
+        if not downpayment_product_id:
+            raise UserError("工事用の前受プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_downpayment_default_product_id)")
+        return self.env['product.product'].browse(int(downpayment_product_id)).exists()
 
     @api.model
     def _default_deposit_account_id(self):
-        return self._default_product_id()._get_product_accounts()['income']
+        return self._default_product_id()._get_product_accounts()['construction_income']
 
     @api.model
     def _default_deposit_taxes_id(self):
@@ -72,6 +74,7 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
             'move_type': 'out_invoice',
             'invoice_origin': order.name,
             'x_organization_id': order.organization_id.id,
+            'x_responsible_user_id': order.user_id.id,
             'x_responsible_dept_id': order.responsible_dept_id.id,
             'x_construction_order_id': order.id,
             'invoice_user_id': order.user_id.id,
@@ -88,6 +91,7 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
                 'quantity': 1.0,
                 'product_id': self.product_id.id,
                 'product_uom_id': order_line.product_uom_id.id,
+                'construction_line_ids': [(4,order_line.id)],
                 'tax_ids': [(6, 0, order_line.tax_id.ids)],
             })],
         }
@@ -95,7 +99,6 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
         return invoice_vals
 
     def _get_advance_details(self, order):
-        context = {'lang': order.partner_id.lang}
         if self.advance_payment_method == 'percentage':
             if all(self.product_id.taxes_id.mapped('price_include')):
                 amount = order.amount_total * self.amount / 100
@@ -105,7 +108,6 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
         else:
             amount = self.fixed_amount
             name = _('前受金')
-        del context
 
         return amount, name
 
@@ -121,14 +123,22 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
         if order.fiscal_position_id:
             invoice_vals['fiscal_position_id'] = order.fiscal_position_id.id
 
+        journal = self.env['account.journal'].sudo().search([('type', '=', 'sale'), ('x_is_construction', '=', True)])
+        if not journal:
+            raise UserError('工事販売仕訳帳をご確認ください。')
+
+        invoice_vals['journal_id'] = journal.id
+
         invoice = self.env['account.move'].with_company(order.company_id) \
             .sudo().create(invoice_vals).with_user(self.env.uid)
         return invoice
 
     def _prepare_construction_component(self, order, tax_ids, amount):
         context = {'lang': order.partner_id.lang}
+        sequence = max(list(set(order.construction_component_ids.mapped('sequence'))))+1
         construction_component_values = {
             'name': _('前受金: %s') % (time.strftime('%m %Y'),),
+            'sequence': sequence,
             'sale_price': amount,
             'product_uom_qty': 0.0,
             'construction_id': order.id,
@@ -155,6 +165,7 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
                     lambda r: not construction_order.company_id or r.company_id == construction_order.company_id)
                 tax_ids = construction_order.fiscal_position_id.map_tax(taxes, self.product_id,
                                                                         construction_order.partner_id).ids
+                if not tax_ids: tax_ids = False
                 construction_component_values = self._prepare_construction_component(construction_order, tax_ids, amount)
                 construction_component = construction_component_obj.create(construction_component_values)
                 self._create_invoice(construction_order, construction_component, amount)

@@ -5,9 +5,10 @@ from datetime import datetime
 class ConstructionWorkorder(models.Model):
     _name = 'ss.erp.construction.workorder'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = '工事の作業オーダー'
+    _description = '工事の作業オーダ'
 
     name = fields.Char(string='工程')
+
     organization_id = fields.Many2one(
         comodel_name='ss_erp.organization',
         string='組織',
@@ -24,21 +25,14 @@ class ConstructionWorkorder(models.Model):
     workcenter_id = fields.Many2one(
         comodel_name='construction.workcenter',
         string='作業区',
+        ondelete='cascade',
         required=False)
-
-    picking_type_id = fields.Many2one('stock.picking.type', related='construction_id.picking_type_id',
-                                      store=True, string='オペレーションタイプ')
-    location_id = fields.Many2one('stock.location', related='construction_id.location_id', store=True,
-                                  string='構成品ロケーション')
-    location_dest_id = fields.Many2one('stock.location', related='construction_id.location_dest_id', store=True,
-                                       string='配送ロケーション')
-
-    partner_id = fields.Many2one(related='construction_id.partner_id', store=True)
 
     planned_labor_costs = fields.Monetary(string='[予定] 労務費')
     result_labor_costs = fields.Monetary(string='[実績] 労務費')
     planned_expenses = fields.Monetary(string='[予定] 経費')
     result_expenses = fields.Monetary(string='[実績] 経費')
+    costs_hour = fields.Float(string='時間毎の費用')
     construction_work_notes = fields.Text(string='備考')
     date_planned_start = fields.Datetime(string='計画開始日')
     date_planned_finished = fields.Datetime(string='計画終了日')
@@ -49,7 +43,7 @@ class ConstructionWorkorder(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     state = fields.Selection([
-        ('pending', '他の作業オーダー待ち'),
+        ('pending', '他の作業オーダ待ち'),
         ('ready', '準備完了'),
         ('progress', '進行中'),
         ('done', '完了'),
@@ -61,44 +55,18 @@ class ConstructionWorkorder(models.Model):
         inverse_name='workorder_id',
         string='構成品',
         required=False)
-
-    def _prepare_stock_picking(self):
-        picking = {
-            'partner_id': self.partner_id.id,
-            'x_organization_id': self.organization_id.id,
-            'x_responsible_dept_id': self.responsible_dept_id.id,
-            'picking_type_id': self.picking_type_id.id,
-            'location_id': self.location_id.id,
-            'location_dest_id': self.location_dest_id.id,
-            'scheduled_date': self.date_planned_start,
-            'x_construction_order_id': self.id,
-        }
-        move_live = []
-        for component in self.workorder_component_ids:
-            if component.product_id.type == 'product':
-                move_live.append((0, 0, {
-                    'name': component.product_id.name or '/',
-                    'product_id': component.product_id.id,
-                    'product_uom': component.product_uom_id.id,
-                    'product_uom_qty': component.product_uom_qty,
-                    'location_id': self.location_id.id,
-                    'location_dest_id': self.location_dest_id.id,
-                    'date': self.date_planned_start or datetime.now(),
-                    'picking_type_id': self.picking_type_id.id,
-                }))
-
-        picking['move_ids_without_package'] = move_live
-        self.env['stock.picking'].create(picking).action_assign()
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
 
 class ConstructionWorkorderComponent(models.Model):
     _name = 'ss.erp.construction.workorder.component'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = '作業オーダーの構成品'
+    _description = '作業オーダの構成品'
 
     workorder_id = fields.Many2one(
         comodel_name='ss.erp.construction.workorder',
-        string='作業オーダー',
+        string='作業オーダ',
         required=False)
 
     product_id = fields.Many2one(
@@ -117,6 +85,6 @@ class ConstructionWorkorderComponent(models.Model):
 
 class ConstructionWorkorderTimesheet(models.Model):
     _name = 'ss.erp.construction.workorder.timesheet'
-    _description = '作業オーダーのタイムシート'
+    _description = '作業オーダのタイムシート'
 
     name = fields.Char()

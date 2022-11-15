@@ -15,7 +15,7 @@
         'views/sale_order_views.xml',
 
         # DATA
-        # 'data/default_param_setting_data.xml',
+        'data/default_param_setting_data.xml',
         'data/menu_item.xml',
     ],
     "application": False,

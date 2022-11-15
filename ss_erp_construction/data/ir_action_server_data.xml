@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_create_batch_invoice" model="ir.actions.act_window">
+            <field name="name">仕入先請求書作成</field>
+            <field name="res_model">ss_erp.construction.po.advance.payment.inv</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_construction_po_advance_payment_inv"/>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="ss_erp_construction.model_purchase_order" />
+            <field name="binding_view_types">list</field>
+        </record>
+        <record id="purchase.action_purchase_batch_bills" model="ir.actions.server">
+            <field name="binding_model_id" eval="False" />
+        </record>
+    </data>
+</odoo>

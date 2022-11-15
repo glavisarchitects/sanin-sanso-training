@@ -1,9 +1,8 @@
-odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
+odoo.define('ss_erp_stock.InstructionCreateInventoryController', function (require) {
     "use strict";
 
     var core = require('web.core');
     var ListController = require('web.ListController');
-
     var _t = core._t;
     var qweb = core.qweb;
 
@@ -46,9 +45,16 @@ odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
          * @private
          */
         _onCreateInventory: function () {
+
             var self = this;
             var prom = Promise.resolve();
             var recordID = this.renderer.getEditableRecordID();
+            var state = this.model.get(this.handle, {raw: true});
+            var domain_record = []
+            if (this.isDomainSelected) {
+                domain_record = state.getDomain()
+            }
+
             if (recordID) {
                 // If user's editing a record, we wait to save it before to try to
                 // validate the inventory.
@@ -56,11 +62,12 @@ odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
             }
 
             prom.then(function () {
+
                 var res_ids = self.getSelectedIds();
                 self._rpc({
                     model: 'ss_erp.instruction.order',
                     method: 'action_create_inventory',
-                    args: [self.inventory_id, res_ids]
+                    args: [self.inventory_id, res_ids, domain_record]
                 }).then(function (res) {
                     var exitCallback = function (infos) {
                         // In case we discarded a wizard, we do nothing to stay on
@@ -71,7 +78,7 @@ odoo.define('ss_erp.InstructionCreateInventoryController', function (require) {
                         // ... but in any other cases, we go back on the inventory form.
                         self.do_notify(
                             false,
-                            _t("The inventory has been created"));
+                            _t("棚卸伝票は作成されました。"));
                         self.trigger_up('history_back');
                     };
 

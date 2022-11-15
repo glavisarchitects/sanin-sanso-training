@@ -47,6 +47,8 @@ class ResPartnerForm(models.Model):
         domain="['|', ('company_id', '=', False), ('company_id', '=', allowed_company_ids[0])]",
         help="The stock location used as source when receiving goods from this contact.",
         default=lambda self: self.env.ref('stock.stock_location_suppliers', raise_if_not_found=False))
+    user_id = fields.Many2one(
+        comodel_name='res.users', default=lambda self: self.env.uid)
 
     @api.model
     def _default_property_account_payable_id(self):
@@ -68,9 +70,9 @@ class ResPartnerForm(models.Model):
     x_payment_terms_ids = fields.Many2many(
         'ss_erp.partner.payment.term', 'ss_erp_partner_payment_term_res_partner_form_rel', 'partner_id', 'payment_terms_id', string="Contact", copy=False)
 
-
     child_ids = fields.Many2many(
-        'res.partner', 'ss_erp_res_partner_child_res_partner_form_rel', 'partner_id', 'child_id', string="Contact", copy=False)
+        'ss_erp.res.partner.form', 'ss_erp_res_partner_form_child_res_partner_form_rel', 'partner_form_id', 'child_id', string="Contact", copy=False)
+
     construction_ids = fields.Many2many('ss_erp.partner.construction', 'ss_erp_partner_construction_res_partner_form_rel',
                                         'partner_id', 'construction_id', string="Construction", copy=False)
     contract_ids = fields.Many2many(
@@ -96,6 +98,9 @@ class ResPartnerForm(models.Model):
         'res.users', 'ss_erp_res_users_res_partner_form_rel', 'partner_id', 'res_users_id', copy=False)
     website_message_ids = fields.Many2many(
         'mail.message', 'ss_erp_web_mail_message_res_partner_form_rel', 'partner_id', 'mail_message_id', copy=False)
+
+    parent_id = fields.Many2one(
+        "ss_erp.res.partner.form", string='親会社')
 
     @api.model
     def _commercial_fields(self):
@@ -149,30 +154,53 @@ class ResPartnerForm(models.Model):
             res = super(ResPartnerForm, self).write(values)
             if 'approval_state' in values and values.get('approval_state') == 'approved' and update_res_partner:
                 self._action_process()
+                if self.parent_id:
+                    self.parent_id._action_process()
+                self.child_ids._action_process()
+                self._update_parent_for_child()
             return res
         else:
             return True
 
+    def _update_parent_for_child(self):
+        # Update parernt
+        if self.parent_id:
+            parent_id = int(self.parent_id.res_partner_id)
+            partner_id = self.env['res.partner'].browse(int(self.res_partner_id))
+            partner_id.write({'parent_id':parent_id})
+
+        # Update child
+        new_parent_id = int(self.res_partner_id)
+        for rec in self.child_ids:
+            partner_id = self.env['res.partner'].browse(int(rec.res_partner_id))
+            partner_id.write({'parent_id': new_parent_id})
+
+
     def _action_process(self):
         DEFAULT_FIELDS = ['id', 'create_uid', 'create_date', 'write_uid', 'write_date',
                           '__last_update', 'approval_id', 'approval_state', 'meeting_ids']
+
+        MANY2MANY_FIELDS = ['construction_ids','contract_ids','invoice_ids','purchase_line_ids','sale_order_ids', 'child_ids','parent_id']
+
         for form_id in self:
             vals = {}
 
             for name, field in form_id._fields.items():
-                if name not in DEFAULT_FIELDS and \
-                        form_id._fields[name].type not in ['one2many'] and \
-                        type(form_id._fields[name].compute) != str:
-                    if form_id._fields[name].type == 'many2many':
-                        value = getattr(form_id, name, ())
-                        value = [(6, 0, value.ids)] if value else False
-                    else:
-                        value = getattr(form_id, name)
-                        if form_id._fields[name].type == 'many2one':
-                            value = value.id if value else False
+                if name in MANY2MANY_FIELDS:
+                    continue
+                else:
+                    if name not in DEFAULT_FIELDS and \
+                            form_id._fields[name].type not in ['one2many'] and \
+                            type(form_id._fields[name].compute) != str:
+                        if form_id._fields[name].type == 'many2many':
+                            value = getattr(form_id, name, ())
+                            value = [(6, 0, value.ids)] if value else False
+                        else:
+                            value = getattr(form_id, name)
+                            if form_id._fields[name].type == 'many2one':
+                                value = value.id if value else False
 
-                    vals.update({name: value})
-
+                        vals.update({name: value})
             res_partner_id = vals.pop('res_partner_id')
             if not res_partner_id:
                 # Create partner with contact form

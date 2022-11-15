@@ -11,26 +11,27 @@ class AccountPaymentWizard(models.TransientModel):
     _name = 'comprehensive.create.zengin.fb'
     _description = 'Comprehensive Create Zengin FB Wizard'
 
-    from_date = fields.Date(string="有効開始日", copy=False)
-    to_date = fields.Date(string="有効終了日", copy=False, )
+    from_date = fields.Date(copy=False)
+    to_date = fields.Date(copy=False)
     transfer_date = fields.Date(string='振込日')
-    property_supplier_payment_term_id = fields.Many2one('account.payment.term', string='連絡先の仕入先支払条件')
+    property_supplier_payment_term_id = fields.Many2one('account.payment.term', string='支払条件')
 
     @api.onchange('from_date', 'to_date')
     def _onchange_from_to__date(self):
         if self.from_date and self.to_date:
             if self.from_date > self.to_date:
-                raise UserError('有効開始日は有効終了日より大きくすることはできません。')
+                raise UserError('有効開始日は、有効終了日より先の日付は選択できません。"')
 
     def zengin_general_transfer_fb(self):
         # account_journal = self.env['account.journal']
         partner_match_payment_term = self.env['res.partner'].search(
-            [('property_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
+            [('property_supplier_payment_term_id', '=', self.property_supplier_payment_term_id.id), ])
         domain = [('payment_type', '=', 'outbound'), ('x_is_fb_created', '=', False),
-                  ('date', '<=', self.to_date), ('date', '>=', self.from_date),
+                  ('x_is_not_create_fb','=',False),
+                  # ('date', '<=', self.to_date), ('date', '>=', self.from_date),
                   ('partner_id', 'in', partner_match_payment_term.ids),
-                  ('journal_id.type', '=', 'bank')]
-        payment_zengin_data = self.env['account.payment'].search(domain)
+                  ('x_payment_type', '=', 'bank')]
+        payment_zengin_data = self.env['account.payment'].search(domain).filtered(lambda x: x.move_id.date == self.transfer_date)
         if not payment_zengin_data:
             raise UserError('有効なデータが見つかりません。')
 
@@ -47,13 +48,14 @@ class AccountPaymentWizard(models.TransientModel):
         transfer_date_month = self.transfer_date.strftime('%m%d')
 
         # TODO: Re confirm Bic bank of head office branch
-        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '000')], limit=1)
+        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '00000')], limit=1)
         if not head_office_organization:
             raise UserError('本社支店情報設定してください')
 
-        organization_bank = head_office_organization.bank_ids[0]
-        if not organization_bank:
+        if not head_office_organization.bank_ids:
             raise UserError('本社支店の銀行を設定してください')
+
+        organization_bank = head_office_organization.bank_ids[0]
 
         bic_bank_organization = organization_bank.bank_id.bic
         if len(bic_bank_organization) != 4:
@@ -75,7 +77,12 @@ class AccountPaymentWizard(models.TransientModel):
             17) + '\r\n'  # '\n\r' = CRLF ?
         # data
         total_sum_amount = 0
+        bank_list = []
+        count = 0
+        # group_bic_number, group_acc_number = payment_zengin_data.mapped('partner_bank_id.bank_id.bic')
         for pay in payment_zengin_data:
+
+
             partner_bic_number = pay.partner_bank_id.bank_id.bic
             if len(partner_bic_number) != 4:
                 raise UserError('振込先金融機関コード長が一致しません')
@@ -92,9 +99,19 @@ class AccountPaymentWizard(models.TransientModel):
             if len(partner_acc_number) != 7:
                 raise UserError('口座番号長が一致しません')
 
+            if (pay.journal_id.id,pay.partner_bank_id.bank_id.bic, pay.partner_bank_id.x_bank_branch_number, pay.partner_bank_id.acc_number) not in bank_list:
+                bank_list.append((pay.journal_id.id,pay.partner_bank_id.bank_id.bic, pay.partner_bank_id.x_bank_branch_number, pay.partner_bank_id.acc_number))
+            else:
+                continue
+
             partner_acc_holder_furigana = pay.partner_bank_id.x_acc_holder_furigana
 
-            total_amount_line = int(pay.amount)
+            # total_amount_line = int(pay.amount)
+            total_amount_line = int(sum(payment_zengin_data.filtered(lambda line: line.partner_bank_id.bank_id.bic == pay.partner_bank_id.bank_id.bic and
+                                                                          line.partner_bank_id.x_bank_branch_number == pay.partner_bank_id.x_bank_branch_number and
+                                                                          line.journal_id.id == pay.journal_id.id and
+                                                                          line.partner_bank_id.acc_number == pay.partner_bank_id.acc_number
+                                                             ).mapped('amount')))
 
 
             # new design total amount = total amount - fee in bank.commission
@@ -131,9 +148,12 @@ class AccountPaymentWizard(models.TransientModel):
                 8) + '\r\n'
 
             # Todo: Now comment this line to test data
-            pay.x_is_fb_created = True
+            count+=1
+        payment_zengin_data.update({'x_is_fb_created':True})
+
+
         # trailer record
-        len_line_record = str(len(payment_zengin_data))
+        len_line_record = str(count)
 
         len_total_amount = len(str(total_sum_amount))
         file_data += '8' + get_multi_character(6 - len(len_line_record), '0') + len_line_record + \
@@ -145,7 +165,7 @@ class AccountPaymentWizard(models.TransientModel):
         # b = bytes(file_data, 'shift-jis')
         b = file_data.encode('shift-jis')
         vals = {
-            'name': 'sample' '.txt',
+            'name': 'furikomi' '.txt',
             'datas': base64.b64encode(b).decode('shift-jis'),
             'type': 'binary',
             'res_model': 'ir.ui.view',

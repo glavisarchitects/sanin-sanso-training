@@ -135,26 +135,40 @@ class YoukiKanri(models.Model):
         inventoryorder_dict = {}
         for line in exe_data:
             error_message = False
-            if int(line.customer_business_partner_code) not in partner_list:
+            if not line.customer_business_partner_code.isdigit():
                 error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
+            else:
+                if int(line.customer_business_partner_code) not in partner_list:
+                    error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
 
-            if int(line.customer_branch_code) not in organization_list:
+            if not line.customer_branch_code.isdigit():
                 if error_message:
                     error_message += '顧支店Ｃが連絡先マスタに存在しません。'
                 else:
                     error_message = '顧支店Ｃが連絡先マスタに存在しません。'
+            else:
+                if int(line.customer_branch_code) not in organization_list:
+                    if error_message:
+                        error_message += '顧支店Ｃが連絡先マスタに存在しません。'
+                    else:
+                        error_message = '顧支店Ｃが連絡先マスタに存在しません。'
 
             if not branch_dict.get(line.codeommercial_branch_code):
                 if error_message:
                     error_message += '商支店Ｃが組織マスタに存在しません。'
                 else:
                     error_message = '商支店Ｃが組織マスタに存在しません。'
-
-            if int(line.codeommercial_product_code) not in product_list:
+            if not line.codeommercial_product_code.isdigit():
                 if error_message:
                     error_message += '商商品Ｃがプロダクトマスタに存在しません。'
                 else:
                     error_message = '商商品Ｃがプロダクトマスタに存在しません。'
+            else:
+                if int(line.codeommercial_product_code) not in product_list:
+                    if error_message:
+                        error_message += '商商品Ｃがプロダクトマスタに存在しません。'
+                    else:
+                        error_message = '商商品Ｃがプロダクトマスタに存在しません。'
 
             if not uom_dict.get(line.unit_code):
                 if error_message:
@@ -187,13 +201,14 @@ class YoukiKanri(models.Model):
                             'product_uom': uom_dict.get(line.unit_code)
                         }
                         if not so_dict.get(key, 0):
+                            org = self.env['ss_erp.organization'].browse(branch_dict.get(line.codeommercial_branch_code))
                             so = {
                                 'x_organization_id': branch_dict.get(line.codeommercial_branch_code),
                                 'partner_id': int(line.customer_business_partner_code),
                                 'partner_invoice_id': int(line.customer_business_partner_code),
                                 'partner_shipping_id': int(line.customer_business_partner_code),
                                 'date_order': datetime.strptime(line.slip_date, '%Y/%m/%d'),
-                                'warehouse_id': self.branch_id.warehouse_id.id,
+                                'warehouse_id': org.warehouse_id.id,
                                 'state': 'draft',
                                 'x_no_approval_required_flag': True,
                                 'order_line': [(0, 0, order_line)],
@@ -224,15 +239,20 @@ class YoukiKanri(models.Model):
                             po_dict[key]['order']['order_line'].append((0, 0, order_line))
 
                     elif line.slip_processing_classification == '9':
+                        org = self.env['ss_erp.organization'].browse(int(line.codeommercial_branch_code))
                         order_line = {
+                            'organization_id':org.id,
+                            'location_dest_id':org.warehouse_id.lot_stock_id.id,
                             'product_id': int(line.codeommercial_product_code),
                             'product_uom_qty': float(line.quantity),
                             'product_uom': uom_dict.get(line.unit_code)
                         }
                         if not inventoryorder_dict.get(key, 0):
+                            org = self.env['ss_erp.organization'].browse(int(line.customer_branch_code))
                             inv_order = {
-                                'organization_id': int(line.codeommercial_branch_code),
+                                'organization_id': org.id,
                                 'state': 'draft',
+                                'location_id': org.warehouse_id.lot_stock_id.id,
                                 'scheduled_date': datetime.strptime(line.slip_date, '%Y/%m/%d'),
                                 'inventory_order_line_ids': [(0, 0, order_line)],
                             }

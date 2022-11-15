@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <odoo>
-<!--    <data noupdate="0">-->
-    <data>
+    <data noupdate="1">
+        <!--    <data>-->
 
         <record id="svf_cloud_client_id" model="ir.config_parameter">
             <field name="key">svf_cloud_client_id</field>
@@ -55,6 +55,11 @@ RyWfUHb5pHQ159c4ndQcXuk=
             <field name="value">1333685628</field>
         </record>
 
+        <record id="svf_cloud_access_form_output_req_url" model="ir.config_parameter">
+            <field name="key">svf_cloud_access_form_output_req_url</field>
+            <field name="value">https://api.svfcloud.com/v1/artifacts</field>
+        </record>
+
         <record id="svf_cloud_access_token_req_url" model="ir.config_parameter">
             <field name="key">svf_cloud_access_token_req_url</field>
             <field name="value">https://api.svfcloud.com/oauth2/token</field>
@@ -68,82 +73,155 @@ RyWfUHb5pHQ159c4ndQcXuk=
         <!--    R003_売掛金残高確認書     -->
         <record id="r003_form_format_path" model="ir.config_parameter">
             <field name="key">R003_form_format_path</field>
-            <field name="value"></field>
+            <field name="value">form/Sample/ga_test/R003_accounts_receivable_balance_confirmation.xml</field>
         </record>
 
         <record id="r003_form_title" model="ir.config_parameter">
             <field name="key">R003_form_title</field>
-            <field name="value"></field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r003_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R003_form_img_resource_path</field>
+            <field name="value">aa</field>
         </record>
 
         <record id="r003_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R003_form_storage_dest_path</field>
-            <field name="value"></field>
+            <field name="value">aa</field>
         </record>
 
         <record id="r002_form_format_path" model="ir.config_parameter">
             <field name="key">R002_form_format_path</field>
-            <field name="value"/>
+            <field name="value">form/Sample/ga_test/R002_invocie.xml</field>
         </record>
 
         <record id="r002_form_title" model="ir.config_parameter">
             <field name="key">R002_form_title</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r002_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R002_form_storage_dest_path</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r002_form_img_resource_path" model="ir.config_parameter">
             <field name="key">R002_form_img_resource_path</field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r002_svf_registration_number" model="ir.config_parameter">
+            <field name="key">invoice_report.registration_number</field>
+            <field name="value"/>
+        </record>
+
+        <record id="r002_tax10_id" model="ir.config_parameter">
+            <field name="key">R002_tax10_id</field>
+            <field name="value"/>
+        </record>
+
+        <record id="r002_tax8_id" model="ir.config_parameter">
+            <field name="key">R002_tax8_id</field>
+            <field name="value"/>
+        </record>
+
+        <record id="r002_reduction_tax8_id" model="ir.config_parameter">
+            <field name="key">R002_reduction_tax8_id</field>
+            <field name="value"/>
+        </record>
+
+        <record id="r002_tax_exempt_id" model="ir.config_parameter">
+            <field name="key">R002_tax_exempt_id</field>
             <field name="value"/>
         </record>
 
         <record id="r004_form_format_path" model="ir.config_parameter">
             <field name="key">R004_form_format_path</field>
-            <field name="value"/>
+            <field name="value">form/Sample/ga_test/R004_accounts_receivable_ledger.xml</field>
         </record>
 
         <record id="r004_form_title" model="ir.config_parameter">
             <field name="key">R004_form_title</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r004_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R004_form_storage_dest_path</field>
-            <field name="value"/>
+            <field name="value">aa</field>
+        </record>
+
+
+        <record id="r004_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R004_form_img_resource_path</field>
+            <field name="value">aa</field>
         </record>
 
         <record id="r005_form_format_path" model="ir.config_parameter">
             <field name="key">R005_form_format_path</field>
-            <field name="value"/>
+            <field name="value">form/Sample/ga_test/R005_accounts_receivable_list.xml</field>
         </record>
 
         <record id="r005_form_title" model="ir.config_parameter">
             <field name="key">R005_form_title</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r005_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R005_form_storage_dest_path</field>
-            <field name="value"/>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r005_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R005_form_img_resource_path</field>
+            <field name="value">aa</field>
         </record>
 
         <record id="r006_form_format_path" model="ir.config_parameter">
             <field name="key">R006_form_format_path</field>
-            <field name="value"/>
+            <field name="value">form/Sample/ga_test/R006_invoice_list.xml</field>
         </record>
 
         <record id="r006_form_title" model="ir.config_parameter">
             <field name="key">R006_form_title</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
 
         <record id="r006_form_storage_dest_path" model="ir.config_parameter">
             <field name="key">R006_form_storage_dest_path</field>
-            <field name="value"/>
+            <field name="value">aa</field>
         </record>
+        <record id="r006_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R006_form_img_resource_path</field>
+            <field name="value">aa</field>
+        </record>
+
+<!--        &lt;!&ndash;        R010 Common&ndash;&gt;-->
+<!--        <record id="r010_form_format_path" model="ir.config_parameter">-->
+<!--            <field name="key">R010_form_format_path</field>-->
+<!--            <field name="value">aa</field>-->
+<!--        </record>-->
+
+<!--        <record id="r010_form_title" model="ir.config_parameter">-->
+<!--            <field name="key">R010_form_title</field>-->
+<!--            <field name="value">aa</field>-->
+<!--        </record>-->
+
+<!--        <record id="r010_form_storage_dest_path" model="ir.config_parameter">-->
+<!--            <field name="key">R010_form_storage_dest_path</field>-->
+<!--            <field name="value">aa</field>-->
+<!--        </record>-->
+<!--        <record id="r010_form_form_img_resource_path" model="ir.config_parameter">-->
+<!--            <field name="key">R010_form_img_resource_path</field>-->
+<!--            <field name="value">aa</field>-->
+<!--        </record>-->
+
+<!--        &lt;!&ndash;        R010 Construction&ndash;&gt;-->
+<!--        <record id="r010_construction_form_format_path" model="ir.config_parameter">-->
+<!--            <field name="key">R010_construction_form_format_path</field>-->
+<!--            <field name="value">aa</field>-->
+<!--        </record>-->
+
+
     </data>
 </odoo>

@@ -13,7 +13,10 @@
         "security/ir.model.access.csv",
 
         # VIEWS
-        'menu/menu_item.xml'
+        'menu/menu_item.xml',
+
+        'data/default_param_setting_data.xml'
+
     ],
     "application": False,
     "installable": True,

@@ -49,7 +49,7 @@ class PurchaseOrder(models.Model):
         ('full', '完納希望'),
         ('separated', '分納可能'),
     ], string="希望納品", default='full', copy=True)
-    x_dest_address_info = fields.Html("直送先情報")
+    x_dest_address_info = fields.Text("直送先情報")
     x_truck_number = fields.Char("車番")
 
     x_mkt_user_id = fields.Many2one(
@@ -57,7 +57,7 @@ class PurchaseOrder(models.Model):
     x_is_construction = fields.Boolean(
         "工事であるか", compute='_compute_show_construction', compute_sudo=True)
     x_construction_name = fields.Char("工事名称")
-    x_construction_sopt = fields.Char("工事場所")
+    x_construction_spot = fields.Char("工事場所")
     x_construction_period_start = fields.Date(
         "予定工期開始")
     x_construction_period_end = fields.Date(
@@ -79,15 +79,21 @@ class PurchaseOrder(models.Model):
     x_construction_other = fields.Text("その他")
     x_construction_payment_cash = fields.Float("現金")
     x_construction_payment_bill = fields.Float("手形")
-    x_construction_contract_notice = fields.Html(
+    x_construction_contract_notice = fields.Text(
         "工事契約における注記事項", copy=True, related='company_id.x_construction_contract_notice', store=True)
-    x_construction_subcontract = fields.Html("下請工事の予定価格と見積期間",
+    x_construction_subcontract = fields.Text("下請工事の予定価格と見積期間",
                                              copy=True, related='company_id.x_construction_subcontract', store=True)
 
     @api.onchange('x_organization_id')
     def _onchange_x_organization_id(self):
         if self.x_organization_id:
             self.picking_type_id = self.x_organization_id.warehouse_id.in_type_id.id
+
+    @api.onchange('partner_id', 'company_id')
+    def onchange_partner_id(self):
+        res = super(PurchaseOrder, self).onchange_partner_id()
+        if self.partner_id:
+            self.x_bis_categ_id = self.partner_id.x_transaction_categ
 
     @api.depends('x_bis_categ_id')
     def _compute_show_construction(self):
@@ -192,7 +198,8 @@ class PurchaseOrderLine(models.Model):
             'ss_erp_product_medium_class_for_convert')
 
         if not medium_classification_code:
-            raise UserError("プロダクト中分類の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_product_medium_class_for_convert）")
+            raise UserError(
+                "プロダクト中分類の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（ss_erp_product_medium_class_for_convert）")
         medium_classification_code.split(",")
         if self.x_alternative_unit_id and self.product_id.x_medium_classification_id.medium_classification_code in medium_classification_code:
             conversion_quantity = float_round(conversion_quantity, precision_digits=2)
@@ -200,7 +207,7 @@ class PurchaseOrderLine(models.Model):
             if self.x_alternative_unit_id.id == self.env.ref('uom.product_uom_kgm').id:
                 conversion_quantity = int(conversion_quantity)
             else:
-                conversion_quantity = math.floor(conversion_quantity * 10)/10
+                conversion_quantity = math.floor(conversion_quantity * 10) / 10
 
         self.x_conversion_quantity = conversion_quantity
 

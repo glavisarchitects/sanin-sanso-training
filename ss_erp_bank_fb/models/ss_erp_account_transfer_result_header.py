@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 from datetime import datetime
 from odoo.tools import format_date
 
+
 class AccountTransferResultHeader(models.Model):
     _name = 'ss_erp.account.transfer.result.header'
     _description = '全銀口座振替結果FBファイル取込/新規'
@@ -77,31 +78,52 @@ class AccountTransferResultHeader(models.Model):
 
     def processing_execution(self):
         # Todo: journal will be created with data
-        # a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
-        #     'A005_account_transfer_result_journal_id')
-        # if not a005_account_transfer_result_journal_id:
-        #     raise UserError('仕訳帳情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
-        account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
-        journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)], limit=1)
+        a005_account_transfer_result_journal_id = self.env['ir.config_parameter'].sudo().get_param(
+            'A005_account_transfer_result_journal_id')
+        if not a005_account_transfer_result_journal_id:
+            raise UserError('仕訳帳情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
 
-        account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
-        journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)], limit=1)
+        journal_ids = a005_account_transfer_result_journal_id.split(",")
+        if len(journal_ids) != 2:
+            raise UserError('仕訳帳情報の設定は間違っています。もう一度ご確認してください。')
+        # 当座預金
+        journal_account_1121 = journal_ids[0]
+        # 普通預金
+        journal_account_1122 = journal_ids[1]
 
-        if not account_1121 or not account_1122:
-            raise UserError('アカウント1122とか1121が見つかりません。設定してください。')
+        normal_receivable = self.env['ir.config_parameter'].sudo().get_param('ss_erp_created_byFB_accounts_receivable_id')
+        if not normal_receivable:
+            raise UserError('勘定科目情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。ss_erp_created_byFB_accounts_receivable_id')
 
-        if not journal_account_1121 or not journal_account_1122:
-            raise UserError('ジャーナル 1121 または 1122 が見つかりません。')
+        construction_receivable = self.env['ir.config_parameter'].sudo().get_param('ss_erp_created_byFB_con_accounts_receivable_id')
+        if not construction_receivable:
+            raise UserError('勘定科目情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。ss_erp_created_byFB_con_accounts_receivable_id')
 
-        transfer_line = self.account_transfer_result_record_ids.search([('status', '=', 'wait')])
+        # account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
+        # journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)], limit=1)
+        #
+        # account_1122 = self.env['account.account'].search([('code', '=', '1122')], limit=1)
+        # journal_account_1122 = self.env['account.journal'].search([('default_account_id', '=', account_1122.id)], limit=1)
+        #
+        # if not account_1121 or not account_1122:
+        #     raise UserError('アカウント1122とか1121が見つかりません。設定してください。')
+        #
+        # if not journal_account_1121 or not journal_account_1122:
+        #     raise UserError('ジャーナル 1121 または 1122 が見つかりません。')
+
+        transfer_line = self.account_transfer_result_record_ids.filtered(lambda k: k.status != 'success')
         for tl in transfer_line:
+            tl.processing_date = fields.Datetime.now()
+
             if tl.deposit_type == '1':
                 journal_id = journal_account_1122
             else:
                 journal_id = journal_account_1121
+            deposit_type = 'bank' if tl.deposit_type == '1' else 'checking'
             bank = self.env['res.bank'].search([('bic', '=', tl.withdrawal_bank_number)], limit=1)
             partner_bank = self.env['res.partner.bank'].search([('bank_id', '=', bank.id), (
-                'x_bank_branch_number', '=', tl.withdrawal_branch_number), ('acc_number', '=', tl.account_number)])
+                'x_bank_branch_number', '=', tl.withdrawal_branch_number), ('acc_number', '=', tl.account_number),
+                                                                ('acc_type', '=', deposit_type)])
             if not partner_bank:
                 tl.status = 'error'
                 tl.error_message = '対象の口座情報が見つかりませんでした。'
@@ -113,92 +135,94 @@ class AccountTransferResultHeader(models.Model):
                 continue
             partner_invoice = self.env['account.move'].search(
                 [('move_type', '=', 'out_invoice'), ('x_organization_id', '=', self.branch_id.id),
-                 ('x_receipt_type', '=', 'bank'), ('x_is_fb_created', '=', True),
+                 ('x_receipt_type', '=', 'transfer'), ('x_is_fb_created', '=', True),
                  ('x_is_not_create_fb', '=', False),
-                 ('state', '=', 'posted'), ('payment_state', '=', 'not_paid'), ('partner_id', '=', partner.id),
-                 ('amount_total', '=', int(tl.withdrawal_amount)), ])
-            if len(partner_invoice) != 1:
+                 ('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),
+                 ('partner_id', '=', partner.id), ]).sorted(key=lambda k: k.name)
+
+            if int(tl.withdrawal_amount) == sum(partner_invoice.mapped('amount_residual')):
+                payment_ids = []
+                for invoice in partner_invoice:
+                    in_accounts_receivable = int(construction_receivable) if invoice.journal_id.x_is_construction else int(normal_receivable)
+                    register_payment = self.env['account.payment.register'].with_context(
+                        active_model='account.move',
+                        active_ids=[invoice.id],
+                        active_id=invoice.id,
+                        allowed_company_ids=[invoice.company_id.id],
+                        dont_redirect_to_payments=True).create(
+                        {
+                            # 'active_model': 'account.move',
+                            # 'active_ids': partner_invoice.id,
+                            'journal_id': int(journal_id),
+                            # 'amount': partner_invoice.amount_total,
+                            # 'payment_date': fields.Date.context_today,
+                            # 'company_id': partner_invoice.company_id.id,
+                        })
+                    register_payment.sudo().action_create_payments()
+                    # assign payment_id
+                    created_payment = self.env['account.payment'].search([('ref', '=', invoice.name)], limit=1)
+                    payment_ids.append(created_payment.id)
+                    # 09/13/2022
+                    # Year + Withdrawal date in account transfer result header (yyyy/mm/dd)
+                    year_current = datetime.today().year
+                    withdrawal_date = (str(self.withdrawal_date) + str(year_current)) if self.withdrawal_date else False
+                    date_acc_payment = datetime.strptime(withdrawal_date, '%m%d%Y').date()
+
+                    # in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
+                    receivable_line = invoice.line_ids.filtered(
+                        lambda l: l.account_id.user_type_id.type == 'receivable')
+                    # if not in_accounts_receivable:
+                    #     raise UserError('アカウント 1150 が見つかりません。設定してください。')
+
+                    created_payment.move_id.with_context(rewrite_name_fb=True).sudo().write({
+                        'x_receipt_type': invoice.x_receipt_type,
+                        'x_payment_type': invoice.x_payment_type,
+                        'x_organization_id': invoice.x_organization_id,
+                        'x_responsible_dept_id': invoice.x_responsible_dept_id,
+                        'x_is_not_create_fb': True,
+                        'date': date_acc_payment,
+                        'x_responsible_user_id': invoice.x_responsible_user_id,
+                        'x_mkt_user_id': invoice.x_mkt_user_id,
+                        'x_is_fb_created': False,
+
+                    })
+
+                    created_payment.sudo().write(
+                        {
+                            'x_receipt_type': invoice.x_receipt_type,
+                            'x_payment_type': invoice.x_payment_type,
+                            'x_sub_account_id': receivable_line.x_sub_account_id,
+                            'x_organization_id': invoice.x_organization_id,
+                            'x_responsible_dept_id': invoice.x_responsible_dept_id,
+                            'x_is_not_create_fb': True,
+                            'x_is_fb_created': False,
+                        })
+
+                    debit_line = created_payment.move_id.line_ids.filtered(lambda l: l.debit > 0)
+                    debit_line.date_maturity = self.upload_date
+
+                    credit_line = created_payment.move_id.line_ids.filtered(lambda l: l.credit > 0)
+
+                    credit_line.with_context({
+                        'from_zengin_create': True,
+                    }).write({
+                        'account_id': in_accounts_receivable,
+                        'x_sub_account_id': receivable_line.x_sub_account_id,
+                        'date_maturity': self.upload_date,
+                    })
+
+                tl.update({'payment_id': [(6, 0, payment_ids)]})
+                tl.status = 'success'
+            else:
                 tl.status = 'error'
-                if not partner_invoice:
-                    tl.error_message = '消込対象の請求情報が見つかりませんでした。'
-                if len(partner_invoice) > 1:
-                    tl.error_message = '消込対象の請求情報が複数見つかりました。'
-                continue
-            # register_payment = partner_invoice.action_register_payment()
-            register_payment = self.env['account.payment.register'].with_context(
-                active_model='account.move',
-                active_ids=[partner_invoice.id],
-                active_id=partner_invoice.id,
-                allowed_company_ids=[partner_invoice.company_id.id],
-                dont_redirect_to_payments=True).create(
-                {
-                    # 'active_model': 'account.move',
-                    # 'active_ids': partner_invoice.id,
-                    'journal_id': journal_id.id,
-                    # 'amount': partner_invoice.amount_total,
-                    # 'payment_date': fields.Date.context_today,
-                    # 'company_id': partner_invoice.company_id.id,
-                })
-            register_payment.sudo().action_create_payments()
-            # assign payment_id
-            created_payment = self.env['account.payment'].search([('ref', '=', partner_invoice.name)], limit=1)
-            # 09/13/2022
-            # Year + Withdrawal date in account transfer result header (yyyy/mm/dd)
-            year_current = datetime.today().year
-            withdrawal_date = (str(self.withdrawal_date) + str(year_current)) if self.withdrawal_date else False
-            date_acc_payment = datetime.strptime(withdrawal_date,'%m%d%Y')
-            created_payment.write({
-                    'x_receipt_type': partner_invoice.x_receipt_type,
-                    'x_payment_type': partner_invoice.x_payment_type,
-                    'x_organization_id': partner_invoice.x_organization_id,
-                    'x_responsible_dept_id': partner_invoice.x_responsible_dept_id,
-                    'x_is_not_create_fb': True,
-                    # 'date': self.upload_date,
-                    'date': date_acc_payment,
-                    # 'journal_id': self.env['account.journal'].browse(int(a005_account_transfer_result_journal_id)),
-                    'x_responsible_user_id': partner_invoice.x_responsible_user_id,
-                    'x_mkt_user_id': partner_invoice.x_mkt_user_id,
-                    'x_is_fb_created': False,
-
-                })
-
-            debit_line = created_payment.move_id.line_ids.filtered(lambda l: l.debit > 0)
-            debit_line.date_maturity = self.upload_date
-
-            credit_line = created_payment.move_id.line_ids.filtered(lambda l: l.credit > 0)
-
-            # if tl.deposit_type == '1':
-            #     deposit_account = account_1122
-            # else:
-            #     deposit_account = account_1121
-            #
-            # debit_line.account_id = deposit_account.id
-
-            in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
-            receivable_line = partner_invoice.line_ids.filtered(lambda l: l.account_id.user_type_id == self.env.ref('account.data_account_type_receivable').id)
-            if not in_accounts_receivable:
-                raise UserError('アカウント 1150 が見つかりません。設定してください。')
-            # credit_line.account_id = in_accounts_receivable.id
-            # credit_line.x_sub_account_id = receivable_line.x_sub_account_id
-            # credit_line.date_maturity = self.upload_date
-
-            credit_line.with_context({
-                'from_zengin_create': True,
-            }).write({
-                'account_id': in_accounts_receivable.id,
-                'x_sub_account_id': receivable_line.x_sub_account_id,
-                'date_maturity': self.upload_date,
-            })
-
-            tl.payment_id = created_payment.id
-            tl.status = 'success'
-
+                tl.error_message = '消込対象の請求情報が見つかりませんでした。'
 
 class AccountTransferResultLine(models.Model):
     _name = 'ss_erp.account.transfer.result.line'
     _description = '全銀口座振替実績FBインポートデータ'
 
-    account_transfer_result_header_id = fields.Many2one('ss_erp.account.transfer.result.header', string='全銀口座振替結果ヘッダ')
+    account_transfer_result_header_id = fields.Many2one('ss_erp.account.transfer.result.header',
+                                                        string='全銀口座振替結果ヘッダ')
     status = fields.Selection(selection=[
         ('wait', '処理待ち'),
         ('success', '成功'),
@@ -219,4 +243,4 @@ class AccountTransferResultLine(models.Model):
     transfer_result_code = fields.Char(string='振込結果コード')
     dummy2 = fields.Char(string='ダミー２')
     error_message = fields.Char(string='エラーメッセージ')
-    payment_id = fields.Many2one('account.payment', string='支払参照')
+    payment_id = fields.Many2many('account.payment', string='支払参照')

@@ -1,4 +1,4 @@
-odoo.define('ss_erp.web_notify', function (require) {
+odoo.define('ss_erp_stock.web_notify', function (require) {
 "use strict";
 var core = require('web.core');
 var ListRenderer = require('web.ListRenderer');
@@ -16,9 +16,9 @@ var _t = core._t;
             });
             warnings.unshift('<ul>');
             warnings.push('</ul>');
-            if(invalidFields.length !== 0 && this.state.model === 'ss_erp.inventory.order.line'){
+//            if(invalidFields.length !== 0 && this.state.model === 'ss_erp.inventory.order.line'){
                 this.do_warn(_t("Invalid fields:"), warnings.join(''));
-            }
+//            }
         },
         canBeSaved: function (recordID) {
             var self = this;
@@ -28,14 +28,17 @@ var _t = core._t;
                 if (recordID === null) {
                     return [];
                 }
-
-
+            var fieldNames = this._super(recordID);
+            this._notifyInvalidFields(fieldNames);
+            return fieldNames;
             }
-             var fieldNames = this._super(recordID);
-             this._notifyInvalidFields(fieldNames);
-             return fieldNames;
+            else{
+             return this._super(recordID);
 
-            return Promise.resolve(true);
+
+             }
+
+//            return Promise.resolve(true);
         },
     });
 
@@ -52,8 +55,13 @@ var _t = core._t;
                     return Promise.resolve(true);
                 }
             }
+            else{
+             return this._super(recordID);
 
-            return Promise.resolve(true);
+
+             }
+
+//            return Promise.resolve(true);
 
         },
 

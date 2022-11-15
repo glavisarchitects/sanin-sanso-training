@@ -3,7 +3,7 @@
     <data>
 
         <record id="model_stock_inventory_action_approval_request" model="ir.actions.server">
-            <field name="name">Approval request</field>
+            <field name="name">承認依頼</field>
             <field name="model_id" ref="model_stock_inventory"/>
             <field name="binding_model_id" ref="model_stock_inventory"/>
             <field name="state">code</field>
@@ -16,7 +16,7 @@
             </field>
         </record>
         <record id="model_stock_inventory_instruction_action_approval_request" model="ir.actions.server">
-            <field name="name">Approval request</field>
+            <field name="name">承認依頼</field>
             <field name="model_id" ref="model_ss_erp_instruction_order"/>
             <field name="binding_model_id" ref="model_ss_erp_instruction_order"/>
             <field name="state">code</field>
@@ -35,8 +35,14 @@
             <field name="model_id" ref="model_ss_erp_lpgas_order"/>
             <field name="binding_model_id" ref="model_ss_erp_lpgas_order"/>
             <field name="state">code</field>
-            <field name="code">records.approval_request()</field>
-        </record>
+            <field name="code">
+                if records:
+                    records.approval_request()
+                    act = env.ref('approvals.approval_request_action').read()[0]
+                    request_category_id = env['approval.category'].search([('has_lp_gas_inventory_ids','in',('required','optional'))], limit=1).id
+                    act.update({'views': [(env.ref('approvals.approval_request_view_form').id, 'form')],'context':{'default_category_id':request_category_id,'default_x_lpgas_inventory_ids': [(6, 0, records.ids)]}})
+                    action = act
+            </field>        </record>
 
     </data>
 </odoo>

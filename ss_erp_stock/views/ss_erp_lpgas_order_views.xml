@@ -21,7 +21,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="集計" confirm="既存のデータは削除されてしまいます。実行をしますか。" name="calculate_aggregate_lpgas" type="object"  attrs="{'invisible': [('state', 'not in', ['draft', 'confirm', 'waiting'])]}" class="oe_highlight"/>
+                    <button string="集計" confirm="既存のデータは削除されてしまいます。実行をしますか。" name="calculate_aggregate_lpgas" type="object"  attrs="{'invisible': [('state', 'not in', ['draft', 'confirm', 'waiting'])]}" class="oe_highlight o_aggregate_lpgas_btn"/>
                     <button string="検証" name="verify_lpgas_slip" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'not in', ['approved'])]}"/>
                     <button string="表示" name="show_lpgas_report" type="object" class="oe_highlight"/>
                     <button string="取消" name="cancel_lpgas_slip" attrs="{'invisible': [('state', 'not in', ['draft', 'confirm', 'waiting'])]}" type="object"/>

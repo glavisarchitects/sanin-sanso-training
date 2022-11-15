@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!--   Menu Account-->
+        <menuitem id="menu_ss_erp_superstream_linkage_journal_parent"
+                  name="Superstream 連携"
+                  parent="account.menu_finance_entries"
+                  sequence="12"
+                   />
+
+        <menuitem id="menu_ss_erp_superstream_journal_entry_output"
+                  name="仕訳伝票出力"
+                  parent="menu_ss_erp_superstream_linkage_journal_parent"
+                  action="ss_erp_sstream_journal_entry_output_action" />
+
+        <menuitem id="menu_ss_erp_sstream_payment_journal_export"
+                  name="入金支払仕訳伝票出力"
+                  parent="menu_ss_erp_superstream_linkage_journal_parent"
+                  action="ss_erp_sstream_payment_journal_export_action" />
+
+        <!--   Menu setting-->
+        <menuitem id="menu_ss_erp_superstream_linkage_journal_parent_in_setting"
+                  name="SuperStream連携"
+                  parent="account.menu_finance_configuration"
+                  sequence="6"
+        />
+
+        <menuitem id="menu_ss_erp_superstream_linkage_journal_setting"
+                  name="SuperStream連携仕訳"
+                  parent="menu_ss_erp_superstream_linkage_journal_parent_in_setting"
+                  action="ss_erp_superstream_linkage_journal_action" />
     </data>
 </odoo>
