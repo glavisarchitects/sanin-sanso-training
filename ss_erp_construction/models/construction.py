@@ -520,10 +520,10 @@ class Construction(models.Model):
             moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
         return moves
 
-    def write(self, vals):
-        super().write(vals)
-        if not self.construction_component_ids:
-            raise UserError('構成品の明細を追加してください。')
+    # def write(self, vals):
+    #     super().write(vals)
+    #     if not self.construction_component_ids:
+    #         raise UserError('構成品の明細を追加してください。')
 
     def _prepare_stock_picking(self):
         picking = {
