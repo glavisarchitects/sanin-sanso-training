@@ -168,6 +168,7 @@ class Construction(models.Model):
                     'product_uom_qty': component.product_uom_qty,
                     'product_id': component.product_id.id,
                     'product_uom_id': component.product_uom_id.id,
+                    'standard_price':component.product_id.product_tmpl_id.standard_price,
                     'name': component.product_id.name,
                 }
             else:
