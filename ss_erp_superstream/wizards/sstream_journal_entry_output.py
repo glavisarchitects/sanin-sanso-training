@@ -119,7 +119,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , tax_excluded_amount :: INTEGER							
                 , tax_amount :: INTEGER								
                 , case when deb_cre_division = '1' then '000'								
-                else tax_id								
+                else COALESCE(tax_id, 0)								
                 end as tax_id								
                 , tax_entry_division								
                 , summery1
@@ -200,7 +200,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         inner join								
                         account_move_line aml /* 仕訳項目 */								
                         on am.id = aml.move_id								
-                        left join								
+                        inner join								
                         account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
                         on aml.id = aml_atr.account_move_line_id								
                         left join 								
@@ -293,7 +293,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     inner join								
                     account_move_line aml /* 仕訳項目 */								
                     on am.id = aml.move_id								
-                    left join								
+                    inner join								
                     account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
                     on aml.id = aml_atr.account_move_line_id								
                     left join 								
@@ -388,7 +388,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         inner join								
                         account_move_line aml /* 仕訳項目 */								
                         on am.id = aml.move_id								
-                        left join								
+                        inner join								
                         account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
                         on aml.id = aml_atr.account_move_line_id								
                         left join 								
@@ -485,7 +485,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     inner join								
                     account_move_line aml /* 仕訳項目 */								
                     on am.id = aml.move_id								
-                    left join								
+                    inner join								
                     account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
                     on aml.id = aml_atr.account_move_line_id								
                     left join 								
@@ -607,16 +607,16 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     where								
                     pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[])
                     and aml.account_id = ojl.debit_account
-                    and aml.price_total = aml.price_subtotal
                     and pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[])								
-                    and aml.debit <> 0  /* 借方を取得 */								
+                    and aml.debit <> 0  /* 借方を取得 */		
+                    and am.amount_tax = 0						
                     and aml.parent_state = 'posted'  /* 記帳済み */								
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and am.date BETWEEN '{start_period}' and '{end_period}'														
                                             
                 union all								
                                                 
-                /* 消費税のある商品売上とその消費税を取得する（貸方-税計算あり） */								
+                /* 消費税のある商品売上とその消費税を取得する（貸方-税計算なし） */								
                 select 								
                     aml.id as move_line_id
                     ,pt.id as product_id
@@ -698,9 +698,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 where								
                 pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[])
                 and aml.account_id = ojl.credit_account
-                and aml.price_total = aml.price_subtotal
                 and pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[])								
-                and aml.credit <> 0  /* 借方を取得 */								
+                and aml.credit <> 0  /* 借方を取得 */
+                and am.amount_tax = 0								
                 and aml.parent_state = 'posted'  /* 記帳済み */								
                 and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                 and am.date BETWEEN '{start_period}' and '{end_period}'																
@@ -1002,19 +1002,22 @@ class SStreamJournalEntryOutput(models.TransientModel):
             credit_line = ''
             # tax region
             if de_line['tax_id'] != '000':
-                account_tax = self.env['account.tax'].browse(de_line['tax_id'])
+                if de_line['tax_id'] == 0:
+                    de_line['tax_id'] = ''
+                else:
+                    account_tax = self.env['account.tax'].browse(de_line['tax_id'])
 
-                convert_tax_code_type = self.env['ss_erp.convert.code.type'].search([('code', '=', 'tax_code')],
-                                                                                    limit=1)
-                external_system_type = self.env['ss_erp.external.system.type'].search(
-                    [('code', '=', 'super_stream')],
-                    limit=1)
-                convert_tax_recs = self.env['ss_erp.code.convert'].search(
-                    [('convert_code_type', '=', convert_tax_code_type.id),
-                     ('external_system', '=', external_system_type.id)], )
-                convert_tax_map = convert_tax_recs.filtered(lambda r: r.internal_code.id == account_tax.id)
+                    convert_tax_code_type = self.env['ss_erp.convert.code.type'].search([('code', '=', 'tax_code')],
+                                                                                        limit=1)
+                    external_system_type = self.env['ss_erp.external.system.type'].search(
+                        [('code', '=', 'super_stream')],
+                        limit=1)
+                    convert_tax_recs = self.env['ss_erp.code.convert'].search(
+                        [('convert_code_type', '=', convert_tax_code_type.id),
+                         ('external_system', '=', external_system_type.id)], )
+                    convert_tax_map = convert_tax_recs.filtered(lambda r: r.internal_code.id == account_tax.id)
 
-                de_line['tax_id'] = convert_tax_map.external_code or de_line['tax_id']
+                    de_line['tax_id'] = convert_tax_map.external_code or de_line['tax_id']
             clean_dict_data = deepcopy(de_line)
             if clean_dict_data.get('move_line_id'):
                 clean_dict_data.pop('move_line_id')
