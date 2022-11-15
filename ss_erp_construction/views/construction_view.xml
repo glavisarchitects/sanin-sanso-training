@@ -227,7 +227,7 @@
                                         <field name="printed_user"/>
                                     </group>
                                     <group>
-                                        <field name="sequence_number" readonly="1"/>
+                                        <field name="name" string="文書番号" readonly="1"/>
                                         <field name="output_date"/>
                                         <field name="expire_date"/>
                                         <field name="estimation_note"/>
