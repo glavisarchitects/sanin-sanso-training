@@ -49,7 +49,7 @@ class PurchaseOrder(models.Model):
         ('full', '完納希望'),
         ('separated', '分納可能'),
     ], string="希望納品", default='full', copy=True)
-    x_dest_address_info = fields.Html("直送先情報")
+    x_dest_address_info = fields.Text("直送先情報")
     x_truck_number = fields.Char("車番")
 
     x_mkt_user_id = fields.Many2one(
@@ -57,7 +57,7 @@ class PurchaseOrder(models.Model):
     x_is_construction = fields.Boolean(
         "工事であるか", compute='_compute_show_construction', compute_sudo=True)
     x_construction_name = fields.Char("工事名称")
-    x_construction_sopt = fields.Char("工事場所")
+    x_construction_spot = fields.Char("工事場所")
     x_construction_period_start = fields.Date(
         "予定工期開始")
     x_construction_period_end = fields.Date(
@@ -79,9 +79,9 @@ class PurchaseOrder(models.Model):
     x_construction_other = fields.Text("その他")
     x_construction_payment_cash = fields.Float("現金")
     x_construction_payment_bill = fields.Float("手形")
-    x_construction_contract_notice = fields.Html(
+    x_construction_contract_notice = fields.Text(
         "工事契約における注記事項", copy=True, related='company_id.x_construction_contract_notice', store=True)
-    x_construction_subcontract = fields.Html("下請工事の予定価格と見積期間",
+    x_construction_subcontract = fields.Text("下請工事の予定価格と見積期間",
                                              copy=True, related='company_id.x_construction_subcontract', store=True)
 
     @api.onchange('x_organization_id')

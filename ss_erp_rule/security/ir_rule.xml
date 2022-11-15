@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data noupdate="1">
+    <data>
 
         <!--        Product Form Delete-->
         <record id="ss_erp_product_template_rule" model="ir.rule">
             <field name="name">Product Form Delete</field>
             <field name="model_id" ref="ss_erp_product_template.model_ss_erp_product_template_form"/>
             <field name="domain_force">
-                [('user_id','=',user.id)]
+                [('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_branch_general')),
                 (4, ref('ss_erp_rule.group_branch_middle_manager')),
                 (4, ref('ss_erp_rule.group_head_quarter_general')),
-                (4, ref('ss_erp_rule.group_branch_manager'))
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                 (4, ref('ss_erp_rule.group_head_quarter_middle_general')),
+                 (4, ref('ss_erp_rule.group_head_quarter'))
             ]"/>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -21,21 +23,21 @@
             <field name="perm_unlink" eval="True"/>
         </record>
         <!--        Partner Form Delete-->
-        <record id="ss_erp_res_partner_rule" model="ir.rule">
-            <field name="name">Partner Form Delete</field>
-            <field name="model_id" ref="ss_erp_res_partner.model_ss_erp_res_partner_form"/>
+        <record id="ss_erp_product_price_rule" model="ir.rule">
+            <field name="name">Product Price Delete</field>
+            <field name="model_id" ref="ss_erp_product_template.model_ss_erp_product_price"/>
             <field name="domain_force">
-                [('user_id','=',user.id)]
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
                 (4, ref('ss_erp_rule.group_branch_middle_manager')),
                  (4, ref('ss_erp_rule.group_head_quarter_general')),
-                 (4, ref('ss_erp_rule.group_branch_manager'))
+                 (4, ref('ss_erp_rule.group_branch_manager')),
             ]"/>
-            <field name="perm_read" eval="False"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
         <!--        Partner Rebate Delete-->
@@ -43,7 +45,7 @@
             <field name="name">Partner Rebate Delete</field>
             <field name="model_id" ref="ss_erp_purchase.model_ss_erp_partner_rebate"/>
             <field name="domain_force">
-                ['|',('organization_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -61,7 +63,7 @@
             <field name="name">Construction Order Delete</field>
             <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction"/>
             <field name="domain_force">
-                ['|',('organization_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -79,7 +81,7 @@
             <field name="name">Construction Workorder Delete</field>
             <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction_workorder"/>
             <field name="domain_force">
-                ['|',('organization_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -97,7 +99,7 @@
             <field name="name">Counstruction Category Delete</field>
             <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction_category"/>
             <field name="domain_force">
-                [('user_id','=',user.id)]
+                [('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -115,7 +117,7 @@
             <field name="name">Construction Template Delete</field>
             <field name="model_id" ref="ss_erp_construction.model_construction_template"/>
             <field name="domain_force">
-                [('user_id','=',user.id)]
+                [('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -133,7 +135,7 @@
             <field name="name">Construction Workcenter Delete</field>
             <field name="model_id" ref="ss_erp_construction.model_construction_workcenter"/>
             <field name="domain_force">
-                [('user_id','=',user.id)]
+                [('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -151,7 +153,7 @@
             <field name="name">Account Move Delete</field>
             <field name="model_id" ref="account.model_account_move"/>
             <field name="domain_force">
-                ['|',('x_organization_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -169,7 +171,7 @@
             <field name="name">Purchase Order Delete</field>
             <field name="model_id" ref="purchase.model_purchase_order"/>
             <field name="domain_force">
-                ['|',('x_organization_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -188,7 +190,7 @@
             <field name="name">SS:Yamasan-Gas Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_yg_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -202,7 +204,7 @@
             <field name="name">SS:Yamasan-Gas Summary User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_yg_summary"/>
             <field name="domain_force">
-                ['|',('header_id.branch_id','in',user.organization_ids.ids), ('header_id.user_id','=',user.id)]
+                ['|',('header_id.branch_id','in',[organization.id for organization in user.organization_ids]), ('header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -216,7 +218,7 @@
             <field name="name">SS:Yamasan-Gas Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_yg_detail"/>
             <field name="domain_force">
-                ['|',('header_id.branch_id','in',user.organization_ids.ids), ('header_id.user_id','=',user.id)]
+                ['|',('header_id.branch_id','in',[organization.id for organization in user.organization_ids]), ('header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -230,7 +232,7 @@
             <field name="name">SS:Powernet Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_powernet_sales_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -244,7 +246,7 @@
             <field name="name">SS:Powernet Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_powernet_sales_detail"/>
             <field name="domain_force">
-                ['|',('powernet_sales_header_id.branch_id','in',user.organization_ids.ids),
+                ['|',('powernet_sales_header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
                 ('powernet_sales_header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
@@ -259,7 +261,7 @@
             <field name="name">SS:Youki Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_youki_kanri"/>
             <field name="domain_force">
-                ['|',('branch_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -273,7 +275,7 @@
             <field name="name">SS:Youki Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_youki_kanri_detail"/>
             <field name="domain_force">
-                ['|',('ifdb_youki_kanri_id.branch_id','in',user.organization_ids.ids),
+                ['|',('ifdb_youki_kanri_id.branch_id','in',[organization.id for organization in user.organization_ids]),
                 ('ifdb_youki_kanri_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
@@ -288,7 +290,7 @@
             <field name="name">SS:Autogas Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_autogas_file_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -302,7 +304,7 @@
             <field name="name">SS:Autogas Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_autogas_file_data_rec"/>
             <field name="domain_force">
-                ['|',('autogas_file_header_id.branch_id','in',user.organization_ids.ids),
+                ['|',('autogas_file_header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
                 ('autogas_file_header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
@@ -317,7 +319,7 @@
             <field name="name">SS:Propane Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_propane_sales_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -331,7 +333,7 @@
             <field name="name">SS:Propane Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_propane_sales_detail"/>
             <field name="domain_force">
-                ['|',('propane_sales_header_id.branch_id','in',user.organization_ids.ids),
+                ['|',('propane_sales_header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
                 ('propane_sales_header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
@@ -346,7 +348,7 @@
             <field name="name">SS:Youki-billing Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_youkikensa_billing_file_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -360,7 +362,7 @@
             <field name="name">SS:Youki-billing Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_youkikensa_billing_file_detail"/>
             <field name="domain_force">
-                ['|',('youkikensa_billing_file_header_id.branch_id','in',user.organization_ids.ids),
+                ['|',('youkikensa_billing_file_header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
                 ('youkikensa_billing_file_header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
@@ -371,35 +373,7 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
-        <record id="ss_erp_youki_billing_import_delete_rule" model="ir.rule">
-            <field name="name">SS youkikensa.header Delete</field>
-            <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_youkikensa_billing_file_header"/>
-            <field name="domain_force">
-                ['|',('branch_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
-            </field>
-            <field name="groups" eval="[
-                (4, ref('ss_erp_rule.group_my_org_only_external_link')),
-            ]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
-        </record>
-        <record id="ss_erp_youki_billing_detail_delete_rule" model="ir.rule">
-            <field name="name">SS youkikensa.detail Delete</field>
-            <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_youkikensa_billing_file_detail"/>
-            <field name="domain_force">
-                ['|',('youkikensa_billing_file_header_id.branch_id','in',user.organization_ids.ids),
-                ('youkikensa_billing_file_header_id.user_id','=',user.id)]
-            </field>
-            <field name="groups" eval="[
-                (4, ref('ss_erp_rule.group_my_org_only_external_link')),
-            ]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="True"/>
-            <field name="perm_unlink" eval="True"/>
-        </record>
+
 
         <!--        SS その他権限-->
 
@@ -407,7 +381,7 @@
             <field name="name">SS Own Branch Orders Analysis</field>
             <field name="model_id" ref="sale.model_sale_report"/>
             <field name="domain_force">
-                ['|',('x_organization_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -418,11 +392,12 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
+
         <record id="ss_erp_own_branch_orders_rule" model="ir.rule">
             <field name="name">SS Own Branch Orders</field>
             <field name="model_id" ref="sale.model_sale_order"/>
             <field name="domain_force">
-                ['|',('x_organization_id','in',user.organization_ids.ids), ('user_id','=',user.id)]
+                ['|',('x_organization_id','in', [organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -437,7 +412,7 @@
             <field name="name">SS Own Branch Order Lines</field>
             <field name="model_id" ref="sale.model_sale_order_line"/>
             <field name="domain_force">
-                ['|',('salesman_id.organization_ids','in',user.organization_ids), ('salesman_id','=',user.id)]
+                ['|',('salesman_id.organization_ids','in',[organization.id for organization in user.organization_ids]), ('salesman_id','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -467,8 +442,8 @@
             <field name="name">SS Own Branch Invoices</field>
             <field name="model_id" ref="account.model_account_move"/>
             <field name="domain_force">
-                [('move_type', 'in', ('out_invoice', 'out_refund','counstruction_out_invoice')), '|',
-                ('x_organization_id', '=', user.organization_ids.ids), ('invoice_user_id', '=', user.id)]
+                [('move_type', 'in', ('out_invoice', 'out_refund')),'|',('x_organization_id', '=', [organization.id for
+                organization in user.organization_ids]), ('invoice_user_id', '=', user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -483,9 +458,8 @@
             <field name="name">SS Own Branch Invoice Lines</field>
             <field name="model_id" ref="account.model_account_move_line"/>
             <field name="domain_force">
-                [('move_id.move_type', 'in', ('out_invoice', 'out_refund','counstruction_out_invoice')), '|',
-                ('move_id.x_organization_id', '=', user.organization_ids.ids), ('move_id.invoice_user_id', '=',
-                user.id)]
+                [('move_id.move_type', 'in', ('out_invoice', 'out_refund')), '|',('move_id.x_organization_id', '=',
+                [organization.id for organization in user.organization_ids]), ('move_id.invoice_user_id', '=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),

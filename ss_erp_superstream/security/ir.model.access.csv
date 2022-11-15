@@ -1,1 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ss_erp_superstream_linkage_journal,access_ss_erp_superstream_linkage_journal,model_ss_erp_superstream_linkage_journal,,1,1,1,1
+access_sstream_journal_entry_output,access_sstream_journal_entry_output,model_sstream_journal_entry_output,,1,1,1,1
+access_sstream_payment_journal_export,access_sstream_payment_journal_export,model_sstream_payment_journal_export,,1,1,1,1

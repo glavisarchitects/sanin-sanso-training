@@ -100,12 +100,7 @@ class InstructionOrderLine(models.Model):
         return res
 
     def _get_virtual_location(self):
-        virtual_location = self.env['stock.location'].search(
-            [('id', 'child_of', self.organization_id.warehouse_id.view_location_id.id), ('scrap_location', '=', True)])
-        if virtual_location:
-            return virtual_location
-        else:
-            raise UserError('在庫ロスロケーションは未設定です。ご確認ください。')
+        return self.product_id.with_company(self.company_id).property_stock_inventory
 
     def _get_move_values(self, qty, location_id, location_dest_id, out):
         self.ensure_one()

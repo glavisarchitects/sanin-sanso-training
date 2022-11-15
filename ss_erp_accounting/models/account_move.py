@@ -80,12 +80,35 @@ class AccountMove(models.Model):
         return res
 
     def action_register_payment(self):
+
+        ''' Open the account.payment.register wizard to pay the selected journal entries.
+        :return: An action opening the account.payment.register wizard.
+        '''
+
+        account_move_ids = self.browse(self.ids)
+
+        org_list = list(set(account_move_ids.mapped('x_organization_id')))
+        dep_list = list(set(account_move_ids.mapped('x_responsible_dept_id')))
+        receipt_type = list(set(account_move_ids.mapped('x_receipt_type')))
+        payment_type = list(set(account_move_ids.mapped('x_payment_type')))
+        if len(org_list) >1 or len(receipt_type) > 1 or len(payment_type) > 1 or len(dep_list) > 1:
+            raise UserError('組織、管轄部門、支払または入金手段が同じであるレコードを選択してください。')
+
         res = super().action_register_payment()
-        res['context']['default_x_organization_id'] = self.x_organization_id.id
-        res['context']['default_x_responsible_dept_id'] = self.x_responsible_dept_id.id
-        res['context']['default_x_receipt_type'] = self.x_receipt_type
-        res['context']['default_x_payment_type'] = self.x_payment_type
+        res['context']['default_x_organization_id'] = account_move_ids[0].x_organization_id.id
+        res['context']['default_x_responsible_dept_id'] = account_move_ids[0].x_responsible_dept_id.id
+        res['context']['default_x_receipt_type'] = account_move_ids[0].x_receipt_type
+        res['context']['default_x_payment_type'] = account_move_ids[0].x_payment_type
         return res
+
+
+    # def action_register_payment(self):
+    #     res = super().action_register_payment()
+    #     res['context']['default_x_organization_id'] = self.x_organization_id.id
+    #     res['context']['default_x_responsible_dept_id'] = self.x_responsible_dept_id.id
+    #     res['context']['default_x_receipt_type'] = self.x_receipt_type
+    #     res['context']['default_x_payment_type'] = self.x_payment_type
+    #     return res
 
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):
@@ -180,8 +203,6 @@ class AccountMove(models.Model):
                 'out_receipt': _('Draft Sales Receipt'),
                 'in_receipt': _('Draft Purchase Receipt'),
                 'entry': _('Draft Entry'),
-                'construction_out_invoice': _('工事販売請求書ドラフト'),
-                'construction_in_invoice': _('工事購買請求書ドラフト'),
             }[self.move_type]
             if not self.name or self.name == '/':
                 draft_name += ' (* %s)' % str(self.id)

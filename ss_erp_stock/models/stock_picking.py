@@ -98,10 +98,11 @@ class StockPicking(models.Model):
             return {'domain': {'location_id': [('usage', '=', 'internal'), (
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'internal':
-            return {'domain': {'location_dest_id': [('usage', '=', 'internal'), (
-                'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)],
-                               'location_id': [('usage', '=', 'internal'), (
-                                   'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
+            return {'domain': {
+                'location_dest_id': [('id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id),
+                                     ('scrap_location', '=', False), ('return_location', '=', False)],
+                'location_id': [('id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id),
+                                ('scrap_location', '=', False), ('return_location', '=', False)]}}
         elif self.picking_type_code == 'mrp_operation':
             return {'domain': {'location_id': [('usage', '=', 'internal'), (
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}

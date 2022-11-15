@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_svf_purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">ss_erp_svf_purchase_order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_create_invoice'][1]" position="after">
+                    <button name="estimation_request_svf_template_export" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            string="見積依頼書"/>
+                    <button name="po_svf_template_export" type="object" attrs="{'invisible': [('state', '!=', 'purchase')]}"
+                            string="発注書"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

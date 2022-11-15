@@ -37,14 +37,15 @@ class ApprovalRequest(models.Model):
     x_product_template_form_id = fields.Many2one(
         'ss_erp.product.template.form', string='プロダクト申請フォーム')
     x_inventory_order_ids = fields.Many2many(
-        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票',store=True,)
+        'stock.inventory', 'inventory_request_rel', 'inventory_id', 'request_id', string='棚卸伝票', store=True, )
     x_sale_order_ids = fields.Many2many(
-        'sale.order', 'ss_erp_sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票',store=True,)
-    x_lpgas_inventory_ids = fields.Many2many('ss_erp.lpgas.order', store=True,string='LPガス棚卸伝票')
+        'sale.order', 'ss_erp_sale_order_request_rel', 'sale_id', 'request_id', string='見積伝票', store=True, )
+    x_lpgas_inventory_ids = fields.Many2many('ss_erp.lpgas.order', store=True, string='LPガス棚卸伝票')
     x_account_move_ids = fields.Many2many(
-        'account.move', 'ss_erp_account_move_request_rel', 'move_id', 'request_id',store=True, string='仕入請求伝票',)
+        'account.move', 'ss_erp_account_move_request_rel', 'move_id', 'request_id', store=True, string='仕入請求伝票', )
     x_purchase_order_ids = fields.Many2many(
-        'purchase.order', 'ss_erp_purchase_request_rel', 'purchase_id', 'request_id',store=True, string='見積依頼伝票',)
+        'purchase.order', 'ss_erp_purchase_request_rel', 'purchase_id', 'request_id', store=True,
+        string='見積依頼伝票', )
     x_payment_date = fields.Date('請求書締日')
     x_purchase_material = fields.Text('仕入商材')
     x_cash_amount = fields.Float('現金仕入額')
@@ -62,7 +63,7 @@ class ApprovalRequest(models.Model):
     multi_approvers_ids = fields.One2many(
         'ss_erp.multi.approvers', 'x_request_id', string='多段階承認', readonly=True, copy=False)
     x_inventory_instruction_ids = fields.Many2many(
-        'ss_erp.instruction.order', 'ss_erp_instruction_request_rel', 'instruction_id', 'request_id',store=True,
+        'ss_erp.instruction.order', 'ss_erp_instruction_request_rel', 'instruction_id', 'request_id', store=True,
         string='指示伝票')
 
     x_approval_date = fields.Date('申請日', default=datetime.now())
@@ -532,11 +533,24 @@ class ApprovalRequest(models.Model):
         body_template = body_template.with_context(lang=self.env.user.lang)
         model_description = self.env['ir.model']._get('approval.request').display_name
 
-        self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'approved')
-        if len(self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'approved')) == 1:
-            message = '一次承認済み'
-        else:
-            message = '二次承認済み'
+        approve_dic = {
+            1: '一次承認済み',
+            2: '二次承認済み',
+            3: '三次承認済み',
+            4: '四次承認済み',
+            5: '五次承認済み',
+            6: '六次承認済み',
+            7: '七次承認済み',
+            8: '八次承認済み',
+            9: '九次承認済み',
+            10: '十次承認済み',
+        }
+        stage_num = len(self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'approved'))
+        message = approve_dic[stage_num]
+        # if len(self.multi_approvers_ids.filtered(lambda x: x.x_user_status == 'approved')) == 1:
+        #     message = '一次承認済み'
+        # else:
+        #     message = '二次承認済み'
 
         subject = _('【新販売基幹システムOdoo】%(name)s 承認ステータス進捗', name=self.name)
         body = body_template._render(
