@@ -22,7 +22,7 @@ class SSSuperStreamLinkageJournal(models.Model):
     product_ctg = fields.Selection([('merchandise', '商品'),
                                     ('product', '製品'),
                                     ('stock', '製品'),
-                                    ], string="商品・貯蔵品")
+                                    ], string="プロダクトカテゴリ")
     materials_grouping = fields.Boolean(string="原材料グルーピング", default=False)
     sanhot_point = fields.Boolean(string="さんほっとポイント", default=False)
     debit_account = fields.Many2one('account.account', string="借方勘定科目")

@@ -41,14 +41,14 @@ class ResPartner(models.Model):
         ('noting', '該当なし'),
     ], string='取引基本契約書', index=True, default='contract', tracking=True,
         help='”新規取引、BtoB取引、継続的取引(スポットではない)、月間取引税込30万円以上” すべて該当する場合は必ず締結にする')
-    x_contract_memo = fields.Text(string="変動理由", tracking=True)
+    x_contract_memo = fields.Text(string="契約変動理由", tracking=True)
     x_found_year = fields.Char(string='創立年度', tracking=True)
     x_capital = fields.Float(string='資本金', tracking=True)
     x_purchase_user_id = fields.Many2one(
         'res.users', string='購買担当者', index=True)
     x_other_payment_reason = fields.Text(string='変動理由', tracking=True)
     x_minimum_cost = fields.Monetary(string='最低仕入価格', tracking=True)
-    x_payment_terms = fields.Html(
+    x_payment_terms = fields.Text(
         related='company_id.x_payment_terms', string='支払条件の当社規定', tracking=True)
 
     x_contract_route = fields.Text(string='取引動機', tracking=True)
@@ -218,6 +218,66 @@ class ResPartner(models.Model):
                                               ('branch_receipt', '他店入金'),
                                               ('offset', '相殺')
                                               ], string='入金手段')
+
+
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        fields_to_hide = [
+            'has_address',
+            'has_bank_accounts',
+            'has_category_id',
+            'has_construction_info',
+            'has_contract_monthly_amount',
+            'has_email',
+            'has_function',
+            'has_industry_id',
+            'has_lang',
+            'has_mobile',
+            'has_parent_id',
+            'has_partner_info',
+            'has_performance_info',
+            'has_phone',
+            'has_property_account_position_id',
+            'has_property_delivery_carrier_id',
+            'has_property_payment_term_id',
+            'has_property_product_pricelist',
+            'has_property_supplier_payment_term_id',
+            'has_purchase_note',
+            'has_ref',
+            'has_sales_note',
+            'has_sales_term',
+            'has_team_id',
+            'has_title',
+            'has_unreconciled_entries',
+            'has_user_id',
+            'has_vat',
+            'has_website',
+            'has_x_bill_site',
+            'has_x_capital',
+            'has_x_collecting_money',
+            'has_x_contract_check',
+            'has_x_contract_material',
+            'has_x_contract_route',
+            'has_x_fax',
+            'has_x_fax_payment',
+            'has_x_fee_burden',
+            'has_x_fee_burden_paid',
+            'has_x_found_year',
+            'has_x_minimum_cost',
+            'has_x_payment_type',
+            'has_x_purchase_user_id',
+            'has_x_receipts_term',
+            'has_x_responsible_stamp',
+            'invoice_ids',
+            'is_company',
+        ]
+        res = super(ResPartner, self).fields_get(allfields, attributes=attributes)
+        for field in fields_to_hide:
+            if res.get(field):
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+                res[field]['exportable'] = False
+        return res
 
     @api.constrains('performance_ids', 'has_performance_info')
     def _check_performance_info_required(self):
