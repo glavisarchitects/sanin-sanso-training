@@ -292,9 +292,9 @@ class Construction(models.Model):
         required=False, )
 
     # Estimation Tab 2022/09/28
-    print_type = fields.Selection(string='帳票タイプ',
-                                  selection=[('housing', 'ハウジング'),
-                                             ('equipment', '設備'),
+    print_type = fields.Selection(string='出力パターン',
+                                  selection=[('set', '一式'),
+                                             ('detail', '明細'),
                                              ], copy=True, )
 
     is_tax_exclude = fields.Selection(string='消費税',
@@ -563,3 +563,6 @@ class Construction(models.Model):
             raise UserError('出荷するものは何もありません！')
         else:
             self._prepare_stock_picking()
+
+
+
