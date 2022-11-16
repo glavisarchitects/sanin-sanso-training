@@ -17,6 +17,7 @@
         'views/account_move_views.xml',
         'views/construction_view.xml',
         'views/purchase_order_views.xml',
+        'views/sale_order_view.xml',
 
         # WIZARD
         'wizards/account_invoice_list_history_views.xml',
