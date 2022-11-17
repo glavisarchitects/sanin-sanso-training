@@ -204,6 +204,9 @@ class ConstructionComponent(models.Model):
     @api.onchange('product_id')
     def _onchange_component_product_id(self):
         if self.product_id:
+
+            self.tax_id = self.product_id.product_tmpl_id.taxes_id[0].id if self.product_id.product_tmpl_id.taxes_id else False
+
             self.product_uom_id = self.product_id.uom_id.id
             self.standard_price = self.product_id.product_tmpl_id.standard_price
             self.sale_price = self.standard_price / (1 - self.margin_rate)
