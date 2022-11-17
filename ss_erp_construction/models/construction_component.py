@@ -64,6 +64,7 @@ class ConstructionComponent(models.Model):
         for rec in self:
             if rec.product_id:
                 rec.name = rec.product_id.product_tmpl_id.name
+                rec.standard_price = rec.product_id.product_tmpl_id.standard_price
 
     @api.depends('stock_move_ids.state')
     def _compute_qty_reserved_from_warehouse(self):
@@ -193,6 +194,12 @@ class ConstructionComponent(models.Model):
             'x_organization_id': self.construction_id.organization_id.id,
             'x_responsible_dept_id': self.construction_id.responsible_dept_id.id,
         }
+
+    @api.constrains('tax_id')
+    def _check_raise_tax_id(self):
+        for rec in self:
+            if not rec.tax_id:
+                raise UserError('税が選択されていない行があります。構成表の税を設定して下さい。')
 
     @api.onchange('product_id')
     def _onchange_component_product_id(self):

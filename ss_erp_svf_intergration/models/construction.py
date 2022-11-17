@@ -8,7 +8,10 @@ class Construction(models.Model):
     _inherit = 'ss.erp.construction'
 
     def action_print_estimation(self):
-        return self._prepare_data_file()
+        if self.print_type == 'detail':
+            return self._prepare_data_file()
+        else:
+            return self._prepare_data_file_set()
         # data_file = self._prepare_data_file()
         # if not data_file:
         #     raise UserError("出力対象のデータがありませんでした。")
@@ -163,6 +166,86 @@ class Construction(models.Model):
         '''
         self.env.cr.execute(query)
         return self.env.cr.dictfetchall()
+
+    def _prepare_data_file_set(self):
+
+        # ヘッダ
+        new_data = [
+            '"customer_name","department_id","output_date","total","address","tel","fax","author",' + \
+            '"construction_name","finish_date","transaction_type","date_of_expiry","remarks",' + \
+            '"product_name_head","specification_head","quantity_head","unit_head","unit_price_head",' + \
+            '"amount_of_money_head","subtotal_head","tax_of_money_head","total_head","comment_text",' + \
+            '"page_title","product_name","specification","quantity","unit","unit_price","amount_of_money","subtotal"']
+
+        output_date_str = self.output_date.strftime("%Y年%m月%d日") if self.output_date else datetime.now().strftime(
+            "%Y年%m月%d日")
+        organization_state_name = self.organization_id.organization_state_id.name or ''
+        organization_address = organization_state_name + (
+                self.organization_id.organization_city or '') + (
+                                       self.organization_id.organization_street or '') + (
+                                           self.organization_id.organization_street2 or '')
+
+        organization_phone = "TEL　" + (self.organization_id.organization_phone or '')
+        organization_fax = "FAX　" + (self.organization_id.organization_fax or '')
+        author = "作成者　" + (self.user_id.partner_id.name or '')
+        construction_name = self.construction_name
+        transaction_type = self.payment_term_id.name
+        date_of_expiry_str = self.expire_date.strftime("%Y年%m月%d日") if self.expire_date else ''
+        remarks = self.estimation_note if self.estimation_note else ''
+
+        data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
+            self.partner_id.display_name,        # customer_name
+            self.name,                           # department_id
+            output_date_str,                     # output_date
+            "{:,}".format(int(self.amount_total)),#total
+            organization_address,
+            organization_phone,
+            organization_fax,
+            author,
+            construction_name,
+            "別途協議",
+            transaction_type if transaction_type else "",
+            date_of_expiry_str if date_of_expiry_str else "",
+            remarks,
+            construction_name,
+            "",
+            "1",
+            "式",
+            "",
+            "{:,}".format(int(self.amount_untaxed)),
+            "{:,}".format(int(self.amount_untaxed)),
+            "{:,}".format(int(self.amount_tax)),
+            "{:,}".format(int(self.amount_total)),
+            "",
+            "1 " + construction_name,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "")
+        new_data.append(data_line)
+
+        file_data = "\n".join(new_data)
+
+        b = file_data.encode('shift-jis')
+        vals = {
+            'name': '工事見積書' '.csv',
+            'datas': base64.b64encode(b).decode('shift-jis'),
+            'type': 'binary',
+            'res_model': 'ir.ui.view',
+            'res_id': False,
+        }
+
+        file_txt = self.env['ir.attachment'].create(vals)
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/' + str(file_txt.id) + '?download=true',
+            'target': 'new',
+        }
+
 
     def _prepare_data_file(self):
 

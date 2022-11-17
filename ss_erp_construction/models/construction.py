@@ -168,6 +168,9 @@ class Construction(models.Model):
                     'product_uom_qty': component.product_uom_qty,
                     'product_id': component.product_id.id,
                     'product_uom_id': component.product_uom_id.id,
+                    'standard_price':component.product_id.product_tmpl_id.standard_price,
+                    'margin_rate': self.all_margin_rate,
+                    'sale_price':component.product_id.product_tmpl_id.standard_price / (1 - self.all_margin_rate),
                     'name': component.product_id.name,
                 }
             else:
@@ -289,9 +292,9 @@ class Construction(models.Model):
         required=False, )
 
     # Estimation Tab 2022/09/28
-    print_type = fields.Selection(string='帳票タイプ',
-                                  selection=[('housing', 'ハウジング'),
-                                             ('equipment', '設備'),
+    print_type = fields.Selection(string='出力パターン',
+                                  selection=[('set', '一式'),
+                                             ('detail', '明細'),
                                              ], copy=True, )
 
     is_tax_exclude = fields.Selection(string='消費税',
@@ -517,10 +520,10 @@ class Construction(models.Model):
             moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
         return moves
 
-    def write(self, vals):
-        super().write(vals)
-        if not self.construction_component_ids:
-            raise UserError('構成品の明細を追加してください。')
+    # def write(self, vals):
+    #     super().write(vals)
+    #     if not self.construction_component_ids:
+    #         raise UserError('構成品の明細を追加してください。')
 
     def _prepare_stock_picking(self):
         picking = {
@@ -560,3 +563,6 @@ class Construction(models.Model):
             raise UserError('出荷するものは何もありません！')
         else:
             self._prepare_stock_picking()
+
+
+
