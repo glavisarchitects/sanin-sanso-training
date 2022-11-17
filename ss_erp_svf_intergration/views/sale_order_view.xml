@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_svf_sale_order_form_inherit" model="ir.ui.view">
+            <field name="name">ss_erp_svf_sale_order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="ss_erp_sale.ss_erp_sale_form_inherit"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_confirm']" position="after">
+                    <button name="estimation_request_svf_template_export" type="object" string="見積書出力" attrs="{'invisible':[('state','!=','draft')]}"/>
+                </xpath>
+                <xpath expr="//page[@name='customer_signature']" position="after">
+                    <page name="estimate_info" string="見積書">
+                        <group modifiers="{}" string="見積書出力">
+                            <group>
+                                <field name="name" readonly="1" string="伝票番号"/>
+                                <label for="x_tax_type" string="合計金額"/>
+
+                                <div class="d-flex">
+                                <field name="x_tax_type" widget="radio" nolabel="1" options="{'horizontal': true}"/>
+                                <field name="amount_untaxed" nolabel="1" attrs="{'invisible':[('x_tax_type','=','include')]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_total" nolabel="1" attrs="{'invisible':[('x_tax_type','=','exclude')]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                </div>
+                                <field name="amount_tax" string="消費税額" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+
+                                <label for="x_delivery_note" string="納期"/>
+                                <div class="d-flex">
+                                    <div>
+                                    <field name="x_delivery_note" force_save="1"
+                                           placeholder="納期" attrs="{'invisible':[('x_delivery_date','!=',False),],'required':[('x_delivery_date','=',False)]}"/>
+                                        </div>
+                                    <span class="o_form_label mx-3 oe_edit_only">or</span>
+                                    <div>
+                                        <field name="x_delivery_date" attrs="{'required':[('x_delivery_note','=',False)]}"
+                                           placeholder="納期日付"/>
+                                    </div>
+                                </div>
+                                <label for="x_payment_term" string="取引方法"/>
+                                <div class="d-flex">
+                                    <div>
+                                    <field name="x_payment_term" force_save="1"
+                                           placeholder="取引方法" attrs="{'invisible':[('payment_term_id','!=',False)], 'required':[('payment_term_id','=',False)]}"/>
+                                        </div>
+                                    <span class="o_form_label mx-3 oe_edit_only">or</span>
+                                    <div>
+                                        <field name="payment_term_id" attrs="{'required':[('x_payment_term','=',False)]}"
+                                           placeholder="支払条件"/>
+                                    </div>
+                                </div>
+
+                                <label for="x_due_date_time" string="見積有効期限"/>
+                                <div class="d-flex">
+                                    <field name="x_due_date_time" force_save="1"
+                                           placeholder="日付" attrs="{'invisible':[('validity_date','!=',False)], 'required':[('validity_date','=',False)]}"/>
+                                    <span attrs="{'invisible':[('validity_date','!=',False)]}">日間 </span>
+                                    <span class="o_form_label mx-3 oe_edit_only">or</span>
+                                    <field name="validity_date" attrs="{'invisible':[('x_due_date_time','!=',0)], 'required':[('x_due_date_time','=',0)]}"
+                                           placeholder="日付"/>
+                                </div>
+                                <field name="x_remark"/>
+                            </group>
+                            <group name="" string="" modifiers="{}">
+                                <field name="x_partner_name"/>
+                                <field name="x_delivery_address"/>
+
+                            </group>
+
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

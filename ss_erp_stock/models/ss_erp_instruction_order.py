@@ -295,7 +295,9 @@ class InstructionOrder(models.Model):
             vals += self._get_exhausted_inventory_lines_vals({(l['product_id'], l['location_id']) for l in vals})
         return vals
 
-    def action_create_inventory(self, ids):
+    def action_create_inventory(self, ids, domain_record=[]):
+        if domain_record:
+            ids = self.env['ss_erp.instruction.order.line'].search(domain_record).ids
         lines = self.env['ss_erp.instruction.order.line'].browse(ids)
         if not self.stock_inventory_id:
             locations = lines.mapped('location_id')
