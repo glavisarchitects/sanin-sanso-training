@@ -169,6 +169,7 @@ class Construction(models.Model):
                     'product_id': component.product_id.id,
                     'product_uom_id': component.product_uom_id.id,
                     'standard_price':component.product_id.product_tmpl_id.standard_price,
+                    'tax_id':component.product_id.product_tmpl_id.taxes_id[0].id if component.product_id.product_tmpl_id.taxes_id else False,
                     'margin_rate': self.all_margin_rate,
                     'sale_price':component.product_id.product_tmpl_id.standard_price / (1 - self.all_margin_rate),
                     'name': component.product_id.name,
