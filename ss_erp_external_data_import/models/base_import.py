@@ -234,9 +234,12 @@ class Import(models.TransientModel):
         if options.get('encoding'):
             encode = options.get('encoding')
         for line in data:
-            if line == b"":
+            line_data = line.decode(encode).split(",")
+            # print(type(line_data[0]))
+            if len(line_data[0]) == 0 or line == b"":
                 continue
             new_line = b'"%s",' % (youki_kensa.name.encode(encode)) + line
+
             new_data.append(new_line)
         self.file = b"\n".join(new_data)
 
