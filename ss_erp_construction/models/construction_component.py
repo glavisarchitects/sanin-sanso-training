@@ -23,7 +23,7 @@ class ConstructionComponent(models.Model):
 
     display_type = fields.Selection([
         ('line_section', "Section"),
-        ('line_note', "Note")], default=False, help="Technical field for UX purpose.")
+        ('line_note', "Note")], default=False, help="Technical field for UX purpose.",string='表示タイプ')
 
     @api.depends('location_id', 'product_id')
     def _get_qty_available(self):
