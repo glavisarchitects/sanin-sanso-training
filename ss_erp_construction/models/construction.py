@@ -7,6 +7,7 @@ class Construction(models.Model):
     _name = 'ss.erp.construction'
     _description = '工事'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'name desc'
 
     name = fields.Char(string='シーケンス', default='新規')
     construction_name = fields.Char(string='工事名', copy=True)
