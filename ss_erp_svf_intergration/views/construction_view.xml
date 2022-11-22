@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_svf_intergration_construction_form_inherit" model="ir.ui.view">
+            <field name="name">ss_erp_svf_intergration.construction.form</field>
+            <field name="model">ss.erp.construction</field>
+            <field name="inherit_id" ref="ss_erp_construction.ss_erp_construction_form_view"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='show_confirmation_button']" position="after">
+                    <button name="action_print_estimation" type="object" string="工事見積書"
+                                confirm="工事見積書を作成します。"
+                                attrs="{'invisible':[('state','in',['draft','lost'])],}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

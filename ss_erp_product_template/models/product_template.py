@@ -20,10 +20,10 @@ class ProductTemplate(models.Model):
     x_fixed_cost = fields.Float("仕入定価", default=0, tracking=True)
     # x_supply_fixed_cost = fields.Float("仕入定価", default=0, tracking=True)
     x_product_unit_measure_ids = fields.One2many('ss_erp.product.units.measure',"product_template_id",string='代替単位', tracking=True)
-    x_product_unit_measure_id = fields.Many2one('ss_erp.product.units.measure', '代替単位ID', tracking=True)
-    x_alternative_uom_id = fields.Many2one(related='x_product_unit_measure_id.alternative_uom_id', string='代替単位', tracking=True)
-    x_converted_value = fields.Float(related='x_product_unit_measure_id.converted_value', string='換算値', tracking=True)
-    x_remarks = fields.Char(related='x_product_unit_measure_id.remarks', string='換算値', tracking=True)
+    # x_product_unit_measure_id = fields.Many2one('ss_erp.product.units.measure', '代替単位ID', tracking=True)
+    # x_alternative_uom_id = fields.Many2one(related='x_product_unit_measure_id.alternative_uom_id', string='代替単位', tracking=True)
+    # x_converted_value = fields.Float(related='x_product_unit_measure_id.converted_value', string='換算値', tracking=True)
+    # x_remarks = fields.Char(related='x_product_unit_measure_id.remarks', string='換算値', tracking=True)
 
     x_major_classification_id = fields.Many2one('ss_erp.product.major.classification', string='プロダクト大分類',store=True, tracking=True)
     x_medium_classification_id = fields.Many2one('ss_erp.product.medium.classification', string='プロダクト中分類',store=True, tracking=True)
@@ -41,6 +41,8 @@ class ProductTemplate(models.Model):
             form_id = self.env['ss_erp.product.template.form'].search([('product_template_id', '=', self.id)])
             values.update({'source': 'product_template'})
             for field_name, field_value in vals.items():
+                if field_name == 'seller_ids':
+                    continue
                 value = False
                 if type(self._fields[field_name].compute) != str:
                     if self._fields[field_name].type in ['one2many', 'many2many']:

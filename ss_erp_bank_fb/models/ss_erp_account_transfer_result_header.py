@@ -91,6 +91,14 @@ class AccountTransferResultHeader(models.Model):
         # 普通預金
         journal_account_1122 = journal_ids[1]
 
+        normal_receivable = self.env['ir.config_parameter'].sudo().get_param('ss_erp_created_byFB_accounts_receivable_id')
+        if not normal_receivable:
+            raise UserError('勘定科目情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。ss_erp_created_byFB_accounts_receivable_id')
+
+        construction_receivable = self.env['ir.config_parameter'].sudo().get_param('ss_erp_created_byFB_con_accounts_receivable_id')
+        if not construction_receivable:
+            raise UserError('勘定科目情報の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。ss_erp_created_byFB_con_accounts_receivable_id')
+
         # account_1121 = self.env['account.account'].search([('code', '=', '1121')], limit=1)
         # journal_account_1121 = self.env['account.journal'].search([('default_account_id', '=', account_1121.id)], limit=1)
         #
@@ -131,9 +139,11 @@ class AccountTransferResultHeader(models.Model):
                  ('x_is_not_create_fb', '=', False),
                  ('state', '=', 'posted'), ('payment_state', '=', 'not_paid'),
                  ('partner_id', '=', partner.id), ]).sorted(key=lambda k: k.name)
+
             if int(tl.withdrawal_amount) == sum(partner_invoice.mapped('amount_residual')):
                 payment_ids = []
                 for invoice in partner_invoice:
+                    in_accounts_receivable = int(construction_receivable) if invoice.journal_id.x_is_construction else int(normal_receivable)
                     register_payment = self.env['account.payment.register'].with_context(
                         active_model='account.move',
                         active_ids=[invoice.id],
@@ -158,11 +168,11 @@ class AccountTransferResultHeader(models.Model):
                     withdrawal_date = (str(self.withdrawal_date) + str(year_current)) if self.withdrawal_date else False
                     date_acc_payment = datetime.strptime(withdrawal_date, '%m%d%Y').date()
 
-                    in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
+                    # in_accounts_receivable = self.env['account.account'].search([('code', '=', '1150')])
                     receivable_line = invoice.line_ids.filtered(
                         lambda l: l.account_id.user_type_id.type == 'receivable')
-                    if not in_accounts_receivable:
-                        raise UserError('アカウント 1150 が見つかりません。設定してください。')
+                    # if not in_accounts_receivable:
+                    #     raise UserError('アカウント 1150 が見つかりません。設定してください。')
 
                     created_payment.move_id.with_context(rewrite_name_fb=True).sudo().write({
                         'x_receipt_type': invoice.x_receipt_type,
@@ -196,7 +206,7 @@ class AccountTransferResultHeader(models.Model):
                     credit_line.with_context({
                         'from_zengin_create': True,
                     }).write({
-                        'account_id': in_accounts_receivable.id,
+                        'account_id': in_accounts_receivable,
                         'x_sub_account_id': receivable_line.x_sub_account_id,
                         'date_maturity': self.upload_date,
                     })

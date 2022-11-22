@@ -26,6 +26,7 @@
                     <field name="x_organization_id"/>
                     <field name="x_responsible_dept_id"/>
                 </xpath>
+
             </field>
         </record>
 

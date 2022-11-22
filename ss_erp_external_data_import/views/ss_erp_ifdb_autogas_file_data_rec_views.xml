@@ -21,7 +21,7 @@
                             string="ファイル"
                             context="{'group_by': 'autogas_file_header_id'}" />
                     <filter name="flt_sale_order"
-                            string="販売オーダー"
+                            string="販売オーダ"
                             context="{'group_by': 'sale_id'}" />
                 </group>
             </search>

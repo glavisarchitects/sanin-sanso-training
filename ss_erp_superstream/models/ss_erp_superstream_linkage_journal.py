@@ -22,9 +22,9 @@ class SSSuperStreamLinkageJournal(models.Model):
     product_ctg = fields.Selection([('merchandise', '商品'),
                                     ('product', '製品'),
                                     ('stock', '製品'),
-                                    ], string="商品・貯蔵品")
-    materials_grouping = fields.Boolean(string="原材料グルーピング")
-    sanhot_point = fields.Boolean(string="さんほっとポイント")
+                                    ], string="プロダクトカテゴリ")
+    materials_grouping = fields.Boolean(string="原材料グルーピング", default=False)
+    sanhot_point = fields.Boolean(string="さんほっとポイント", default=False)
     debit_account = fields.Many2one('account.account', string="借方勘定科目")
     debit_related_organization = fields.Many2one('ss_erp.organization', string="借方関連組織")
     debit_related_org_except = fields.Boolean(string='借方関連組織除外')
@@ -67,45 +67,73 @@ class SSSuperStreamLinkageJournal(models.Model):
                                                          ('employee', '社員')
                                                          ], string="貸方取引先・社員区分")
     credit_application = fields.Char(string="貸方適用")
+    categ_product_id_char = fields.Char(store=True, copy=False)
+    sanhot_product_id_char = fields.Char(store=True, copy=False)
 
-    # field use for technical function (query)
-    categ_product_id_char = fields.Char(compute='_compute_categ_product_id_char', store=True, copy=False)
-    sanhot_product_id_char = fields.Char(compute='_compute_sanhot_product_id_char', store=True, copy=False)
+    def _recalculate_product_category_char(self, is_materials_grouping=None):
+        if is_materials_grouping:
+            product_ctg_merchandise = self.env['ir.config_parameter'].sudo().get_param(
+                'A007_product_ctg_merchandise')
+            if not product_ctg_merchandise:
+                raise UserError(
+                    'プロダクトカテゴリ（原材料）の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_product_ctg_material)')
+            return product_ctg_merchandise
+        else:
+            all_categ = self.env['product.category'].sudo().search([]).ids
+            string_all_categ = ','.join([str(x) for x in all_categ])
+            return string_all_categ
 
-    @api.depends('materials_grouping')
-    def _compute_categ_product_id_char(self, categ_product_id=False):
-        all_categ = self.env['product.category'].search([]).ids
-        string_all_categ = ','.join([str(x) for x in all_categ])
-        for rec in self:
-            if rec.materials_grouping:
-                product_ctg_merchandise = categ_product_id or rec.env['ir.config_parameter'].sudo().get_param(
-                    'A007_product_ctg_merchandise')
-                if not product_ctg_merchandise:
-                    raise UserError(
-                        'プロダクトカテゴリ（商品）の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_product_ctg_merchandise)')
-                rec.categ_product_id_char = product_ctg_merchandise
-            else:
-                rec.categ_product_id_char = string_all_categ
+    def _recalculate_sanhot_product_id_char(self, is_sanhot_point=None):
+        if is_sanhot_point:
+            product_sanhot = self.env['ir.config_parameter'].sudo().get_param('A007_sanhot_point_product_id')
+            if not product_sanhot:
+                raise UserError(
+                    'さんほっとポイントのプロダクトID取得に失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_sanhot_point_product_id)')
+            return product_sanhot
+        else:
+            all_product = self.env['product.template'].sudo().search([]).ids
+            string_all_product = ','.join([str(x) for x in all_product])
+            return string_all_product
 
-    @api.depends('sanhot_point')
-    def _compute_sanhot_product_id_char(self, sanhot_point_product_id=False):
-        all_product = self.env['product.template'].search([]).ids
-        string_all_product = ','.join([str(x) for x in all_product])
-        for rec in self:
-            if rec.sanhot_point:
-                product_sanhot = sanhot_point_product_id or rec.env['ir.config_parameter'].sudo().get_param('A007_sanhot_point_product_id')
-                if not product_sanhot:
-                    raise UserError(
-                        'プロダクトカテゴリ（商品）の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_product_ctg_merchandise)')
-                rec.sanhot_product_id_char = product_sanhot
-            else:
-                rec.sanhot_product_id_char = string_all_product
+    @api.model
+    def create(self, vals):
+        res = super().create(vals)
+        if vals.get('materials_grouping'):
+            res.categ_product_id_char = res.sudo()._recalculate_product_category_char(
+                is_materials_groupingvals=vals.get('materials_grouping'))
 
-    # @api.depends('name', 'journal')
-    # def _compute_complete_name(self):
-    #     for jour in self:
-    #         if jour:
-    #             jour.journal = '%s / %s' % (
-    #                 jour.journal, jour.name)
-    #         else:
-    #             jour.journal = jour.name
+        if vals.get('sanhot_point'):
+            res.sanhot_product_id_char = res.sudo()._recalculate_sanhot_product_id_char(
+                is_sanhot_point=vals.get('sanhot_point'))
+        return res
+
+    def write(self, vals):
+        res = super().write(vals)
+        if vals.get('materials_grouping'):
+            self.categ_product_id_char = self.sudo()._recalculate_product_category_char(
+                is_materials_groupingvals=vals.get('materials_grouping'))
+
+        if vals.get('sanhot_point'):
+            self.sanhot_product_id_char = self.sudo()._recalculate_sanhot_product_id_char(
+                is_sanhot_point=vals.get('sanhot_point'))
+        return res
+
+
+class ProductCategory(models.Model):
+    _inherit = 'product.category'
+
+    def _recalculate_product_category_char(self):
+        linkage_ids = self.env['ss_erp.superstream.linkage.journal'].sudo().search([])
+        for linkage in linkage_ids:
+            linkage.categ_product_id_char = linkage.sudo()._recalculate_product_category_char(
+                is_materials_grouping=linkage.materials_grouping)
+
+
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
+
+    def _recalculate_sanhot_product_id_char(self):
+        linkage_ids = self.env['ss_erp.superstream.linkage.journal'].sudo().search([])
+        for linkage in linkage_ids:
+            linkage.sanhot_product_id_char = linkage.sudo()._recalculate_sanhot_product_id_char(
+                is_sanhot_point=linkage.sanhot_point)

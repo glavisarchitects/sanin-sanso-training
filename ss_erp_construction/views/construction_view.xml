@@ -21,9 +21,9 @@
                 <form string="工事">
                     <header>
                         <field name="show_confirmation_button" invisible="1"/>
-                        <button name="action_print_estimation" type="object" string="工事見積書"
-                                confirm="工事見積書を作成します。"
-                                attrs="{'invisible':[('state','in',['draft','lost'])],}"/>
+<!--                        <button name="action_print_estimation" type="object" string="工事見積書"-->
+<!--                                confirm="工事見積書を作成します。"-->
+<!--                                attrs="{'invisible':[('state','in',['draft','lost'])],}"/>-->
                         <button name="action_confirm" type="object" string="確認"
                                 attrs="{'invisible':['|',('show_confirmation_button','=',False),('state','!=','draft')],}"/>
                         <button name="action_pending" string="保留" type="object"
@@ -227,7 +227,7 @@
                                         <field name="printed_user"/>
                                     </group>
                                     <group>
-                                        <field name="sequence_number" readonly="1"/>
+                                        <field name="name" string="文書番号" readonly="1"/>
                                         <field name="output_date"/>
                                         <field name="expire_date"/>
                                         <field name="estimation_note"/>
