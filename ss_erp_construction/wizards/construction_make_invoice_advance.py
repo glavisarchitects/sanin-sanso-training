@@ -116,6 +116,9 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
                 self.advance_payment_method == 'fixed' and self.fixed_amount <= 0.00):
             raise UserError(_('前受金の金額は正の値でなければなりません。'))
 
+        if not self.product_id.product_tmpl_id.taxes_id:
+            raise UserError(_('前受金の税は設定していません。'))
+
         amount, name = self._get_advance_details(order)
 
         invoice_vals = self._prepare_invoice_values(order, name, amount, order_line)
@@ -144,7 +147,7 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
             'construction_id': order.id,
             'product_uom_id': self.product_id.uom_id.id,
             'product_id': self.product_id.id,
-            'tax_id': [(6, 0, tax_ids)] if tax_ids else False ,
+            'tax_id': tax_ids,
             'is_downpayment': True,
         }
         del context
@@ -160,12 +163,7 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
             construction_component_obj = self.env['ss.erp.construction.component']
             for construction_order in construction_order_ids:
                 amount, name = self._get_advance_details(construction_order)
-
-                taxes = self.product_id.taxes_id.filtered(
-                    lambda r: not construction_order.company_id or r.company_id == construction_order.company_id)
-                tax_ids = construction_order.fiscal_position_id.map_tax(taxes, self.product_id,
-                                                                        construction_order.partner_id).ids
-                if not tax_ids: tax_ids = False
+                tax_ids = self.product_id.product_tmpl_id.taxes_id[0].id if self.product_id.product_tmpl_id.taxes_id else False,
                 construction_component_values = self._prepare_construction_component(construction_order, tax_ids, amount)
                 construction_component = construction_component_obj.create(construction_component_values)
                 self._create_invoice(construction_order, construction_component, amount)

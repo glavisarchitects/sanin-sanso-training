@@ -23,7 +23,7 @@ class ConstructionComponent(models.Model):
 
     display_type = fields.Selection([
         ('line_section', "Section"),
-        ('line_note', "Note")], default=False, help="Technical field for UX purpose.")
+        ('line_note', "Note")], default=False, help="Technical field for UX purpose.",string='表示タイプ')
 
     @api.depends('location_id', 'product_id')
     def _get_qty_available(self):
@@ -195,15 +195,18 @@ class ConstructionComponent(models.Model):
             'x_responsible_dept_id': self.construction_id.responsible_dept_id.id,
         }
 
-    @api.constrains('tax_id')
-    def _check_raise_tax_id(self):
-        for rec in self:
-            if not rec.tax_id:
-                raise UserError('税が選択されていない行があります。構成表の税を設定して下さい。')
+    # @api.constrains('tax_id')
+    # def _check_raise_tax_id(self):
+    #     for rec in self:
+    #         if not rec.tax_id:
+    #             raise UserError('税が選択されていない行があります。構成表の税を設定して下さい。')
 
     @api.onchange('product_id')
     def _onchange_component_product_id(self):
         if self.product_id:
+
+            self.tax_id = self.product_id.product_tmpl_id.taxes_id[0].id if self.product_id.product_tmpl_id.taxes_id else False
+
             self.product_uom_id = self.product_id.uom_id.id
             self.standard_price = self.product_id.product_tmpl_id.standard_price
             self.sale_price = self.standard_price / (1 - self.margin_rate)

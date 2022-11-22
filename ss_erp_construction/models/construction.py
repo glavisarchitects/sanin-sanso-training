@@ -7,6 +7,7 @@ class Construction(models.Model):
     _name = 'ss.erp.construction'
     _description = '工事'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = 'name desc'
 
     name = fields.Char(string='シーケンス', default='新規')
     construction_name = fields.Char(string='工事名', copy=True)
@@ -169,6 +170,7 @@ class Construction(models.Model):
                     'product_id': component.product_id.id,
                     'product_uom_id': component.product_uom_id.id,
                     'standard_price':component.product_id.product_tmpl_id.standard_price,
+                    'tax_id':component.product_id.product_tmpl_id.taxes_id[0].id if component.product_id.product_tmpl_id.taxes_id else False,
                     'margin_rate': self.all_margin_rate,
                     'sale_price':component.product_id.product_tmpl_id.standard_price / (1 - self.all_margin_rate),
                     'name': component.product_id.name,
@@ -557,6 +559,9 @@ class Construction(models.Model):
             stock_picking = self.env['stock.picking'].create(picking)
 
             stock_picking.action_assign()
+        else:
+            if self.state in ['order_received','progress']:
+                raise UserError('手持数量がないため、出荷できませんでした。対象の構成品を正しい数量で購買発注してください。')
 
     def action_picking_from_warehouse(self):
         if not self.construction_component_ids.filtered(lambda x: x.qty_to_buy != 0 and x.product_id.type == 'product'):
