@@ -146,8 +146,8 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '' as project_code1									
             , '0' as partner_employee_division								
             , rpad(right(seo.organization_code, 3), 13, '0') as partner_employee_code								
-            , aml.credit as journal_amount								
-            , aml.credit as tax_excluded_amount								
+            , aml.credit :: INTEGER as journal_amount								
+            , aml.credit :: INTEGER as tax_excluded_amount								
             , 0 as tax_amount								
             , '000' as tax_code								
             , '0' as tax_entry_division								
@@ -320,8 +320,8 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '' as project_code1									
             , '0' as partner_employee_division								
             , '' as partner_employee_code								
-            , aml.credit as journal_amount								
-            , aml.credit as tax_excluded_amount								
+            , aml.credit :: INTEGER as journal_amount								
+            , aml.credit :: INTEGER as tax_excluded_amount								
             , 0 as tax_amount								
             , '000' as tax_code								
             , '0' as tax_entry_division								

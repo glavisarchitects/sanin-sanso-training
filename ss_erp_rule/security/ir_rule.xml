@@ -27,7 +27,8 @@
             <field name="name">Product Price Delete</field>
             <field name="model_id" ref="ss_erp_product_template.model_ss_erp_product_price"/>
             <field name="domain_force">
-                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -40,84 +41,200 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
-        <!--        Partner Rebate Delete-->
-        <record id="ss_erp_partner_rebate_rule" model="ir.rule">
-            <field name="name">Partner Rebate Delete</field>
+        <!--        SS Partner Rebate All Record Read-->
+        <record id="ss_erp_partner_rebate_rule_all" model="ir.rule">
+            <field name="name">SS Partner Rebate All Record Read</field>
             <field name="model_id" ref="ss_erp_purchase.model_ss_erp_partner_rebate"/>
             <field name="domain_force">
-                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                [(1,'=',1)]
             </field>
             <field name="groups" eval="[
-                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_general')),
                 (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                 (4, ref('ss_erp_rule.group_head_quarter_general')),
-                 (4, ref('ss_erp_rule.group_branch_manager'))
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
+
             ]"/>
-            <field name="perm_read" eval="False"/>
+            <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!--        SS Partner Rebate Branch Records Update -->
+        <record id="ss_erp_partner_rebate_rule_branch" model="ir.rule">
+            <field name="name">SS Partner Rebate Branch Records Update</field>
+            <field name="model_id" ref="ss_erp_purchase.model_ss_erp_partner_rebate"/>
+            <field name="domain_force">
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('ss_erp_rule.group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
+
+            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
-        <!--        Construction Order Delete-->
-        <record id="ss_erp_construction_rule" model="ir.rule">
-            <field name="name">Construction Order Delete</field>
+        <!--        SS Branch Cash Note -->
+        <record id="ss_erp_cash_note_rule" model="ir.rule">
+            <field name="name">SS Branch Cash Note</field>
+            <field name="model_id" ref="ss_erp_accouting.model_ss_erp_petty_cash_note"/>
+            <field name="domain_force">
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('ss_erp_rule.group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
+
+            ]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        <!--       SS Construction Order All Record Read -->
+        <record id="ss_erp_construction_rule_all" model="ir.rule">
+            <field name="name">SS Construction Order All Record Read</field>
             <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction"/>
             <field name="domain_force">
-                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                [(1,'=',1)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
                 (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                 (4, ref('ss_erp_rule.group_head_quarter_general')),
-                 (4, ref('ss_erp_rule.group_branch_manager'))
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
+
             ]"/>
-            <field name="perm_read" eval="False"/>
+            <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
         </record>
-        <!--        Construction Workorder Delete-->
-        <record id="ss_erp_counstruction_workorder_rule" model="ir.rule">
-            <field name="name">Construction Workorder Delete</field>
-            <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction_workorder"/>
+        <!--        SS Construction Order Branch Records Update-->
+        <record id="ss_erp_construction_rule" model="ir.rule">
+            <field name="name">SS Construction Order Branch Records Update</field>
+            <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction"/>
             <field name="domain_force">
-                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
                 (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                 (4, ref('ss_erp_rule.group_head_quarter_general')),
-                 (4, ref('ss_erp_rule.group_branch_manager'))
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
             ]"/>
             <field name="perm_read" eval="False"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
-        <!--        Instruction Category Delete-->
-        <record id="ss_erp_construction_category_rule" model="ir.rule">
-            <field name="name">Counstruction Category Delete</field>
-            <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction_category"/>
-            <field name="domain_force">
-                [('create_uid','=',user.id)]
-            </field>
-            <field name="groups" eval="[
-                (4, ref('group_branch_general')),
-                (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                 (4, ref('ss_erp_rule.group_head_quarter_general')),
-                 (4, ref('ss_erp_rule.group_branch_manager'))
-            ]"/>
-            <field name="perm_read" eval="False"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="True"/>
-        </record>
-        <!--        Instruction Category Delete-->
-        <record id="ss_erp_construction_template_rule" model="ir.rule">
-            <field name="name">Construction Template Delete</field>
+        <!--        SS Construction Template Create/Read-->
+        <record id="ss_erp_construction_template_rule_all" model="ir.rule">
+            <field name="name">SS Construction Template Create/Read</field>
             <field name="model_id" ref="ss_erp_construction.model_construction_template"/>
             <field name="domain_force">
-                [('create_uid','=',user.id)]
+                [(1,'=',1)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
+            ]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!--        SS Construction Template Create/Read-->
+        <record id="ss_erp_construction_template_update" model="ir.rule">
+            <field name="name">SS Construction Template Update</field>
+            <field name="model_id" ref="ss_erp_construction.model_construction_template"/>
+            <field name="domain_force">
+                [('state','in',’new')]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
+            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        <!--        &lt;!&ndash;        Construction Workorder Delete&ndash;&gt;-->
+        <!--        <record id="ss_erp_counstruction_workorder_rule" model="ir.rule">-->
+        <!--            <field name="name">Construction Workorder Delete</field>-->
+        <!--            <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction_workorder"/>-->
+        <!--            <field name="domain_force">-->
+        <!--                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),-->
+        <!--                ('create_uid','=',user.id)]-->
+        <!--            </field>-->
+        <!--            <field name="groups" eval="[-->
+        <!--                (4, ref('group_branch_general')),-->
+        <!--                (4, ref('ss_erp_rule.group_branch_middle_manager')),-->
+        <!--                 (4, ref('ss_erp_rule.group_head_quarter_general')),-->
+        <!--                 (4, ref('ss_erp_rule.group_branch_manager'))-->
+        <!--            ]"/>-->
+        <!--            <field name="perm_read" eval="False"/>-->
+        <!--            <field name="perm_write" eval="False"/>-->
+        <!--            <field name="perm_create" eval="False"/>-->
+        <!--            <field name="perm_unlink" eval="True"/>-->
+        <!--        </record>-->
+        <!--        Instruction Category Delete-->
+        <!--        <record id="ss_erp_construction_category_rule" model="ir.rule">-->
+        <!--            <field name="name">Counstruction Category Delete</field>-->
+        <!--            <field name="model_id" ref="ss_erp_construction.model_ss_erp_construction_category"/>-->
+        <!--            <field name="domain_force">-->
+        <!--                [('create_uid','=',user.id)]-->
+        <!--            </field>-->
+        <!--            <field name="groups" eval="[-->
+        <!--                (4, ref('group_branch_general')),-->
+        <!--                (4, ref('ss_erp_rule.group_branch_middle_manager')),-->
+        <!--                 (4, ref('ss_erp_rule.group_head_quarter_general')),-->
+        <!--                 (4, ref('ss_erp_rule.group_branch_manager'))-->
+        <!--            ]"/>-->
+        <!--            <field name="perm_read" eval="False"/>-->
+        <!--            <field name="perm_write" eval="False"/>-->
+        <!--            <field name="perm_create" eval="False"/>-->
+        <!--            <field name="perm_unlink" eval="True"/>-->
+        <!--        </record>-->
+        <!--        Instruction Category Delete-->
+        <!--        <record id="ss_erp_construction_template_rule" model="ir.rule">-->
+        <!--            <field name="name">Construction Template Delete</field>-->
+        <!--            <field name="model_id" ref="ss_erp_construction.model_construction_template"/>-->
+        <!--            <field name="domain_force">-->
+        <!--                [('create_uid','=',user.id)]-->
+        <!--            </field>-->
+        <!--            <field name="groups" eval="[-->
+        <!--                (4, ref('group_branch_general')),-->
+        <!--                (4, ref('ss_erp_rule.group_branch_middle_manager')),-->
+        <!--                 (4, ref('ss_erp_rule.group_head_quarter_general')),-->
+        <!--                 (4, ref('ss_erp_rule.group_branch_manager'))-->
+        <!--            ]"/>-->
+        <!--            <field name="perm_read" eval="False"/>-->
+        <!--            <field name="perm_write" eval="False"/>-->
+        <!--            <field name="perm_create" eval="False"/>-->
+        <!--            <field name="perm_unlink" eval="True"/>-->
+        <!--        </record>-->
+        <!--   SS Construction Workcenter All Record Read     -->
+        <record id="ss_erp_construction_workcenter_all" model="ir.rule">
+            <field name="name">SS Construction Workcenter All Record Read</field>
+            <field name="model_id" ref="ss_erp_construction.model_construction_workcenter"/>
+            <field name="domain_force">
+                [(1,'=',1)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
@@ -125,14 +242,14 @@
                  (4, ref('ss_erp_rule.group_head_quarter_general')),
                  (4, ref('ss_erp_rule.group_branch_manager'))
             ]"/>
-            <field name="perm_read" eval="False"/>
+            <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
         </record>
-        <!--   Construction Workcenter Delete     -->
+        <!--   SS Construction Workcenter Update     -->
         <record id="ss_erp_construction_workcenter_rule" model="ir.rule">
-            <field name="name">Construction Workcenter Delete</field>
+            <field name="name">SS Construction Workcenter Update</field>
             <field name="model_id" ref="ss_erp_construction.model_construction_workcenter"/>
             <field name="domain_force">
                 [('create_uid','=',user.id)]
@@ -140,57 +257,96 @@
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
                 (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                 (4, ref('ss_erp_rule.group_head_quarter_general')),
-                 (4, ref('ss_erp_rule.group_branch_manager'))
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
             ]"/>
             <field name="perm_read" eval="False"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
-        <!--Account Move Delete-->
-        <record id="ss_erp_account_move_rule" model="ir.rule">
-            <field name="name">Account Move Delete</field>
-            <field name="model_id" ref="account.model_account_move"/>
-            <field name="domain_force">
-                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
-            </field>
-            <field name="groups" eval="[
-                (4, ref('group_branch_general')),
-                (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                 (4, ref('ss_erp_rule.group_head_quarter_general')),
-                 (4, ref('ss_erp_rule.group_branch_manager'))
-            ]"/>
-            <field name="perm_read" eval="False"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="True"/>
-        </record>
-        <!--Purchase Order Delete-->
-        <record id="ss_erp_purchase_order_rule" model="ir.rule">
-            <field name="name">Purchase Order Delete</field>
+        <!--   SS Purchase Order All Record Read     -->
+        <record id="ss_erp_purchase_order_rule_all" model="ir.rule">
+            <field name="name">SS Purchase Order All Record Read</field>
             <field name="model_id" ref="purchase.model_purchase_order"/>
             <field name="domain_force">
-                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                [(1,'=',1)]
             </field>
             <field name="groups" eval="[
                 (4, ref('group_branch_general')),
                 (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                 (4, ref('ss_erp_rule.group_head_quarter_general')),
-                 (4, ref('ss_erp_rule.group_branch_manager'))
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
             ]"/>
-            <field name="perm_read" eval="False"/>
+            <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!--   SS Purchase Order Branch Records Update     -->
+        <record id="ss_erp_purchase_order_rule_branch" model="ir.rule">
+            <field name="name">SS Purchase Order Branch Records Update</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="domain_force">
+                ['|',('x_organization_id','in',user.organization_ids.ids), ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),
+            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
         </record>
+        <!--        &lt;!&ndash;Account Move Delete&ndash;&gt;-->
+        <!--        <record id="ss_erp_account_move_rule" model="ir.rule">-->
+        <!--            <field name="name">Account Move Delete</field>-->
+        <!--            <field name="model_id" ref="account.model_account_move"/>-->
+        <!--            <field name="domain_force">-->
+        <!--                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]),-->
+        <!--                ('create_uid','=',user.id)]-->
+        <!--            </field>-->
+        <!--            <field name="groups" eval="[-->
+        <!--                (4, ref('group_branch_general')),-->
+        <!--                (4, ref('ss_erp_rule.group_branch_middle_manager')),-->
+        <!--                 (4, ref('ss_erp_rule.group_head_quarter_general')),-->
+        <!--                 (4, ref('ss_erp_rule.group_branch_manager'))-->
+        <!--            ]"/>-->
+        <!--            <field name="perm_read" eval="True"/>-->
+        <!--            <field name="perm_write" eval="True"/>-->
+        <!--            <field name="perm_create" eval="True"/>-->
+        <!--            <field name="perm_unlink" eval="True"/>-->
+        <!--        </record>-->
+        <!--        &lt;!&ndash;Purchase Order Delete&ndash;&gt;-->
+        <!--        <record id="ss_erp_purchase_order_rule" model="ir.rule">-->
+        <!--            <field name="name">Purchase Order Delete</field>-->
+        <!--            <field name="model_id" ref="purchase.model_purchase_order"/>-->
+        <!--            <field name="domain_force">-->
+        <!--                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]),-->
+        <!--                ('create_uid','=',user.id)]-->
+        <!--            </field>-->
+        <!--            <field name="groups" eval="[-->
+        <!--                (4, ref('group_branch_general')),-->
+        <!--                (4, ref('ss_erp_rule.group_branch_middle_manager')),-->
+        <!--                 (4, ref('ss_erp_rule.group_head_quarter_general')),-->
+        <!--                 (4, ref('ss_erp_rule.group_branch_manager'))-->
+        <!--            ]"/>-->
+        <!--            <field name="perm_read" eval="True"/>-->
+        <!--            <field name="perm_write" eval="True"/>-->
+        <!--            <field name="perm_create" eval="True"/>-->
+        <!--            <field name="perm_unlink" eval="True"/>-->
+        <!--        </record>-->
 
         <!--        SS その他権限-->
         <record id="ss_erp_yamasan_gas_header_rule" model="ir.rule">
             <field name="name">SS:Yamasan-Gas Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_yg_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -204,7 +360,8 @@
             <field name="name">SS:Yamasan-Gas Summary User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_yg_summary"/>
             <field name="domain_force">
-                ['|',('header_id.branch_id','in',[organization.id for organization in user.organization_ids]), ('header_id.user_id','=',user.id)]
+                ['|',('header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
+                ('header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -218,7 +375,8 @@
             <field name="name">SS:Yamasan-Gas Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_yg_detail"/>
             <field name="domain_force">
-                ['|',('header_id.branch_id','in',[organization.id for organization in user.organization_ids]), ('header_id.user_id','=',user.id)]
+                ['|',('header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
+                ('header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -232,7 +390,8 @@
             <field name="name">SS:Powernet Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_powernet_sales_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -246,7 +405,8 @@
             <field name="name">SS:Powernet Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_powernet_sales_detail"/>
             <field name="domain_force">
-                ['|',('powernet_sales_header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
+                ['|',('powernet_sales_header_id.branch_id','in',[organization.id for organization in
+                user.organization_ids]),
                 ('powernet_sales_header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
@@ -261,7 +421,8 @@
             <field name="name">SS:Youki Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_youki_kanri"/>
             <field name="domain_force">
-                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -290,7 +451,8 @@
             <field name="name">SS:Autogas Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_autogas_file_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -304,7 +466,8 @@
             <field name="name">SS:Autogas Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_autogas_file_data_rec"/>
             <field name="domain_force">
-                ['|',('autogas_file_header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
+                ['|',('autogas_file_header_id.branch_id','in',[organization.id for organization in
+                user.organization_ids]),
                 ('autogas_file_header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
@@ -319,7 +482,8 @@
             <field name="name">SS:Propane Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_propane_sales_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -333,7 +497,8 @@
             <field name="name">SS:Propane Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_propane_sales_detail"/>
             <field name="domain_force">
-                ['|',('propane_sales_header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
+                ['|',('propane_sales_header_id.branch_id','in',[organization.id for organization in
+                user.organization_ids]),
                 ('propane_sales_header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
@@ -348,7 +513,8 @@
             <field name="name">SS:Youki-billing Import User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_youkikensa_billing_file_header"/>
             <field name="domain_force">
-                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('branch_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_external_link')),
@@ -362,7 +528,8 @@
             <field name="name">SS:Youki-billing Detail User</field>
             <field name="model_id" ref="ss_erp_external_data_import.model_ss_erp_ifdb_youkikensa_billing_file_detail"/>
             <field name="domain_force">
-                ['|',('youkikensa_billing_file_header_id.branch_id','in',[organization.id for organization in user.organization_ids]),
+                ['|',('youkikensa_billing_file_header_id.branch_id','in',[organization.id for organization in
+                user.organization_ids]),
                 ('youkikensa_billing_file_header_id.user_id','=',user.id)]
             </field>
             <field name="groups" eval="[
@@ -381,7 +548,8 @@
             <field name="name">SS Own Branch Orders Analysis</field>
             <field name="model_id" ref="sale.model_sale_report"/>
             <field name="domain_force">
-                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -397,7 +565,8 @@
             <field name="name">SS Own Branch Orders</field>
             <field name="model_id" ref="sale.model_sale_order"/>
             <field name="domain_force">
-                ['|',('x_organization_id','in', [organization.id for organization in user.organization_ids]), ('create_uid','=',user.id)]
+                ['|',('x_organization_id','in', [organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -408,11 +577,29 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
+        <!--        (purchase.orderのcreate/write/deleteは自分の組織と一致するレコードのみ可能とする)-->
+        <!--        <record id="ss_erp_own_branch_purchase_orders_rule" model="ir.rule">-->
+        <!--            <field name="name">SS Own Branch Purchase Orders</field>-->
+        <!--            <field name="model_id" ref="purchase.model_purchase_order"/>-->
+        <!--            <field name="domain_force">-->
+        <!--                ['|',('x_organization_id','in', [organization.id for organization in user.organization_ids]),-->
+        <!--                ('create_uid','=',user.id)]-->
+        <!--            </field>-->
+        <!--            <field name="groups" eval="[-->
+        <!--                (4, ref('ss_erp_rule.group_my_org_only_sale')),-->
+        <!--            ]"/>-->
+        <!--            <field name="perm_read" eval="True"/>-->
+        <!--            <field name="perm_write" eval="True"/>-->
+        <!--            <field name="perm_create" eval="True"/>-->
+        <!--            <field name="perm_unlink" eval="True"/>-->
+        <!--        </record>-->
+
         <record id="ss_erp_own_branch_orders_line_rule" model="ir.rule">
             <field name="name">SS Own Branch Order Lines</field>
             <field name="model_id" ref="sale.model_sale_order_line"/>
             <field name="domain_force">
-                ['|',('salesman_id.organization_ids','in',[organization.id for organization in user.organization_ids]), ('salesman_id','=',user.id)]
+                ['|',('salesman_id.organization_ids','in',[organization.id for organization in user.organization_ids]),
+                ('salesman_id','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -427,7 +614,8 @@
             <field name="name">SS Own Branch Invoices Analysis</field>
             <field name="model_id" ref="sale.model_account_invoice_report"/>
             <field name="domain_force">
-                ['|',('salesman_id.organization_ids','in',user.organization_ids), ('salesman_id','=',user.id)]
+                ['|',('salesman_id.organization_ids','in',[organization.id for organization in user.organization_ids]),
+                ('salesman_id','=',user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -435,6 +623,37 @@
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="ss_erp_product_price_rule_all" model="ir.rule">
+            <field name="name">SS Product Price Create/Read</field>
+            <field name="model_id" ref="ss_erp_product_template.model_ss_erp_product_price"/>
+            <field name="domain_force">
+                [(1,'=',1)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('ss_erp_rule.group_my_org_only_sale')),
+            ]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="ss_erp_product_price_rule_branch" model="ir.rule">
+            <field name="name">SS Product Price Update</field>
+            <field name="model_id" ref="ss_erp_product_template.model_ss_erp_product_price"/>
+            <field name="domain_force">
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('ss_erp_rule.group_my_org_only_sale')),
+            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="True"/>
         </record>
 
@@ -442,8 +661,8 @@
             <field name="name">SS Own Branch Invoices</field>
             <field name="model_id" ref="account.model_account_move"/>
             <field name="domain_force">
-                [('move_type', 'in', ('out_invoice', 'out_refund')),'|',('x_organization_id', '=', [organization.id for
-                organization in user.organization_ids]), ('invoice_user_id', '=', user.id)]
+                ['|',('x_organization_id', 'in',[organization.id for organization in user.organization_ids]),
+                ('invoice_user_id', '=', user.id)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
@@ -454,17 +673,255 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
-        <record id="ss_erp_own_branch_invoice_line_rule" model="ir.rule">
-            <field name="name">SS Own Branch Invoice Lines</field>
-            <field name="model_id" ref="account.model_account_move_line"/>
+        <!--        <record id="ss_erp_own_branch_invoice_line_rule" model="ir.rule">-->
+        <!--            <field name="name">SS Own Branch Invoice Lines</field>-->
+        <!--            <field name="model_id" ref="account.model_account_move_line"/>-->
+        <!--            <field name="domain_force">-->
+        <!--                [('move_id.move_type', 'in', ('out_invoice', 'out_refund')), '|',('move_id.x_organization_id', '=',-->
+        <!--                [organization.id for organization in user.organization_ids]), ('move_id.invoice_user_id', '=',user.id)]-->
+        <!--            </field>-->
+        <!--            <field name="groups" eval="[-->
+        <!--                (4, ref('ss_erp_rule.group_my_org_only_sale')),-->
+        <!--            ]"/>-->
+        <!--            <field name="perm_read" eval="True"/>-->
+        <!--            <field name="perm_write" eval="True"/>-->
+        <!--            <field name="perm_create" eval="True"/>-->
+        <!--            <field name="perm_unlink" eval="True"/>-->
+        <!--        </record>-->
+
+        <record id="ss_erp_account_payment_rule_all" model="ir.rule">
+            <field name="name">SS Account Payment Create/Read</field>
+            <field name="model_id" ref="account.model_account_payment"/>
             <field name="domain_force">
-                [('move_id.move_type', 'in', ('out_invoice', 'out_refund')), '|',('move_id.x_organization_id', '=',
-                [organization.id for organization in user.organization_ids]), ('move_id.invoice_user_id', '=',user.id)]
+                [(1,'=',1)]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
             ]"/>
             <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="ss_erp_account_payment_rule_branch" model="ir.rule">
+            <field name="name">SS Account Payment Update</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="domain_force">
+                [('x_organization_id', 'in',[organization.id for organization in user.organization_ids])]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('ss_erp_rule.group_my_org_only_sale')),
+            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="ss_erp_stock_picking_rule_all" model="ir.rule">
+            <field name="name">SS Stock Picking All Record Read</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="domain_force">
+                [(1,'=',1)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="ss_erp_stock_picking_rule_branch" model="ir.rule">
+            <field name="name">SS Stock Picking Branch Records Update</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="domain_force">
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        <record id="ss_erp_stock_scrap_rule_all" model="ir.rule">
+            <field name="name">SS Stock Scrap All Record Read</field>
+            <field name="model_id" ref="stock.model_stock_scrap"/>
+            <field name="domain_force">
+                [(1,'=',1)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="ss_erp_stock_scrap_rule_branch" model="ir.rule">
+            <field name="name">SS Stock Scrap Branch Records Update</field>
+            <field name="model_id" ref="stock.model_stock_scrap"/>
+            <field name="domain_force">
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="ss_erp_stock_inventory_rule_all" model="ir.rule">
+            <field name="name">SS Stock Inventory All Record Read</field>
+            <field name="model_id" ref="stock.model_stock_inventory"/>
+            <field name="domain_force">
+                [(1,'=',1)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="ss_erp_stock_inventory_rule_branch" model="ir.rule">
+            <field name="name">SS Stock Inventory Branch Records Update</field>
+            <field name="model_id" ref="stock.model_stock_inventory"/>
+            <field name="domain_force">
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="ss_erp_instruction_order_rule_all" model="ir.rule">
+            <field name="name">SS Instruction Order All Record Read</field>
+            <field name="model_id" ref="ss_erp_stock.model_ss_erp_instruction_order"/>
+            <field name="domain_force">
+                [(1,'=',1)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="ss_erp_instruction_order_rule_branch" model="ir.rule">
+            <field name="name">SS Instruction Order Branch Records Update</field>
+            <field name="model_id" ref="ss_erp_stock.model_ss_erp_instruction_order"/>
+            <field name="domain_force">
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="ss_erp_lpgas_order_rule_all" model="ir.rule">
+            <field name="name">SS Lpgas Order All Record Read</field>
+            <field name="model_id" ref="ss_erp_stock.model_ss_erp_lpgas_order"/>
+            <field name="domain_force">
+                [(1,'=',1)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="ss_erp_lpgas_order_rule_branch" model="ir.rule">
+            <field name="name">SS Lpgas OrderBranch Records Update</field>
+            <field name="model_id" ref="ss_erp_stock.model_ss_erp_lpgas_order"/>
+            <field name="domain_force">
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+                <record id="ss_erp_inventory_order_rule_all" model="ir.rule">
+            <field name="name">SS Inventory Order All Record Read</field>
+            <field name="model_id" ref="ss_erp_stock.model_ss_erp_inventory_order"/>
+            <field name="domain_force">
+                [(1,'=',1)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="ss_erp_inventory_order_rule_branch" model="ir.rule">
+            <field name="name">SS Inventory OrderBranch Records Update</field>
+            <field name="model_id" ref="ss_erp_stock.model_ss_erp_inventory_order"/>
+            <field name="domain_force">
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
+                ('create_uid','=',user.id)]
+            </field>
+            <field name="groups" eval="[
+                (4, ref('group_branch_general')),
+                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
+                (4, ref('ss_erp_rule.group_head_quarter_general')),            ]"/>
+            <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="True"/>
