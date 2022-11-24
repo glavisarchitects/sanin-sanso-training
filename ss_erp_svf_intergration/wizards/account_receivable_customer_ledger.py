@@ -40,7 +40,6 @@ class AccountReceivableCustomerLedger(models.TransientModel):
             return False
 
     def _get_account_receivable_balance(self):
-        title = "得意先元帳（商品順）"
         if not self.sort_order:
             title = "得意先元帳"
         elif self.sort_order == 'date':
