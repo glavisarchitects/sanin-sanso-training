@@ -49,11 +49,6 @@ class SStreamJournalEntryOutput(models.TransientModel):
             raise UserError(
                 'プロダクトカテゴリ（貯蔵品）の取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(A007_product_ctg_stock")')
 
-        # sstream_linkage_recs = self.env['ss_erp.superstream.linkage.journal'].search(
-        #     [('journal_creation', '=', 'odoo_journal')])
-        # if not sstream_linkage_recs:
-        #     raise UserError('Odoo仕訳が見つかりませんでした。')
-
         result = {
             'sstream_company_code': sstream_company_code,
             'sstream_slip_group': sstream_slip_group,
@@ -681,10 +676,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         END
                         as summery1	
                         ,ojl.materials_grouping									
-                    from								
-                        account_move am /* 仕訳 */								
-                        inner join								
-                        account_move_line aml /* 仕訳項目 */								
+                    from	
+                        account_move_line aml /* 仕訳項目 */
+                        left join account_move am /* 仕訳 */								                        								
                         on am.id = aml.move_id								
                         left join								
                         account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -711,9 +705,6 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         left join odoo_journal_linkage ojl 
                         on ojl.debit_account = any(string_to_array(amc.debit_account, ',')::int[])	
                         and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])						
-                        and (ojl.debit_sub_account is Null and aml.x_sub_account_id is Null OR ojl.debit_sub_account = any(string_to_array(amc.debit_sub_account, ',')::int[]))					
-                        and (ojl.credit_sub_account is Null and aml.x_sub_account_id is Null OR ojl.credit_sub_account = any(string_to_array(amc.credit_sub_account, ',')::int[]))
-
                         left join account_account cre_ojl 
                         on ojl.credit_account = cre_ojl.id	
                         left join ss_erp_account_subaccount sub_cre_ojl 
@@ -725,7 +716,6 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and aml.debit <> 0  /* 借方を取得 */		
                     and aml_atr.account_tax_id is Null						
                     and aml.parent_state = 'posted'  /* 記帳済み */
-                    and aml.product_id is not Null							
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and am.date BETWEEN '{start_period}' and '{end_period}'		
 
@@ -777,9 +767,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         as summery1	
                         ,ojl.materials_grouping									
                     from								
-                        account_move am /* 仕訳 */								
-                        inner join								
-                        account_move_line aml /* 仕訳項目 */								
+                        account_move_line aml /* 仕訳項目 */
+                        left join account_move am /* 仕訳 */								
                         on am.id = aml.move_id								
                         left join								
                         account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -806,9 +795,6 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         left join odoo_journal_linkage ojl 
                         on ojl.debit_account = any(string_to_array(amc.debit_account, ',')::int[])	
                         and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])						
-                        and (ojl.debit_sub_account is Null and aml.x_sub_account_id is Null OR ojl.debit_sub_account = any(string_to_array(amc.debit_sub_account, ',')::int[]))					
-                        and (ojl.credit_sub_account is Null and aml.x_sub_account_id is Null OR ojl.credit_sub_account = any(string_to_array(amc.credit_sub_account, ',')::int[]))
-
                         left join account_account cre_ojl 
                         on ojl.credit_account = cre_ojl.id	
                         left join ss_erp_account_subaccount sub_cre_ojl 
@@ -969,9 +955,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     as summery1	
                     ,ojl.materials_grouping								
                 from								
-                    account_move am /* 仕訳 */								
-                    inner join								
-                    account_move_line aml /* 仕訳項目 */								
+                    account_move_line aml /* 仕訳項目 */
+                    left join account_move am /* 仕訳 */								
                     on am.id = aml.move_id								
                     left join								
                     account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -998,8 +983,6 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     left join odoo_journal_linkage ojl 
                     on ojl.debit_account = any(string_to_array(amc.debit_account, ',')::int[])	
                     and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])						
-                    and (ojl.debit_sub_account is Null and aml.x_sub_account_id is Null OR ojl.debit_sub_account = any(string_to_array(amc.debit_sub_account, ',')::int[]))					
-                    and (ojl.credit_sub_account is Null and aml.x_sub_account_id is Null OR ojl.credit_sub_account = any(string_to_array(amc.credit_sub_account, ',')::int[]))							
                 where								
                 aml.account_id = ojl.credit_account								
                 and (pt.categ_id is Null or pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[]) )  
@@ -1060,9 +1043,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     as summery1	
                     ,ojl.materials_grouping								
                 from								
-                    account_move am /* 仕訳 */								
-                    inner join								
-                    account_move_line aml /* 仕訳項目 */								
+                    account_move_line aml /* 仕訳項目 */
+                    left join account_move am /* 仕訳 */								
                     on am.id = aml.move_id								
                     left join								
                     account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -1088,9 +1070,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
                     left join odoo_journal_linkage ojl 
                     on ojl.debit_account = any(string_to_array(amc.debit_account, ',')::int[])	
-                    and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])						
-                    and (ojl.debit_sub_account is Null and aml.x_sub_account_id is Null OR ojl.debit_sub_account = any(string_to_array(amc.debit_sub_account, ',')::int[]))					
-                    and (ojl.credit_sub_account is Null and aml.x_sub_account_id is Null OR ojl.credit_sub_account = any(string_to_array(amc.credit_sub_account, ',')::int[]))							
+                    and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])						                    							
                 where								
                 aml.account_id = ojl.credit_account								
                 and (pt.categ_id is Null or pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[]) )  
