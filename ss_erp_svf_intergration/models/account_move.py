@@ -332,7 +332,7 @@ class AccountMove(models.Model):
         
         SELECT 
                 am.name AS invoice_no
-              , rp.zip as zip
+                , '〒' || COALESCE(rp.zip,'') as zip
                 , concat(rcs.name,rp.city,rp.street,rp.street2) as address
                 , concat(rp.name,'様') as customer_name
                 , to_char(now(), 'YYYY年MM月DD日')  as output_date
@@ -730,7 +730,7 @@ class AccountMove(models.Model):
 
         SELECT 
                 am.name AS invoice_no
-              , rp.zip as zip
+              , '〒' || COALESCE(rp.zip,'') as zip
                 , concat(rcs.name,rp.city,rp.street,rp.street2) as address
                 , concat(rp.name,'様') as customer_name
                 , to_char(now(), 'YYYY年MM月DD日')  as output_date
