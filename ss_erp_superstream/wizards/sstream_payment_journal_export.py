@@ -50,13 +50,13 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '0' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
+            , '40' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
             , '' as function_code4								
             , '' as project_code1								
-            , '1' as partner_employee_division								
+            , '0' as partner_employee_division								
             , '' as partner_employee_code							
             , aml.debit :: INTEGER as journal_amount								
             , aml.debit :: INTEGER as tax_excluded_amount								
@@ -138,13 +138,13 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '1' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
+            , '40' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
             , '' as function_code4								
             , '' as project_code1									
-            , '0' as partner_employee_division								
+            , '1' as partner_employee_division								
             , rpad(right(seo.organization_code, 3), 13, '0') as partner_employee_code								
             , aml.credit :: INTEGER as journal_amount								
             , aml.credit :: INTEGER as tax_excluded_amount								
@@ -232,7 +232,7 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '0' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
+            , '40' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
@@ -312,7 +312,7 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '1' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
+            , '40' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
@@ -418,19 +418,23 @@ class StreamPaymentJournalExport(models.TransientModel):
             else:
                 credit_line_data.append(all_data)
 
+        count = 0
         for de_line in debit_line_data:
             # Document data header record
             doc_header = "1" + '\r\n'
             file_data += doc_header
 
-            other_system_slip_number_int = 1
-            other_system_slip_number_str = str(other_system_slip_number_int)
-            other_system_slip_number = get_multi_character(
-                7 - len(other_system_slip_number_str)) + other_system_slip_number_str
-            other_system_slip_number_int += 1
+            # other_system_slip_number_int = 1
+            # other_system_slip_number_str = str(other_system_slip_number_int)
+            # other_system_slip_number = get_multi_character(
+            #     7 - len(other_system_slip_number_str)) + other_system_slip_number_str
+            # other_system_slip_number_int += 1
+
+            count+=1
+            count_str = str(count).zfill(7)
             #     # journal entry header region
             journal_header = "2," + param['sstream_company_code'] + "," + param['sstream_slip_group'] + ",," + de_line[
-                'slip_date'] + ',,0,1,,,,' + other_system_slip_number + ',0,0,,,,,,,,,,,,,' + '\r\n'
+                'slip_date'] + ',,0,1,,,,' + count_str + ',0,0,,,,,,,,,,,,,' + '\r\n'
             file_data += journal_header
             # End region
 
