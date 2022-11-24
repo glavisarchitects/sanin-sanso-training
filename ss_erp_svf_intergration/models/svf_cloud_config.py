@@ -68,19 +68,19 @@ class SvfCloudConfig(models.Model):
         key_config_form_format_path = type_report + '_form_format_path'
         form_format_path = self.env['ir.config_parameter'].sudo().get_param(key_config_form_format_path)
         if not form_format_path:
-            raise UserError('帳票レイアウトパスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+            raise UserError('帳票レイアウトパスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。%s' % key_config_form_format_path)
         config['form_format_path'] = form_format_path
 
         key_config_form_title = type_report + '_form_title'
         form_title = self.env['ir.config_parameter'].sudo().get_param(key_config_form_title)
         if not form_title:
-            raise UserError('帳票タイトルの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+            raise UserError('帳票タイトルの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。%s' % key_config_form_title)
         config['form_title'] = form_title
 
         key_config_form_storage_dest_path = type_report + '_form_storage_dest_path'
         form_storage_dest_path = self.env['ir.config_parameter'].sudo().get_param(key_config_form_storage_dest_path)
         if not form_storage_dest_path:
-            raise UserError('帳票格納先パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。')
+            raise UserError('帳票格納先パスの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。%s' % key_config_form_storage_dest_path)
         config['form_storage_dest_path'] = form_storage_dest_path
 
         # key_config_form_img_resource_path = type_report + '_form_img_resource_path'
