@@ -759,10 +759,10 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , '000' as tax_id								
                         , '0' as tax_entry_division							
                         , pt.name as product	
-                        , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
-                        when ojl.debit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
-                        when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
-                        ELSE ojl.debit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
+                        , case when ojl.credit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1	
                         ,ojl.materials_grouping									
