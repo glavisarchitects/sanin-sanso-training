@@ -532,8 +532,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
       
                 ) result								
-                order by								
-                   product asc								
+                order by
+                    move_line_id asc							
+                    , product asc								
                     , organization_code asc								
                     , department_code asc								
                     , tax_id asc  								
@@ -759,9 +760,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , '000' as tax_id								
                         , '0' as tax_entry_division							
                         , pt.name as product	
-                        , case when ojl.credit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
-                        when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
-                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
                         ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1	
@@ -810,8 +811,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and am.date BETWEEN '{start_period}' and '{end_period}'																									
                 --end pattern3											
                 ) result								
-                order by								
-                   product asc								
+                order by	
+                    move_line_id asc						
+                    , product asc								
                     , organization_code asc								
                     , department_code asc								
                     , tax_id asc  								
@@ -947,10 +949,10 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , '000' as tax_id								
                     , '0' as tax_entry_division								
                     , pt.name as product
-                    , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
-                    when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
-                    when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
-                    ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
+                    , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
+                    when ojl.debit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                    when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                    ELSE ojl.debit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                     END
                     as summery1	
                     ,ojl.materials_grouping								
@@ -1082,12 +1084,13 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 and am.date BETWEEN '{start_period}' and '{end_period}'													
                 --end pattern3											
                 ) result								
-                order by								
-                   product asc								
+                order by
+                    move_line_id asc	
+                    , deb_cre_division asc								
+                    ,product asc								
                     , organization_code asc								
                     , department_code asc								
                     , tax_id asc  								
-                    , deb_cre_division asc								
                     , line_number asc  								
             )pattern123								
 
@@ -1107,9 +1110,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
             SELECT * FROM ss_erp_superstream_linkage_journal where journal_creation = 'transfer_between_base'								
             ),
         part5_categ AS (
-        SELECT * FROM (VALUES('merchandise', '{param['product_ctg_merchandise']}':: BIGINT),
-            ('product', '{param['product_ctg_product']}':: BIGINT),
-            ('stock', '{param['product_ctg_stock']}':: BIGINT)) AS t (categ_key,categ_id)
+        SELECT * FROM (VALUES('merchandise', '{param['product_ctg_merchandise']}':: INT),
+            ('product', '{param['product_ctg_product']}':: INT),
+            ('stock', '{param['product_ctg_stock']}':: INT)) AS t (categ_key,categ_id)
         )
         select 						
             *				
@@ -1237,7 +1240,10 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         on ojl.debit_related_organization = dest_seo.id
                         
                         left join part5_categ p5ct
-                        on p5ct.categ_id = pt.categ_id
+                        on p5ct.categ_key = ojl.product_ctg
+                        
+                        left join stock_picking_type spt 
+                        on sp.picking_type_id = spt.id
 
                     where						
                     sp.state = 'done'  /* 完了を指定 */						
@@ -1245,7 +1251,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and sp.x_organization_id = any(string_to_array(ojl.credit_related_org_id_char, ',')::int[])  /* 移動元組織（貸方関連組織を指定） */						
                     and sp.x_organization_dest_id = any(string_to_array(ojl.debit_related_org_id_char, ',')::int[]) /* 移動先組織（借方関連組織を指定） */	
                     and io.is_super_stream_linked = False																			
-                     and p5ct.categ_key = ojl.product_ctg																			
+                    and p5ct.categ_id :: INT = pt.categ_id
+                    and spt.code = 'incoming'																			
                                                                                                          
             union all						
         
@@ -1283,11 +1290,11 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , 0 as tax_amount						
                     , '000' as tax_id						
                     , '0' as tax_entry_division	
-                    , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分'
-                        when ojl.debit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
-                        when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
-                        when ojl.debit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
-                        ELSE ojl.debit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
+                    , case when ojl.credit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
+                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                        ELSE ojl.credit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1									
                 from						
@@ -1324,24 +1331,48 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     on ojl.debit_related_organization = dest_seo.id
                     
                     left join part5_categ p5ct
-                    on p5ct.categ_id = pt.categ_id			
+                    on p5ct.categ_key = ojl.product_ctg	
+                    
+                    left join stock_picking_type spt 
+                    on sp.picking_type_id = spt.id
+                    		
                 where						
                 sp.state = 'done'  /* 完了を指定 */						
                 and sp.date BETWEEN '{start_period}' and '{end_period}'							
                 and sp.x_organization_id = any(string_to_array(ojl.credit_related_org_id_char, ',')::int[])  /* 移動元組織（貸方関連組織を指定） */						
                 and sp.x_organization_dest_id = any(string_to_array(ojl.debit_related_org_id_char, ',')::int[]) /* 移動先組織（借方関連組織を指定） */	
                 and io.is_super_stream_linked = False	
-                and p5ct.categ_key = ojl.product_ctg	
+                and p5ct.categ_id :: INT = pt.categ_id
+                and spt.code = 'outgoing'
             ) result				
-                order by						
-                department_code asc						
+                order by
+                inventory_order_line_id
                 , deb_cre_division asc						
+                , department_code asc
                 , line_number asc	
                 )pattern5										
 """
         self._cr.execute(_select_data)
         data_pattern5 = self._cr.dictfetchall()
         return data_pattern5
+
+    def _update_account_move_line(self, update_move_line=None):
+        if update_move_line:
+            update_move_line_str = '(' + ','.join([str(move_line_id) for move_line_id in update_move_line]) + ')'
+            query = f"""
+                update account_move_line set is_super_stream_linked = True where id in {update_move_line_str}
+            """
+            self._cr.execute(query)
+
+    def _update_move_between_base(self, update_inventory_order_line=None):
+        if update_inventory_order_line:
+            update_inventory_order_line_str = '(' + ','.join(
+                [str(order_line) for order_line in update_inventory_order_line]) + ')'
+            query = f"""
+                update ss_erp_inventory_order set is_super_stream_linked = True 
+                where id in (select order_id from ss_erp_inventory_order_line where id in {update_inventory_order_line_str})                
+            """
+            self._cr.execute(query)
 
     def export_sstream_journal_entry(self):
         # Captured data start record
@@ -1361,74 +1392,59 @@ class SStreamJournalEntryOutput(models.TransientModel):
         if not all_pattern_data:
             raise UserError('データがないとか、すべてエクスポートされました。もう一度確認してください。')
 
-        update_move_line = []
-
         tax_dict = {}
         tax_convert_ids = self.env['ss_erp.code.convert'].search([]).filtered(
             lambda x: x.external_system.code == 'super_stream')
         for tax in tax_convert_ids:
             tax_dict[tax.internal_code.id] = tax.external_code
 
-        for all_data in all_pattern_data:
-            if all_data.get('move_line_id'):
-                update_move_line.append(all_data['move_line_id'])
-
-            if all_data.get('inventory_order_line_id'):
-                iol_rec = self.env['ss_erp.inventory.order.line'].browse(all_data['inventory_order_line_id'])
-                iol_rec.order_id.is_super_stream_linked = True
-
-            # tax region
-            if all_data['tax_id'] != '000':
-                if all_data['tax_id'] == 0:
-                    all_data['tax_id'] = ''
-                else:
-                    all_data['tax_id'] = tax_dict[all_data['tax_id']] if tax_dict.get(all_data['tax_id']) else ''
+        update_move_line = []
 
         for data in pattern3_data_credit:
             if data.get('move_line_id'):
                 update_move_line.append(data['move_line_id'])
 
-        self.env['account.move.line'].browse(update_move_line).update({'is_super_stream_linked': True})
-        # move_line_rec.is_super_stream_linked = True
-
-        debit_line_data = []
-        credit_line_data = []
-        for pd in all_pattern_data:
-            if pd['deb_cre_division'] == '0':
-                debit_line_data.append(pd)
-            else:
-                credit_line_data.append(pd)
-
         list_group = []
-        for de_line in debit_line_data:
-            if de_line['materials_grouping']:
-                if list_group == [de_line['slip_date'], de_line['depar_orga_code'], de_line['account_code'],
-                                  de_line['sub_account_code'], de_line['product_id']]:
+
+        update_inventory_order_line = []
+        for index, all_data in enumerate(all_pattern_data):
+            if all_data.get('move_line_id'):
+                update_move_line.append(all_data['move_line_id'])
+            if all_data.get('inventory_order_line_id'):
+                update_inventory_order_line.append(all_data['inventory_order_line_id'])
+            if index % 2 == 1:
+                continue
+
+            if all_data['materials_grouping']:
+                if list_group == [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id']]:
                     continue
                 else:
-                    list_group = [de_line['slip_date'], de_line['depar_orga_code'], de_line['account_code'],
-                                  de_line['sub_account_code'], de_line['product_id']]
+                    list_group = [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id']]
             else:
-                if list_group == [de_line['slip_date'], de_line['depar_orga_code'], de_line['account_code'],
-                                  de_line['sub_account_code']]:
+                if list_group == [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code']]:
                     continue
                 else:
-                    list_group = [de_line['slip_date'], de_line['depar_orga_code'], de_line['account_code'],
-                                  de_line['sub_account_code']]
+                    list_group = [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code']]
 
             # Document data header record
             doc_header = "1" + '\r\n'
             file_data += doc_header
 
             # journal entry header region
-            journal_header = "2," + param['sstream_company_code'] + "," + param['sstream_slip_group'] + ",," + de_line[
+            journal_header = "2," + param['sstream_company_code'] + "," + param['sstream_slip_group'] + ",," + all_data[
                 'slip_date'] + ',,0,1,,,,,0,0,,,,,,,,,,,,,' + '\r\n'
             file_data += journal_header
 
-            debit_line = ''
-            credit_line = ''
-
-            clean_dict_data = deepcopy(de_line)
+            if all_data['tax_id'] != '000':
+                if all_data['tax_id'] == 0:
+                    all_data['tax_id'] = ''
+                else:
+                    all_data['tax_id'] = tax_dict[all_data['tax_id']] if tax_dict.get(all_data['tax_id']) else ''
+            clean_dict_data = deepcopy(all_data)
             if 'move_line_id' in clean_dict_data.keys():
                 clean_dict_data.pop('move_line_id')
             if 'materials_grouping' in clean_dict_data.keys():
@@ -1439,25 +1455,34 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 clean_dict_data.pop('inventory_order_line_id')
             debit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
 
-            for cre_line in credit_line_data:
-                if cre_line['move_line_id'] == de_line['move_line_id']:
-                    clean_dict_data = deepcopy(cre_line)
-                    if 'move_line_id' in clean_dict_data.keys():
-                        clean_dict_data.pop('move_line_id')
-                    if 'materials_grouping' in clean_dict_data.keys():
-                        clean_dict_data.pop('materials_grouping')
-                    if 'product_id' in clean_dict_data.keys():
-                        clean_dict_data.pop('product_id')
-                    if 'inventory_order_line_id' in clean_dict_data.keys():
-                        clean_dict_data.pop('inventory_order_line_id')
-                    credit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
-                    continue
+            cre_line = all_pattern_data[index + 1]
+
+            if cre_line['tax_id'] != '000':
+                if cre_line['tax_id'] == 0:
+                    cre_line['tax_id'] = ''
+                else:
+                    cre_line['tax_id'] = tax_dict[cre_line['tax_id']] if tax_dict.get(cre_line['tax_id']) else ''
+
+            clean_dict_data = deepcopy(cre_line)
+            if 'move_line_id' in clean_dict_data.keys():
+                clean_dict_data.pop('move_line_id')
+            if 'materials_grouping' in clean_dict_data.keys():
+                clean_dict_data.pop('materials_grouping')
+            if 'product_id' in clean_dict_data.keys():
+                clean_dict_data.pop('product_id')
+            if 'inventory_order_line_id' in clean_dict_data.keys():
+                clean_dict_data.pop('inventory_order_line_id')
+            credit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
 
             file_data += debit_line
             file_data += credit_line
             # slip data trailer record
             slip_trailer = "8" + '\r\n'
             file_data += slip_trailer
+
+        self._update_account_move_line(list(set(update_move_line)))
+        self._update_move_between_base(list(set(update_inventory_order_line)))
+
         # end data trailer record
         end_trailer = "9" + '\r\n'
         file_data += end_trailer
