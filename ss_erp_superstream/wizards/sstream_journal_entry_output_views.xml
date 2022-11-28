@@ -7,7 +7,7 @@
             <field name="model">sstream.journal.entry.output</field>
             <field name="arch" type="xml">
                 <form>
-                    <button name="export_sstream_journal_entry" string="仕訳伝票出力" type="object" class="oe_highlight"/>
+
                     <group>
                         <label for="first_day_period" string="対象期間："/>
                         <div name="filter_period" class="o_row">
@@ -17,6 +17,7 @@
                         </div>
                     </group>
                     <footer>
+                        <button name="export_sstream_journal_entry" string="仕訳伝票出力" type="object" class="oe_highlight"/>
                         <button string="取消" class="oe_link" special="cancel"/>
                     </footer>
 
