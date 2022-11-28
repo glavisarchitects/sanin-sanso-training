@@ -6,7 +6,7 @@
     """,
     "version": "14.0.1.1",
     "depends": [
-        "base", "contacts", "calendar", "delivery", "mail", "mrp_subcontracting"
+        "base", "contacts", "calendar", "mail", "mrp_subcontracting"
     ],
     "data": [
         # SECURITY
