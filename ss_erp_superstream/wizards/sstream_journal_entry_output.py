@@ -1422,18 +1422,18 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
             if all_data['materials_grouping']:
                 if (all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code'], all_data['product_id']) in list_group:
+                                  all_data['sub_account_code'], all_data['product_id'], all_data['summery1']) in list_group:
                     continue
                 else:
                     list_group.append((all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code'], all_data['product_id']))
+                                  all_data['sub_account_code'], all_data['product_id'], all_data['summery1']))
             else:
                 if (all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code'], all_data['product_id']) in list_group:
+                                  all_data['sub_account_code'], all_data['product_id'], all_data['summery1']) in list_group:
                     continue
                 else:
                     list_group.append((all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code'], all_data['product_id']))
+                                  all_data['sub_account_code'], all_data['product_id'], all_data['summery1']))
 
             # Document data header record
             doc_header = "1" + '\r\n'
