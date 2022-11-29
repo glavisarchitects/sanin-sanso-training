@@ -198,10 +198,10 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         END
                         as summery1
                         ,ojl.materials_grouping
-                    from								
-                        account_move am /* 仕訳 */								
-                        inner join								
-                        account_move_line aml /* 仕訳項目 */								
+                    from				
+                        account_move_line aml /* 仕訳項目 */
+                        left join								                        					
+                        account_move am /* 仕訳 */								                        							
                         on am.id = aml.move_id								
                         inner join								
                         account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -236,7 +236,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))	
                     and aml.debit <> 0  /* 借方を取得 */								
                     and aml.parent_state = 'posted'  /* 記帳済み */								
-                    and aml.product_id is not Null								
+                    and aml.product_id is not Null							
+                    and ojl.debit_tax_calculation = True	
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and am.date BETWEEN '{start_period}' and '{end_period}'														
                                             
@@ -293,9 +294,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         as summery1
                     ,ojl.materials_grouping	
                 from								
-                    account_move am /* 仕訳 */								
-                    inner join								
-                    account_move_line aml /* 仕訳項目 */								
+                    account_move_line aml /* 仕訳項目 */
+                    left join								                        					
+                    account_move am /* 仕訳 */									
                     on am.id = aml.move_id								
                     inner join								
                     account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -335,7 +336,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))								
                 and aml.debit <> 0  /* 借方を取得 */								
                 and aml.parent_state = 'posted'  /* 記帳済み */
-                and aml.product_id is not Null							
+                and aml.product_id is not Null
+                and ojl.debit_tax_calculation = True							
                 and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                 and am.date BETWEEN '{start_period}' and '{end_period}'	
                 
@@ -389,9 +391,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ,ojl.materials_grouping		
                         
                     from								
-                        account_move am /* 仕訳 */								
-                        inner join								
-                        account_move_line aml /* 仕訳項目 */								
+                        account_move_line aml /* 仕訳項目 */
+                        left join								                        					
+                        account_move am /* 仕訳 */									
                         on am.id = aml.move_id								
                         inner join								
                         account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -431,7 +433,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))										
                     and aml.credit <> 0  /* 借方を取得 */								
                     and aml.parent_state = 'posted'  /* 記帳済み */
-                    and aml.product_id is not Null							
+                    and aml.product_id is not Null		
+                    and ojl.credit_tax_calculation = True					
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and am.date BETWEEN '{start_period}' and '{end_period}'														
                                             
@@ -487,9 +490,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     as summery1
                     ,ojl.materials_grouping					
                 from								
-                    account_move am /* 仕訳 */								
-                    inner join								
-                    account_move_line aml /* 仕訳項目 */								
+                    account_move_line aml /* 仕訳項目 */
+                    left join								                        					
+                    account_move am /* 仕訳 */									
                     on am.id = aml.move_id								
                     inner join								
                     account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -526,20 +529,20 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 and aml.parent_state = 'posted'  /* 記帳済み */	
                 and aml.product_id is not Null							
                 and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
-                and am.date BETWEEN '{start_period}' and '{end_period}'																
-                
+                and am.date BETWEEN '{start_period}' and '{end_period}'		
+                and ojl.credit_tax_calculation = True																		                
                 --end pattern2
 
       
                 ) result								
                 order by
-                    move_line_id asc							
+                    move_line_id asc	
+                    , line_number asc  								                    						
                     , product asc								
                     , organization_code asc								
                     , department_code asc								
                     , tax_id asc  								
                     , deb_cre_division asc								
-                    , line_number asc  								
             )pattern123								
 
         """
@@ -718,7 +721,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and aml_atr.account_tax_id is Null						
                     and aml.parent_state = 'posted'  /* 記帳済み */
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
-                    and am.date BETWEEN '{start_period}' and '{end_period}'		
+                    and ojl.debit_tax_calculation = False								
+                    and am.date BETWEEN '{start_period}' and '{end_period}'	                    	
 
                 UNION ALL
                     select
@@ -805,20 +809,21 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and (pt.categ_id is Null or pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[]) )  
                     and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))								
                     and aml.debit <> 0  /* 借方を取得 */		
-                    and aml_atr.account_tax_id is Null						
+                    and aml_atr.account_tax_id is Null			
+                    and ojl.debit_tax_calculation = False			
                     and aml.parent_state = 'posted'  /* 記帳済み */								
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and am.date BETWEEN '{start_period}' and '{end_period}'																									
                 --end pattern3											
                 ) result								
                 order by	
-                    move_line_id asc						
+                    move_line_id asc	
+                    , line_number asc  								                    					
                     , product asc								
                     , organization_code asc								
                     , department_code asc								
                     , tax_id asc  								
                     , deb_cre_division asc								
-                    , line_number asc  								
             )pattern123								
 
         """
@@ -1085,13 +1090,13 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 --end pattern3											
                 ) result								
                 order by
-                    move_line_id asc	
+                    move_line_id asc
+                    , line_number asc  								                    	
                     , deb_cre_division asc								
                     ,product asc								
                     , organization_code asc								
                     , department_code asc								
                     , tax_id asc  								
-                    , line_number asc  								
             )pattern123								
 
         """
@@ -1268,8 +1273,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE
                     to_char(date_trunc('month', sp.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
                     END  as slip_date			
-                    , '1' as line_number 								
-                    , '0' as deb_cre_division	
+                    , '2' as line_number 								
+                    , '1' as deb_cre_division	
                     , cre_ojl.code as account_code								
                     , COALESCE(sub_cre_ojl.code, '') as sub_account_code	
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
@@ -1347,9 +1352,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
             ) result				
                 order by
                 inventory_order_line_id
+                , line_number asc	                
                 , deb_cre_division asc						
                 , department_code asc
-                , line_number asc	
                 )pattern5										
 """
         self._cr.execute(_select_data)
@@ -1416,19 +1421,19 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 continue
 
             if all_data['materials_grouping']:
-                if list_group == [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code'], all_data['product_id']]:
+                if (all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id']) in list_group:
                     continue
                 else:
-                    list_group = [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code'], all_data['product_id']]
+                    list_group.append((all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id']))
             else:
-                if list_group == [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code']]:
+                if (all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id']) in list_group:
                     continue
                 else:
-                    list_group = [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code']]
+                    list_group.append((all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id']))
 
             # Document data header record
             doc_header = "1" + '\r\n'
