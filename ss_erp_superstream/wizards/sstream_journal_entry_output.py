@@ -1224,7 +1224,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         on sp.x_responsible_dept_id = serd.id						
                         left join						
                         ss_erp_organization seo /* 組織 */						
-                        on sp.x_organization_id = seo.id						
+                        on sp.x_organization_dest_id = seo.id						
                         left join						
                         product_product pp  /* プロダクト */						
                         on iol.product_id = pp.id
