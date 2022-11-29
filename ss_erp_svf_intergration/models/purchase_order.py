@@ -155,10 +155,11 @@ class PurchaseOrder(models.Model):
 
     def po_svf_template_export(self):
         if self.x_bis_categ_id == 'gas_material':
+            type_report = 'R011_1'
             data_file = [
-                '"purchase_order_code","issue_date","company_name","branch_name","branch_address","branch_tel",'
-                '"branch_fax","purchase_member","branch_receive","customer_name","customer_tel","customer_fax",'
-                '"price_subtotal","amount_tax","amount_total","notes","dest_info","website","page","product_name",'
+                '"purchase_order_code","issue_date","company_name","branch_name","branch_address","branch_tel",'+ \
+                '"branch_fax","purchase_member","branch_receive","customer_name","customer_tel","customer_fax",'+ \
+                '"price_subtotal","amount_tax","amount_total","notes","dest_info","website","page","product_name",'+ \
                 '"quantity","unit","price_unit","price_per_product","price_tax","fixed_cost","date_planned"']
             for line in self.order_line:
                 if not line.product_id:
@@ -215,14 +216,15 @@ class PurchaseOrder(models.Model):
 
         # construction
         else:
+            type_report = 'R011_2'
             data_file = [
-                '"purchase_order_code", "issue_date", "company_name", "branch_name", "branch_address",'
-                '"branch_tel", "branch_fax", "purchase_member", "branch_receive", "message1", "customer_name",'
-                '"customer_tel", "customer_fax", "price_subtotal", "amount_tax", "amount_total", "notes", "dest_info",'
-                '"website", "page", "construction_info", "construction_name", "construction_spot", "overview",'
-                '"conditions", "planned_period", "supplies_check", "supplies_info", "explanation_check",'
-                '"explanation_date", "explanation_spot", "payment_list", "cash", "bill", "product_name",'
-                '"quantity", "unit", "price_unit", "price_per_product", "price_tax", "fixed_cost", "date_planned"']
+                '"purchase_order_code","issue_date","company_name","branch_name","branch_address",'+ \
+                '"branch_tel","branch_fax","purchase_member","branch_receive","message1","customer_name",'+ \
+                '"customer_tel","customer_fax","price_subtotal","amount_tax","amount_total","notes","dest_info",'+ \
+                '"website","page","construction_info","construction_name","construction_spot","overview",'+ \
+                '"conditions","planned_period","supplies_check","supplies_info","explanation_check",'+ \
+                '"explanation_date","explanation_spot","payment_list","cash","bill","product_name",'+ \
+                '"quantity","unit","price_unit","price_per_product","price_tax","fixed_cost","date_planned"']
             for line in self.order_line:
                 if not line.product_id:
                     continue
@@ -232,37 +234,19 @@ class PurchaseOrder(models.Model):
                 organization_fax = self.x_organization_id.organization_fax if self.x_organization_id.organization_fax else ''
                 organization_phone = self.x_organization_id.organization_phone if self.x_organization_id.organization_phone else ''
                 date_planned = self.date_planned.strftime("%Y年%m月%d日") if self.date_planned else ''
-                date_order = self.date_order.strftime("%Y年%m月%d日") if self.date_order else ''
 
-                header_organization_name = self.x_organization_id.name + '入荷'
                 purchase_user_name = self.user_id.name if self.user_id.name else ''
-
-                # detail
-                x_name_specification = line.product_id.x_name_specification if line.product_id.x_name_specification else ''
-                product_note = line.name if line.name else ''
 
                 # purchase order
                 x_construction_name = self.x_construction_name if self.x_construction_name else ''
                 construction_period_start = self.x_construction_period_start.strftime(
                     "%Y年%m月%d日") if self.x_construction_period_start else '' + '~' + self.x_construction_period_end.strftime(
                     "%Y年%m月%d日") if self.x_construction_period_end else ''
-                x_supplies_info = get_multi_character(3 * 4) + (self.x_supplies_info if self.x_supplies_info else "")
-                supplies_check = "あり" + x_supplies_info if self.x_supplies_check == 'exist' else "なし"
-                construction_payment_terms = "当社規定による、月末締切・翌月末支払\r\n" + "現金" + get_multi_character(
-                    2 * 4) + str(
-                    self.x_construction_payment_cash) + "%" + get_multi_character(3 * 4) + "手形" + get_multi_character(
-                    3 * 4) + str(self.x_construction_payment_bill) + "%"
-                explanation_check = self.x_explanation_check + "\r\n" + self.x_explanation_date.strftime(
-                    "%Y年%m月%d日") + self.x_explanation_spot if self.x_explanation_check == 'exist' else self.x_explanation_check
-
                 dest_info = self.x_dest_address_info if self.x_dest_address_info else ''
 
                 # footer
                 notes = self.notes if self.notes else ''
                 construction_spot = self.x_construction_spot if self.x_construction_spot else ''
-                x_dest_address_info = self.x_dest_address_info if self.x_dest_address_info else ''
-                ss_erp_construction_subcontract = str(
-                    self.x_construction_subcontract) if self.x_construction_subcontract else ""
 
                 website = self.company_id.website if self.company_id.website else ''
                 price_tax = ''
@@ -317,21 +301,22 @@ class PurchaseOrder(models.Model):
                 str_data_line = '"' + str_data_line + '"'
                 data_file.append(str_data_line)
             data_send = "\n".join(data_file)
-        b = data_send.encode('shift-jis')
-        vals = {
-            'name': '発注書' '.csv',
-            'datas': base64.b64encode(b).decode('shift-jis'),
-            'type': 'binary',
-            'res_model': 'ir.ui.view',
-            'x_no_need_save': True,
-            'res_id': False,
-        }
+        # b = data_send.encode('shift-jis')
+        # vals = {
+        #     'name': '発注書' '.csv',
+        #     'datas': base64.b64encode(b).decode('shift-jis'),
+        #     'type': 'binary',
+        #     'res_model': 'ir.ui.view',
+        #     'x_no_need_save': True,
+        #     'res_id': False,
+        # }
+        #
+        # file_txt = self.env['ir.attachment'].create(vals)
+        #
+        # return {
+        #     'type': 'ir.actions.act_url',
+        #     'url': '/web/content/' + str(file_txt.id) + '?download=true',
+        #     'target': 'new',
+        # }
 
-        file_txt = self.env['ir.attachment'].create(vals)
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/' + str(file_txt.id) + '?download=true',
-            'target': 'new',
-        }
-        # return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R010')
+        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report=type_report)

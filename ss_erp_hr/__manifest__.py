@@ -14,9 +14,6 @@
         # VIEWS
         'views/hr_employee_views.xml',
         'menu/menu_item.xml',
-
-        # DATA
-        'data/default_param_setting_data.xml',
     ],
     "application": False,
     "installable": True,

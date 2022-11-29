@@ -332,7 +332,7 @@ class AccountMove(models.Model):
         
         SELECT 
                 am.name AS invoice_no
-              , rp.zip as zip
+                , '〒' || COALESCE(rp.zip,'') as zip
                 , concat(rcs.name,rp.city,rp.street,rp.street2) as address
                 , concat(rp.name,'様') as customer_name
                 , to_char(now(), 'YYYY年MM月DD日')  as output_date
@@ -609,7 +609,7 @@ class AccountMove(models.Model):
         org_bank as (
         select 
             rpb.organization_id,
-            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,'）',rpb.x_bank_branch_number) as payee_info	
+            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,'）',rpb.acc_number) as payee_info	
         from res_partner_bank rpb
         left join res_bank rb on rpb.bank_id = rb.id
         where rpb.organization_id is not null
@@ -730,7 +730,7 @@ class AccountMove(models.Model):
 
         SELECT 
                 am.name AS invoice_no
-              , rp.zip as zip
+              , '〒' || COALESCE(rp.zip,'') as zip
                 , concat(rcs.name,rp.city,rp.street,rp.street2) as address
                 , concat(rp.name,'様') as customer_name
                 , to_char(now(), 'YYYY年MM月DD日')  as output_date

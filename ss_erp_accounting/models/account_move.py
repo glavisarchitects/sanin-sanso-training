@@ -54,13 +54,6 @@ class AccountMove(models.Model):
                    ('bills', '手形'), ],
         required=False, index=True, store=True)
 
-    def _recompute_payment_terms_lines(self):
-        super()._recompute_payment_terms_lines()
-
-        for line in self.line_ids:
-            if line.account_id.x_sub_account_ids and line.account_id.user_type_id.type in ('receivable', 'payable'):
-                line.x_sub_account_id = line.account_id.x_sub_account_ids[0]
-
     def button_cancel(self):
         res = super(AccountMove, self).button_cancel()
         approval_account_move_in = self.env['approval.request'].search([('x_account_move_ids', 'in', self.id),
@@ -215,9 +208,24 @@ class AccountMove(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', string='補助科目')
+    def _get_default_x_sub_account(self):
+        if self.account_id.x_sub_account_ids and self.account_id.user_type_id.type in ('receivable', 'payable'):
+            return self.account_id.x_sub_account_ids[0]
+        else:
+            return False
+
+    x_sub_account_id = fields.Many2one('ss_erp.account.subaccount', string='補助科目', default=_get_default_x_sub_account)
     x_sub_account_ids = fields.Many2many('ss_erp.account.subaccount', related='account_id.x_sub_account_ids')
 
     x_organization_id = fields.Many2one('ss_erp.organization', related='move_id.x_organization_id', store=True)
     x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department', related='move_id.x_responsible_dept_id',
                                             store=True)
+
+
+
+    # @api.onchange('account_id')
+    # def _onchange_account_id(self):
+    #     res = super()._onchange_account_id()
+    #     if self.account_id.x_sub_account_ids and self.account_id.user_type_id.type in ('receivable', 'payable'):
+    #         self.x_sub_account_id = self.account_id.x_sub_account_ids[0]
+    #     return res
