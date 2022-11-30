@@ -7,7 +7,7 @@ from odoo.fields import Datetime, Date
 
 class ProductMediumClassification(models.Model):
     _name = 'ss_erp.product.medium.classification'
-    _description = 'プロダクト中位分類'
+    _description = 'プロダクト中分類'
     _rec_name = 'display_name'
 
     major_classification_code = fields.Many2one('ss_erp.product.major.classification', '大分類コード')

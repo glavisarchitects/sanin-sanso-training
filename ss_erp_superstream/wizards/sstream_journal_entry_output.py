@@ -722,6 +722,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and aml.parent_state = 'posted'  /* 記帳済み */
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and ojl.debit_tax_calculation = False								
+                    and ojl.credit_tax_calculation = False								
                     and am.date BETWEEN '{start_period}' and '{end_period}'	                    	
 
                 UNION ALL
@@ -810,7 +811,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))								
                     and aml.debit <> 0  /* 借方を取得 */		
                     and aml_atr.account_tax_id is Null			
-                    and ojl.debit_tax_calculation = False			
+                    and ojl.debit_tax_calculation = False								
+                    and ojl.credit_tax_calculation = False					
                     and aml.parent_state = 'posted'  /* 記帳済み */								
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and am.date BETWEEN '{start_period}' and '{end_period}'																									
@@ -995,7 +997,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 and (pt.categ_id is Null or pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[]) )  
                 and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))									
                 and aml.credit <> 0  /* 借方を取得 */
-                and aml_atr.account_tax_id is Null								
+                and aml_atr.account_tax_id is Null
+                and ojl.debit_tax_calculation = False								
+                and ojl.credit_tax_calculation = False										
                 and aml.parent_state = 'posted'  /* 記帳済み */								
                 and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                 and am.date BETWEEN '{start_period}' and '{end_period}'
@@ -1347,6 +1351,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 and sp.x_organization_id = any(string_to_array(ojl.credit_related_org_id_char, ',')::int[])  /* 移動元組織（貸方関連組織を指定） */						
                 and sp.x_organization_dest_id = any(string_to_array(ojl.debit_related_org_id_char, ',')::int[]) /* 移動先組織（借方関連組織を指定） */	
                 and io.is_super_stream_linked = False	
+                and ojl.debit_tax_calculation = False								
+                and ojl.credit_tax_calculation = False		                
                 and p5ct.categ_id :: INT = pt.categ_id
                 and spt.code = 'outgoing'
             ) result				
