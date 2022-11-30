@@ -7,7 +7,7 @@ from odoo.fields import Datetime, Date
 
 class ProductMajorClassification(models.Model):
     _name = 'ss_erp.product.major.classification'
-    _description = 'プロダクトメイジャー分類'
+    _description = 'プロダクト大分類'
     _rec_name = 'display_name'
 
     major_classification_code = fields.Char('大分類コード')
