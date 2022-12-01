@@ -1401,7 +1401,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
         all_pattern_data = pattern12_data + pattern3_data_debit + pattern5_data
 
         if not all_pattern_data:
-            raise UserError('データがないとか、すべてエクスポートされました。もう一度確認してください。')
+            raise UserError('出力するデータが見つかりませんでした。指定した期間内に出力対象データが存在しないか、既に出力済みの可能性があります。')
 
         tax_dict = {}
         tax_convert_ids = self.env['ss_erp.code.convert'].search([]).filtered(

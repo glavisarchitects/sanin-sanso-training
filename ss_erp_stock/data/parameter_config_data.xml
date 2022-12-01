@@ -9,5 +9,6 @@
             <field name="key">ss_erp_stock_expense</field>
             <field name="value"></field>
         </record>
+
     </data>
 </odoo>

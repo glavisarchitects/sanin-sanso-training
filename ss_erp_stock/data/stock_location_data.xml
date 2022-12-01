@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+     <record id="ss_erp_transit_location" model="stock.location">
+            <field name="name">拠点間移動用の積送ロケーション</field>
+            <field name="usage">transit</field>
+        </record>
+    </data>
+</odoo>

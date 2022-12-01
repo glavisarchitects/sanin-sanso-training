@@ -166,7 +166,7 @@ class InventoryOrder(models.Model):
 
     def confirm_inventory_order(self):
         if self.inventory_order_line_ids:
-            virtual_location = self.env['stock.location'].search([('usage', '=', 'customer')], limit=1)
+            virtual_location = self.env.ref('ss_erp_stock.ss_erp_transit_location')
             if not virtual_location:
                 raise UserError(
                     _("Can't find virtual location. Please check stock.location again."))

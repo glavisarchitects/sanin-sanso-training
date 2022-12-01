@@ -405,6 +405,9 @@ class StreamPaymentJournalExport(models.TransientModel):
         #
         all_pattern_data = data_receipt_payment_p6 + data_outbound_payment_p6
 
+        if not all_pattern_data:
+            raise UserError('出力するデータが見つかりませんでした。指定した期間内に出力対象データが存在しないか、既に出力済みの可能性があります。')
+
         for all_data in all_pattern_data:
             payment_rec = self.env['account.payment'].search([('id', '=', all_data['payment_id'])])
             journal_entry_rec = payment_rec.move_id
