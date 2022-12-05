@@ -44,7 +44,7 @@ class StockScrap(models.Model):
     @api.constrains('user_id', 'x_responsible_id', 'x_organization_id')
     def _validate_responsible_department(self):
         for rec in self:
-            employee_id = self.env['hr.employee'].search([('user_id', '=', rec.user_id.id)], limit=1)
+            employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', rec.user_id.id)], limit=1)
             if employee_id:
                 if rec.x_organization_id:
                     org_ids = [employee_id.organization_first, employee_id.organization_second,

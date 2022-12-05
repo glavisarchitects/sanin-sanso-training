@@ -7,7 +7,7 @@
             <field name="model">sstream.payment.journal.export</field>
             <field name="arch" type="xml">
                 <form>
-                    <button name="payment_journal_stream_export" string="入金支払仕訳伝票出力" type="object" class="oe_highlight"/>
+
                     <group>
                         <field name="branch_id" required="1" />
                         <label for="first_day_period" string="対象期間："/>
@@ -18,6 +18,7 @@
                         </div>
                     </group>
                     <footer>
+                        <button name="payment_journal_stream_export" string="入金支払仕訳伝票出力" type="object" class="oe_highlight"/>
                         <button string="取消" class="oe_link" special="cancel"/>
                     </footer>
 

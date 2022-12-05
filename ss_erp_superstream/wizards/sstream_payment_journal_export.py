@@ -50,13 +50,13 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '0' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
+            , '40' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
             , '' as function_code4								
             , '' as project_code1								
-            , '1' as partner_employee_division								
+            , '0' as partner_employee_division								
             , '' as partner_employee_code							
             , aml.debit :: INTEGER as journal_amount								
             , aml.debit :: INTEGER as tax_excluded_amount								
@@ -138,16 +138,16 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '1' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
+            , '40' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
             , '' as function_code4								
             , '' as project_code1									
-            , '0' as partner_employee_division								
+            , '1' as partner_employee_division								
             , rpad(right(seo.organization_code, 3), 13, '0') as partner_employee_code								
-            , aml.credit as journal_amount								
-            , aml.credit as tax_excluded_amount								
+            , aml.credit :: INTEGER as journal_amount								
+            , aml.credit :: INTEGER as tax_excluded_amount								
             , 0 as tax_amount								
             , '000' as tax_code								
             , '0' as tax_entry_division								
@@ -232,7 +232,7 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '0' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
+            , '40' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
@@ -312,7 +312,7 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '1' as deb_cre_division								
             , aa.code as account_code								
             , COALESCE(seas.code, '') as sub_account_code								
-            , '{get_multi_character(40,' ')}' || right(seo.organization_code, 3) as depar_orga_code								
+            , '40' || right(seo.organization_code, 3) as depar_orga_code								
             , '' as function_code1								
             , '' as function_code2								
             , '' as function_code3								
@@ -320,8 +320,8 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '' as project_code1									
             , '0' as partner_employee_division								
             , '' as partner_employee_code								
-            , aml.credit as journal_amount								
-            , aml.credit as tax_excluded_amount								
+            , aml.credit :: INTEGER as journal_amount								
+            , aml.credit :: INTEGER as tax_excluded_amount								
             , 0 as tax_amount								
             , '000' as tax_code								
             , '0' as tax_entry_division								
@@ -405,6 +405,9 @@ class StreamPaymentJournalExport(models.TransientModel):
         #
         all_pattern_data = data_receipt_payment_p6 + data_outbound_payment_p6
 
+        if not all_pattern_data:
+            raise UserError('出力するデータが見つかりませんでした。指定した期間内に出力対象データが存在しないか、既に出力済みの可能性があります。')
+
         for all_data in all_pattern_data:
             payment_rec = self.env['account.payment'].search([('id', '=', all_data['payment_id'])])
             journal_entry_rec = payment_rec.move_id
@@ -418,19 +421,23 @@ class StreamPaymentJournalExport(models.TransientModel):
             else:
                 credit_line_data.append(all_data)
 
+        count = 0
         for de_line in debit_line_data:
             # Document data header record
             doc_header = "1" + '\r\n'
             file_data += doc_header
 
-            other_system_slip_number_int = 1
-            other_system_slip_number_str = str(other_system_slip_number_int)
-            other_system_slip_number = get_multi_character(
-                7 - len(other_system_slip_number_str)) + other_system_slip_number_str
-            other_system_slip_number_int += 1
+            # other_system_slip_number_int = 1
+            # other_system_slip_number_str = str(other_system_slip_number_int)
+            # other_system_slip_number = get_multi_character(
+            #     7 - len(other_system_slip_number_str)) + other_system_slip_number_str
+            # other_system_slip_number_int += 1
+
+            count+=1
+            count_str = str(count).zfill(7)
             #     # journal entry header region
             journal_header = "2," + param['sstream_company_code'] + "," + param['sstream_slip_group'] + ",," + de_line[
-                'slip_date'] + ',,0,1,,,,' + other_system_slip_number + ',0,0,,,,,,,,,,,,,' + '\r\n'
+                'slip_date'] + ',,0,1,,,,' + count_str + ',0,0,,,,,,,,,,,,,' + '\r\n'
             file_data += journal_header
             # End region
 

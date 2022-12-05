@@ -14,9 +14,6 @@
         #VIEW
         "views/res_company_views.xml",
 
-        # DATA
-        # "data/default_param_setting_data.xml",
-
         # VIEW
         "views/res_company_views.xml",
     ],

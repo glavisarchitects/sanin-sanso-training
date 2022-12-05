@@ -489,19 +489,19 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="res_partner_delivery_inherit_form">
-        <field name="name">res.partner.delivery.inherit.form</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="delivery.view_partner_property_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='property_delivery_carrier_id']" position="attributes">
-                <attribute name="attrs">{
-                    'invisible': [('has_property_delivery_carrier_id', '=', 'no')],
-                    'required': [('has_property_delivery_carrier_id', '=', 'required')]
-                }</attribute>
-            </xpath>
-        </field>
-    </record>
+<!--    <record model="ir.ui.view" id="res_partner_delivery_inherit_form">-->
+<!--        <field name="name">res.partner.delivery.inherit.form</field>-->
+<!--        <field name="model">res.partner</field>-->
+<!--        <field name="inherit_id" ref="delivery.view_partner_property_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//field[@name='property_delivery_carrier_id']" position="attributes">-->
+<!--                <attribute name="attrs">{-->
+<!--                    'invisible': [('has_property_delivery_carrier_id', '=', 'no')],-->
+<!--                    'required': [('has_property_delivery_carrier_id', '=', 'required')]-->
+<!--                }</attribute>-->
+<!--            </xpath>-->
+<!--        </field>-->
+<!--    </record>-->
 
     <record model="ir.ui.view" id="res_partner_view_form_inherit_mail">
         <field name="name">res.partner.inherit.form</field>
