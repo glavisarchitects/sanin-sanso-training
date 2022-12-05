@@ -53,9 +53,10 @@ class StockScrap(models.Model):
             scrap.name = self.env['ir.sequence'].next_by_code('stock.scrap') or _('New')
             move = self.env['stock.move'].create(scrap._prepare_move_values())
             # master: replace context by cancel_backorder
-            move.update({
+            move.sudo().update({
                 'x_organization_id': scrap.x_organization_id.id,
                 'x_responsible_dept_id': scrap.x_responsible_dept_id.id,
+                'x_responsible_user_id': scrap.user_id.id,
             })
             move.with_context(is_scrap=True)._action_done()
             scrap.write({'move_id': move.id, 'state': 'done'})
