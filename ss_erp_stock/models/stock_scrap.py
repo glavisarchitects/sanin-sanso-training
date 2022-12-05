@@ -47,11 +47,20 @@ class StockScrap(models.Model):
 
     scrap_type = fields.Many2one('ss_erp.stock.scrap.category', string='廃棄種別', required=False, )
 
-    def _prepare_move_values(self):
-        vals = super(StockScrap, self)._prepare_move_values()
-        vals.update({'x_organization_id': self.x_organization_id.id,
-                     'x_responsible_dept_id': self.x_responsible_dept_id.id})
-        return vals
+    def do_scrap(self):
+        self._check_company()
+        for scrap in self:
+            scrap.name = self.env['ir.sequence'].next_by_code('stock.scrap') or _('New')
+            move = self.env['stock.move'].create(scrap._prepare_move_values())
+            # master: replace context by cancel_backorder
+            move.update({
+                'x_organization_id': scrap.x_organization_id.id,
+                'x_responsible_dept_id': scrap.x_responsible_dept_id.id,
+            })
+            move.with_context(is_scrap=True)._action_done()
+            scrap.write({'move_id': move.id, 'state': 'done'})
+            scrap.date_done = fields.Datetime.now()
+        return True
 
 
 class ScrapCategory(models.Model):
