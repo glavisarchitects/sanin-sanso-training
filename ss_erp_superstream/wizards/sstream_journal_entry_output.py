@@ -945,7 +945,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     END  as slip_date										
                     , '1' as line_number 								
                     , '0' as deb_cre_division									
-                    , aa.code as account_code								
+                    , ojl.code as account_code								
                     , COALESCE(seas.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
                     when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
@@ -992,10 +992,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     on am.x_organization_id = seo.id								
                     left join								
                     ss_erp_responsible_department serd /* 管轄部門 */								
-                    on am.x_responsible_dept_id = serd.id								
-                    left join								
-                    account_account aa /* 勘定科目 */								
-                    on aml.account_id = aa.id								
+                    on am.x_responsible_dept_id = serd.id													
                     left join								
                     ss_erp_account_subaccount seas /* 補助科目 */								
                     on aml.x_sub_account_id = seas.id								
@@ -1008,7 +1005,11 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
                     left join odoo_journal_linkage ojl 
                     on ojl.debit_account = any(string_to_array(amc.debit_account, ',')::int[])	
-                    and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])						
+                    and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])	
+                    
+                    left join								
+                    account_account aa /* 勘定科目 */								
+                    on ojl.debit_account = aa.id							
                 where								
                 aml.account_id = ojl.credit_account								
                 and (pt.categ_id is Null or pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[]) )  
