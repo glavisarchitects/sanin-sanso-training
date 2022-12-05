@@ -142,7 +142,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , '' as spare_character_item8								
                 , '' as reserved_numeric_item1								
                 , '' as reserved_numeric_item2								
-                , '' as reserved_numeric_item3						
+                , '' as reserved_numeric_item3
+                , move_id
+                , pattern						
                 from 								
                 (								
                     /* 消費税のある入庫請求仮とその消費税を取得する（借方-税計算なし） */								
@@ -198,6 +200,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         END
                         as summery1
                         ,ojl.materials_grouping
+                        , am.id as move_id
+                        , 1 as pattern
                     from				
                         account_move_line aml /* 仕訳項目 */
                         left join								                        					
@@ -292,7 +296,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1
-                    ,ojl.materials_grouping	
+                    ,ojl.materials_grouping
+                    , am.id as move_id
+                    , 1 as pattern                    
                 from								
                     account_move_line aml /* 仕訳項目 */
                     left join								                        					
@@ -389,7 +395,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         END
                         as summery1	
                         ,ojl.materials_grouping		
-                        
+                        , am.id as move_id
+                        , 2 as pattern   
                     from								
                         account_move_line aml /* 仕訳項目 */
                         left join								                        					
@@ -488,7 +495,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                     END
                     as summery1
-                    ,ojl.materials_grouping					
+                    ,ojl.materials_grouping		
+                    , am.id as move_id
+                    , 2 as pattern                       			
                 from								
                     account_move_line aml /* 仕訳項目 */
                     left join								                        					
@@ -629,7 +638,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , '' as spare_character_item8								
                 , '' as reserved_numeric_item1								
                 , '' as reserved_numeric_item2								
-                , '' as reserved_numeric_item3						
+                , '' as reserved_numeric_item3	
+                , move_id
+                , pattern	                					
                 from 								
                 (								
                 --START PATTERN3 NO DEBIT - NO CREDIT
@@ -679,7 +690,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ELSE ojl.debit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1	
-                        ,ojl.materials_grouping									
+                        ,ojl.materials_grouping
+                        , am.id as move_id
+                        , 3 as pattern                         									
                     from	
                         account_move_line aml /* 仕訳項目 */
                         left join account_move am /* 仕訳 */								                        								
@@ -771,7 +784,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1	
-                        ,ojl.materials_grouping									
+                        ,ojl.materials_grouping	
+                        , am.id as move_id
+                        , 3 as pattern                         								
                     from								
                         account_move_line aml /* 仕訳項目 */
                         left join account_move am /* 仕訳 */								
@@ -912,7 +927,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , '' as spare_character_item8								
                 , '' as reserved_numeric_item1								
                 , '' as reserved_numeric_item2								
-                , '' as reserved_numeric_item3						
+                , '' as reserved_numeric_item3		
+                , move_id
+                , pattern	                				
                 from 								
                 (								
                 --START PATTERN3 NO DEBIT - NO CREDIT  
@@ -962,7 +979,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE ojl.debit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                     END
                     as summery1	
-                    ,ojl.materials_grouping								
+                    ,ojl.materials_grouping
+                    , am.id as move_id
+                    , 3 as pattern                     							
                 from								
                     account_move_line aml /* 仕訳項目 */
                     left join account_move am /* 仕訳 */								
@@ -1052,7 +1071,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                     END
                     as summery1	
-                    ,ojl.materials_grouping								
+                    ,ojl.materials_grouping	
+                    , am.id as move_id
+                    , 3 as pattern                      							
                 from								
                     account_move_line aml /* 仕訳項目 */
                     left join account_move am /* 仕訳 */								
@@ -1087,7 +1108,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 and (pt.categ_id is Null or pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[]) )  
                 and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))									
                 and aml.credit <> 0  /* 借方を取得 */
-                and aml_atr.account_tax_id is Null								
+                and aml_atr.account_tax_id is Null			
+                and ojl.debit_tax_calculation = False								
+                and ojl.credit_tax_calculation = False			                					
                 and aml.parent_state = 'posted'  /* 記帳済み */								
                 and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                 and am.date BETWEEN '{start_period}' and '{end_period}'													
@@ -1171,7 +1194,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , '' as spare_character_item8								
                     , '' as reserved_numeric_item1								
                     , '' as reserved_numeric_item2								
-                    , '' as reserved_numeric_item3	
+                    , '' as reserved_numeric_item3
+                    , move_id
+                    , pattern	                    	
                 from					
                 (						
                     select								
@@ -1215,6 +1240,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                             ELSE ojl.debit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
                             END
                             as summery1
+                        , io.id as move_id
+                        , 5 as pattern                             
                     from						
                         ss_erp_inventory_order io  /* 移動伝票 */						
                         inner join						
@@ -1305,7 +1332,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         when ojl.credit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
                         ELSE ojl.credit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
                         END
-                        as summery1									
+                        as summery1	
+                    , io.id as move_id
+                    , 5 as pattern                           								
                 from						
                     ss_erp_inventory_order io  /* 移動伝票 */						
                     inner join						
@@ -1398,7 +1427,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
         pattern5_data = self.query_pattern5(param)
 
         # all_pattern_data = pattern3_data
-        all_pattern_data = pattern12_data + pattern3_data_debit + pattern5_data
+        all_pattern_data = pattern12_data + pattern3_data_debit + pattern3_data_credit + pattern5_data
 
         if not all_pattern_data:
             raise UserError('出力するデータが見つかりませんでした。指定した期間内に出力対象データが存在しないか、既に出力済みの可能性があります。')
@@ -1411,13 +1440,16 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
         update_move_line = []
 
-        for data in pattern3_data_credit:
-            if data.get('move_line_id'):
-                update_move_line.append(data['move_line_id'])
+        # for data in pattern3_data_credit:
+        #     if data.get('move_line_id'):
+        #         update_move_line.append(data['move_line_id'])
 
         list_group = []
 
         update_inventory_order_line = []
+
+        pattern3_list = []
+
         for index, all_data in enumerate(all_pattern_data):
             if all_data.get('move_line_id'):
                 update_move_line.append(all_data['move_line_id'])
@@ -1455,35 +1487,46 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     all_data['tax_id'] = ''
                 else:
                     all_data['tax_id'] = tax_dict[all_data['tax_id']] if tax_dict.get(all_data['tax_id']) else ''
-            clean_dict_data = deepcopy(all_data)
-            if 'move_line_id' in clean_dict_data.keys():
-                clean_dict_data.pop('move_line_id')
-            if 'materials_grouping' in clean_dict_data.keys():
-                clean_dict_data.pop('materials_grouping')
-            if 'product_id' in clean_dict_data.keys():
-                clean_dict_data.pop('product_id')
-            if 'inventory_order_line_id' in clean_dict_data.keys():
-                clean_dict_data.pop('inventory_order_line_id')
-            debit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
 
             cre_line = all_pattern_data[index + 1]
-
             if cre_line['tax_id'] != '000':
                 if cre_line['tax_id'] == 0:
                     cre_line['tax_id'] = ''
                 else:
                     cre_line['tax_id'] = tax_dict[cre_line['tax_id']] if tax_dict.get(cre_line['tax_id']) else ''
 
-            clean_dict_data = deepcopy(cre_line)
-            if 'move_line_id' in clean_dict_data.keys():
-                clean_dict_data.pop('move_line_id')
-            if 'materials_grouping' in clean_dict_data.keys():
-                clean_dict_data.pop('materials_grouping')
-            if 'product_id' in clean_dict_data.keys():
-                clean_dict_data.pop('product_id')
-            if 'inventory_order_line_id' in clean_dict_data.keys():
-                clean_dict_data.pop('inventory_order_line_id')
-            credit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
+            clean_dict_data_debit = deepcopy(all_data)
+            clean_dict_data_credit = deepcopy(cre_line)
+
+            if clean_dict_data_debit['pattern'] == 3:
+                if (clean_dict_data_debit['move_id'], clean_dict_data_debit['account_code'], clean_dict_data_credit['account_code']) in pattern3_list:
+                    continue
+                else:
+                    pattern3_list.append((clean_dict_data_debit['move_id'], clean_dict_data_debit['account_code'], clean_dict_data_credit['account_code']))
+            clean_dict_data_debit.pop('move_id')
+            clean_dict_data_debit.pop('pattern')
+            clean_dict_data_credit.pop('move_id')
+            clean_dict_data_credit.pop('pattern')
+
+            if 'move_line_id' in clean_dict_data_debit.keys():
+                clean_dict_data_debit.pop('move_line_id')
+            if 'materials_grouping' in clean_dict_data_debit.keys():
+                clean_dict_data_debit.pop('materials_grouping')
+            if 'product_id' in clean_dict_data_debit.keys():
+                clean_dict_data_debit.pop('product_id')
+            if 'inventory_order_line_id' in clean_dict_data_debit.keys():
+                clean_dict_data_debit.pop('inventory_order_line_id')
+            debit_line = ','.join(map(str, clean_dict_data_debit.values())) + '\r\n'
+
+            if 'move_line_id' in clean_dict_data_credit.keys():
+                clean_dict_data_credit.pop('move_line_id')
+            if 'materials_grouping' in clean_dict_data_credit.keys():
+                clean_dict_data_credit.pop('materials_grouping')
+            if 'product_id' in clean_dict_data_credit.keys():
+                clean_dict_data_credit.pop('product_id')
+            if 'inventory_order_line_id' in clean_dict_data_credit.keys():
+                clean_dict_data_credit.pop('inventory_order_line_id')
+            credit_line = ','.join(map(str, clean_dict_data_credit.values())) + '\r\n'
 
             file_data += debit_line
             file_data += credit_line
