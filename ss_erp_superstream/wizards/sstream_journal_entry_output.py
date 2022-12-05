@@ -945,7 +945,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     END  as slip_date										
                     , '1' as line_number 								
                     , '0' as deb_cre_division									
-                    , ojl.code as account_code								
+                    , aa.code as account_code								
                     , COALESCE(seas.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
                     when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
