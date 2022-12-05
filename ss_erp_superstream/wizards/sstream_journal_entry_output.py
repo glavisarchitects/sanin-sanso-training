@@ -121,9 +121,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , journal_amount :: BIGINT								
                 , tax_excluded_amount :: BIGINT							
                 , tax_amount :: BIGINT								
-                , case when deb_cre_division = '1' then '000'								
-                else COALESCE(tax_id, 0)								
-                end as tax_id								
+                , tax_id								
                 , tax_entry_division								
                 , summery1
                 ,'' summery2	
@@ -287,7 +285,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount							
                     
                     , 0 as tax_amount								
-                    , '000' as tax_id								
+                    , 0 as tax_id								
                     , '0' as tax_entry_division								
                     , pt.name as product
                     , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -385,7 +383,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                         ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount								
                         , 0 as tax_amount								
-                        , '000' as tax_id								
+                        , 0 as tax_id								
                         , '0' as tax_entry_division									
                         , pt.name as product
                         , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -681,7 +679,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                         ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount							
                         , 0 as tax_amount
-                        , '000' as tax_id								
+                        , 0 as tax_id								
                         , '0' as tax_entry_division							
                         , pt.name as product	
                         , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -775,7 +773,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                         ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount							
                         , 0 as tax_amount
-                        , '000' as tax_id								
+                        , 0 as tax_id								
                         , '0' as tax_entry_division							
                         , pt.name as product	
                         , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -970,7 +968,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                     ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount								
                     , 0 as tax_amount								
-                    , '000' as tax_id								
+                    , 0 as tax_id								
                     , '0' as tax_entry_division								
                     , pt.name as product
                     , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -1062,7 +1060,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                     ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount								
                     , 0 as tax_amount								
-                    , '000' as tax_id								
+                    , 0 as tax_id								
                     , '0' as tax_entry_division								
                     , pt.name as product
                     , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -1482,18 +1480,29 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 'slip_date'] + ',,0,1,,,,,0,0,,,,,,,,,,,,,' + '\r\n'
             file_data += journal_header
 
-            if all_data['tax_id'] != '000':
-                if all_data['tax_id'] == 0:
-                    all_data['tax_id'] = ''
-                else:
-                    all_data['tax_id'] = tax_dict[all_data['tax_id']] if tax_dict.get(all_data['tax_id']) else ''
+            if all_data['pattern'] in (1, 2):
+                all_data['tax_id'] = '000' if all_data['tax_id'] == 0 else tax_dict.get(all_data['tax_id'])
+            else:
+                all_data['tax_id'] = ''
+
+            # if all_data['tax_id'] != '000':
+            #     if all_data['tax_id'] == 0:
+            #         all_data['tax_id'] = ''
+            #     else:
+            #         all_data['tax_id'] = tax_dict[all_data['tax_id']] if tax_dict.get(all_data['tax_id']) else ''
 
             cre_line = all_pattern_data[index + 1]
-            if cre_line['tax_id'] != '000':
-                if cre_line['tax_id'] == 0:
-                    cre_line['tax_id'] = ''
-                else:
-                    cre_line['tax_id'] = tax_dict[cre_line['tax_id']] if tax_dict.get(cre_line['tax_id']) else ''
+            if cre_line['pattern'] in (1, 2):
+                cre_line['tax_id'] = '000' if cre_line['tax_id'] == 0 else tax_dict.get(cre_line['tax_id'])
+            else:
+                cre_line['tax_id'] = ''
+
+            #
+            # if cre_line['tax_id'] != '000':
+            #     if cre_line['tax_id'] == 0:
+            #         cre_line['tax_id'] = ''
+            #     else:
+            #         cre_line['tax_id'] = tax_dict[cre_line['tax_id']] if tax_dict.get(cre_line['tax_id']) else ''
 
             clean_dict_data_debit = deepcopy(all_data)
             clean_dict_data_credit = deepcopy(cre_line)
