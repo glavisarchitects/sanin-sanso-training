@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError,ValidationError
+from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
 
 
@@ -17,7 +17,7 @@ class IFDBPowerNetSalesHeader(models.Model):
         ('wait', '処理待ち'),
         ('success', '成功'),
         ('error', 'エラーあり')
-    ], string='ステータス', default="wait", store=True,compute='_compute_status')
+    ], string='ステータス', default="wait", store=True, compute='_compute_status')
 
     powernet_sale_record_ids = fields.One2many(
         comodel_name="ss_erp.ifdb.powernet.sales.detail",
@@ -99,7 +99,13 @@ class IFDBPowerNetSalesHeader(models.Model):
             raise UserError(
                 _('ガス基本料金のプロダクトIDの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（powernet.gas.basic.charge.product_id）'))
 
-        if int(gas_product_id) not in self.env['product.template'].search([]).ids:
+        gas_usage_product_id = self.env['ir.config_parameter'].sudo().get_param('powernet.gas.usage.fee.product_id')
+        if not gas_usage_product_id:
+            raise UserError(
+                _('ガス従量料金のプロダクトIDの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（powernet.gas.usage.fee.product_id）'))
+
+        product_ids = self.env['product.template'].search([]).ids
+        if int(gas_product_id) not in product_ids or int(gas_usage_product_id) not in product_ids:
             raise UserError(
                 _('設定しているプロダクトIDは、プロダクトマスタに存在しません。プロダクトマスタを確認してください。'))
 
@@ -111,8 +117,9 @@ class IFDBPowerNetSalesHeader(models.Model):
         convert_product_unit_type_ids = self.env['ss_erp.convert.code.type'].search(
             [('code', '=', 'product_unit')]).mapped('id')
         uom_code_convert = self.env['ss_erp.code.convert'].search(
-            [('external_system', 'in', powernet_type_ids), ('convert_code_type', 'in', convert_product_unit_type_ids)]).sorted(
-                key=lambda k: (k['external_code'], k['priority_conversion']))
+            [('external_system', 'in', powernet_type_ids),
+             ('convert_code_type', 'in', convert_product_unit_type_ids)]).sorted(
+            key=lambda k: (k['external_code'], k['priority_conversion']))
 
         uom_dict = {}
         for uom in uom_code_convert:
@@ -120,11 +127,16 @@ class IFDBPowerNetSalesHeader(models.Model):
                 uom_dict[uom['external_code']] = uom['internal_code'].id
 
         tax_dict = {}
-        tax_ids = self.env['ss_erp.code.convert'].search([]).filtered(lambda x:x.external_system.code == 'power_net' and x.convert_code_type.code =='tax')
+        tax_ids = self.env['ss_erp.code.convert'].search([]).filtered(
+            lambda x: x.external_system.code == 'power_net' and x.convert_code_type.code == 'tax')
         for tax in tax_ids:
             tax_dict[tax.external_code] = tax.internal_code.id
 
-        product_product_ids = self.env['product.product'].search([]).mapped('id')
+        list_product_ids = self.env['product.product'].search([])
+        product_product_ids = list_product_ids.mapped('id')
+
+        base_gas_charge_id = list_product_ids.filtered(lambda x: x.product_tmpl_id.name == 'ガス基本料金').id
+        metered_gas_charge_id = list_product_ids.filtered(lambda x: x.product_tmpl_id.name == 'ガス従量料金').id
 
         failed_so = []
         success_dict = {}
@@ -154,16 +166,24 @@ class IFDBPowerNetSalesHeader(models.Model):
                     continue
                 else:
                     # 2022/06/30 販売伝票を作成する際に、プロダクトIDが上記で取得したガス基本料金のプロダクトIDと一致する場合、数量を「1」で更新する。
-                    quantity = 1 if (int(line.product_code) == int(gas_product_id)) else line.quantity
+                    if int(line.product_code) == int(gas_product_id):
+                        quantity = 1
+                        product_id = int(gas_product_id)
+                        if line.product_name == 'ガス従量料金':
+                            product_id = int(gas_usage_product_id)
+                    else:
+                        quantity = line.quantity
+                        product_id = int(line.product_code)
+
                     order_line = {
-                        'product_id': int(line.product_code),
+                        'product_id': product_id,
                         'product_uom_qty': quantity,
                         'product_uom': uom_dict[line.unit_code],
-                        'tax_id': [(4,tax_dict.get(line.search_remarks_4))]
+                        'tax_id': [(4, tax_dict.get(line.search_remarks_4))]
                     }
 
                     # 2022/05/09 Add new client_order_ref
-                    client_order_ref = '%s：%s' % (line.customer_code,line.search_remarks_6)
+                    client_order_ref = '%s：%s' % (line.customer_code, line.search_remarks_6)
 
                     if not success_dict.get(key):
                         so = {
