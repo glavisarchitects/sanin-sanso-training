@@ -12,6 +12,9 @@
                     <button name="action_print_estimation" type="object" string="工事見積書"
                                 confirm="工事見積書を作成します。"
                                 attrs="{'invisible':[('state','in',['draft','lost'])],}"/>
+
+                    <button name="order_confirm_svf_template_export" type="object" string="注文請書"
+                                attrs="{'invisible':[('state','in',['draft','lost'])],}"/>
                 </xpath>
             </field>
         </record>

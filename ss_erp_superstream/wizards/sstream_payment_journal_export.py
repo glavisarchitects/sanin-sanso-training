@@ -123,9 +123,9 @@ class StreamPaymentJournalExport(models.TransientModel):
         and ap.partner_type = 'customer'  /* 顧客 */								
         and am.x_organization_id = '{self.branch_id.id}'
         and aml.is_super_stream_linked = False							
-                                        
+
         UNION ALL								
-                                        
+
         /* 貸方データ取得 */								
         select								
             ap.id payment_id							
@@ -297,9 +297,9 @@ class StreamPaymentJournalExport(models.TransientModel):
         and ap.partner_type = 'supplier'  /* 顧客 */								
         and am.x_organization_id = '{self.branch_id.id}'
         and aml.is_super_stream_linked = False							
-                                        
+
         UNION ALL								
-                                        
+
         /* 貸方データ取得 */								
         select								
             ap.id payment_id							
@@ -433,7 +433,7 @@ class StreamPaymentJournalExport(models.TransientModel):
             #     7 - len(other_system_slip_number_str)) + other_system_slip_number_str
             # other_system_slip_number_int += 1
 
-            count+=1
+            count += 1
             count_str = str(count).zfill(7)
             #     # journal entry header region
             journal_header = "2," + param['sstream_company_code'] + "," + param['sstream_slip_group'] + ",," + de_line[

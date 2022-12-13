@@ -17,6 +17,33 @@ class PurchaseOrder(models.Model):
 
     x_construction_order_id = fields.Many2one('ss.erp.construction', string='工事オーダ')
 
+    # 注文請書 tab field
+    # form_type = fields.Selection([('ss_to_orderer', 'SS→発注者'), ('coo_company_to_ss', '努力会社→SS')], default='ss_to_orderer', string='帳票タイプ')
+    export_type = fields.Selection([('complete_set', '一式'), ('detail', '明細')], default='complete_set', string='出力タイプ')
+    receipt_type = fields.Selection(
+        string='入金手段',
+        selection=[
+            ('bank', '振込'),
+            ('transfer', '振替'),
+            ('bills', '手形'),
+            ('cash', '現金'),
+            ('paycheck', '小切手'),
+            ('branch_receipt', '他店入金'),
+            ('offset', '相殺'), ],
+        required=False, )
+    order_number = fields.Char(string='注文番号', compute='_compute_order_number')
+    delivery_location = fields.Char(string='受渡場所')
+    other_conditions = fields.Char(string='その他条件')
+    terms_of_contract = fields.Char(string='契約条件')
+
+    @api.depends('name', 'date_planned')
+    def _compute_order_number(self):
+        for rec in self:
+            if rec.name and rec.date_planned:
+                rec.order_number = rec.date_planned.strftime("%Y%m%d") + '-' + rec.name.replace('工事', '')
+            else:
+                rec.order_number = ''
+
     def _prepare_picking(self):
         res = super(PurchaseOrder, self)._prepare_picking()
         res.update({
