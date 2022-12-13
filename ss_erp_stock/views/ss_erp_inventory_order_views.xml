@@ -8,6 +8,7 @@
             <tree string="拠点間移動">
                 <field name="name"/>
                 <field name="organization_id"/>
+                <field name="responsible_dept_id"/>
                 <field name="location_id"/>
                 <!--                <field name="picking_type_id"/>-->
                 <field name="scheduled_date"/>

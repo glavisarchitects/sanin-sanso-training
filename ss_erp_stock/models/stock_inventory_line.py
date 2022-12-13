@@ -12,6 +12,9 @@ class StockInventoryLine(models.Model):
     organization_id = fields.Many2one(
         'ss_erp.organization', string='組織名',
         related='inventory_order_line_id.organization_id')
+    responsible_dept_id = fields.Many2one(
+        'ss_erp.responsible.department', string='管轄部門',
+        related='inventory_order_line_id.responsible_dept_id')
     product_cost = fields.Float(string='単価')
     currency_id = fields.Many2one(string='Company Currency', readonly=True,
         related='company_id.currency_id')
