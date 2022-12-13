@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="product_product_yamasan_gas" model="product.product">
+        <record id="product_product_yamasan_gas" model="product.template">
             <field name="name">ヤマサンガス</field>
             <field name="categ_id" ref="product.product_category_all"/>
             <field name="type">product</field>

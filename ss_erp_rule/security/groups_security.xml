@@ -31,7 +31,7 @@
         <record id="group_my_org_only_external_link" model="res.groups">
             <field name="name">自分の組織のみ (外部連携)</field>
             <field name="category_id" ref="ss_erp_rule.module_ss_other_authority_group"/>
-            <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user'))
+            <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user')),(4, ref('sales_team.group_sale_salesman_all_leads'))
                                              ]"/>
         </record>
 
@@ -104,8 +104,6 @@
                                             (4, ref('stock.group_stock_user')),
                                             (4, ref('account.group_account_user')),
                                             (4, ref('mrp.group_mrp_manager')),
-                                            (4, ref('ss_erp_rule.group_my_org_only_sale')),
-                                            (4, ref('ss_erp_rule.group_my_org_only_external_link')),
                                             (4, ref('base.group_user'))
                                             ]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
@@ -132,8 +130,8 @@
             <field name="name">本社:管理者</field>
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[
-            (4, ref('base.group_allow_export')),
-            (4, ref('ss_erp_rule.group_head_quarter_middle_general')),
+                                            (4, ref('base.group_allow_export')),
+                                            (4, ref('ss_erp_rule.group_head_quarter_middle_general')),
                                             (4, ref('sales_team.group_sale_manager')),
                                             (4, ref('purchase.group_purchase_manager')),
                                             (4, ref('stock.group_stock_manager')),
