@@ -37,7 +37,7 @@
         'data/parameter_config_data.xml',
         # 'data/ss_erp_convert_code_type_data.xml',
         'data/ss_erp_external_system_type_data.xml',
-        'data/yamasan_product_data.xml',
+        # 'data/yamasan_product_data.xml',
     ],
     "application": False,
     "installable": True,
