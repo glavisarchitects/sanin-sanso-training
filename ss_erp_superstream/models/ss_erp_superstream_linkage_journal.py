@@ -15,13 +15,14 @@ class SSSuperStreamLinkageJournal(models.Model):
     journal_creation = fields.Selection([('odoo_journal', 'Odoo仕訳'),
                                          ('move_within_base', '拠点内移動'),
                                          ('transfer_between_base', '拠点間移動'),
+                                         ('sanhot_point', 'さんほっとポイント'),
                                          ], string="仕訳作成")
     slip_date_edit = fields.Selection([('first_day', '月初日'),
                                        ('last_day', '月末日')
                                        ], string="伝票日付編集")
     product_ctg = fields.Selection([('merchandise', '商品'),
                                     ('product', '製品'),
-                                    ('stock', '製品'),
+                                    ('stock', '貯蔵品'),
                                     ], string="プロダクトカテゴリ")
     materials_grouping = fields.Boolean(string="原材料グルーピング", default=False)
     sanhot_point = fields.Boolean(string="さんほっとポイント", default=False)
@@ -69,6 +70,29 @@ class SSSuperStreamLinkageJournal(models.Model):
     credit_application = fields.Char(string="貸方適用")
     categ_product_id_char = fields.Char(store=True, copy=False)
     sanhot_product_id_char = fields.Char(store=True, copy=False)
+
+    debit_related_org_id_char = fields.Char(store=True, copy=False, compute='compute_debit_related_org_id_char')
+    credit_related_org_id_char = fields.Char(store=True, copy=False, compute='compute_credit_related_org_id_char')
+
+    @api.depends('debit_related_organization', 'debit_related_org_except')
+    def compute_debit_related_org_id_char(self):
+        for rec in self:
+            if rec.debit_related_org_except:
+                all_organization_except_current = self.env['ss_erp.organization'].search([('id', '!=', rec.debit_related_organization.id)]).ids
+                str_all_organization_except_current = ','.join([str(x) for x in all_organization_except_current])
+                rec.debit_related_org_id_char = str_all_organization_except_current
+            else:
+                rec.debit_related_org_id_char = str(rec.debit_related_organization.id)
+
+    @api.depends('credit_related_organization', 'credit_related_org_except')
+    def compute_credit_related_org_id_char(self):
+        for rec in self:
+            if rec.credit_related_org_except:
+                all_organization_except_current = self.env['ss_erp.organization'].search([('id', '!=', rec.credit_related_organization.id)]).ids
+                str_all_organization_except_current = ','.join([str(x) for x in all_organization_except_current])
+                rec.credit_related_org_id_char = str_all_organization_except_current
+            else:
+                rec.credit_related_org_id_char = str(rec.credit_related_organization.id)
 
     def _recalculate_product_category_char(self, is_materials_grouping=None):
         if is_materials_grouping:

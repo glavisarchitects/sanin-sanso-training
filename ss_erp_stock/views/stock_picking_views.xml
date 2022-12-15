@@ -69,6 +69,10 @@
                                 'invisible' :[('has_lot_ids', '=', False)]}"/>
             </field>
 
+            <field name="date_done" position="after">
+                <field name="x_inventory_journal_date" required="1"/>
+            </field>
+
             <field name="move_type" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
@@ -78,19 +82,19 @@
         </field>
     </record>
 
-    <record id="ss_erp_view_picking_withcarrier_out_form_inherit" model="ir.ui.view">
-        <field name="name">ss_erp.view.picking.withcarrier.out.form</field>
-        <field name="model">stock.picking</field>
-        <field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
-        <field name="arch" type="xml">
-            <field name="carrier_id" position="attributes">
-                <attribute name="string">運送会社</attribute>
-            </field>
-            <group name="carrier_data" position="inside">
-                <field name="x_dest_address_info" attrs="{'readonly':1}"/>
-            </group>
-        </field>
-    </record>
+<!--    <record id="ss_erp_view_picking_withcarrier_out_form_inherit" model="ir.ui.view">-->
+<!--        <field name="name">ss_erp.view.picking.withcarrier.out.form</field>-->
+<!--        <field name="model">stock.picking</field>-->
+<!--        <field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <field name="carrier_id" position="attributes">-->
+<!--                <attribute name="string">運送会社</attribute>-->
+<!--            </field>-->
+<!--            <group name="carrier_data" position="inside">-->
+<!--                <field name="x_dest_address_info" attrs="{'readonly':1}"/>-->
+<!--            </group>-->
+<!--        </field>-->
+<!--    </record>-->
 
     <record id="ss_erp_stock_view_move_line_tree" model="ir.ui.view">
         <field name="name">ss_erp.stock.move.line.tree</field>

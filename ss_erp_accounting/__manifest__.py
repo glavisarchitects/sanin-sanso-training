@@ -26,13 +26,6 @@
 
         # MENU
         'menu/menu_item.xml',
-
-        # DATA
-        # 'data/default_param_setting_data.xml'
-
-        # 'data/default_param_setting_data.xml',
-        # 'data/account_tax.xml',
-	#dummy row3
     ],
     "application": False,
     "installable": True,

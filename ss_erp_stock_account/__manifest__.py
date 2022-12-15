@@ -5,7 +5,7 @@
         山陰酸素工業　在庫会計カスタマイズ
     """,
     "depends": [
-        "ss_erp_accounting", "ss_erp_stock"
+        "stock_account", "ss_erp_accounting", "ss_erp_stock"
     ],
     "data": [
         # SECURITY
