@@ -311,7 +311,7 @@ class InstructionOrder(models.Model):
                     'location_ids': [(4, location.id)],
                     'organization_id': self.organization_id.id,
                     'responsible_dept_id': self.responsible_dept_id.id,
-                    'x_responsible_user_id': self.responsible_user_id.id,
+                    'responsible_user_id': self.responsible_user_id.id,
                     'accounting_date': self.accounting_date,
                     'prefill_counted_quantity': self.prefill_counted_quantity,
                     'instruction_order_id': self.id
