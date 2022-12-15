@@ -117,9 +117,6 @@ class ApprovalRequest(models.Model):
     has_lp_gas_inventory_ids = fields.Selection(
         related='category_id.has_lp_gas_inventory_ids', store=True)
 
-    x_current_sequence = fields.Integer(compute='_compute_current_sequence', store=True)
-    x_user_sequence = fields.Integer(compute='_compute_current_sequence')
-
     @api.constrains('x_approval_date')
     def _check_x_approval_date(self):
         for request in self:

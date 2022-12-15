@@ -16,6 +16,9 @@ class AccountMove(models.Model):
         'ss_erp.responsible.department', string="管轄部門", index=True,
         default=lambda self: self._get_default_x_responsible_dept_id())
 
+    # 開発設計書　R0012
+    x_business_organization_id = fields.Many2one('ss_erp.organization', string="業務担当組織")
+
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:

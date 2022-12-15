@@ -20,6 +20,8 @@ class LPGasOrder(models.Model):
     user_organization_ids = fields.Many2many('ss_erp.organization',
                                              default=lambda self: self.env.user.organization_ids.ids)
     organization_id = fields.Many2one('ss_erp.organization', string="組織名", domain="[('warehouse_id', '!=', False)]")
+    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string='管轄部門')
+    responsible_user_id = fields.Many2one('res.users', string='担当者')
     inventory_type = fields.Selection([('cylinder', 'シリンダー'), ('minibulk', 'ミニバルク')], string='棚卸種別')
     accounting_date = fields.Date(string='会計日')
     aggregation_period = fields.Date(string='棚卸対象期間', copy=False)
@@ -53,6 +55,8 @@ class LPGasOrder(models.Model):
             sm_value = {
                 'name': _('INV:LP GAS ') + (str(self.inventory_type) or ''),
                 'x_organization_id': self.organization_id.id,
+                'x_responsible_dept_id': self.responsible_dept_id.id,
+                'x_responsible_user_id': self.responsible_user_id.id,
                 'product_id': lpgas_product_id.id,
                 'product_uom': lpgas_product_id.uom_id.id,
                 'product_uom_qty': abs(line.difference_qty),

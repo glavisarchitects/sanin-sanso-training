@@ -1,59 +1,52 @@
 <?xml version="1.0"?>
 <odoo>
     <data>
-        <record id="ss_erp_res_partner.ss_erp_res_partner_form_menu" model="ir.ui.menu">
+        <record id="contacts.menu_partner_category_form" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-                <record id="sale.menu_sale_report" model="ir.ui.menu">
+        <record id="contacts.menu_partner_title_contact" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-        <record id="sale.menu_sale_invoicing" model="ir.ui.menu">
-             <field name="groups_id" eval="[
-            (4, ref('base.group_no_one')),]"/>
-        </record>
-
-        <!--        # 15 本社:中間管理者、管理者以外全グループ	購買/設定/プロダクトと購買/設定/単位にて属しているメニューは非表示とする-->
-        <record id="purchase.menu_unit_of_measure_in_config_purchase" model="ir.ui.menu">
+        <record id="contacts.res_partner_industry_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="ss_erp_res_partner.ss_erp_contact_category_action_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
 
-
-        <record id="ss_erp_external_data_import.external_system_cooperation_importing_performance" model="ir.ui.menu">
+        <record id="contacts.menu_localisation" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
 
-        <record id="ss_erp_external_data_import.external_system_cooperation_imported_data" model="ir.ui.menu">
+        <record id="contacts.menu_config_bank_accounts" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
             (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="sale.report_sales_team" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+
+        <record id="sale.menu_sale_order_upselling" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="sale.menu_sale_order_upselling" model="ir.ui.menu">
+            <field name="groups_id" eval="[
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
@@ -62,15 +55,25 @@
             <field name="groups_id" eval="[(4, ref('group_head_quarter'))]"/>
         </record>
 
-        <record id="sale.menu_sale_config" model="ir.ui.menu">
+        <record id="sale.menu_sale_general_settings" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="sale.sales_team_config" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="sale.menu_sales_config" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-        <record id="sale.menu_sale_general_settings" model="ir.ui.menu">
+        <record id="sale.prod_config_main" model="ir.ui.menu">
             <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
@@ -86,46 +89,8 @@
             ]"/>
         </record>
 
-        <record id="purchase.purchase_report" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
-            (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-        <record id="purchase.menu_purchase_config" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
-            (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
         <record id="purchase.menu_purchase_general_settings" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
-            (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-        <record id="purchase.menu_product_pricelist_action2_purchase" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
@@ -137,67 +102,69 @@
             ]"/>
         </record>
 
-        <!--  update AR004 27/10/2022      -->
+        <record id="purchase.menu_unit_of_measure_in_config_purchase" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
         <record id="stock.menu_reordering_rules_replenish" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4, ref('group_head_quarter'))]"/>
-        </record>
-
-        <record id="ss_erp_stock.menu_ss_erp_instruction_order_action" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-
         <record id="stock.menu_procurement_compute" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4, ref('group_head_quarter'))]"/>
-        </record>
-
-        <record id="ss_erp_stock.menu_ss_erp_lpgas_order" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="stock.menu_stock_general_settings" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="stock.menu_warehouse_config" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="stock.menu_product_in_config_stock" model="ir.ui.menu">
+            <field name="groups_id" eval="[
             (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-        <record id="ss_erp_stock.ss_erp_inventory_order_menu" model="ir.ui.menu">
+        <record id="stock.product_uom_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
             (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-        <record id="stock.menu_warehouse_report" model="ir.ui.menu">
+        <record id="mrp.menu_procurement_compute_mrp" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-        <record id="stock.menu_stock_config_settings" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4, ref('group_head_quarter'))]"/>
+        <record id="mrp.menu_mrp_config" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter'))
+            ]"/>
         </record>
-
+        <record id="ss_erp_construction.construction_category_setting_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="account_followup.customer_statements_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
         <record id="ss_erp_bank_fb.ss_erp_invoices" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),
-                                            (4, ref('group_head_quarter'))]"/>
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
         </record>
         <record id="ss_erp_bank_fb.ss_erp_comprehensive_create_zengin_fb_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
@@ -205,390 +172,113 @@
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-        <record id="ss_erp_purchase.ss_erp_partner_rebate_finance_action_menu" model="ir.ui.menu">
+        <record id="account.menu_finance_entries_accounting_ledgers" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
             (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-<!--        <record id="account.menu_finance_entries_management" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),-->
-<!--                                            (4, ref('group_head_quarter'))]"/>-->
-<!--        </record>-->
-
+        <record id="account.menu_finance_entries_management" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
         <record id="account_accountant.menu_action_change_lock_date" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),
-                                                (4, ref('group_head_quarter'))]"/>
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
         </record>
-
+        <record id="ss_erp_superstream.menu_ss_erp_superstream_linkage_journal_parent" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="account.account_reports_legal_statements_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="account_reports.menu_action_account_report_partner_ledger" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="account_reports.menu_action_account_report_aged_receivable" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="account_reports.menu_action_account_report_aged_payable" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
         <record id="account_reports.account_reports_audit_reports_menu" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),
-                                                (4, ref('group_head_quarter'))]"/>
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
         </record>
-
         <record id="account.account_reports_management_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-<!--        <record id="ss_erp_svf_intergration.ss_erp_annual_monthly_menu" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-
-        <record id="ss_erp_construction.ss_erp_construction_root_menu" model="ir.ui.menu">
+        <record id="account.menu_account_config" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="account.account_invoicing_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[
             (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-        <record id="ss_erp_construction.ss_erp_construction_order_menu" model="ir.ui.menu">
+        <record id="account.account_banks_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
             (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-<!--        <record id="ss_erp_construction.ss_erp_construction_workorder_menu" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-
-        <record id="ss_erp_construction.ss_erp_construction_config_menu" model="ir.ui.menu">
+        <record id="account.account_account_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
             (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-<!--        <record id="contacts.menu_config_bank_accounts" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-
-
-<!--        <record id="ss_erp_purchase.ss_erp_partner_rebate_action_management_menu" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-
-<!--        <record id="ss_erp_external_data_import.external_system_cooperation_importing_performance_purchase"-->
-<!--                model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-
-
-<!--        <record id="ss_erp_bank_fb.ss_erp_zengin_account_transfer_request_fb" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-<!--        <record id="ss_erp_bank_fb.ss_erp_account_transfer_result_header_menu" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-<!--        <record id="ss_erp_bank_fb.ss_erp_account_receipt_notofication_header_menu" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-
-
-<!--        <record id="ss_erp_purchase.ss_erp_partner_rebate_finance_action_menu" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-<!--        <record id="account.menu_finance_entries_accounting_miscellaneous" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-<!--        <record id="account.menu_finance_entries_accounting_ledgers" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-<!--        <record id="account.menu_finance_entries_accounting_journals" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-<!--        <record id="account_accountant.menu_action_manual_reconciliation" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-
-
-<!--        <record id="account_reports.account_reports_partners_reports_menu" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-
-<!--            ]"/>-->
-<!--        </record>-->
-
-
-<!--        <record id="ss_erp_stock.menu_ss_erp_instruction_order_action" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-<!--        <record id="stock.menu_warehouse_report" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--            (4, ref('group_branch_general')),-->
-<!--            (4, ref('group_branch_middle_manager')),-->
-<!--            (4, ref('group_branch_manager')),-->
-<!--            (4, ref('group_head_quarter_general')),-->
-<!--            (4, ref('group_head_quarter_middle_general')),-->
-<!--            (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-
-        <!--        update AR004_メニューグループ 08/11/22-->
+        <record id="account.root_payment_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="account.account_management_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="account.menu_analytic_accounting" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
         <record id="ss_erp_superstream.menu_ss_erp_superstream_linkage_journal_parent_in_setting" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),
-                                                (4, ref('group_head_quarter'))]"/>
-        </record>
-        <record id="ss_erp_superstream.menu_ss_erp_superstream_linkage_journal_setting" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),
-                                                (4, ref('group_head_quarter'))]"/>
-        </record>
-
-        <record id="ss_erp_superstream.menu_ss_erp_superstream_linkage_journal_parent" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4, ref('group_head_quarter_middle_general')),
-                                                (4, ref('group_head_quarter'))]"/>
-        </record>
-
-
-        <record id="stock_enterprise.stock_dashboard_menuitem" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            ]"/>
-        </record>
-
-        <record id="stock_account.menu_valuation" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            ]"/>
-        </record>
-
-        <record id="stock.stock_move_menu" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            ]"/>
-        </record>
-
-        <record id="mrp.menu_procurement_compute_mrp" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-                (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-        <record id="mrp.menu_mrp_config" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('group_head_quarter_middle_general')),
             (4, ref('group_head_quarter'))
             ]"/>
         </record>
-
-        <record id="mrp.menu_view_resource_search_mrp" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            ]"/>
-        </record>
-
-        <record id="mrp.menu_mrp_routing_action" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_branch_general')),
-            (4, ref('group_branch_middle_manager')),
-            (4, ref('group_branch_manager')),
-            (4, ref('group_head_quarter_general')),
-            ]"/>
-        </record>
-
-        <record id="account_followup.customer_statements_menu" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-        <record id="account.menu_finance_entries_management" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-            (4, ref('group_head_quarter_middle_general')),
-            (4, ref('group_head_quarter'))            ]"/>
-        </record>
-
-        <record id="account.menu_finance_reports" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-                (4, ref('group_branch_middle_manager')),
-                (4, ref('group_branch_manager')),
-                (4, ref('group_head_quarter_middle_general')),
-                (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-        <record id="ss_erp_svf_intergration.ss_erp_annual_monthly_menu" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-                (4, ref('group_branch_middle_manager')),
-                (4, ref('group_branch_manager')),
-                (4, ref('group_head_quarter_middle_general')),
-                (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-        <record id="account.account_reports_legal_statements_menu" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-                (4, ref('group_head_quarter_middle_general')),
-                (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-
-        <record id="account.account_reports_legal_statements_menu" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-                (4, ref('group_head_quarter_middle_general')),
-                (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-
-        <record id="account_reports.account_reports_partners_reports_menu" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-                (4, ref('group_head_quarter_middle_general')),
-                (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-
-        <record id="account_reports.account_reports_partners_reports_menu" model="ir.ui.menu">
-            <field name="groups_id" eval="[
-                (4, ref('group_head_quarter_middle_general')),
-                (4, ref('group_head_quarter'))
-            ]"/>
-        </record>
-
-
-<!--        <record id="account.account_reports_management_menu" model="ir.ui.menu">-->
-<!--            <field name="groups_id" eval="[-->
-<!--                (4, ref('group_head_quarter_middle_general')),-->
-<!--                (4, ref('group_head_quarter'))-->
-<!--            ]"/>-->
-<!--        </record>-->
-
 
     </data>
 </odoo>

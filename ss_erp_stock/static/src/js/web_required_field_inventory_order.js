@@ -20,26 +20,42 @@ var _t = core._t;
                 this.do_warn(_t("Invalid fields:"), warnings.join(''));
 //            }
         },
+//        canBeSaved: function (recordID) {
+//            var self = this;
+////            console.log('canBeSavedrecordID',this.state.model);
+//            if (this.state.model === 'ss_erp.inventory.order.line') {
+//                recordID = this.getEditableRecordID();
+////                console.log('recordIDrecordIDrecordID',recordID);
+//
+//                if (recordID === null) {
+//                    return [];
+//                }
+//            var fieldNames = this._super(recordID);
+//            console.log('fieldNamesssssssssssss',fieldNames);
+//            var invalid = [];
+//            if (!fieldNames){
+//                this._notifyInvalidFields(fieldNames);
+//            return fieldNames;}
+//
+//            }
+//            else{
+//             return this._super(recordID);
+//
+//
+//             }
+//
+////            return Promise.resolve(true);
+//        },
         canBeSaved: function (recordID) {
-            var self = this;
-//            console.log('canBeSavedrecordID',this.state.model);
-            if (this.state.model === 'ss_erp.inventory.order.line') {
-                recordID = this.getEditableRecordID();
-                if (recordID === null) {
-                    return [];
-                }
             var fieldNames = this._super(recordID);
-            this._notifyInvalidFields(fieldNames);
-            return fieldNames;
+            if (this.state.model === 'ss_erp.inventory.order.line') {
+                if (fieldNames.length) {
+                    this._notifyInvalidFields(fieldNames);
+                    return false;
+                }
             }
-            else{
-             return this._super(recordID);
-
-
-             }
-
-//            return Promise.resolve(true);
-        },
+            return true;
+            },
     });
 
     BasicController.include({

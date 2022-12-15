@@ -19,6 +19,7 @@
                         <field name="x_responsible_user_id" attrs="{'required': [('move_type', '!=', 'entry')]}"/>
                         <field name="x_mkt_user_id"/>
                         <field name="x_is_fb_created" groups="base.group_no_one"/>
+                        <field name="x_business_organization_id"/>
                     </group>
                 </xpath>
                 <xpath expr="//group[@id='header_right_group']//div[@class='o_td_label']" position="before">

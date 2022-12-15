@@ -190,7 +190,7 @@ class AccountMove(models.Model):
         org_bank as (
         select 
             rpb.organization_id,
-            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,'）',rpb.acc_number) as payee_info	
+            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '普通' ELSE '当座' END,'）',rpb.acc_number) as payee_info	
         from res_partner_bank rpb
         left join res_bank rb on rpb.bank_id = rb.id
         where rpb.organization_id is not null
@@ -199,7 +199,7 @@ class AccountMove(models.Model):
         sum_tax_10 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/10)) tax_amount_rate10, 
+        ROUND(sum(aml.price_subtotal*0.1)) tax_amount_rate10, 
         ROUND(sum(aml.price_subtotal)) price_total_tax_rate10 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
@@ -210,7 +210,7 @@ class AccountMove(models.Model):
         sum_tax_8 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/8)) tax_amount_rate8, 
+        ROUND(sum(aml.price_subtotal*0.08)) tax_amount_rate8, 
         ROUND(sum(aml.price_subtotal)) price_total_tax_rate8 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
@@ -221,8 +221,8 @@ class AccountMove(models.Model):
         sum_reduce_tax_8 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/8)) price_total_reduced_tax_rate8, 
-        ROUND(sum(aml.price_subtotal)) tax_amount_reduced_tax_rate8 
+        ROUND(sum(aml.price_subtotal*0.08)) tax_amount_reduced_tax_rate8, 
+        ROUND(sum(aml.price_subtotal)) price_total_reduced_tax_rate8 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
         left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
@@ -585,7 +585,7 @@ class AccountMove(models.Model):
         org_bank as (
         select 
             rpb.organization_id,
-            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,'）',rpb.acc_number) as payee_info	
+            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '普通' ELSE '当座' END,'）',rpb.acc_number) as payee_info	
         from res_partner_bank rpb
         left join res_bank rb on rpb.bank_id = rb.id
         where rpb.organization_id is not null
@@ -594,7 +594,7 @@ class AccountMove(models.Model):
         sum_tax_10 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/10)) tax_amount_rate10, 
+        ROUND(sum(aml.price_subtotal*0.1)) tax_amount_rate10, 
         ROUND(sum(aml.price_subtotal)) price_total_tax_rate10 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
@@ -605,7 +605,7 @@ class AccountMove(models.Model):
         sum_tax_8 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/8)) tax_amount_rate8, 
+        ROUND(sum(aml.price_subtotal*0.08)) tax_amount_rate8, 
         ROUND(sum(aml.price_subtotal)) price_total_tax_rate8 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
@@ -616,8 +616,8 @@ class AccountMove(models.Model):
         sum_reduce_tax_8 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/8)) price_total_reduced_tax_rate8, 
-        ROUND(sum(aml.price_subtotal)) tax_amount_reduced_tax_rate8 
+        ROUND(sum(aml.price_subtotal*0.08)) tax_amount_reduced_tax_rate8, 
+        ROUND(sum(aml.price_subtotal)) price_total_reduced_tax_rate8
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
         left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
