@@ -44,6 +44,7 @@ class InstructionOrder(models.Model):
         states={'draft': [('readonly', False)]}, )
     organization_id = fields.Many2one('ss_erp.organization', string='組織名')
     responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string='管轄部門')
+    responsible_user_id = fields.Many2one('res.users', string='担当者')
     # type_id = fields.Many2one('product.template', string='棚卸種別')
     stock_inventory_id = fields.One2many('stock.inventory', 'instruction_order_id', string='棚卸伝票番号', ondelete='cascade')
 
@@ -310,6 +311,7 @@ class InstructionOrder(models.Model):
                     'location_ids': [(4, location.id)],
                     'organization_id': self.organization_id.id,
                     'responsible_dept_id': self.responsible_dept_id.id,
+                    'x_responsible_user_id': self.responsible_user_id.id,
                     'accounting_date': self.accounting_date,
                     'prefill_counted_quantity': self.prefill_counted_quantity,
                     'instruction_order_id': self.id
@@ -339,6 +341,7 @@ class InstructionOrder(models.Model):
                     'location_ids': [(4, location.id)],
                     'organization_id': self.organization_id.id,
                     'responsible_dept_id': self.responsible_dept_id.id,
+                    'x_responsible_user_id': self.responsible_user_id.id,
                     'accounting_date': self.accounting_date,
                     'prefill_counted_quantity': self.prefill_counted_quantity,
                     'instruction_order_id': self.id

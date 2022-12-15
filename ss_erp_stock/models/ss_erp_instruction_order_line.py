@@ -35,6 +35,7 @@ class InstructionOrderLine(models.Model):
     organization_id = fields.Many2one('ss_erp.organization', related='order_id.organization_id', store = True,
                                       string='組織名')
     responsible_dept_id = fields.Many2one('ss_erp.responsible.department', related='order_id.responsible_dept_id', string='管轄部門')
+    responsible_user_id = fields.Many2one('res.users', related='order_id.responsible_user_id', string='担当者')
     # type_id = fields.Many2one('product.template', related='order_id.type_id', string='棚卸種別')
     stock_inventory_line_id = fields.Many2one('stock.inventory.line', string='棚卸明細')
     product_cost = fields.Float(string='単価')
@@ -113,6 +114,7 @@ class InstructionOrderLine(models.Model):
             'date': self.order_id.date,
             'x_organization_id': self.organization_id.id,
             'x_responsible_dept_id': self.responsible_dept_id.id,
+            'x_responsible_user_id': self.responsible_user_id.id,
             'instruction_order_id': self.order_id.id,
             'company_id': self.order_id.company_id.id,
             'price_unit': self.product_cost,

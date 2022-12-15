@@ -69,6 +69,10 @@
                                 'invisible' :[('has_lot_ids', '=', False)]}"/>
             </field>
 
+            <field name="date_done" position="after">
+                <field name="x_inventory_journal_date" required="1"/>
+            </field>
+
             <field name="move_type" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>

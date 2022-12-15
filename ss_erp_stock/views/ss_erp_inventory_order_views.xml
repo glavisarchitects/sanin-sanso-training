@@ -60,6 +60,7 @@
                         <group>
 <!--                            <field name="reserved_availability"/>-->
                             <field name="scheduled_date" attrs="{'readonly': [('state', 'not in', ['draft','waiting'])]}" required="1"/>
+                            <field name="inventory_journal_date" attrs="{'readonly': [('state', 'not in', ['draft','waiting'])]}" required="1"/>
                             <field name="shipping_method" widget="radio"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
