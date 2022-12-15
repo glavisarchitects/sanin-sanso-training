@@ -15,6 +15,9 @@ class StockInventoryLine(models.Model):
     responsible_dept_id = fields.Many2one(
         'ss_erp.responsible.department', string='管轄部門',
         related='inventory_order_line_id.responsible_dept_id')
+    responsible_user_id = fields.Many2one(
+        'res.users', string='担当者',
+        related='inventory_order_line_id.responsible_user_id')
     product_cost = fields.Float(string='単価')
     currency_id = fields.Many2one(string='Company Currency', readonly=True,
         related='company_id.currency_id')

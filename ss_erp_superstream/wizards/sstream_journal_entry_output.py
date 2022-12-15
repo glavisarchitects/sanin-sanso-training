@@ -219,13 +219,10 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         on aml.account_id = aa.id								
                         left join								
                         ss_erp_account_subaccount seas /* 補助科目 */								
-                        on aml.x_sub_account_id = seas.id	
-                        left join 
-                        product_product pp 
-                        on aml.product_id = pp.id							
+                        on aml.x_sub_account_id = seas.id								
                         left join								
-                        product_template pt                        							
-                        on  pp.product_tmpl_id = pt.id
+                        product_template pt  /* プロダクトテンプレート */								
+                        on aml.product_id = pt.id
                         
                         left join all_move_account amc 
                         on amc.move_id = am.id
@@ -320,12 +317,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     left join								
                     ss_erp_account_subaccount seas /* 補助科目 */								
                     on aml.x_sub_account_id = seas.id								
-                    left join 
-                    product_product pp 
-                    on aml.product_id = pp.id							
                     left join								
-                    product_template pt                        							
-                    on  pp.product_tmpl_id = pt.id	
+                    product_template pt  /* プロダクトテンプレート */								
+                    on aml.product_id = pt.id		
                     
                     left join all_move_account amc 
                     on amc.move_id = am.id
@@ -421,12 +415,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         left join								
                         ss_erp_account_subaccount seas /* 補助科目 */								
                         on aml.x_sub_account_id = seas.id								
-                        left join 
-                        product_product pp 
-                        on aml.product_id = pp.id							
                         left join								
-                        product_template pt                        							
-                        on  pp.product_tmpl_id = pt.id	
+                        product_template pt  /* プロダクトテンプレート */								
+                        on aml.product_id = pt.id
                         
                         left join all_move_account amc 
                         on amc.move_id = am.id
@@ -525,13 +516,10 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     left join								
                     ss_erp_account_subaccount seas /* 補助科目 */								
                     on aml.x_sub_account_id = seas.id								
-                    left join 
-                    product_product pp 
-                    on aml.product_id = pp.id							
                     left join								
-                    product_template pt                        							
-                    on  pp.product_tmpl_id = pt.id	
-                
+                    product_template pt  /* プロダクトテンプレート */								
+                    on aml.product_id = pt.id	
+                    
                     left join all_move_account amc 
                     on amc.move_id = am.id
                     
@@ -716,12 +704,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         left join								
                         ss_erp_account_subaccount seas /* 補助科目 */								
                         on aml.x_sub_account_id = seas.id								
-                        left join 
-                        product_product pp 
-                        on aml.product_id = pp.id							
                         left join								
-                        product_template pt                        							
-                        on  pp.product_tmpl_id = pt.id		
+                        product_template pt  /* プロダクトテンプレート */								
+                        on aml.product_id = pt.id	
 
                         left join all_move_account amc 
                         on amc.move_id = am.id
@@ -803,12 +788,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         left join								
                         ss_erp_account_subaccount seas /* 補助科目 */								
                         on aml.x_sub_account_id = seas.id								
-                        left join 
-                        product_product pp 
-                        on aml.product_id = pp.id							
                         left join								
-                        product_template pt                        							
-                        on  pp.product_tmpl_id = pt.id	
+                        product_template pt  /* プロダクトテンプレート */								
+                        on aml.product_id = pt.id	
 
                         left join all_move_account amc 
                         on amc.move_id = am.id
@@ -1170,12 +1152,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         left join								
                         ss_erp_account_subaccount seas /* 補助科目 */								
                         on aml.x_sub_account_id = seas.id								
-                        left join 
-                        product_product pp 
-                        on aml.product_id = pp.id							
                         left join								
-                        product_template pt                        							
-                        on  pp.product_tmpl_id = pt.id	
+                        product_template pt  /* プロダクトテンプレート */								
+                        on aml.product_id = pt.id	
 
                         left join all_move_account amc 
                         on amc.move_id = am.id
@@ -1267,12 +1246,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         left join								
                         ss_erp_account_subaccount seas /* 補助科目 */								
                         on aml.x_sub_account_id = seas.id								
-                        left join 
-                        product_product pp 
-                        on aml.product_id = pp.id							
                         left join								
-                        product_template pt                        							
-                        on  pp.product_tmpl_id = pt.id	
+                        product_template pt  /* プロダクトテンプレート */								
+                        on aml.product_id = pt.id	
 
                         left join all_move_account amc 
                         on amc.move_id = am.id
@@ -1462,12 +1438,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     left join								
                     ss_erp_account_subaccount seas /* 補助科目 */								
                     on aml.x_sub_account_id = seas.id								
-                    left join 
-                    product_product pp 
-                    on aml.product_id = pp.id							
-                    left join								
-                    product_template pt                        							
-                    on  pp.product_tmpl_id = pt.id	
+                    inner join								
+                    product_template pt  /* プロダクトテンプレート */								
+                    on aml.product_id = pt.id	
 
                     left join all_move_account amc 
                     on amc.move_id = am.id
@@ -1561,12 +1534,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     left join								
                     ss_erp_account_subaccount seas /* 補助科目 */								
                     on aml.x_sub_account_id = seas.id								
-                    left join 
-                    product_product pp 
-                    on aml.product_id = pp.id							
-                    left join								
-                    product_template pt                        							
-                    on  pp.product_tmpl_id = pt.id	
+                    inner join								
+                    product_template pt  /* プロダクトテンプレート */								
+                    on aml.product_id = pt.id	
 
                     left join all_move_account amc 
                     on amc.move_id = am.id
