@@ -44,7 +44,7 @@ class StockInventory(models.Model):
                 negative.product_qty
             ))
         self.action_check()
-        self.write({'date': fields.Datetime.now()})
+        self.write({'date': self.accounting_date})
         # self.post_inventory()
         return True
 
