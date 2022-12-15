@@ -25,7 +25,7 @@ class InstructionOrderLine(models.Model):
     package_id = fields.Many2one('stock.quant.package', string='梱包')
     partner_id = fields.Many2one('res.partner', string='オーナー')
     prod_lot_id = fields.Many2one('stock.production.lot', string='ロット/シリアル番号')
-    product_id = fields.Many2one('product.product', string='プロダクト', required=True)
+    product_id = fields.Many2one('product.product', string='プロダクト')
     product_qty = fields.Float(string='棚卸数量')
     product_tracking = fields.Selection(string='追跡', related='product_id.tracking')
     product_uom_id = fields.Many2one('uom.uom', string='プロダクト単位', required=True)

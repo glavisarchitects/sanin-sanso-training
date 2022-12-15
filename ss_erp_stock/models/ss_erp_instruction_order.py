@@ -31,7 +31,7 @@ class InstructionOrder(models.Model):
         ('approved', '承認済み'),
         ('done', '検証済'),
     ], string='ステータス', default='draft')
-    line_ids = fields.One2many('ss_erp.instruction.order.line', 'order_id')
+    line_ids = fields.One2many('ss_erp.instruction.order.line', 'order_id', ondelete='cascade')
     location_ids = fields.Many2many(
         'stock.location', string='ロケーション',
         readonly=True, check_company=True,
