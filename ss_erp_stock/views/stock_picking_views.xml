@@ -70,7 +70,7 @@
             </field>
 
             <field name="date_done" position="after">
-                <field name="x_inventory_journal_date" required="1"/>
+                <field name="x_inventory_journal_date"/>
             </field>
 
             <field name="move_type" position="attributes">
