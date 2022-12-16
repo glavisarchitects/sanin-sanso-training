@@ -26,19 +26,20 @@ class MrpProduction(models.Model):
         else:
             return False
 
-    def _get_move_raw_values(self, product_id, product_uom_qty, product_uom, operation_id=False, bom_line=False):
-        data = super()._get_move_raw_values(product_id, product_uom_qty, product_uom, operation_id=False, bom_line=False)
-        data.update({
-            'x_organization_id': self.x_organization_id.id,
-            'x_responsible_dept_id': self.x_responsible_dept_id.id
-        })
-        return data
-
-    def _get_move_finished_values(self, product_id, product_uom_qty, product_uom, operation_id=False, byproduct_id=False):
-        data = super()._get_move_finished_values(product_id, product_uom_qty, product_uom, operation_id=False, byproduct_id=False)
-        data.update({
-            'x_organization_id': self.x_organization_id.id,
-            'x_responsible_dept_id': self.x_responsible_dept_id.id
-        })
-        return data
-
+    def write(self, vals):
+        res = super(MrpProduction, self).write(vals)
+        for production in self:
+            if production.state != 'draft':
+                # for some reason moves added after state = 'done' won't save group_id, reference if added in
+                # "stock_move.default_get()"
+                production.move_raw_ids.write({
+                    'x_organization_id': production.x_organization_id.id,
+                    'x_responsible_dept_id': production.x_responsible_dept_id.id,
+                    'x_responsible_user_id': production.user_id.id
+                })
+                production.move_finished_ids.write({
+                    'x_organization_id': production.x_organization_id.id,
+                    'x_responsible_dept_id': production.x_responsible_dept_id.id,
+                    'x_responsible_user_id': production.user_id.id
+                })
+        return res
