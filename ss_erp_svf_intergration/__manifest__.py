@@ -18,18 +18,20 @@
         'views/construction_view.xml',
         'views/purchase_order_views.xml',
         'views/sale_order_view.xml',
+        'views/stock_picking_views.xml',
 
         # WIZARD
         'wizards/account_invoice_list_history_views.xml',
         'wizards/account_list_receivable_views.xml',
         'wizards/account_receivable_balance_confirm_views.xml',
         'wizards/account_receivable_customer_ledger_views.xml',
+        'wizards/payment_vendor_notice_views.xml',
 
 
         'menu/menu_item.xml',
 
         # DATA
-        'data/svf_cloud_config_data.xml',
+        # 'data/svf_cloud_config_data.xml',
     ],
     "application": False,
     "installable": True,

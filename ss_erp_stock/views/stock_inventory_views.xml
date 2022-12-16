@@ -32,6 +32,8 @@
                 </xpath>
                 <xpath expr="//field[@name='product_ids']" position="after">
                     <field name="organization_id"/>
+                    <field name="responsible_dept_id"/>
+                    <field name="responsible_user_id"/>
                     <!--                    <field name="type_id"/>-->
                 </xpath>
             </field>
@@ -50,6 +52,8 @@
                 </xpath>
                 <xpath expr="//field[@name='date']" position="after">
                     <field name="organization_id"/>
+                    <field name="responsible_dept_id"/>
+                    <field name="responsible_user_id"/>
                     <!--                    <field name="type_id"/>-->
                     <field name="location_ids" widget="many2many_tags"/>
                 </xpath>

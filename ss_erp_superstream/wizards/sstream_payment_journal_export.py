@@ -33,12 +33,21 @@ class StreamPaymentJournalExport(models.TransientModel):
         }
         return result
 
-    # receipt payment p6
-    def query_receipt_payment_pattern6(self, param):
+    # receipt payment p6, p7
+    def query_payment_p6p7(self, param):
         start_period = datetime.combine(self.first_day_period, datetime.min.time())
         end_period = datetime.combine(self.last_day_period, datetime.max.time())
 
         _select_data = f"""
+        WITH x_payment_type AS (
+        SELECT * FROM (VALUES('bank', '振込'),
+            ('transfer', '振替'),
+            ('bills', '手形'),
+            ('cash', '現金'),
+            ('paycheck', '小切手'),
+            ('branch_receipt', '他店入金'),
+            ('offset', '相殺')) AS t (x_type,x_value)
+        )
         select								
             ap.id payment_id								
             ,'3' as record_division								
@@ -56,22 +65,18 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '' as function_code3								
             , '' as function_code4								
             , '' as project_code1								
-            , '0' as partner_employee_division								
-            , '' as partner_employee_code							
+            , case when ap.payment_type = 'inbound' and ap.partner_type = 'customer' then  '0'														
+            else '2'								
+            end as partner_employee_division							
+            , case when ap.payment_type = 'inbound' and ap.partner_type = 'customer' then  ''														
+            else rpad(right(seo.organization_code, 3), 13, '0')								
+            end as partner_employee_code							
             , aml.debit :: INTEGER as journal_amount								
             , aml.debit :: INTEGER as tax_excluded_amount								
             , 0 as tax_amount								
             , '000' as tax_code								
             , '0' as tax_entry_division								
-            , case when ap.x_receipt_type = 'bank' then  '振込' || '／' || rp.name								
-                   when ap.x_receipt_type = 'transfer' then  '振替' || '／' || rp.name								
-                   when ap.x_receipt_type = 'bills' then  '手形' || '／' || rp.name								
-                   when ap.x_receipt_type = 'cash' then  '現金' || '／' || rp.name								
-                   when ap.x_receipt_type = 'paycheck' then  '小切手' || '／' || rp.name								
-                   when ap.x_receipt_type = 'branch_receipt' then  '他支店入金' || '／' || rp.name								
-                   when ap.x_receipt_type = 'offset' then  '相殺' || '／' || rp.name								
-                   else rp.name								
-              end as apply1								
+           , xpt.x_value || '／' || rp.name as apply1								
             , '' as summary2								
             , '' as partner_ref_code								
             , '' as transaction_currency_code								
@@ -112,20 +117,21 @@ class StreamPaymentJournalExport(models.TransientModel):
             on am.id = ap.move_id								
             inner join								
             ss_erp_organization seo /* 組織 */								
-            on am.x_organization_id = seo.id								
+            on am.x_organization_id = seo.id	
+            left join								
+            x_payment_type xpt /* 組織 */								
+            on ((xpt.x_type = ap.x_receipt_type and ap.payment_type = 'inbound') OR (xpt.x_type = ap.x_payment_type and ap.payment_type = 'outbound'))								
         where								
             aml.debit <> 0								
         and am.state = 'posted'								
         and am.move_type = 'entry'								
         and am.date BETWEEN '{start_period}' and '{end_period}'								
-        and ap.x_receipt_type in ('bank', 'transfer', 'bills', 'cash', 'paycheck', 'branch_receipt', 'offset')								
-        and ap.payment_type = 'inbound'  /* 入金 */								
-        and ap.partner_type = 'customer'  /* 顧客 */								
+        and (ap.x_receipt_type is not NUll and ap.payment_type = 'inbound' OR	ap.x_payment_type is not NULL and ap.payment_type = 'outbound')								
         and am.x_organization_id = '{self.branch_id.id}'
         and aml.is_super_stream_linked = False							
-                                        
+
         UNION ALL								
-                                        
+
         /* 貸方データ取得 */								
         select								
             ap.id payment_id							
@@ -144,14 +150,18 @@ class StreamPaymentJournalExport(models.TransientModel):
             , '' as function_code3								
             , '' as function_code4								
             , '' as project_code1									
-            , '1' as partner_employee_division								
-            , rpad(right(seo.organization_code, 3), 13, '0') as partner_employee_code								
+            , case when ap.payment_type = 'inbound' and ap.partner_type = 'customer' then  '1'														
+            else '0'								
+            end as partner_employee_division									
+            , case when ap.payment_type = 'inbound' and ap.partner_type = 'customer' then rpad(right(seo.organization_code, 3), 13, '0')														
+            else ''								
+            end as partner_employee_code								
             , aml.credit :: INTEGER as journal_amount								
             , aml.credit :: INTEGER as tax_excluded_amount								
             , 0 as tax_amount								
             , '000' as tax_code								
             , '0' as tax_entry_division								
-            , rp.name as apply1								
+            , xpt.x_value || '／' || rp.name as apply1								
             , '' as summary2								
             , '' as partner_ref_code								
             , '' as transaction_currency_code								
@@ -192,28 +202,30 @@ class StreamPaymentJournalExport(models.TransientModel):
             on am.id = ap.move_id								
             inner join								
             ss_erp_organization seo /* 組織 */								
-            on am.x_organization_id = seo.id								
+            on am.x_organization_id = seo.id
+            left join								
+            x_payment_type xpt /* 組織 */								
+            on ((xpt.x_type = ap.x_receipt_type and ap.payment_type = 'inbound') OR (xpt.x_type = ap.x_payment_type and ap.payment_type = 'outbound'))									
         where								
             aml.credit <> 0								
         and am.state = 'posted'								
         and am.move_type = 'entry'								
         and am.date BETWEEN '{start_period}' and '{end_period}'								
-        and ap.x_receipt_type in ('bank', 'transfer', 'bills', 'cash', 'paycheck', 'branch_receipt', 'offset')								
-        and ap.payment_type = 'inbound'  /* 入金 */								
-        and ap.partner_type = 'customer'  /* 顧客 */								
+        and (ap.x_receipt_type is not NUll and ap.payment_type = 'inbound' OR	ap.x_payment_type is not NULL and ap.payment_type = 'outbound')								
         and am.x_organization_id = '{self.branch_id.id}'
         and aml.is_super_stream_linked = False								
-        order by 								
-            slip_date asc								
+        order by 
+            payment_id asc	
+            , deb_cre_division asc	
+            , line_number asc															
+            , slip_date asc								
             , partner_name asc								
             , journal_amount asc								
             , depar_orga_code asc								
-            , line_number asc								
-            , deb_cre_division asc								
 """
         self._cr.execute(_select_data)
-        data_receipt_payment_pattern6 = self._cr.dictfetchall()
-        return data_receipt_payment_pattern6
+        data_query_payment_p6p7 = self._cr.dictfetchall()
+        return data_query_payment_p6p7
 
     # outbound payment p6
     def query_outbound_payment_pattern6(self, param):
@@ -221,6 +233,15 @@ class StreamPaymentJournalExport(models.TransientModel):
         end_period = datetime.combine(self.last_day_period, datetime.max.time())
 
         _select_data = f"""
+        WITH x_payment_type AS (
+        SELECT * FROM (VALUES('bank', '振込'),
+            ('transfer', '振替'),
+            ('bills', '手形'),
+            ('cash', '現金'),
+            ('paycheck', '小切手'),
+            ('branch_receipt', '他店入金'),
+            ('offset', '相殺')) AS t (x_type,x_value)
+        )
         select								
             ap.id payment_id								
             ,'3' as record_division								
@@ -297,9 +318,9 @@ class StreamPaymentJournalExport(models.TransientModel):
         and ap.partner_type = 'supplier'  /* 顧客 */								
         and am.x_organization_id = '{self.branch_id.id}'
         and aml.is_super_stream_linked = False							
-                                        
+
         UNION ALL								
-                                        
+
         /* 貸方データ取得 */								
         select								
             ap.id payment_id							
@@ -381,13 +402,14 @@ class StreamPaymentJournalExport(models.TransientModel):
         and ap.partner_type = 'supplier'  /* 顧客 */								
         and am.x_organization_id = '{self.branch_id.id}'
         and aml.is_super_stream_linked = False								
-        order by 								
-            slip_date asc								
+        order by 
+            payment_id asc	
+            , deb_cre_division asc	
+            , line_number asc															
+            , slip_date asc								
             , partner_name asc								
             , journal_amount asc								
             , depar_orga_code asc								
-            , line_number asc								
-            , deb_cre_division asc								
 """
         self._cr.execute(_select_data)
         data_outbound_payment_pattern6 = self._cr.dictfetchall()
@@ -399,30 +421,18 @@ class StreamPaymentJournalExport(models.TransientModel):
 
         param = self.get_a007_payment_journal_param()
 
-        data_receipt_payment_p6 = self.query_receipt_payment_pattern6(self.get_a007_payment_journal_param())
-        data_outbound_payment_p6 = self.query_outbound_payment_pattern6(self.get_a007_payment_journal_param())
+        data_query_payment_p6p7 = self.query_payment_p6p7(param)
+        # data_outbound_payment_p6 = self.query_outbound_payment_pattern6(self.get_a007_payment_journal_param())
 
         #
-        all_pattern_data = data_receipt_payment_p6 + data_outbound_payment_p6
-
-        if not all_pattern_data:
-            raise UserError('出力するデータが見つかりませんでした。指定した期間内に出力対象データが存在しないか、既に出力済みの可能性があります。')
-
-        for all_data in all_pattern_data:
-            payment_rec = self.env['account.payment'].search([('id', '=', all_data['payment_id'])])
-            journal_entry_rec = payment_rec.move_id
-            journal_item_recs = journal_entry_rec.line_ids
-            journal_item_recs.is_super_stream_linked = True
-        debit_line_data = []
-        credit_line_data = []
-        for all_data in all_pattern_data:
-            if all_data['deb_cre_division'] == '0':
-                debit_line_data.append(all_data)
-            else:
-                credit_line_data.append(all_data)
+        all_pattern_data = data_query_payment_p6p7
+        all_payment_rec_id = []
 
         count = 0
-        for de_line in debit_line_data:
+        for index, all_data in enumerate(all_pattern_data):
+            all_payment_rec_id.append(all_data['payment_id'])
+            if all_data['deb_cre_division'] == '1':
+                continue
             # Document data header record
             doc_header = "1" + '\r\n'
             file_data += doc_header
@@ -432,37 +442,37 @@ class StreamPaymentJournalExport(models.TransientModel):
             # other_system_slip_number = get_multi_character(
             #     7 - len(other_system_slip_number_str)) + other_system_slip_number_str
             # other_system_slip_number_int += 1
-
             count+=1
             count_str = str(count).zfill(7)
             #     # journal entry header region
-            journal_header = "2," + param['sstream_company_code'] + "," + param['sstream_slip_group'] + ",," + de_line[
+            journal_header = "2," + param['sstream_company_code'] + "," + param['sstream_slip_group'] + ",," + all_data[
                 'slip_date'] + ',,0,1,,,,' + count_str + ',0,0,,,,,,,,,,,,,' + '\r\n'
             file_data += journal_header
             # End region
 
-            debit_line = ''
-            credit_line = ''
-
             #
-            clean_dict_data = deepcopy(de_line)
+            clean_dict_data = deepcopy(all_data)
             clean_dict_data.pop('payment_id')
             clean_dict_data.pop('partner_name')
             debit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
 
-            for cre_line in credit_line_data:
-                if cre_line['payment_id'] == de_line['payment_id']:
-                    clean_dict_data = deepcopy(cre_line)
-                    clean_dict_data.pop('payment_id')
-                    clean_dict_data.pop('partner_name')
-                    credit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
-                    continue
+            cre_line = all_pattern_data[index + 1]
+            clean_dict_data = deepcopy(cre_line)
+            clean_dict_data.pop('payment_id')
+            clean_dict_data.pop('partner_name')
+            credit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
 
             file_data += debit_line
             file_data += credit_line
             # slip data trailer record
             slip_trailer = "8" + '\r\n'
             file_data += slip_trailer
+
+        payment_recs = self.env['account.payment'].search([('id', 'in', all_payment_rec_id)]).mapped('move_id').ids
+        journal_entry_recs = self.env['account.move'].search([('id', 'in', payment_recs)])
+        journal_item_recs = journal_entry_recs.line_ids
+        journal_item_recs.is_super_stream_linked = True
+
         # end data trailer record
         end_trailer = "9" + '\r\n'
         file_data += end_trailer

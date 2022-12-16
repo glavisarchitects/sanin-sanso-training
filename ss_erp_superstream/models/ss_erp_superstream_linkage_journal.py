@@ -15,6 +15,7 @@ class SSSuperStreamLinkageJournal(models.Model):
     journal_creation = fields.Selection([('odoo_journal', 'Odoo仕訳'),
                                          ('move_within_base', '拠点内移動'),
                                          ('transfer_between_base', '拠点間移動'),
+                                         ('sanhot_point', 'さんほっとポイント'),
                                          ], string="仕訳作成")
     slip_date_edit = fields.Selection([('first_day', '月初日'),
                                        ('last_day', '月末日')

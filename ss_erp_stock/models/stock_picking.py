@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
+from datetime import datetime
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -69,6 +70,8 @@ class StockPicking(models.Model):
                 r.has_lot_ids = False
 
     required_responsible_dept_id = fields.Boolean(compute='_compute_responsible_dept_id')
+
+    x_inventory_journal_date = fields.Datetime('在庫仕訳日')
 
     @api.depends('x_organization_id')
     def _compute_responsible_dept_id(self):

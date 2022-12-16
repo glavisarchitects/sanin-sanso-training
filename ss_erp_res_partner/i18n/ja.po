@@ -1,0 +1,5 @@
+#. module: base
+#: code:addons/base/models/res_bank.py:0
+#, python-format
+msgid "Normal"
+msgstr "普通"
