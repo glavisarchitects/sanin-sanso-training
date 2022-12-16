@@ -15,6 +15,7 @@ class PurchaseOrder(models.Model):
 
     def estimation_request_svf_template_export(self):
         if self.x_bis_categ_id == 'gas_material':
+            type_report = 'R010'
             data_file = [
                 '"rfq_issue_date","partner_name","partner_text","company_name","organization_name","organization_address","organization_tel","organization_fax","purchase_number","date_planned","date_order","purchase_user_name","dest_address","dropship_text","product_name","product_note","product_qty","product_uom","notes","dest_address_info","url"']
             for line in self.order_line:
@@ -53,6 +54,7 @@ class PurchaseOrder(models.Model):
 
         # construction
         else:
+            type_report = 'R010_construction'
             data_file = [
                 '"rfq_issue_date","partner_id","partner_id_text","comapany_id","organization_id",'
                 '"organization_address","organization_tel","organization_fax","purchase_number","date_planned","date_order",'
@@ -136,24 +138,24 @@ class PurchaseOrder(models.Model):
                 str_data_line = '"' + str_data_line + '"'
                 data_file.append(str_data_line)
             data_send = "\n".join(data_file)
-        b = data_send.encode('shift-jis')
-        vals = {
-            'name': '見積依頼書' '.csv',
-            'datas': base64.b64encode(b).decode('shift-jis'),
-            'type': 'binary',
-            'res_model': 'ir.ui.view',
-            'x_no_need_save': True,
-            'res_id': False,
-        }
-
-        file_txt = self.env['ir.attachment'].create(vals)
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/' + str(file_txt.id) + '?download=true',
-            'target': 'new',
-        }
-        # return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R010')
+        # b = data_send.encode('shift-jis')
+        # vals = {
+        #     'name': '見積依頼書' '.csv',
+        #     'datas': base64.b64encode(b).decode('shift-jis'),
+        #     'type': 'binary',
+        #     'res_model': 'ir.ui.view',
+        #     'x_no_need_save': True,
+        #     'res_id': False,
+        # }
+        #
+        # file_txt = self.env['ir.attachment'].create(vals)
+        #
+        # return {
+        #     'type': 'ir.actions.act_url',
+        #     'url': '/web/content/' + str(file_txt.id) + '?download=true',
+        #     'target': 'new',
+        # }
+        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report=type_report)
 
     def po_svf_template_export(self):
         if self.x_bis_categ_id == 'gas_material':
@@ -334,17 +336,15 @@ class PurchaseOrder(models.Model):
             if not line.product_id:
                 continue
             output_date = datetime.now().strftime("%Y年%m月%d日")
-            orderer_address = str(
-                self.x_organization_id.organization_state_id.name) if self.x_organization_id.organization_state_id.name else "" + str(
-                self.x_organization_id.organization_city) if self.x_organization_id.organization_city else "" + str(
-                self.x_organization_id.organization_street) if self.x_organization_id.organization_street else "" + str(
-                self.x_organization_id.organization_street2) if self.x_organization_id.organization_street2 else ""
+            orderer_address = (str(self.x_organization_id.organization_state_id.name) if self.x_organization_id.organization_state_id.name else "") \
+                      + (str(self.x_organization_id.organization_city) if self.x_organization_id.organization_city else "") \
+                      + (str( self.x_organization_id.organization_street) if self.x_organization_id.organization_street else "") \
+                      + (str(self.x_organization_id.organization_street2) if self.x_organization_id.organization_street2 else "")
             orderer_name = self.partner_id.x_purchase_user_id.company_id.name + "　殿" if self.partner_id.x_purchase_user_id.company_id.name else ''
-            address = str(
-                self.partner_id.state_id.name) if self.partner_id.state_id.name else "" + str(
-                self.partner_id.city) if self.partner_id.city else "" + str(
-                self.partner_id.street) if self.partner_id.street else "" + str(
-                self.partner_id.street2) if self.partner_id.street2 else ""
+            address = (str(self.partner_id.state_id.name) if self.partner_id.state_id.name else "") \
+                              + (str(self.partner_id.city) if self.partner_id.city else "") \
+                              + (str(self.partner_id.street) if self.partner_id.street else "") \
+                              + (str(self.partner_id.street2) if self.partner_id.street2 else "")
 
             tel = ""
             fax = ""
@@ -419,21 +419,21 @@ class PurchaseOrder(models.Model):
             data_file.append(str_data_line)
 
         data_send = "\n".join(data_file)
-        b = data_send.encode('shift-jis')
-        vals = {
-            'name': '注文請書(協力会社→SS)' '.csv',
-            'datas': base64.b64encode(b).decode('shift-jis'),
-            'type': 'binary',
-            'res_model': 'ir.ui.view',
-            'x_no_need_save': True,
-            'res_id': False,
-        }
-
-        file_txt = self.env['ir.attachment'].create(vals)
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/' + str(file_txt.id) + '?download=true',
-            'target': 'new',
-        }
-        # return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R008')
+        # b = data_send.encode('shift-jis')
+        # vals = {
+        #     'name': '注文請書(協力会社→SS)' '.csv',
+        #     'datas': base64.b64encode(b).decode('shift-jis'),
+        #     'type': 'binary',
+        #     'res_model': 'ir.ui.view',
+        #     'x_no_need_save': True,
+        #     'res_id': False,
+        # }
+        #
+        # file_txt = self.env['ir.attachment'].create(vals)
+        #
+        # return {
+        #     'type': 'ir.actions.act_url',
+        #     'url': '/web/content/' + str(file_txt.id) + '?download=true',
+        #     'target': 'new',
+        # }
+        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R008_toSS')

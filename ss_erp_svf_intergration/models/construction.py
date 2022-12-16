@@ -183,7 +183,7 @@ class Construction(models.Model):
         organization_address = organization_state_name + (
                 self.organization_id.organization_city or '') + (
                                        self.organization_id.organization_street or '') + (
-                                           self.organization_id.organization_street2 or '')
+                                       self.organization_id.organization_street2 or '')
 
         organization_phone = "TEL　" + (self.organization_id.organization_phone or '')
         organization_fax = "FAX　" + (self.organization_id.organization_fax or '')
@@ -194,10 +194,10 @@ class Construction(models.Model):
         remarks = self.estimation_note if self.estimation_note else ''
 
         data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
-            self.partner_id.display_name,        # customer_name
-            self.name,                           # department_id
-            output_date_str,                     # output_date
-            "{:,}".format(int(self.amount_total)),#total
+            self.partner_id.display_name,  # customer_name
+            self.name,  # department_id
+            output_date_str,  # output_date
+            "{:,}".format(int(self.amount_total)),  # total
             organization_address,
             organization_phone,
             organization_fax,
@@ -246,7 +246,6 @@ class Construction(models.Model):
             'target': 'new',
         }
 
-
     def _prepare_data_file(self):
 
         fee_product_list = [
@@ -288,7 +287,7 @@ class Construction(models.Model):
         organization_address = organization_state_name + (
                 self.organization_id.organization_city or '') + (
                                        self.organization_id.organization_street or '') + (
-                                           self.organization_id.organization_street2 or '')
+                                       self.organization_id.organization_street2 or '')
 
         organization_phone = "TEL　" + (self.organization_id.organization_phone or '')
         organization_fax = "FAX　" + (self.organization_id.organization_fax or '')
@@ -316,10 +315,10 @@ class Construction(models.Model):
                 welfare = line.subtotal
             else:
                 data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
-                    self.partner_id.display_name,        # customer_name
-                    self.name,                           # department_id
-                    output_date_str,                     # output_date
-                    "{:,}".format(int(self.amount_total)),#total
+                    self.partner_id.display_name,  # customer_name
+                    self.name,  # department_id
+                    output_date_str,  # output_date
+                    "{:,}".format(int(self.amount_total)),  # total
                     organization_address,
                     organization_phone,
                     organization_fax,
@@ -461,11 +460,11 @@ class Construction(models.Model):
 
         b = file_data.encode('shift-jis')
         vals = {
-        'name': '工事見積書' '.csv',
-        'datas': base64.b64encode(b).decode('shift-jis'),
-        'type': 'binary',
-        'res_model': 'ir.ui.view',
-        'res_id': False,
+            'name': '工事見積書' '.csv',
+            'datas': base64.b64encode(b).decode('shift-jis'),
+            'type': 'binary',
+            'res_model': 'ir.ui.view',
+            'res_id': False,
         }
 
         file_txt = self.env['ir.attachment'].create(vals)
@@ -484,17 +483,15 @@ class Construction(models.Model):
             if not line.product_id:
                 continue
             output_date = datetime.now().strftime("%Y年%m月%d日")
-            orderer_address = str(
-                self.partner_id.state_id.name) if self.partner_id.state_id.name else "" + str(
-                self.partner_id.city) if self.partner_id.city else "" + str(
-                self.partner_id.street) if self.partner_id.street else "" + str(
-                self.partner_id.street2) if self.partner_id.street2 else ""
+            orderer_address = (str(self.partner_id.state_id.name) if self.partner_id.state_id.name else "") \
+                              + (str(self.partner_id.city) if self.partner_id.city else "") \
+                              + (str(self.partner_id.street) if self.partner_id.street else "") \
+                              + (str(self.partner_id.street2) if self.partner_id.street2 else "")
             orderer_name = self.partner_id.name + "　殿"
-            address = str(
-                self.organization_id.organization_state_id.name) if self.organization_id.organization_state_id.name else "" + str(
-                self.organization_id.organization_city) if self.organization_id.organization_city else "" + str(
-                self.organization_id.organization_street) if self.organization_id.organization_street else "" + str(
-                self.organization_id.organization_street2) if self.organization_id.organization_street2 else ""
+            address = (str(self.organization_id.organization_state_id.name) if self.organization_id.organization_state_id.name else "") \
+                      + (str(self.organization_id.organization_city) if self.organization_id.organization_city else "") \
+                      + (str( self.organization_id.organization_street) if self.organization_id.organization_street else "") \
+                      + (str(self.organization_id.organization_street2) if self.organization_id.organization_street2 else "")
 
             tel = self.organization_id.organization_phone if self.organization_id.organization_phone else ""
             fax = self.organization_id.organization_fax if self.organization_id.organization_fax else ""
@@ -569,21 +566,21 @@ class Construction(models.Model):
             data_file.append(str_data_line)
 
         data_send = "\n".join(data_file)
-        b = data_send.encode('shift-jis')
-        vals = {
-            'name': '注文請書(SS→発注者)' '.csv',
-            'datas': base64.b64encode(b).decode('shift-jis'),
-            'type': 'binary',
-            'res_model': 'ir.ui.view',
-            'x_no_need_save': True,
-            'res_id': False,
-        }
-
-        file_txt = self.env['ir.attachment'].create(vals)
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/' + str(file_txt.id) + '?download=true',
-            'target': 'new',
-        }
-        # return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R008')
+        # b = data_send.encode('shift-jis')
+        # vals = {
+        #     'name': '注文請書(SS→発注者)' '.csv',
+        #     'datas': base64.b64encode(b).decode('shift-jis'),
+        #     'type': 'binary',
+        #     'res_model': 'ir.ui.view',
+        #     'x_no_need_save': True,
+        #     'res_id': False,
+        # }
+        #
+        # file_txt = self.env['ir.attachment'].create(vals)
+        #
+        # return {
+        #     'type': 'ir.actions.act_url',
+        #     'url': '/web/content/' + str(file_txt.id) + '?download=true',
+        #     'target': 'new',
+        # }
+        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R008')

@@ -9,12 +9,34 @@
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_create_invoice'][1]" position="after">
-                    <button name="estimation_request_svf_template_export" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    <button name="estimation_request_svf_template_export" type="object"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"
                             string="見積依頼書"/>
-                    <button name="order_confirm_coo_com_to_ss_svf_template_export" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    <button name="order_confirm_coo_com_to_ss_svf_template_export" type="object"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"
                             string="注文請書"/>
-                    <button name="po_svf_template_export" type="object" attrs="{'invisible': [('state', '!=', 'purchase')]}"
+                    <button name="po_svf_template_export" type="object"
+                            attrs="{'invisible': [('state', '!=', 'purchase')]}"
                             string="発注書"/>
+                </xpath>
+                <xpath expr="//page[@name='purchase_delivery_invoice']" position="after">
+                    <page name="order_confirm" string="注文請書">
+                        <group string="注文請書 帳票設定">
+                            <group>
+                                <!--                                <field name="form_type" readonly="1"/>-->
+                                <field name="export_type" widget="radio"/>
+                                <field name="receipt_type"/>
+                            </group>
+                            <group>
+                                <field name="order_number"/>
+                                <field name="delivery_location"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="terms_of_contract"/>
+                            <field name="other_conditions"/>
+                        </group>
+                    </page>
                 </xpath>
             </field>
         </record>
