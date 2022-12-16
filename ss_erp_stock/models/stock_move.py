@@ -10,13 +10,13 @@ class StockMove(models.Model):
     instruction_order_line_id = fields.Many2one('ss_erp.instruction.order.line', string="棚卸計画明細")
 
     product_packaging = fields.Many2one(string='パッケージ', related='inventory_order_line_id.product_packaging', store=True)
-    x_organization_id = fields.Many2one('ss_erp.organization', related='picking_id.x_organization_id',
+    x_organization_id = fields.Many2one('ss_erp.organization', default=lambda self: self.picking_id.x_organization_id,
                                         string='組織名', store=True)
 
     x_responsible_dept_id = fields.Many2one('ss_erp.responsible.department',
-                                            related='picking_id.x_responsible_dept_id', string='管轄部門', store=True)
+                                            default=lambda self: self.picking_id.x_responsible_dept_id.id, string='管轄部門', store=True)
 
-    x_responsible_user_id = fields.Many2one('res.users', related='picking_id.user_id', string='業務担当', store=True)
+    x_responsible_user_id = fields.Many2one('res.users', default=lambda self: self.picking_id.user_id, string='業務担当', store=True)
 
     lpgas_adjustment = fields.Boolean(string='', default=False)
 
@@ -41,7 +41,7 @@ class StockMove(models.Model):
             svl_vals.update(move._prepare_common_svl_vals())
             if forced_quantity:
                 svl_vals[
-                    'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
+                        'description'] = 'INV：%s - %s' % (move.picking_id.name or move.name or move.instruction_order_id.name, move.product_id.product_tmpl_id.name)
             svl_vals_list.append(svl_vals)
         return self.env['stock.valuation.layer'].sudo().create(svl_vals_list)
 
