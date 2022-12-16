@@ -163,7 +163,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , aa.code as account_code								
                         , COALESCE(seas.code, '') as sub_account_code								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -263,7 +263,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , cre_ojl.code as account_code								
                     , COALESCE(sub_cre_ojl.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code															
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -363,7 +363,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , de_ojl.code as account_code								
                         , COALESCE(sub_de_ojl.code, '') as sub_account_code								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                            when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                            when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                             else ojl.debit_accounting_department_code								
                             end as depar_orga_code								
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -462,7 +462,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , aa.code as account_code								
                     , COALESCE(seas.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code									
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -658,7 +658,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , cre_ojl.code as account_code								
                         , '' as sub_account_code								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -742,7 +742,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , cre_ojl.code as account_code								
                         , ''								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -827,7 +827,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , cre_ojl.code as account_code								
                         , ''								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -914,7 +914,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , cre_ojl.code as account_code								
                         , ''								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -1101,7 +1101,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , aa.code as account_code								
                         , COALESCE(seas.code, '') as sub_account_code								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -1195,7 +1195,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , cre_ojl.code as account_code								
                         , COALESCE(sub_cre_ojl.code, '') as sub_account_code								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -1390,7 +1390,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , aa.code as account_code								
                     , COALESCE(seas.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code									
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -1483,7 +1483,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , aa.code as account_code								
                     , COALESCE(seas.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code									
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -1656,8 +1656,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , '0' as deb_cre_division	
                         , de_ojl.code as account_code								
                         , COALESCE(sub_de_ojl.code, '') as sub_account_code	
-                        ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                        ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(dest_seo.organization_code, 3)
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(dest_seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code	
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -1676,8 +1676,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , '0' as tax_entry_division	
                         , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分'
                             when ojl.debit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
-                            when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
-                            when ojl.debit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                            when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                            when ojl.debit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || source_dep.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
                             ELSE ojl.debit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
                             END
                             as summery1
@@ -1693,7 +1693,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         on io.id = sp.x_inventory_order_id						
                         left join	
                         ss_erp_responsible_department serd /* 管轄部門 */						
-                        on sp.x_responsible_dept_id = serd.id						
+                        on sp.x_responsible_dept_dest_id = serd.id						
                         left join						
                         ss_erp_organization seo /* 組織 */						
                         on sp.x_organization_dest_id = seo.id						
@@ -1712,9 +1712,14 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         on ojl.debit_sub_account = sub_de_ojl.id
                         
                         left join ss_erp_organization source_seo
-                        on ojl.credit_related_organization = source_seo.id
+                        on sp.x_organization_id = source_seo.id
                         left join ss_erp_organization dest_seo
-                        on ojl.debit_related_organization = dest_seo.id
+                        on sp.x_organization_dest_id = dest_seo.id                        
+                        
+                        left join ss_erp_responsible_department source_dep
+                        on sp.x_responsible_dept_id = source_dep.id
+                        left join ss_erp_responsible_department dest_dep
+                        on sp.x_responsible_dept_dest_id = dest_dep.id
                         
                         left join part5_categ p5ct
                         on p5ct.categ_key = ojl.product_ctg
@@ -1749,8 +1754,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , '1' as deb_cre_division	
                     , cre_ojl.code as account_code								
                     , COALESCE(sub_cre_ojl.code, '') as sub_account_code	
-                    ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(source_seo.organization_code, 3)
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(source_seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code	
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -1769,8 +1774,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , '0' as tax_entry_division	
                     , case when ojl.credit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分'
                         when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
-                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
-                        when ojl.credit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || source_dep.name || '->' || dest_dep.name || to_char(sp.date, 'MM') || '月分'
                         ELSE ojl.credit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1	
@@ -1805,16 +1810,20 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     on ojl.credit_sub_account = sub_cre_ojl.id	
                     
                     left join ss_erp_organization source_seo
-                    on ojl.credit_related_organization = source_seo.id
+                    on sp.x_organization_id = source_seo.id
                     left join ss_erp_organization dest_seo
-                    on ojl.debit_related_organization = dest_seo.id
+                    on sp.x_organization_dest_id = dest_seo.id
                     
+                    left join ss_erp_responsible_department source_dep
+                    on sp.x_responsible_dept_id = source_dep.id
+                    left join ss_erp_responsible_department dest_dep
+                    on sp.x_responsible_dept_dest_id = dest_dep.id
+                
                     left join part5_categ p5ct
                     on p5ct.categ_key = ojl.product_ctg	
                     
                     left join stock_picking_type spt 
-                    on sp.picking_type_id = spt.id
-                    		
+                    on sp.picking_type_id = spt.id                    		
                 where						
                 sp.state = 'done'  /* 完了を指定 */						
                 and sp.date BETWEEN '{start_period}' and '{end_period}'							
