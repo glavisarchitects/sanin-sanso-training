@@ -5,7 +5,7 @@
         山陰酸素工業　製造管理カスタマイズ
     """,
     "depends": [
-        "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
+        "mrp", "ss_erp_res_partner", "ss_erp_product_template", "ss_erp_organization",
         "ss_erp_responsible_dept", "ss_erp_res_company", "ss_erp_res_users",
     ],
     "data": [
@@ -13,6 +13,8 @@
         "security/ir.model.access.csv",
 
         # VIEWS
+        'views/mrp_production_views.xml',
+        'views/mrp_unbuild_views.xml',
         'menu/menu_item.xml',
 
     ],
