@@ -62,22 +62,22 @@ class StockPicking(models.Model):
             data_file.append(str_data_line)
         data_send = "\n".join(data_file)
 
-        b = data_send.encode('utf-8')
-        vals = {
-            'name': '納品書出力' '.csv',
-            'datas': base64.b64encode(b).decode('utf-8'),
-            'type': 'binary',
-            'res_model': 'ir.ui.view',
-            'x_no_need_save': True,
-            'res_id': False,
-        }
+        # b = data_send.encode('utf-8')
+        # vals = {
+        #     'name': '納品書出力' '.csv',
+        #     'datas': base64.b64encode(b).decode('utf-8'),
+        #     'type': 'binary',
+        #     'res_model': 'ir.ui.view',
+        #     'x_no_need_save': True,
+        #     'res_id': False,
+        # }
+        #
+        # file_txt = self.env['ir.attachment'].create(vals)
+        #
+        # return {
+        #     'type': 'ir.actions.act_url',
+        #     'url': '/web/content/' + str(file_txt.id) + '?download=true',
+        #     'target': 'new',
+        # }
 
-        file_txt = self.env['ir.attachment'].create(vals)
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/' + str(file_txt.id) + '?download=true',
-            'target': 'new',
-        }
-
-        # return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R009')
+        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R009')
