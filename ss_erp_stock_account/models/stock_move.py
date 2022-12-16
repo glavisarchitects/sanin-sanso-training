@@ -1,5 +1,5 @@
 from odoo import models, fields
-
+from odoo.tools import float_is_zero, float_compare
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
@@ -35,3 +35,60 @@ class StockMove(models.Model):
             return self.instruction_order_line_id.product_cost
         else:
             return super()._get_price_unit()
+
+    def _create_in_svl(self, forced_quantity=None):
+        """Create a `stock.valuation.layer` from `self`.
+
+        :param forced_quantity: under some circunstances, the quantity to value is different than
+            the initial demand of the move (Default value = None)
+        """
+        svl_vals_list = []
+        for move in self:
+            move = move.with_company(move.company_id)
+            valued_move_lines = move._get_in_move_lines()
+            valued_quantity = 0
+            for valued_move_line in valued_move_lines:
+                valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done,
+                                                                                     move.product_id.uom_id)
+            unit_cost = abs(move._get_price_unit())  # May be negative (i.e. decrease an out move).
+            if move.product_id.cost_method == 'standard' and not move.instruction_order_id:
+                unit_cost = move.product_id.standard_price
+            svl_vals = move.product_id._prepare_in_svl_vals(forced_quantity or valued_quantity, unit_cost)
+            svl_vals.update(move._prepare_common_svl_vals())
+            if forced_quantity:
+                if move.lpgas_adjustment:
+                    svl_vals[
+                        'description'] = self.name
+                else:
+                    svl_vals[
+                        'description'] = 'INV：%s - %s' % (move.picking_id.name or move.name or move.instruction_order_id.name, move.product_id.product_tmpl_id.name)
+            svl_vals_list.append(svl_vals)
+        return self.env['stock.valuation.layer'].sudo().create(svl_vals_list)
+
+    def _create_out_svl(self, forced_quantity=None):
+        """Create a `stock.valuation.layer` from `self`.
+
+        :param forced_quantity: under some circunstances, the quantity to value is different than
+            the initial demand of the move (Default value = None)
+        """
+        svl_vals_list = []
+        for move in self:
+            move = move.with_company(move.company_id)
+            valued_move_lines = move._get_out_move_lines()
+            valued_quantity = 0
+            for valued_move_line in valued_move_lines:
+                valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done, move.product_id.uom_id)
+            if float_is_zero(forced_quantity or valued_quantity, precision_rounding=move.product_id.uom_id.rounding):
+                continue
+            svl_vals = move.product_id._prepare_out_svl_vals(forced_quantity or valued_quantity, move.company_id)
+            svl_vals.update(move._prepare_common_svl_vals())
+            if forced_quantity:
+                if move.lpgas_adjustment:
+                    svl_vals[
+                        'description'] = self.name
+                else:
+                    svl_vals[
+                        'description'] = 'INV：%s - %s' % (move.picking_id.name or move.name or move.instruction_order_id.name, move.product_id.product_tmpl_id.name)
+            svl_vals['description'] += svl_vals.pop('rounding_adjustment', '')
+            svl_vals_list.append(svl_vals)
+        return self.env['stock.valuation.layer'].sudo().create(svl_vals_list)
