@@ -42,6 +42,7 @@ class MrpUnbuild(models.Model):
             'company_id': move.company_id.id,
             'x_organization_id': self.x_organization_id.id,
             'x_responsible_dept_id': self.x_responsible_dept_id.id,
+            'x_responsible_user_id': self.env.user.id,
         })
 
     def _generate_move_from_bom_line(self, product, product_uom, quantity, bom_line_id=False, byproduct_id=False):
@@ -65,5 +66,6 @@ class MrpUnbuild(models.Model):
             'company_id': self.company_id.id,
             'x_organization_id': self.x_organization_id.id,
             'x_responsible_dept_id': self.x_responsible_dept_id.id,
+            'x_responsible_user_id': self.env.user.id,
         })
 
