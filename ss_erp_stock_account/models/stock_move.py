@@ -92,3 +92,56 @@ class StockMove(models.Model):
             svl_vals['description'] += svl_vals.pop('rounding_adjustment', '')
             svl_vals_list.append(svl_vals)
         return self.env['stock.valuation.layer'].sudo().create(svl_vals_list)
+
+    def _get_accounting_data_for_valuation(self):
+        journal_id, acc_src, acc_dest, acc_valuation = super()._get_accounting_data_for_valuation()
+        if self._is_in():
+            if self.location_dest_id.x_stored_location:
+                acc_valuation = self.location_dest_id.valuation_in_account_id.id
+            if self.location_id.x_stored_location:
+                acc_src = self.location_id.valuation_out_account_id.id
+        if self._is_out():
+            if self.location_dest_id.x_stored_location:
+                acc_dest = self.location_dest_id.valuation_in_account_id.id
+            if self.location_id.x_stored_location:
+                acc_valuation = self.location_id.valuation_out_account_id.id
+
+        return journal_id, acc_src, acc_dest, acc_valuation
+
+    def write(self,vals):
+        res = super().write(vals)
+        if vals.get('state') and vals.get('state') == 'done':
+            for rec in self:
+                cost = int(rec.product_id.product_tmpl_id.standard_price) * rec.product_uom_qty
+                if cost == 0:
+                    continue
+
+                if rec.state == 'done' and rec.is_stored_location_transfer:
+                    description = rec.picking_id.name + ' － ' + rec.name
+                    journal_id, acc_src, acc_dest, acc_valuation = rec._get_accounting_data_for_valuation()
+                    if rec.location_id.x_stored_location:
+                        debit_account = acc_valuation
+                        credit_account = rec.location_id.valuation_out_account_id.id
+                    else:
+                        debit_account = rec.location_dest_id.valuation_in_account_id.id
+                        credit_account = acc_valuation
+                    qty = rec.product_uom_qty
+                    self.with_company(self.company_id)._ss_erp_create_account_move_line(credit_account, debit_account, journal_id, qty, description, cost)
+        return res
+
+    def _ss_erp_create_account_move_line(self, credit_account_id, debit_account_id, journal_id, qty, description, cost):
+        self.ensure_one()
+        AccountMove = self.env['account.move'].with_context(default_journal_id=journal_id)
+
+        move_lines = self._prepare_account_move_line(qty, cost, credit_account_id, debit_account_id, description)
+        if move_lines:
+            date = self._context.get('force_period_date', fields.Date.context_today(self))
+            new_account_move = AccountMove.sudo().create({
+                'journal_id': journal_id,
+                'line_ids': move_lines,
+                'date': date,
+                'ref': description,
+                'stock_move_id': self.id,
+                'move_type': 'entry',
+            })
+            new_account_move._post()

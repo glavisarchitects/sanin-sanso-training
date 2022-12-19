@@ -12,6 +12,15 @@
                         <field name="x_total_installation_quantity"  attrs="{'required':[('x_inventory_type','in',('cylinder','minibulk'))]}"/>
                     </group>
                 </xpath>
+                <xpath expr="//field[@name='return_location']" position="after">
+                    <field name="x_stored_location"/>
+                </xpath>
+<!--                <xpath expr="//field[@name='valuation_in_account_id']" position="attributes">-->
+<!--                    <attribute name="attrs">{'required': [('x_stored_location', '=', True]}</attribute>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//field[@name='valuation_out_account_id']" position="attributes">-->
+<!--                    <attribute name="attrs">{'required': [('x_stored_location', '=', True]}</attribute>-->
+<!--                </xpath>-->
             </field>
         </record>
     </data>
