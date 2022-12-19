@@ -143,5 +143,8 @@ class StockMove(models.Model):
                 'ref': description,
                 'stock_move_id': self.id,
                 'move_type': 'entry',
+                'x_organization_id': self.x_organization_id.id,
+                'x_responsible_dept_id': self.x_responsible_dept_id.id,
+                'x_responsible_user_id': self.x_responsible_user_id.id,
             })
             new_account_move._post()

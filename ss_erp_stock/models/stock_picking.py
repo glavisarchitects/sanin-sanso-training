@@ -113,16 +113,22 @@ class StockPicking(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if self.move_lines:
-            self.move_lines.update({'x_organization_id': self.x_organization_id.id})
-        if self.move_ids_without_package:
-            self.move_ids_without_package.update({'x_organization_id': self.x_organization_id.id})
-        if self.move_line_ids:
-            self.move_line_ids.update({'x_organization_id': self.x_organization_id.id})
-        if self.move_line_ids_without_package:
-            self.move_line_ids_without_package.update({'x_organization_id': self.x_organization_id.id})
-        if self.move_line_nosuggest_ids:
-            self.move_line_nosuggest_ids.update({'x_organization_id': self.x_organization_id.id})
+        for rec in self:
+            update_dict = {
+                'x_organization_id': rec.x_organization_id.id,
+                'x_responsible_dept_id': rec.x_responsible_dept_id.id,
+                'x_responsible_user_id': rec.user_id.id,
+            }
+            if rec.move_lines:
+                rec.move_lines.update(update_dict)
+            if rec.move_ids_without_package:
+                rec.move_ids_without_package.update(update_dict)
+            if rec.move_line_ids:
+                rec.move_line_ids.update(update_dict)
+            if rec.move_line_ids_without_package:
+                rec.move_line_ids_without_package.update(update_dict)
+            if rec.move_line_nosuggest_ids:
+                rec.move_line_nosuggest_ids.update(update_dict)
         return res
 
 
