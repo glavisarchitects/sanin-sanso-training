@@ -95,10 +95,10 @@ class StockPicking(models.Model):
     @api.onchange('picking_type_id')
     def _onchange_picking_type_id(self):
         if self.picking_type_code == 'incoming':
-            return {'domain': {'location_dest_id': [('usage', '=', 'internal'), (
+            return {'domain': {'location_dest_id': ['|',('usage', '=', 'internal'), ('x_stored_location','=',True),(
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'outgoing':
-            return {'domain': {'location_id': [('usage', '=', 'internal'), (
+            return {'domain': {'location_id': ['|',('usage', '=', 'internal'), ('x_stored_location','=',True), (
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'internal':
             return {'domain': {
