@@ -27,7 +27,8 @@ class StockMove(models.Model):
     @api.depends('location_id', 'location_dest_id')
     def _computed_is_stored_location_transfer(self):
         for rec in self:
-            if rec.location_id.x_stored_location or rec.location_dest_id.x_stored_location:
+            if (rec.location_id.x_stored_location and rec.location_dest_id.usage == 'internal') or (
+                    rec.location_dest_id.x_stored_location and rec.location_id.usage == 'internal'):
                 rec.is_stored_location_transfer = True
             else:
                 rec.is_stored_location_transfer = False
@@ -61,5 +62,3 @@ class StockMove(models.Model):
                 return False
         else:
             return super()._is_out()
-
-
