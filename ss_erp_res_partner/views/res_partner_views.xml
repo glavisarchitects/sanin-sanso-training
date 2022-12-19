@@ -101,7 +101,7 @@
                        attrs="{'required': [('x_is_vendor', '=', True)], 'invisible': [('x_is_vendor', '!=', True)]}"
 
                 />
-
+                <field name="id" string="内部ID" />
                 <field name="ref" string="取引先コード" attrs="{
                     'invisible': [('has_ref', '=', 'no')],
                     'required': [('has_ref', '=', 'required')]
