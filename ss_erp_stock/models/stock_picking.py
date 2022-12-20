@@ -117,16 +117,16 @@ class StockMove(models.Model):
 
     x_inventory_order_line_id = fields.Many2one(comodel_name='ss_erp.inventory.order.line', )
 
-    def write(self, vals):
-        res = super(StockMove, self).write(vals)
-        if self.picking_id and not self.x_organization_id:
-            self.write({
-                'x_organization_id': self.picking_id.x_organization_id.id,
-                'x_responsible_dept_id': self.picking_id.x_responsible_dept_id.id,
-                'x_responsible_user_id': self.picking_id.user_id.id,
-            }
-            )
-        return res
+    # def write(self, vals):
+    #     res = super(StockMove, self).write(vals)
+    #     if self.picking_id and not self.x_organization_id and not vals.get('x_organization_id'):
+    #         self.write({
+    #             'x_organization_id': self.picking_id.x_organization_id.id,
+    #             'x_responsible_dept_id': self.picking_id.x_responsible_dept_id.id,
+    #             'x_responsible_user_id': self.picking_id.user_id.id,
+    #         }
+    #         )
+    #     return res
 
 
 class StockMoveLine(models.Model):
