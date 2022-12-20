@@ -111,3 +111,28 @@ class StockPicking(models.Model):
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}
                     }
 
+
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+
+    x_inventory_order_line_id = fields.Many2one(comodel_name='ss_erp.inventory.order.line', )
+
+    def write(self, vals):
+        res = super(StockMove, self).write(vals)
+        if self.picking_id and not self.x_organization_id:
+            self.write({
+                'x_organization_id': self.picking_id.x_organization_id.id,
+                'x_responsible_dept_id': self.picking_id.x_responsible_dept_id.id,
+                'x_responsible_user_id': self.picking_id.user_id.id,
+            }
+            )
+        return res
+
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    x_partner_id = fields.Many2one(
+        comodel_name='res.partner',
+        string='連絡先名',
+        required=False)
