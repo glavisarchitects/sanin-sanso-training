@@ -73,7 +73,7 @@ class SaleOrder(models.Model):
                 , notes
                 , str(count)
                 ,
-                line.product_id.product_tmpl_id.x_name_abbreviation if line.product_id.product_tmpl_id.x_name_abbreviation else ''
+                line.product_id.product_tmpl_id.x_name_abbreviation if line.product_id.product_tmpl_id.x_name_abbreviation else line.product_id.product_tmpl_id.name
                 ,
                 line.product_id.product_tmpl_id.x_name_specification if line.product_id.product_tmpl_id.x_name_specification else ''
                 , product_uom_qty
