@@ -95,10 +95,10 @@ class StockPicking(models.Model):
     @api.onchange('picking_type_id')
     def _onchange_picking_type_id(self):
         if self.picking_type_code == 'incoming':
-            return {'domain': {'location_dest_id': ['|',('usage', '=', 'internal'), ('x_stored_location','=',True),(
+            return {'domain': {'location_dest_id': ['|', ('usage', '=', 'internal'), ('x_stored_location', '=', True), (
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'outgoing':
-            return {'domain': {'location_id': ['|',('usage', '=', 'internal'), ('x_stored_location','=',True), (
+            return {'domain': {'location_id': ['|', ('usage', '=', 'internal'), ('x_stored_location', '=', True), (
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'internal':
             return {'domain': {
@@ -111,37 +111,3 @@ class StockPicking(models.Model):
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}
                     }
 
-    def write(self, vals):
-        res = super().write(vals)
-        for rec in self:
-            update_dict = {
-                'x_organization_id': rec.x_organization_id.id,
-                'x_responsible_dept_id': rec.x_responsible_dept_id.id,
-                'x_responsible_user_id': rec.user_id.id,
-            }
-            if rec.move_lines:
-                rec.move_lines.update(update_dict)
-            if rec.move_ids_without_package:
-                rec.move_ids_without_package.update(update_dict)
-            if rec.move_line_ids:
-                rec.move_line_ids.update(update_dict)
-            if rec.move_line_ids_without_package:
-                rec.move_line_ids_without_package.update(update_dict)
-            if rec.move_line_nosuggest_ids:
-                rec.move_line_nosuggest_ids.update(update_dict)
-        return res
-
-
-class StockMove(models.Model):
-    _inherit = 'stock.move'
-
-    x_inventory_order_line_id = fields.Many2one(comodel_name='ss_erp.inventory.order.line', )
-
-
-class StockMoveLine(models.Model):
-    _inherit = 'stock.move.line'
-
-    x_partner_id = fields.Many2one(
-        comodel_name='res.partner',
-        string='連絡先名',
-        required=False)
