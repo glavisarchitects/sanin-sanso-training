@@ -1682,7 +1682,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                             END
                             as summery1
                         , io.id as move_id
-                        , 5 as pattern                             
+                        , 5 || ' ' || ojl.debit_account::text || ' ' || ojl.credit_account::text as pattern                               
                     from						
                         ss_erp_inventory_order io  /* 移動伝票 */						
                         inner join						
@@ -1780,7 +1780,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         END
                         as summery1	
                     , io.id as move_id
-                    , 5 as pattern                           								
+                    , 5 || ' ' || ojl.debit_account::text || ' ' || ojl.credit_account::text as pattern                            								
                 from						
                     ss_erp_inventory_order io  /* 移動伝票 */						
                     inner join						
@@ -1837,6 +1837,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
             ) result				
                 order by
                 inventory_order_line_id
+                , pattern
                 , line_number asc	                
                 , deb_cre_division asc						
                 , department_code asc

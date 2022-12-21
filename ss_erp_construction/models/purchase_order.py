@@ -83,10 +83,15 @@ class PurchaseOrder(models.Model):
         overridden to implement custom invoice generation (making sure to call super() to establish
         a clean extension chain).
         """
+        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '00000')],
+                                                                          limit=1)
+
         invoice_vals = super(PurchaseOrder, self)._prepare_invoice()
         invoice_vals.update({
-            'x_organization_id': self.x_organization_id.id,
+            'x_organization_id': head_office_organization.id,
+            'x_business_organization_id': self.x_organization_id.id,
             'x_responsible_dept_id': self.x_responsible_dept_id.id,
+            'x_responsible_user_id': self.user_id.id,
         })
         if self.x_bis_categ_id == 'gas_material':
             invoice_vals.update({
