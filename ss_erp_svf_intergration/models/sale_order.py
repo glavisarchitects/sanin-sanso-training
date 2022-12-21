@@ -31,7 +31,7 @@ class SaleOrder(models.Model):
             '"line_number","product_name","specification_name","qty","uom","price_unit","price_subtotal","line_subtotal","line_amount_tax","line_total_amount"']
 
         rfq_name = self.name
-        rfq_issue_date = datetime.now().strftime("%Y年%m月%d日")
+        rfq_issue_date = self.date_order.strftime("%Y年%m月%d日")
         branch_manager = '支店長　' + self.x_organization_id.responsible_person.name if self.x_organization_id.responsible_person else ''
         due_date = self.validity_date.strftime("%Y年%m月%d日") if self.validity_date else ''
         partner_name = self.x_partner_name + '殿'
@@ -92,21 +92,3 @@ class SaleOrder(models.Model):
         data_send = "\n".join(data_file)
 
         return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R007')
-
-        # b = data_send.encode('shift-jis')
-        # vals = {
-        #     'name': '見積書' '.csv',
-        #     'datas': base64.b64encode(b).decode('shift-jis'),
-        #     'type': 'binary',
-        #     'res_model': 'ir.ui.view',
-        #     'x_no_need_save': True,
-        #     'res_id': False,
-        # }
-        #
-        # file_txt = self.env['ir.attachment'].create(vals)
-        #
-        # return {
-        #     'type': 'ir.actions.act_url',
-        #     'url': '/web/content/' + str(file_txt.id) + '?download=true',
-        #     'target': 'new',
-        # }
