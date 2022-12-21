@@ -88,6 +88,10 @@ class StockPicking(models.Model):
                 'location_id': False,
                 'location_dest_id': False,
             })
+            for move in self.move_ids_without_package:
+                move.update({
+                    'x_organization_id': self.x_organization_id
+                })
             return {'domain': {'picking_type_id': ['|', ('warehouse_id', '=', False),
                                                    ('warehouse_id', '=', self.x_organization_id.warehouse_id.id)],
                                }}
@@ -111,22 +115,24 @@ class StockPicking(models.Model):
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}
                     }
 
+    def write(self, vals):
+        res = super(StockPicking, self).write(vals)
+        for picking in self:
+            if picking.state != 'draft':
+                # for some reason moves added after state = 'done' won't save group_id, reference if added in
+                # "stock_move.default_get()"
+                picking.move_ids_without_package.write({
+                    'x_organization_id': picking.x_organization_id.id,
+                    'x_responsible_dept_id': picking.x_responsible_dept_id.id,
+                    'x_responsible_user_id': picking.user_id.id
+                })
+        return res
+
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
     x_inventory_order_line_id = fields.Many2one(comodel_name='ss_erp.inventory.order.line', )
-
-    # def write(self, vals):
-    #     res = super(StockMove, self).write(vals)
-    #     if self.picking_id and not self.x_organization_id and not vals.get('x_organization_id'):
-    #         self.write({
-    #             'x_organization_id': self.picking_id.x_organization_id.id,
-    #             'x_responsible_dept_id': self.picking_id.x_responsible_dept_id.id,
-    #             'x_responsible_user_id': self.picking_id.user_id.id,
-    #         }
-    #         )
-    #     return res
 
 
 class StockMoveLine(models.Model):
