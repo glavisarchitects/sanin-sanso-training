@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="pay_vendor_notice_form" model="ir.ui.view">
+            <field name="name">pay.vendor.notice.form</field>
+            <field name="model">pay.vendor.notice</field>
+            <field name="arch" type="xml">
+                <form string="支払通知書">
+                    <sheet>
+                        <group>
+                            <field name="partner_type" widget="radio" options="{'horizontal': true}"/>
+                            <field name="vendor_ids" widget="many2many_tags"
+                                   attrs="{'invisible': [('partner_type', '=', 'all')]}"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string="支払通知書" class="btn-primary" name="pay_vendor_notice_svf_export"
+                                type="object"/>
+                        <button string="取消" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="pay_vendor_notice_action" model="ir.actions.act_window">
+            <field name="name">支払通知書</field>
+            <field name="res_model">pay.vendor.notice</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pay_vendor_notice_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+
+    <menuitem
+            id="pay_vendor_notice_menu"
+            name="支払通知書"
+            action="pay_vendor_notice_action"
+            parent="account.menu_finance_payables"
+            sequence="22"/>
+
+</odoo>

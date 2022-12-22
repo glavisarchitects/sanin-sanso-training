@@ -87,12 +87,15 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
         return {}
 
     def _prepare_invoice_values(self, order, name, amount, order_line):
+        head_office_organization = self.env['ss_erp.organization'].search([('organization_code', '=', '00000')],
+                                                                          limit=1)
         invoice_vals = {
             'ref': order.partner_ref or False,
             'move_type': 'in_invoice',
             'invoice_origin': order.name,
-            'x_organization_id': order.x_organization_id.id,
+            'x_organization_id': head_office_organization.id, #TODO: 確認必要
             'x_responsible_dept_id': order.x_responsible_dept_id.id,
+            'x_business_organization_id': order.x_organization_id.id,
             'x_construction_order_id': order.x_construction_order_id.id,
             'invoice_user_id': order.user_id.id,
             'partner_id': order.partner_id.id,

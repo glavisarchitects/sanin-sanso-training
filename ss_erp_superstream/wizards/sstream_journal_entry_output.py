@@ -121,9 +121,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , journal_amount :: BIGINT								
                 , tax_excluded_amount :: BIGINT							
                 , tax_amount :: BIGINT								
-                , case when deb_cre_division = '1' then '000'								
-                else COALESCE(tax_id, 0)								
-                end as tax_id								
+                , tax_id								
                 , tax_entry_division								
                 , summery1
                 ,'' summery2	
@@ -142,7 +140,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , '' as spare_character_item8								
                 , '' as reserved_numeric_item1								
                 , '' as reserved_numeric_item2								
-                , '' as reserved_numeric_item3						
+                , '' as reserved_numeric_item3
+                , move_id
+                , pattern						
                 from 								
                 (								
                     /* 消費税のある入庫請求仮とその消費税を取得する（借方-税計算なし） */								
@@ -163,7 +163,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , aa.code as account_code								
                         , COALESCE(seas.code, '') as sub_account_code								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -198,10 +198,12 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         END
                         as summery1
                         ,ojl.materials_grouping
-                    from								
-                        account_move am /* 仕訳 */								
-                        inner join								
-                        account_move_line aml /* 仕訳項目 */								
+                        , am.id as move_id
+                        , 1 as pattern
+                    from				
+                        account_move_line aml /* 仕訳項目 */
+                        left join								                        					
+                        account_move am /* 仕訳 */								                        							
                         on am.id = aml.move_id								
                         inner join								
                         account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -236,7 +238,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))	
                     and aml.debit <> 0  /* 借方を取得 */								
                     and aml.parent_state = 'posted'  /* 記帳済み */								
-                    and aml.product_id is not Null								
+                    and aml.product_id is not Null							
+                    and ojl.debit_tax_calculation = True	
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and am.date BETWEEN '{start_period}' and '{end_period}'														
                                             
@@ -260,7 +263,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , cre_ojl.code as account_code								
                     , COALESCE(sub_cre_ojl.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code															
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -282,7 +285,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount							
                     
                     , 0 as tax_amount								
-                    , '000' as tax_id								
+                    , 0 as tax_id								
                     , '0' as tax_entry_division								
                     , pt.name as product
                     , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -291,11 +294,13 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1
-                    ,ojl.materials_grouping	
+                    ,ojl.materials_grouping
+                    , am.id as move_id
+                    , 1 as pattern                    
                 from								
-                    account_move am /* 仕訳 */								
-                    inner join								
-                    account_move_line aml /* 仕訳項目 */								
+                    account_move_line aml /* 仕訳項目 */
+                    left join								                        					
+                    account_move am /* 仕訳 */									
                     on am.id = aml.move_id								
                     inner join								
                     account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -335,7 +340,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))								
                 and aml.debit <> 0  /* 借方を取得 */								
                 and aml.parent_state = 'posted'  /* 記帳済み */
-                and aml.product_id is not Null							
+                and aml.product_id is not Null
+                and ojl.debit_tax_calculation = True							
                 and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                 and am.date BETWEEN '{start_period}' and '{end_period}'	
                 
@@ -357,7 +363,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , de_ojl.code as account_code								
                         , COALESCE(sub_de_ojl.code, '') as sub_account_code								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                            when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                            when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                             else ojl.debit_accounting_department_code								
                             end as depar_orga_code								
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -377,7 +383,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                         ELSE sum(aml.price_total) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount								
                         , 0 as tax_amount								
-                        , '000' as tax_id								
+                        , 0 as tax_id								
                         , '0' as tax_entry_division									
                         , pt.name as product
                         , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -387,11 +393,12 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         END
                         as summery1	
                         ,ojl.materials_grouping		
-                        
+                        , am.id as move_id
+                        , 2 as pattern   
                     from								
-                        account_move am /* 仕訳 */								
-                        inner join								
-                        account_move_line aml /* 仕訳項目 */								
+                        account_move_line aml /* 仕訳項目 */
+                        left join								                        					
+                        account_move am /* 仕訳 */									
                         on am.id = aml.move_id								
                         inner join								
                         account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -431,7 +438,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))										
                     and aml.credit <> 0  /* 借方を取得 */								
                     and aml.parent_state = 'posted'  /* 記帳済み */
-                    and aml.product_id is not Null							
+                    and aml.product_id is not Null		
+                    and ojl.credit_tax_calculation = True					
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and am.date BETWEEN '{start_period}' and '{end_period}'														
                                             
@@ -454,7 +462,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , aa.code as account_code								
                     , COALESCE(seas.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code									
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -485,11 +493,13 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                     END
                     as summery1
-                    ,ojl.materials_grouping					
+                    ,ojl.materials_grouping		
+                    , am.id as move_id
+                    , 2 as pattern                       			
                 from								
-                    account_move am /* 仕訳 */								
-                    inner join								
-                    account_move_line aml /* 仕訳項目 */								
+                    account_move_line aml /* 仕訳項目 */
+                    left join								                        					
+                    account_move am /* 仕訳 */									
                     on am.id = aml.move_id								
                     inner join								
                     account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
@@ -526,26 +536,468 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 and aml.parent_state = 'posted'  /* 記帳済み */	
                 and aml.product_id is not Null							
                 and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
-                and am.date BETWEEN '{start_period}' and '{end_period}'																
-                
+                and am.date BETWEEN '{start_period}' and '{end_period}'		
+                and ojl.credit_tax_calculation = True																		                
                 --end pattern2
 
       
                 ) result								
                 order by
-                    move_line_id asc							
+                    move_line_id asc	
+                    , line_number asc  								                    						
                     , product asc								
                     , organization_code asc								
                     , department_code asc								
                     , tax_id asc  								
                     , deb_cre_division asc								
-                    , line_number asc  								
             )pattern123								
 
         """
         self._cr.execute(_select_data)
         data_pattern12 = self._cr.dictfetchall()
         return data_pattern12
+
+    def query_pattern4_sanhot(self, param):
+
+        start_period = datetime.combine(self.first_day_period, datetime.min.time())
+        end_period = datetime.combine(self.last_day_period, datetime.max.time())
+
+        _select_data = f""" 
+            WITH odoo_journal_linkage AS (
+                SELECT * FROM ss_erp_superstream_linkage_journal where journal_creation = 'sanhot_point'								
+            ),
+
+            all_move_account AS (
+                select
+                    tb1.id as move_id
+                    , string_agg(tb1.debit_account,', ') as debit_account
+                    , string_agg(tb1.debit_sub_account,', ') as debit_sub_account
+                    , string_agg(tb1.credit_account,', ') as credit_account
+                    , string_agg(tb1.credit_sub_account,', ') as credit_sub_account
+                    From
+                    (select
+                        am.id
+                        , case when aml.debit>0 then aml.account_id::VARCHAR else Null end as debit_account
+                        , case when aml.debit>0 then aml.x_sub_account_id::VARCHAR else Null end as debit_sub_account
+                        , case when aml.credit>0 then aml.account_id::VARCHAR else Null end as credit_account
+                        , case when aml.credit>0 then aml.x_sub_account_id::VARCHAR else Null end as credit_sub_account
+                    from account_move_line aml
+                    left join account_move am
+                    on aml.move_id = am.id
+                    Where
+                    aml.is_super_stream_linked = False
+                    ) tb1
+
+                    group by tb1.id								
+            )
+            select									
+                *						
+            from(	
+                select	
+                move_line_id
+                ,product_id
+                ,materials_grouping								
+                ,record_division								
+                , company_code								
+                , slip_group
+                , '' as slip_number
+                , slip_date								
+                , line_number								
+                , deb_cre_division								
+                , account_code								
+                , sub_account_code								
+                , depar_orga_code	
+                , '' as function_code1								
+                , '' as function_code2								
+                , '' as function_code3								
+                , '' as function_code4								
+                , '' as project_code1	
+                , partner_employee_division								
+                , partner_employee_code								
+                , journal_amount :: BIGINT								
+                , tax_excluded_amount :: BIGINT							
+                , tax_amount :: BIGINT								
+                , tax_id								
+                , tax_entry_division								
+                , summery1
+                ,'' summery2	
+                , '' as partner_ref_code								
+                , '' as transaction_currency_code								
+                , '' as rate_type								
+                , '0' as exchange_rate								
+                , 0 as transaction_currency_amount								
+                , '' as spare_character_item1								
+                , '' as spare_character_item2								
+                , '' as spare_character_item3								
+                , '' as spare_character_item4								
+                , '' as spare_character_item5								
+                , '' as spare_character_item6								
+                , '' as spare_character_item7								
+                , '' as spare_character_item8								
+                , '' as reserved_numeric_item1								
+                , '' as reserved_numeric_item2								
+                , '' as reserved_numeric_item3	
+                , move_id
+                , pattern	                					
+                from 								
+                (		
+                    /* Use Debit to generate both debit & credit */							
+                    select
+                         aml.id as move_line_id 
+                         ,pt.id as product_id  
+                        ,'3' as record_division								
+                        , '{param['sstream_company_code']}' as company_code								
+                        , '{param['sstream_slip_group']}' as slip_group	
+                       ,CASE WHEN ojl.slip_date_edit = 'first_day' THEN
+                        to_char(date_trunc('month', am.date) + '-1 month', 'YYYY/MM/DD')
+                        ELSE
+                        to_char(date_trunc('month', am.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
+                        END  as slip_date										
+                        , '1' as line_number 								
+                        , '0' as deb_cre_division								
+                        , cre_ojl.code as account_code								
+                        , '' as sub_account_code								
+                        ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
+                        else ojl.debit_accounting_department_code								
+                        end as depar_orga_code									
+                        ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
+                        when ojl.debit_account_employee_category = 'customer' then '1'				
+                        when ojl.debit_account_employee_category = 'vendor' then '2'				
+                        else '3'							
+                        end as partner_employee_division								
+                        , case when ojl.debit_account_employee_category != 'no_used' then rpad(right(seo.organization_code, 3), 13, '0')
+                        ElSE '' END as partner_employee_code									
+                        , seo.organization_code as organization_code								
+                        , serd.code as department_code								
+                        , sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code):: BIGINT as journal_amount		
+                        , sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount							
+                        , 0 as tax_amount
+                        , 0 as tax_id								
+                        , '0' as tax_entry_division							
+                        , pt.name as product	
+                        , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
+                        when ojl.debit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        ELSE ojl.debit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
+                        END
+                        as summery1	
+                        ,ojl.materials_grouping
+                        , am.id as move_id
+                        , 4 as pattern                         									
+                    from	
+                        account_move_line aml /* 仕訳項目 */
+                        left join account_move am /* 仕訳 */								                        								
+                        on am.id = aml.move_id								
+                        left join								
+                        account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
+                        on aml.id = aml_atr.account_move_line_id								
+                        left join 								
+                        ss_erp_organization seo  /* 組織 */								
+                        on am.x_organization_id = seo.id								
+                        left join								
+                        ss_erp_responsible_department serd /* 管轄部門 */								
+                        on am.x_responsible_dept_id = serd.id								
+                        left join								
+                        account_account aa /* 勘定科目 */								
+                        on aml.account_id = aa.id								
+                        left join								
+                        ss_erp_account_subaccount seas /* 補助科目 */								
+                        on aml.x_sub_account_id = seas.id								
+                        left join								
+                        product_template pt  /* プロダクトテンプレート */								
+                        on aml.product_id = pt.id	
+
+                        left join all_move_account amc 
+                        on amc.move_id = am.id
+
+                        left join odoo_journal_linkage ojl 
+                        on ojl.debit_account = any(string_to_array(amc.debit_account, ',')::int[])	
+                        and ojl.credit_account = any(string_to_array(amc.debit_account, ',')::int[])						
+                        left join account_account cre_ojl 
+                        on ojl.debit_account = cre_ojl.id			                        								
+                    where								
+                    aml.account_id = ojl.debit_account								
+                    and (pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))								
+                    and aml.debit <> 0  /* 借方を取得 */		
+                    and aml_atr.account_tax_id is Null						
+                    and aml.parent_state = 'posted'  /* 記帳済み */
+                    and aml.is_super_stream_linked = False  /* SuperStream未連携 */															
+                    and am.date BETWEEN '{start_period}' and '{end_period}'	                    	
+
+                UNION ALL
+                    select
+                         aml.id as move_line_id 
+                         ,pt.id as product_id  
+                        ,'3' as record_division								
+                        , '{param['sstream_company_code']}' as company_code								
+                        , '{param['sstream_slip_group']}' as slip_group	
+                       ,CASE WHEN ojl.slip_date_edit = 'first_day' THEN
+                        to_char(date_trunc('month', am.date) + '-1 month', 'YYYY/MM/DD')
+                        ELSE
+                        to_char(date_trunc('month', am.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
+                        END  as slip_date										
+                        , '2' as line_number 								
+                        , '1' as deb_cre_division								
+                        , cre_ojl.code as account_code								
+                        , ''								
+                        ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
+                        else ojl.debit_accounting_department_code								
+                        end as depar_orga_code									
+                        ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
+                        when ojl.debit_account_employee_category = 'customer' then '1'				
+                        when ojl.debit_account_employee_category = 'vendor' then '2'				
+                        else '3'							
+                        end as partner_employee_division								
+                        , case when ojl.debit_account_employee_category != 'no_used' then rpad(right(seo.organization_code, 3), 13, '0')
+                        ElSE '' END as partner_employee_code									
+                        , seo.organization_code as organization_code								
+                        , serd.code as department_code								
+                        , sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) :: BIGINT as journal_amount		
+                        , sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount							
+                        , 0 as tax_amount
+                        , 0 as tax_id								
+                        , '0' as tax_entry_division							
+                        , pt.name as product	
+                        , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
+                        END
+                        as summery1	
+                        ,ojl.materials_grouping	
+                        , am.id as move_id
+                        , 4 as pattern                         								
+                    from								
+                        account_move_line aml /* 仕訳項目 */
+                        left join account_move am /* 仕訳 */								
+                        on am.id = aml.move_id								
+                        left join								
+                        account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
+                        on aml.id = aml_atr.account_move_line_id								
+                        left join 								
+                        ss_erp_organization seo  /* 組織 */								
+                        on am.x_organization_id = seo.id								
+                        left join								
+                        ss_erp_responsible_department serd /* 管轄部門 */								
+                        on am.x_responsible_dept_id = serd.id								
+                        left join								
+                        account_account aa /* 勘定科目 */								
+                        on aml.account_id = aa.id								
+                        left join								
+                        ss_erp_account_subaccount seas /* 補助科目 */								
+                        on aml.x_sub_account_id = seas.id								
+                        left join								
+                        product_template pt  /* プロダクトテンプレート */								
+                        on aml.product_id = pt.id	
+
+                        left join all_move_account amc 
+                        on amc.move_id = am.id
+
+                        left join odoo_journal_linkage ojl 
+                        on ojl.debit_account = any(string_to_array(amc.debit_account, ',')::int[])	
+                        and ojl.credit_account = any(string_to_array(amc.debit_account, ',')::int[])						
+                        left join account_account cre_ojl 
+                        on ojl.credit_account = cre_ojl.id			                        								
+                    where								
+                    aml.account_id = ojl.debit_account								
+                    and (pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))								
+                    and aml.debit <> 0  /* 借方を取得 */		
+                    and aml_atr.account_tax_id is Null						
+                    and aml.parent_state = 'posted'  /* 記帳済み */								
+                    and aml.is_super_stream_linked = False  /* SuperStream未連携 */				                                    				
+                    and am.date BETWEEN '{start_period}' and '{end_period}'						
+                    
+                    union all
+                    /* Use Credit to generate both debit & credit */						
+                    select
+                         aml.id as move_line_id 
+                         ,pt.id as product_id  
+                        ,'3' as record_division								
+                        , '{param['sstream_company_code']}' as company_code								
+                        , '{param['sstream_slip_group']}' as slip_group	
+                       ,CASE WHEN ojl.slip_date_edit = 'first_day' THEN
+                        to_char(date_trunc('month', am.date) + '-1 month', 'YYYY/MM/DD')
+                        ELSE
+                        to_char(date_trunc('month', am.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
+                        END  as slip_date										
+                        , '1' as line_number 								
+                        , '0' as deb_cre_division								
+                        , cre_ojl.code as account_code								
+                        , ''								
+                        ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
+                        else ojl.debit_accounting_department_code								
+                        end as depar_orga_code									
+                        ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
+                        when ojl.debit_account_employee_category = 'customer' then '1'				
+                        when ojl.debit_account_employee_category = 'vendor' then '2'				
+                        else '3'							
+                        end as partner_employee_division								
+                        , case when ojl.debit_account_employee_category != 'no_used' then rpad(right(seo.organization_code, 3), 13, '0')
+                        ElSE '' END as partner_employee_code									
+                        , seo.organization_code as organization_code								
+                        , serd.code as department_code								
+                        , sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) :: BIGINT as journal_amount		
+                        , sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount							
+                        , 0 as tax_amount
+                        , 0 as tax_id								
+                        , '0' as tax_entry_division							
+                        , pt.name as product	
+                        , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
+                        when ojl.debit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        ELSE ojl.debit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
+                        END
+                        as summery1	
+                        ,ojl.materials_grouping
+                        , am.id as move_id
+                        , 4 as pattern                         									
+                    from	
+                        account_move_line aml /* 仕訳項目 */
+                        left join account_move am /* 仕訳 */								                        								
+                        on am.id = aml.move_id								
+                        left join								
+                        account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
+                        on aml.id = aml_atr.account_move_line_id								
+                        left join 								
+                        ss_erp_organization seo  /* 組織 */								
+                        on am.x_organization_id = seo.id								
+                        left join								
+                        ss_erp_responsible_department serd /* 管轄部門 */								
+                        on am.x_responsible_dept_id = serd.id								
+                        left join								
+                        account_account aa /* 勘定科目 */								
+                        on aml.account_id = aa.id								
+                        left join								
+                        ss_erp_account_subaccount seas /* 補助科目 */								
+                        on aml.x_sub_account_id = seas.id								
+                        left join 
+                        product_product pp 
+                        on aml.product_id = pp.id							
+                        left join								
+                        product_template pt                        							
+                        on  pp.product_tmpl_id = pt.id	
+
+                        left join all_move_account amc 
+                        on amc.move_id = am.id
+
+                        left join odoo_journal_linkage ojl 
+                        on ojl.debit_account = any(string_to_array(amc.credit_account, ',')::int[])	
+                        and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])						
+                        left join account_account cre_ojl 
+                        on ojl.debit_account = cre_ojl.id			                        								
+                    where								
+                    aml.account_id = ojl.credit_account								
+                    and (pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))								
+                    and aml.credit <> 0  /* 借方を取得 */		
+                    and aml_atr.account_tax_id is Null						
+                    and aml.parent_state = 'posted'  /* 記帳済み */
+                    and aml.is_super_stream_linked = False  /* SuperStream未連携 */															
+                    and am.date BETWEEN '{start_period}' and '{end_period}'	                    	
+
+                UNION ALL
+                    select
+                         aml.id as move_line_id 
+                         ,pt.id as product_id  
+                        ,'3' as record_division								
+                        , '{param['sstream_company_code']}' as company_code								
+                        , '{param['sstream_slip_group']}' as slip_group	
+                       ,CASE WHEN ojl.slip_date_edit = 'first_day' THEN
+                        to_char(date_trunc('month', am.date) + '-1 month', 'YYYY/MM/DD')
+                        ELSE
+                        to_char(date_trunc('month', am.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
+                        END  as slip_date										
+                        , '2' as line_number 								
+                        , '1' as deb_cre_division								
+                        , cre_ojl.code as account_code								
+                        , ''								
+                        ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
+                        else ojl.debit_accounting_department_code								
+                        end as depar_orga_code									
+                        ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
+                        when ojl.debit_account_employee_category = 'customer' then '1'				
+                        when ojl.debit_account_employee_category = 'vendor' then '2'				
+                        else '3'							
+                        end as partner_employee_division								
+                        , case when ojl.debit_account_employee_category != 'no_used' then rpad(right(seo.organization_code, 3), 13, '0')
+                        ElSE '' END as partner_employee_code									
+                        , seo.organization_code as organization_code								
+                        , serd.code as department_code								
+                        , sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) :: BIGINT as journal_amount		
+                        , sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount							
+                        , 0 as tax_amount
+                        , 0 as tax_id								
+                        , '0' as tax_entry_division							
+                        , pt.name as product	
+                        , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分/' || seo.name 
+                        ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
+                        END
+                        as summery1	
+                        ,ojl.materials_grouping	
+                        , am.id as move_id
+                        , 4 as pattern                         								
+                    from								
+                        account_move_line aml /* 仕訳項目 */
+                        left join account_move am /* 仕訳 */								
+                        on am.id = aml.move_id								
+                        left join								
+                        account_move_line_account_tax_rel aml_atr /* account_move_line_account_tax_rel */								
+                        on aml.id = aml_atr.account_move_line_id								
+                        left join 								
+                        ss_erp_organization seo  /* 組織 */								
+                        on am.x_organization_id = seo.id								
+                        left join								
+                        ss_erp_responsible_department serd /* 管轄部門 */								
+                        on am.x_responsible_dept_id = serd.id								
+                        left join								
+                        account_account aa /* 勘定科目 */								
+                        on aml.account_id = aa.id								
+                        left join								
+                        ss_erp_account_subaccount seas /* 補助科目 */								
+                        on aml.x_sub_account_id = seas.id								
+                        left join 
+                        product_product pp 
+                        on aml.product_id = pp.id							
+                        left join								
+                        product_template pt                        							
+                        on  pp.product_tmpl_id = pt.id	
+
+                        left join all_move_account amc 
+                        on amc.move_id = am.id
+
+                        left join odoo_journal_linkage ojl 
+                        on ojl.debit_account = any(string_to_array(amc.credit_account, ',')::int[])	
+                        and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])						
+                        left join account_account cre_ojl 
+                        on ojl.credit_account = cre_ojl.id			                        								
+                    where								
+                    aml.account_id = ojl.credit_account								
+                    and (pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))								
+                    and aml.credit <> 0  /* 借方を取得 */		
+                    and aml_atr.account_tax_id is Null							
+                    and aml.parent_state = 'posted'  /* 記帳済み */								
+                    and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
+                    and am.date BETWEEN '{start_period}' and '{end_period}'	                                    																			
+                ) result								
+                order by	
+                    move_line_id asc	
+                    , line_number asc  								                    					
+                    , product asc								
+                    , organization_code asc								
+                    , department_code asc								
+                    , tax_id asc  								
+                    , deb_cre_division asc								
+            )patter4								
+
+        """
+        self._cr.execute(_select_data)
+        data_pattern4_sanhot = self._cr.dictfetchall()
+        return data_pattern4_sanhot
 
     def query_pattern3_debit(self, param):
 
@@ -626,7 +1078,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , '' as spare_character_item8								
                 , '' as reserved_numeric_item1								
                 , '' as reserved_numeric_item2								
-                , '' as reserved_numeric_item3						
+                , '' as reserved_numeric_item3	
+                , move_id
+                , pattern	                					
                 from 								
                 (								
                 --START PATTERN3 NO DEBIT - NO CREDIT
@@ -647,7 +1101,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , aa.code as account_code								
                         , COALESCE(seas.code, '') as sub_account_code								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -667,7 +1121,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                         ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount							
                         , 0 as tax_amount
-                        , '000' as tax_id								
+                        , 0 as tax_id								
                         , '0' as tax_entry_division							
                         , pt.name as product	
                         , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -676,7 +1130,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ELSE ojl.debit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1	
-                        ,ojl.materials_grouping									
+                        ,ojl.materials_grouping
+                        , am.id as move_id
+                        , 3 as pattern                         									
                     from	
                         account_move_line aml /* 仕訳項目 */
                         left join account_move am /* 仕訳 */								                        								
@@ -718,7 +1174,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and aml_atr.account_tax_id is Null						
                     and aml.parent_state = 'posted'  /* 記帳済み */
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
-                    and am.date BETWEEN '{start_period}' and '{end_period}'		
+                    and ojl.debit_tax_calculation = False								
+                    and ojl.credit_tax_calculation = False								
+                    and am.date BETWEEN '{start_period}' and '{end_period}'	                    	
 
                 UNION ALL
                     select
@@ -737,7 +1195,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , cre_ojl.code as account_code								
                         , COALESCE(sub_cre_ojl.code, '') as sub_account_code								
                         ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.debit_accounting_department_code || right(seo.organization_code, 3)				
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code									
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -757,7 +1215,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                         ELSE sum(aml.debit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount							
                         , 0 as tax_amount
-                        , '000' as tax_id								
+                        , 0 as tax_id								
                         , '0' as tax_entry_division							
                         , pt.name as product	
                         , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -766,7 +1224,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1	
-                        ,ojl.materials_grouping									
+                        ,ojl.materials_grouping	
+                        , am.id as move_id
+                        , 3 as pattern                         								
                     from								
                         account_move_line aml /* 仕訳項目 */
                         left join account_move am /* 仕訳 */								
@@ -805,20 +1265,22 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     and (pt.categ_id is Null or pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[]) )  
                     and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))								
                     and aml.debit <> 0  /* 借方を取得 */		
-                    and aml_atr.account_tax_id is Null						
+                    and aml_atr.account_tax_id is Null			
+                    and ojl.debit_tax_calculation = False								
+                    and ojl.credit_tax_calculation = False					
                     and aml.parent_state = 'posted'  /* 記帳済み */								
                     and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                     and am.date BETWEEN '{start_period}' and '{end_period}'																									
                 --end pattern3											
                 ) result								
                 order by	
-                    move_line_id asc						
+                    move_line_id asc	
+                    , line_number asc  								                    					
                     , product asc								
                     , organization_code asc								
                     , department_code asc								
                     , tax_id asc  								
                     , deb_cre_division asc								
-                    , line_number asc  								
             )pattern123								
 
         """
@@ -905,7 +1367,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 , '' as spare_character_item8								
                 , '' as reserved_numeric_item1								
                 , '' as reserved_numeric_item2								
-                , '' as reserved_numeric_item3						
+                , '' as reserved_numeric_item3		
+                , move_id
+                , pattern	                				
                 from 								
                 (								
                 --START PATTERN3 NO DEBIT - NO CREDIT  
@@ -926,7 +1390,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , aa.code as account_code								
                     , COALESCE(seas.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code									
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -946,7 +1410,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                     ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount								
                     , 0 as tax_amount								
-                    , '000' as tax_id								
+                    , 0 as tax_id								
                     , '0' as tax_entry_division								
                     , pt.name as product
                     , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -955,7 +1419,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE ojl.debit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                     END
                     as summery1	
-                    ,ojl.materials_grouping								
+                    ,ojl.materials_grouping
+                    , am.id as move_id
+                    , 3 as pattern                     							
                 from								
                     account_move_line aml /* 仕訳項目 */
                     left join account_move am /* 仕訳 */								
@@ -968,10 +1434,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     on am.x_organization_id = seo.id								
                     left join								
                     ss_erp_responsible_department serd /* 管轄部門 */								
-                    on am.x_responsible_dept_id = serd.id								
-                    left join								
-                    account_account aa /* 勘定科目 */								
-                    on aml.account_id = aa.id								
+                    on am.x_responsible_dept_id = serd.id													
                     left join								
                     ss_erp_account_subaccount seas /* 補助科目 */								
                     on aml.x_sub_account_id = seas.id								
@@ -984,13 +1447,19 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
                     left join odoo_journal_linkage ojl 
                     on ojl.debit_account = any(string_to_array(amc.debit_account, ',')::int[])	
-                    and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])						
+                    and ojl.credit_account = any(string_to_array(amc.credit_account, ',')::int[])	
+                    
+                    left join								
+                    account_account aa /* 勘定科目 */								
+                    on ojl.debit_account = aa.id							
                 where								
                 aml.account_id = ojl.credit_account								
                 and (pt.categ_id is Null or pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[]) )  
                 and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))									
                 and aml.credit <> 0  /* 借方を取得 */
-                and aml_atr.account_tax_id is Null								
+                and aml_atr.account_tax_id is Null
+                and ojl.debit_tax_calculation = False								
+                and ojl.credit_tax_calculation = False										
                 and aml.parent_state = 'posted'  /* 記帳済み */								
                 and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                 and am.date BETWEEN '{start_period}' and '{end_period}'
@@ -1014,7 +1483,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , aa.code as account_code								
                     , COALESCE(seas.code, '') as sub_account_code								
                     ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code									
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -1034,7 +1503,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code, aml.product_id)
                     ELSE sum(aml.credit) OVER (PARTITION BY am.date,aml_atr.account_tax_id,aa.code,seas.code,aml.product_id,seo.organization_code, serd.code) END) :: BIGINT as tax_excluded_amount								
                     , 0 as tax_amount								
-                    , '000' as tax_id								
+                    , 0 as tax_id								
                     , '0' as tax_entry_division								
                     , pt.name as product
                     , case when ojl.credit_application_edit_indicator = 'month' then ojl.credit_application || ' ' || to_char(am.date, 'MM') || '月分'
@@ -1043,7 +1512,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE ojl.credit_application || ' ' || to_char(am.date, 'MM') || pt.name || '月分/' || seo.name
                     END
                     as summery1	
-                    ,ojl.materials_grouping								
+                    ,ojl.materials_grouping	
+                    , am.id as move_id
+                    , 3 as pattern                      							
                 from								
                     account_move_line aml /* 仕訳項目 */
                     left join account_move am /* 仕訳 */								
@@ -1078,20 +1549,22 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 and (pt.categ_id is Null or pt.categ_id = any(string_to_array(ojl.categ_product_id_char, ',')::int[]) )  
                 and (pt.id is Null or pt.id = any(string_to_array(ojl.sanhot_product_id_char, ',')::int[]))									
                 and aml.credit <> 0  /* 借方を取得 */
-                and aml_atr.account_tax_id is Null								
+                and aml_atr.account_tax_id is Null			
+                and ojl.debit_tax_calculation = False								
+                and ojl.credit_tax_calculation = False			                					
                 and aml.parent_state = 'posted'  /* 記帳済み */								
                 and aml.is_super_stream_linked = False  /* SuperStream未連携 */								
                 and am.date BETWEEN '{start_period}' and '{end_period}'													
                 --end pattern3											
                 ) result								
                 order by
-                    move_line_id asc	
+                    move_line_id asc
+                    , line_number asc  								                    	
                     , deb_cre_division asc								
                     ,product asc								
                     , organization_code asc								
                     , department_code asc								
                     , tax_id asc  								
-                    , line_number asc  								
             )pattern123								
 
         """
@@ -1162,7 +1635,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , '' as spare_character_item8								
                     , '' as reserved_numeric_item1								
                     , '' as reserved_numeric_item2								
-                    , '' as reserved_numeric_item3	
+                    , '' as reserved_numeric_item3
+                    , move_id
+                    , pattern	                    	
                 from					
                 (						
                     select								
@@ -1181,8 +1656,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , '0' as deb_cre_division	
                         , de_ojl.code as account_code								
                         , COALESCE(sub_de_ojl.code, '') as sub_account_code	
-                        ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                        when ojl.debit_department_edit_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                        ,  case when ojl.debit_department_edit_classification = 'no_edits' then serd.code || right(dest_seo.organization_code, 3)
+                        when ojl.debit_department_edit_classification = 'first_two_digits' then left(ojl.debit_accounting_department_code,2) || right(dest_seo.organization_code, 3)				
                         else ojl.debit_accounting_department_code								
                         end as depar_orga_code	
                         ,  case when ojl.debit_account_employee_category = 'no_used' then '0'
@@ -1201,11 +1676,13 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , '0' as tax_entry_division	
                         , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分'
                             when ojl.debit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
-                            when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
-                            when ojl.debit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                            when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                            when ojl.debit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || source_dep.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
                             ELSE ojl.debit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
                             END
                             as summery1
+                        , io.id as move_id
+                        , 5 || ' ' || ojl.debit_account::text || ' ' || ojl.credit_account::text as pattern                               
                     from						
                         ss_erp_inventory_order io  /* 移動伝票 */						
                         inner join						
@@ -1216,10 +1693,10 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         on io.id = sp.x_inventory_order_id						
                         left join	
                         ss_erp_responsible_department serd /* 管轄部門 */						
-                        on sp.x_responsible_dept_id = serd.id						
+                        on sp.x_responsible_dept_dest_id = serd.id						
                         left join						
                         ss_erp_organization seo /* 組織 */						
-                        on sp.x_organization_id = seo.id						
+                        on sp.x_organization_dest_id = seo.id						
                         left join						
                         product_product pp  /* プロダクト */						
                         on iol.product_id = pp.id
@@ -1235,9 +1712,14 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         on ojl.debit_sub_account = sub_de_ojl.id
                         
                         left join ss_erp_organization source_seo
-                        on ojl.credit_related_organization = source_seo.id
+                        on sp.x_organization_id = source_seo.id
                         left join ss_erp_organization dest_seo
-                        on ojl.debit_related_organization = dest_seo.id
+                        on sp.x_organization_dest_id = dest_seo.id                        
+                        
+                        left join ss_erp_responsible_department source_dep
+                        on sp.x_responsible_dept_id = source_dep.id
+                        left join ss_erp_responsible_department dest_dep
+                        on sp.x_responsible_dept_dest_id = dest_dep.id
                         
                         left join part5_categ p5ct
                         on p5ct.categ_key = ojl.product_ctg
@@ -1268,12 +1750,12 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ELSE
                     to_char(date_trunc('month', sp.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
                     END  as slip_date			
-                    , '1' as line_number 								
-                    , '0' as deb_cre_division	
+                    , '2' as line_number 								
+                    , '1' as deb_cre_division	
                     , cre_ojl.code as account_code								
                     , COALESCE(sub_cre_ojl.code, '') as sub_account_code	
-                    ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(seo.organization_code, 3)
-                    when ojl.credit_department_editing_classification = 'first_two_digits' then ojl.credit_accounting_department_code || right(seo.organization_code, 3)				
+                    ,  case when ojl.credit_department_editing_classification = 'no_edits' then serd.code || right(source_seo.organization_code, 3)
+                    when ojl.credit_department_editing_classification = 'first_two_digits' then left(ojl.credit_accounting_department_code,2) || right(source_seo.organization_code, 3)				
                     else ojl.credit_accounting_department_code								
                     end as depar_orga_code	
                     ,  case when ojl.credit_account_employee_category = 'no_used' then '0'
@@ -1292,11 +1774,13 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , '0' as tax_entry_division	
                     , case when ojl.credit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分'
                         when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
-                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
-                        when ojl.credit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || '/' || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || source_dep.name || '->' || dest_dep.name || to_char(sp.date, 'MM') || '月分'
                         ELSE ojl.credit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
                         END
-                        as summery1									
+                        as summery1	
+                    , io.id as move_id
+                    , 5 || ' ' || ojl.debit_account::text || ' ' || ojl.credit_account::text as pattern                            								
                 from						
                     ss_erp_inventory_order io  /* 移動伝票 */						
                     inner join						
@@ -1326,30 +1810,37 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     on ojl.credit_sub_account = sub_cre_ojl.id	
                     
                     left join ss_erp_organization source_seo
-                    on ojl.credit_related_organization = source_seo.id
+                    on sp.x_organization_id = source_seo.id
                     left join ss_erp_organization dest_seo
-                    on ojl.debit_related_organization = dest_seo.id
+                    on sp.x_organization_dest_id = dest_seo.id
                     
+                    left join ss_erp_responsible_department source_dep
+                    on sp.x_responsible_dept_id = source_dep.id
+                    left join ss_erp_responsible_department dest_dep
+                    on sp.x_responsible_dept_dest_id = dest_dep.id
+                
                     left join part5_categ p5ct
                     on p5ct.categ_key = ojl.product_ctg	
                     
                     left join stock_picking_type spt 
-                    on sp.picking_type_id = spt.id
-                    		
+                    on sp.picking_type_id = spt.id                    		
                 where						
                 sp.state = 'done'  /* 完了を指定 */						
                 and sp.date BETWEEN '{start_period}' and '{end_period}'							
                 and sp.x_organization_id = any(string_to_array(ojl.credit_related_org_id_char, ',')::int[])  /* 移動元組織（貸方関連組織を指定） */						
                 and sp.x_organization_dest_id = any(string_to_array(ojl.debit_related_org_id_char, ',')::int[]) /* 移動先組織（借方関連組織を指定） */	
                 and io.is_super_stream_linked = False	
+                and ojl.debit_tax_calculation = False								
+                and ojl.credit_tax_calculation = False		                
                 and p5ct.categ_id :: INT = pt.categ_id
                 and spt.code = 'outgoing'
             ) result				
                 order by
                 inventory_order_line_id
+                , pattern
+                , line_number asc	                
                 , deb_cre_division asc						
                 , department_code asc
-                , line_number asc	
                 )pattern5										
 """
         self._cr.execute(_select_data)
@@ -1383,14 +1874,15 @@ class SStreamJournalEntryOutput(models.TransientModel):
         pattern12_data = self.query_pattern12(param)
         pattern3_data_debit = self.query_pattern3_debit(param)
         pattern3_data_credit = self.query_pattern3_credit(param)
+        pattern4_data_sanhot = self.query_pattern4_sanhot(param)
         #
         pattern5_data = self.query_pattern5(param)
 
         # all_pattern_data = pattern3_data
-        all_pattern_data = pattern12_data + pattern3_data_debit + pattern5_data
+        all_pattern_data = pattern12_data + pattern3_data_debit + pattern3_data_credit + pattern4_data_sanhot+ pattern5_data
 
         if not all_pattern_data:
-            raise UserError('データがないとか、すべてエクスポートされました。もう一度確認してください。')
+            raise UserError('出力するデータが見つかりませんでした。指定した期間内に出力対象データが存在しないか、既に出力済みの可能性があります。')
 
         tax_dict = {}
         tax_convert_ids = self.env['ss_erp.code.convert'].search([]).filtered(
@@ -1400,13 +1892,16 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
         update_move_line = []
 
-        for data in pattern3_data_credit:
-            if data.get('move_line_id'):
-                update_move_line.append(data['move_line_id'])
+        # for data in pattern3_data_credit:
+        #     if data.get('move_line_id'):
+        #         update_move_line.append(data['move_line_id'])
 
         list_group = []
 
         update_inventory_order_line = []
+
+        pattern3_list = []
+
         for index, all_data in enumerate(all_pattern_data):
             if all_data.get('move_line_id'):
                 update_move_line.append(all_data['move_line_id'])
@@ -1416,19 +1911,19 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 continue
 
             if all_data['materials_grouping']:
-                if list_group == [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code'], all_data['product_id']]:
+                if (all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id'], all_data['summery1']) in list_group:
                     continue
                 else:
-                    list_group = [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code'], all_data['product_id']]
+                    list_group.append((all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id'], all_data['summery1']))
             else:
-                if list_group == [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code']]:
+                if (all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id'], all_data['summery1']) in list_group:
                     continue
                 else:
-                    list_group = [all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
-                                  all_data['sub_account_code']]
+                    list_group.append((all_data['slip_date'], all_data['depar_orga_code'], all_data['account_code'],
+                                  all_data['sub_account_code'], all_data['product_id'], all_data['summery1']))
 
             # Document data header record
             doc_header = "1" + '\r\n'
@@ -1439,40 +1934,62 @@ class SStreamJournalEntryOutput(models.TransientModel):
                 'slip_date'] + ',,0,1,,,,,0,0,,,,,,,,,,,,,' + '\r\n'
             file_data += journal_header
 
-            if all_data['tax_id'] != '000':
-                if all_data['tax_id'] == 0:
-                    all_data['tax_id'] = ''
-                else:
-                    all_data['tax_id'] = tax_dict[all_data['tax_id']] if tax_dict.get(all_data['tax_id']) else ''
-            clean_dict_data = deepcopy(all_data)
-            if 'move_line_id' in clean_dict_data.keys():
-                clean_dict_data.pop('move_line_id')
-            if 'materials_grouping' in clean_dict_data.keys():
-                clean_dict_data.pop('materials_grouping')
-            if 'product_id' in clean_dict_data.keys():
-                clean_dict_data.pop('product_id')
-            if 'inventory_order_line_id' in clean_dict_data.keys():
-                clean_dict_data.pop('inventory_order_line_id')
-            debit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
+            if all_data['pattern'] in (1, 2):
+                all_data['tax_id'] = '000' if all_data['tax_id'] == 0 else tax_dict.get(all_data['tax_id'])
+            else:
+                all_data['tax_id'] = ''
+
+            # if all_data['tax_id'] != '000':
+            #     if all_data['tax_id'] == 0:
+            #         all_data['tax_id'] = ''
+            #     else:
+            #         all_data['tax_id'] = tax_dict[all_data['tax_id']] if tax_dict.get(all_data['tax_id']) else ''
 
             cre_line = all_pattern_data[index + 1]
+            if cre_line['pattern'] in (1, 2):
+                cre_line['tax_id'] = '000' if cre_line['tax_id'] == 0 else tax_dict.get(cre_line['tax_id'])
+            else:
+                cre_line['tax_id'] = ''
 
-            if cre_line['tax_id'] != '000':
-                if cre_line['tax_id'] == 0:
-                    cre_line['tax_id'] = ''
+            #
+            # if cre_line['tax_id'] != '000':
+            #     if cre_line['tax_id'] == 0:
+            #         cre_line['tax_id'] = ''
+            #     else:
+            #         cre_line['tax_id'] = tax_dict[cre_line['tax_id']] if tax_dict.get(cre_line['tax_id']) else ''
+
+            clean_dict_data_debit = deepcopy(all_data)
+            clean_dict_data_credit = deepcopy(cre_line)
+
+            if clean_dict_data_debit['pattern'] == 3:
+                if (clean_dict_data_debit['move_id'], clean_dict_data_debit['account_code'], clean_dict_data_credit['account_code']) in pattern3_list:
+                    continue
                 else:
-                    cre_line['tax_id'] = tax_dict[cre_line['tax_id']] if tax_dict.get(cre_line['tax_id']) else ''
+                    pattern3_list.append((clean_dict_data_debit['move_id'], clean_dict_data_debit['account_code'], clean_dict_data_credit['account_code']))
+            clean_dict_data_debit.pop('move_id')
+            clean_dict_data_debit.pop('pattern')
+            clean_dict_data_credit.pop('move_id')
+            clean_dict_data_credit.pop('pattern')
 
-            clean_dict_data = deepcopy(cre_line)
-            if 'move_line_id' in clean_dict_data.keys():
-                clean_dict_data.pop('move_line_id')
-            if 'materials_grouping' in clean_dict_data.keys():
-                clean_dict_data.pop('materials_grouping')
-            if 'product_id' in clean_dict_data.keys():
-                clean_dict_data.pop('product_id')
-            if 'inventory_order_line_id' in clean_dict_data.keys():
-                clean_dict_data.pop('inventory_order_line_id')
-            credit_line = ','.join(map(str, clean_dict_data.values())) + '\r\n'
+            if 'move_line_id' in clean_dict_data_debit.keys():
+                clean_dict_data_debit.pop('move_line_id')
+            if 'materials_grouping' in clean_dict_data_debit.keys():
+                clean_dict_data_debit.pop('materials_grouping')
+            if 'product_id' in clean_dict_data_debit.keys():
+                clean_dict_data_debit.pop('product_id')
+            if 'inventory_order_line_id' in clean_dict_data_debit.keys():
+                clean_dict_data_debit.pop('inventory_order_line_id')
+            debit_line = ','.join(map(str, clean_dict_data_debit.values())) + '\r\n'
+
+            if 'move_line_id' in clean_dict_data_credit.keys():
+                clean_dict_data_credit.pop('move_line_id')
+            if 'materials_grouping' in clean_dict_data_credit.keys():
+                clean_dict_data_credit.pop('materials_grouping')
+            if 'product_id' in clean_dict_data_credit.keys():
+                clean_dict_data_credit.pop('product_id')
+            if 'inventory_order_line_id' in clean_dict_data_credit.keys():
+                clean_dict_data_credit.pop('inventory_order_line_id')
+            credit_line = ','.join(map(str, clean_dict_data_credit.values())) + '\r\n'
 
             file_data += debit_line
             file_data += credit_line

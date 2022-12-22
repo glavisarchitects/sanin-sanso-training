@@ -20,6 +20,8 @@ class LPGasOrder(models.Model):
     user_organization_ids = fields.Many2many('ss_erp.organization',
                                              default=lambda self: self.env.user.organization_ids.ids)
     organization_id = fields.Many2one('ss_erp.organization', string="組織名", domain="[('warehouse_id', '!=', False)]")
+    responsible_dept_id = fields.Many2one('ss_erp.responsible.department', string='管轄部門')
+    responsible_user_id = fields.Many2one('res.users', string='担当者')
     inventory_type = fields.Selection([('cylinder', 'シリンダー'), ('minibulk', 'ミニバルク')], string='棚卸種別')
     accounting_date = fields.Date(string='会計日')
     aggregation_period = fields.Date(string='棚卸対象期間', copy=False)
@@ -50,9 +52,13 @@ class LPGasOrder(models.Model):
             location_id = line.location_id.id if line.difference_qty < 0 else branch_loss_location.id
             location_dest_id = branch_loss_location.id if line.difference_qty < 0 else line.location_id.id
 
+            inventory_type = dict(self._fields['inventory_type'].selection).get(self.inventory_type)
+
             sm_value = {
-                'name': _('INV:LP GAS ') + (str(self.inventory_type) or ''),
+                'name': _('INV:LP GAS ') + (inventory_type or '') + ' ― ' + lpgas_product_id.product_tmpl_id.name,
                 'x_organization_id': self.organization_id.id,
+                'x_responsible_dept_id': self.responsible_dept_id.id,
+                'x_responsible_user_id': self.responsible_user_id.id,
                 'product_id': lpgas_product_id.id,
                 'product_uom': lpgas_product_id.uom_id.id,
                 'product_uom_qty': abs(line.difference_qty),
@@ -93,7 +99,7 @@ class LPGasOrder(models.Model):
     def calculate_aggregate_lpgas(self):
 
         # calculate cylinder
-        lpgas_product_tmp_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id')
+        lpgas_product_tmp_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id', False)
         if lpgas_product_tmp_id == '':
             raise UserError(_("プロダクトコードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。"))
 
@@ -148,8 +154,10 @@ class LPGasOrder(models.Model):
                     SELECT sml.location_id, sum(sml.qty_done) cm_use from stock_move_line sml  -- 2-3-2 Current Month Use
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     LEFT JOIN sale_order so ON so.id = sp.sale_id
+                    LEFT JOIN product_product pp on sml.product_id = pp.id
+                    LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id
                     WHERE sml.state = 'done'
-                    And sml.product_id = '{lpgas_product_id}'
+                    And pt.id = '{lpgas_product_id}'
                     And sml.location_id IN {customer_location}
                     and (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
                                             interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_measure}' and '{end_period_measure}'
@@ -161,8 +169,10 @@ class LPGasOrder(models.Model):
                     (
                     SELECT sml.location_dest_id location_id, ('{current_month_measure_date}'::date - sml.date::date) num_day_measure FROM stock_move_line sml -- 2-3-4 Số ngày đo
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
+                    LEFT JOIN product_product pp on sml.product_id = pp.id
+                    LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id
                     WHERE sml.location_dest_id IN {customer_location}
-                    AND sml.product_id = '{lpgas_product_id}'
+                    AND pt.id = '{lpgas_product_id}'
                     AND (sml.date + interval '1 hour' * '8' + interval '1 minute' * '59' +
                                             interval '1 second' * '59') <=  '{current_month_measure_date}'
                     AND sml.state = 'done') tb order by tb.location_id, tb.num_day_measure asc
@@ -170,20 +180,24 @@ class LPGasOrder(models.Model):
                 fam as (
                 SELECT sml.location_dest_id location_id, (Case When sum(sml.qty_done) is NULL then 0 ELSE sum(sml.qty_done) END) fill_after_measure FROM stock_move_line sml  --2-4-1 Lượng bơm thêm sau khi đo
                 Left join stock_picking sp ON sp.id = sml.picking_id
+                LEFT JOIN product_product pp on sml.product_id = pp.id
+                LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id
                 where sml.state = 'done'
                 AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
                                         interval '1 second' * '{seconds_diff}') BETWEEN '{day_after_end_period_measure}' and '{end_period_datetime}'
-                And sml.product_id = '{lpgas_product_id}'
+                And pt.id = '{lpgas_product_id}'
                 And sml.location_dest_id IN {customer_location}
                 GROUP BY sml.location_dest_id
                 ), 
                 ftm as (
                 SELECT sml.location_dest_id location_id, sum(sml.qty_done) fill_this_month FROM stock_move_line sml -- 2-5-1 this_month_filling
                 Left join stock_picking sp ON sp.id = sml.picking_id
+                LEFT JOIN product_product pp on sml.product_id = pp.id
+                LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id
                 where sml.state = 'done'
                 AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
                     interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
-                And sml.product_id = '{lpgas_product_id}'
+                And pt.id = '{lpgas_product_id}'
                 And sml.location_dest_id IN {customer_location}
                 GROUP BY sml.location_dest_id),
                 lmi as 
@@ -248,10 +262,12 @@ class LPGasOrder(models.Model):
                                             interval '1 second' * '{seconds_diff}') measure_date FROM stock_move_line sml  -- 3-3-1 get measure date from SO date order
                         LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                         LEFT JOIN sale_order so ON so.id = sp.sale_id
+                        LEFT JOIN product_product pp on sml.product_id = pp.id
+                        LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id
                         WHERE sml.state = 'done'
                         AND so.state = 'sale'
                         AND sp.state = 'done' --update condition 3-3-1
-                        AND sml.product_id = '{lpgas_product_id}'
+                        AND pt.id = '{lpgas_product_id}'
                         AND sml.location_id IN {customer_location}
                         AND (so.date_order + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
                                             interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}')
@@ -273,8 +289,10 @@ class LPGasOrder(models.Model):
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     LEFT JOIN do_mea ON sml.location_id = do_mea.location_id
                     LEFT JOIN lmi ON sml.location_id = lmi.location_id
+                    LEFT JOIN product_product pp on sml.product_id = pp.id
+                    LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id
                     WHERE sml.state = 'done'
-                    AND sml.product_id = '{lpgas_product_id}'
+                    AND pt.id = '{lpgas_product_id}'
                     AND sml.location_id IN {customer_location}
                     AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
                     interval '1 second' * '{seconds_diff}') BETWEEN lmi.lm_meter_reading_date AND do_mea.measure_date
@@ -287,22 +305,28 @@ class LPGasOrder(models.Model):
                     interval '1 second' * '{seconds_diff}') date_done FROM stock_move_line sml  -- 3-3-5 a date_done transfer 
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     LEFT JOIN do_mea ON sml.location_dest_id = do_mea.location_id
+                    LEFT JOIN product_product pp on sml.product_id = pp.id
+                    LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id                    
                     WHERE sml.state = 'done'
-                    AND sml.product_id = '{lpgas_product_id}'
+                    AND pt.id = '{lpgas_product_id}'
                     AND sml.location_dest_id IN {customer_location}
                     AND sp.date_done <= do_mea.measure_date
                     ) tb2 ORDER BY tb2.location_id, tb2.date_done DESC),
                     mri_not_tran AS (
-                    SELECT location_id, quantity FROM stock_quant  -- 3-3-6 case 3-3-5-a is NULL
-                    WHERE product_id = '{lpgas_product_id}'
+                    SELECT sq.location_id, sq.quantity FROM stock_quant sq  -- 3-3-6 case 3-3-5-a is NULL
+                    LEFT JOIN product_product pp on sq.product_id = pp.id
+                    LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id
+                    WHERE pt.id = '{lpgas_product_id}'
                     AND location_id IN {customer_location}),
                     fam AS 
                     (
                     SELECT sml.location_dest_id location_id,sum(sml.qty_done) fill_after_measure FROM stock_move_line sml  --3-4-1 Extra filling amount after measuring
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
                     LEFT JOIN do_mea ON do_mea.location_id = sml.location_dest_id
+                    LEFT JOIN product_product pp on sml.product_id = pp.id
+                    LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id                        
                     WHERE sml.state = 'done'
-                    AND sml.product_id = '{lpgas_product_id}'
+                    AND pt.id = '{lpgas_product_id}'
                     AND sml.location_dest_id IN {customer_location}
                     AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
                     interval '1 second' * '{seconds_diff}') > do_mea.measure_date 
@@ -312,10 +336,12 @@ class LPGasOrder(models.Model):
                     ftm AS (
                     SELECT sml.location_dest_id location_id, sum(sml.qty_done) fill_this_month FROM stock_move_line sml -- 3-5-1 fill amount in this month
                     LEFT JOIN stock_picking sp ON sp.id = sml.picking_id
+                    LEFT JOIN product_product pp on sml.product_id = pp.id
+                    LEFT JOIN product_template pt on pp.product_tmpl_id = pt.id                      
                     WHERE sml.state = 'done'
                     AND (sml.date + interval '1 hour' * '{hours_diff}' + interval '1 minute' * '{minutes_diff}' +
                                         interval '1 second' * '{seconds_diff}') BETWEEN '{start_period_datetime}' and '{end_period_datetime}'
-                    AND sml.product_id = '{lpgas_product_id}'
+                    AND pt.id = '{lpgas_product_id}'
                     AND sml.location_dest_id IN {customer_location}
                     GROUP BY sml.location_dest_id)
                     SELECT 

@@ -108,6 +108,32 @@ class Construction(models.Model):
 
     show_confirmation_button = fields.Boolean(compute='_compute_show_confirmation_button')
 
+    # 注文請書 tab field
+    # form_type = fields.Selection([('ss_to_orderer', 'SS→発注者'), ('coo_company_to_ss', '努力会社→SS')], default='ss_to_orderer', string='帳票タイプ')
+    export_type = fields.Selection([('complete_set', '一式'), ('detail', '明細')], default='complete_set', string='出力タイプ')
+    receipt_type = fields.Selection(
+        string='入金手段',
+        selection=[
+            ('bank', '振込'),
+            ('transfer', '振替'),
+            ('bills', '手形'),
+            ('cash', '現金'),
+            ('paycheck', '小切手'),
+            ('branch_receipt', '他店入金'),
+            ('offset', '相殺'), ],
+        required=False, )
+    order_number = fields.Char(string='注文番号', compute='_compute_order_number')
+    delivery_location = fields.Char(string='受渡場所')
+    other_conditions = fields.Char(string='その他条件')
+
+    @api.depends('name', 'plan_date')
+    def _compute_order_number(self):
+        for rec in self:
+            if rec.name and rec.plan_date:
+                rec.order_number = rec.plan_date.strftime("%Y%m%d") + '-' + rec.name.replace('工事', '')
+            else:
+                rec.order_number = ''
+
     @api.depends('amount_total')
     def _compute_show_confirmation_button(self):
 
@@ -258,6 +284,7 @@ class Construction(models.Model):
         return res
 
     plan_date = fields.Date(string='予定日', copy=True)
+    date_planed_finished = fields.Date(string='終了予定日', copy=True)
     user_id = fields.Many2one(comodel_name='res.users', string='担当者', default=lambda self: self.env.user, copy=True)
     all_margin_rate = fields.Float(string='一律マージン率', copy=True)
     construction_component_ids = fields.One2many(comodel_name='ss.erp.construction.component',

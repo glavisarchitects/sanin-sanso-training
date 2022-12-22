@@ -166,6 +166,7 @@ class PurchaseOrder(models.Model):
             'x_payment_type': self.partner_id.x_payment_type,
             'x_organization_id': head_office_organization.id,
             'x_responsible_dept_id': business_department.id,
+            'x_business_organization_id': self.x_organization_id.id,
         })
         return invoice_vals
 

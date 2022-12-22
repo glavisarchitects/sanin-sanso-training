@@ -39,6 +39,7 @@ class InventoryOrder(models.Model):
     location_id = fields.Many2one('stock.location', '移動元ロケーション', tracking=True)
     user_id = fields.Many2one('res.users', '担当者', tracking=True)
     scheduled_date = fields.Datetime('予定日', copy=False, tracking=True)
+    inventory_journal_date = fields.Datetime('在庫仕訳日')
     shipping_method = fields.Selection(
         [('transport', '配車（移動元）'), ('pick_up', '配車（移動先）'), ('outsourcing', '宅配')],
         default='transport', string='配送方法', tracking=True)
@@ -166,7 +167,7 @@ class InventoryOrder(models.Model):
 
     def confirm_inventory_order(self):
         if self.inventory_order_line_ids:
-            virtual_location = self.env['stock.location'].search([('usage', '=', 'customer')], limit=1)
+            virtual_location = self.env.ref('ss_erp_stock.ss_erp_transit_location')
             if not virtual_location:
                 raise UserError(
                     _("Can't find virtual location. Please check stock.location again."))
@@ -207,6 +208,7 @@ class InventoryOrder(models.Model):
                         'x_responsible_dept_dest_id': line.responsible_dept_id.id,
                         'scheduled_date': self.scheduled_date,
                         'x_inventory_order_id': self.id,
+                        'x_inventory_journal_date': self.inventory_journal_date,
                         'move_ids_without_package': [(0, 0, move_in)]
                     }
                     source_in[key] = move_to_dest_location
@@ -226,6 +228,7 @@ class InventoryOrder(models.Model):
                         'user_id': self.user_id.id,
                         'scheduled_date': self.scheduled_date,
                         'x_inventory_order_id': self.id,
+                        'x_inventory_journal_date': self.inventory_journal_date,
                         'move_ids_without_package': [(0, 0, move_out)]
                     }
                     source_out[key] = from_source_move

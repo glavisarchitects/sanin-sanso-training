@@ -110,6 +110,7 @@
                                 <field name="responsible_dept_id" required="1"
                                        attrs="{'readonly':[('state','!=','draft')],}"/>
                                 <field name="plan_date"/>
+                                <field name="date_planed_finished"/>
                                 <field name="user_id" required="1" attrs="{'readonly':[('state','!=','draft')],}"/>
                                 <field name="all_margin_rate" widget="percentage"/>
                                 <field name="payment_term_id"/>
@@ -240,6 +241,7 @@
                                     <field name="red_notice" nolabel="1"/>
                                 </div>
                             </page>
+
                         </notebook>
                     </sheet>
                     <div class="oe_chatter" modifiers="{}">

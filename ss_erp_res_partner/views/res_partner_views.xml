@@ -101,7 +101,7 @@
                        attrs="{'required': [('x_is_vendor', '=', True)], 'invisible': [('x_is_vendor', '!=', True)]}"
 
                 />
-
+                <field name="id" string="ID" />
                 <field name="ref" string="取引先コード" attrs="{
                     'invisible': [('has_ref', '=', 'no')],
                     'required': [('has_ref', '=', 'required')]
@@ -384,7 +384,7 @@
                         <tree editable="bottom">
                             <field name="organization_id"/>
                             <field name="total_amount"/>
-                            <field name="range" nolabel="1"/>
+                            <field name="range"/>
                             <field name="payment_term"/>
                             <field name="receipt_type_branch"/>
                             <field name="collecting_money"/>

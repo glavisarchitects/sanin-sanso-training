@@ -16,6 +16,9 @@ class AccountMove(models.Model):
         'ss_erp.responsible.department', string="管轄部門", index=True,
         default=lambda self: self._get_default_x_responsible_dept_id())
 
+    # 開発設計書　R0012
+    x_business_organization_id = fields.Many2one('ss_erp.organization', string="業務担当組織")
+
     def _get_default_x_organization_id(self):
         employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', self.env.user.id)], limit=1)
         if employee_id:
@@ -93,15 +96,6 @@ class AccountMove(models.Model):
         res['context']['default_x_receipt_type'] = account_move_ids[0].x_receipt_type
         res['context']['default_x_payment_type'] = account_move_ids[0].x_payment_type
         return res
-
-
-    # def action_register_payment(self):
-    #     res = super().action_register_payment()
-    #     res['context']['default_x_organization_id'] = self.x_organization_id.id
-    #     res['context']['default_x_responsible_dept_id'] = self.x_responsible_dept_id.id
-    #     res['context']['default_x_receipt_type'] = self.x_receipt_type
-    #     res['context']['default_x_payment_type'] = self.x_payment_type
-    #     return res
 
     @api.depends('posted_before', 'state', 'journal_id', 'date')
     def _compute_name(self):

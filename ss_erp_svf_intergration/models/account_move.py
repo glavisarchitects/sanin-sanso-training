@@ -54,11 +54,9 @@ class AccountMove(models.Model):
         deposit_amount AS (
         select ap.partner_id, ap.x_organization_id, sum(ap.amount) deposit_amount from account_payment ap
             left join account_move am on am.id = ap.move_id
-            left join account_journal aj on am.journal_id = aj.id
-            where am.date BETWEEN '{first_day_current_month}' 
-            and '{last_day_current_month}' and ap.payment_type = 'inbound'
+            where am.date BETWEEN '{first_day_last_month}' 
+            and '{last_day_last_month}' and ap.payment_type = 'inbound'
             and ap.partner_id = '{self.partner_id.id}' and ap.x_organization_id = '{self.x_organization_id.id}'
-            and aj.x_is_construction = False
             GROUP BY ap.partner_id, ap.x_organization_id),
             
         -- PREVIOUS MONTH AMOUNT
@@ -75,13 +73,11 @@ class AccountMove(models.Model):
             CASE WHEN am.move_type = 'out_invoice' THEN am.amount_total ELSE -am.amount_total END AS amount 
         FROM
         account_move am
-        left join account_journal aj on am.journal_id = aj.id
         WHERE
         am.STATE = 'posted' 
         AND am.move_type IN ( 'out_invoice', 'out_refund' )
         AND am.x_organization_id = {self.x_organization_id.id}
         AND am.partner_id = {self.partner_id.id}
-        AND aj.x_is_construction = False
         AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}'
         ) tb1 
         GROUP BY
@@ -103,14 +99,12 @@ class AccountMove(models.Model):
                         CASE WHEN am.move_type = 'out_invoice' THEN am.amount_total ELSE -am.amount_total END AS amount 
                     FROM
                     account_move am
-                    left join account_journal aj on am.journal_id = aj.id
                     WHERE
                     am.STATE = 'posted' 
                     AND am.move_type IN ( 'out_invoice', 'out_refund' )
                     AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 		
                     AND am.x_organization_id = {self.x_organization_id.id}
                     AND am.partner_id = {self.partner_id.id}
-                    AND aj.x_is_construction = False
                     UNION ALL
                         SELECT
                         ap.partner_id,
@@ -119,13 +113,11 @@ class AccountMove(models.Model):
                     FROM
                     account_payment ap
                     LEFT JOIN account_move am ON ap.move_id = am.ID 
-                    left join account_journal aj on am.journal_id = aj.id
                     WHERE
                     ap.payment_type IN ( 'inbound', 'outbound' ) 
                     AND ap.move_id IS NOT NULL
                     AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 		
                     AND am.x_organization_id = {self.x_organization_id.id}
-                    AND aj.x_is_construction = False
                     AND ap.partner_id = {self.partner_id.id}
                     ) tb3 
                     GROUP BY
@@ -151,7 +143,6 @@ class AccountMove(models.Model):
             account_payment ap
             LEFT JOIN account_move am ON ap.move_id = am.ID
             LEFT JOIN x_payment_type xpt ON ap.x_receipt_type = xpt.x_type
-            LEFT JOIN account_journal aj on am.journal_id = aj.id
             WHERE
                     ap.payment_type IN ( 'inbound', 'outbound' ) 
                     AND ap.move_id IS NOT NULL 
@@ -159,7 +150,6 @@ class AccountMove(models.Model):
                     AND ap.partner_id = {self.partner_id.id}
                     AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 		
                     AND am.x_organization_id = {self.x_organization_id.id}
-                    AND aj.x_is_construction = False
             ),
 
         previous_month_money_collect_sum AS (
@@ -184,14 +174,12 @@ class AccountMove(models.Model):
                 FROM
                         account_payment ap
                         LEFT JOIN account_move am ON ap.move_id = am.ID
-                        LEFT JOIN account_journal aj on am.journal_id = aj.id
                 WHERE
                         ap.payment_type IN ( 'inbound', 'outbound' ) 
                         AND ap.move_id IS NOT NULL 
                         AND ap.partner_id = {self.partner_id.id}
                         AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 	
                         AND am.x_organization_id = {self.x_organization_id.id}
-                        AND aj.x_is_construction = False
                 )tb4
                 GROUP BY
                             tb4.partner_id,
@@ -202,7 +190,7 @@ class AccountMove(models.Model):
         org_bank as (
         select 
             rpb.organization_id,
-            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,'）',rpb.x_bank_branch_number) as payee_info	
+            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '普通' ELSE '当座' END,'）',rpb.acc_number) as payee_info	
         from res_partner_bank rpb
         left join res_bank rb on rpb.bank_id = rb.id
         where rpb.organization_id is not null
@@ -211,7 +199,7 @@ class AccountMove(models.Model):
         sum_tax_10 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/10)) tax_amount_rate10, 
+        ROUND(sum(aml.price_subtotal*0.1)) tax_amount_rate10, 
         ROUND(sum(aml.price_subtotal)) price_total_tax_rate10 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
@@ -222,7 +210,7 @@ class AccountMove(models.Model):
         sum_tax_8 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/8)) tax_amount_rate8, 
+        ROUND(sum(aml.price_subtotal*0.08)) tax_amount_rate8, 
         ROUND(sum(aml.price_subtotal)) price_total_tax_rate8 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
@@ -233,8 +221,8 @@ class AccountMove(models.Model):
         sum_reduce_tax_8 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/8)) price_total_reduced_tax_rate8, 
-        ROUND(sum(aml.price_subtotal)) tax_amount_reduced_tax_rate8 
+        ROUND(sum(aml.price_subtotal*0.08)) tax_amount_reduced_tax_rate8, 
+        ROUND(sum(aml.price_subtotal)) price_total_reduced_tax_rate8 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
         left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
@@ -344,7 +332,7 @@ class AccountMove(models.Model):
                 , concat('TEL:', seo.organization_phone) as organization_phone
                 , concat('FAX:', seo.organization_fax) as organization_fax
                 , COALESCE(am.amount_total, 0) AS this_month_amount
-                , to_char(am.invoice_date_due, 'YYYY年MM月DD日')  as invoice_date_due
+                , '{str_due_date_end}' as invoice_date_due
                 , COALESCE(pmi.previous_month_amount, 0) AS previous_month_amount
                 , COALESCE(da.deposit_amount, 0) AS deposit_amount
                 , COALESCE(pmb.previous_month_balance, 0) AS previous_month_balance
@@ -461,11 +449,9 @@ class AccountMove(models.Model):
         deposit_amount AS (
         select ap.partner_id, ap.x_organization_id, sum(ap.amount) deposit_amount from account_payment ap
             left join account_move am on am.id = ap.move_id
-            left join account_journal aj on am.journal_id = aj.id
             where am.date BETWEEN '{first_day_current_month}' 
             and '{last_day_current_month}' and ap.payment_type = 'inbound'
             and ap.partner_id = '{self.partner_id.id}' and ap.x_organization_id = '{self.x_organization_id.id}'
-            and aj.x_is_construction = True
             GROUP BY ap.partner_id, ap.x_organization_id),
 
         -- PREVIOUS MONTH AMOUNT
@@ -482,13 +468,11 @@ class AccountMove(models.Model):
             CASE WHEN am.move_type = 'out_invoice' THEN am.amount_total ELSE -am.amount_total END AS amount 
         FROM
         account_move am
-        left join account_journal aj on am.journal_id = aj.id
         WHERE
         am.STATE = 'posted' 
         AND am.move_type IN ( 'out_invoice', 'out_refund' )
         AND am.x_organization_id = {self.x_organization_id.id}
         AND am.partner_id = {self.partner_id.id}
-        AND aj.x_is_construction = True
         AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}'
         ) tb1 
         GROUP BY
@@ -510,14 +494,12 @@ class AccountMove(models.Model):
                         CASE WHEN am.move_type = 'out_invoice' THEN am.amount_total ELSE -am.amount_total END AS amount 
                     FROM
                     account_move am
-                    left join account_journal aj on am.journal_id = aj.id
                     WHERE
                     am.STATE = 'posted' 
                     AND am.move_type IN ( 'out_invoice', 'out_refund' )
                     AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 		
                     AND am.x_organization_id = {self.x_organization_id.id}
                     AND am.partner_id = {self.partner_id.id}
-                    AND aj.x_is_construction = True
                     UNION ALL
                         SELECT
                         ap.partner_id,
@@ -526,13 +508,11 @@ class AccountMove(models.Model):
                     FROM
                     account_payment ap
                     LEFT JOIN account_move am ON ap.move_id = am.ID 
-                    left join account_journal aj on am.journal_id = aj.id
                     WHERE
                     ap.payment_type IN ( 'inbound', 'outbound' ) 
                     AND ap.move_id IS NOT NULL
                     AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 		
                     AND am.x_organization_id = {self.x_organization_id.id}
-                    AND aj.x_is_construction = True
                     AND ap.partner_id = {self.partner_id.id}
                     ) tb3 
                     GROUP BY
@@ -558,7 +538,6 @@ class AccountMove(models.Model):
             account_payment ap
             LEFT JOIN account_move am ON ap.move_id = am.ID
             LEFT JOIN x_payment_type xpt ON ap.x_receipt_type = xpt.x_type
-            LEFT JOIN account_journal aj on am.journal_id = aj.id
             WHERE
                     ap.payment_type IN ( 'inbound', 'outbound' ) 
                     AND ap.move_id IS NOT NULL 
@@ -566,7 +545,6 @@ class AccountMove(models.Model):
                     AND ap.partner_id = {self.partner_id.id}
                     AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 		
                     AND am.x_organization_id = {self.x_organization_id.id}
-                    AND aj.x_is_construction = True
             ),
 
         previous_month_money_collect_sum AS (
@@ -591,14 +569,12 @@ class AccountMove(models.Model):
                 FROM
                         account_payment ap
                         LEFT JOIN account_move am ON ap.move_id = am.ID
-                        LEFT JOIN account_journal aj on am.journal_id = aj.id
                 WHERE
                         ap.payment_type IN ( 'inbound', 'outbound' ) 
                         AND ap.move_id IS NOT NULL 
                         AND ap.partner_id = {self.partner_id.id}
                         AND am.date BETWEEN '{first_day_last_month}' and '{last_day_last_month}' 	
                         AND am.x_organization_id = {self.x_organization_id.id}
-                        AND aj.x_is_construction = True
                 )tb4
                 GROUP BY
                             tb4.partner_id,
@@ -609,7 +585,7 @@ class AccountMove(models.Model):
         org_bank as (
         select 
             rpb.organization_id,
-            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '通常' ELSE '当座' END,'）',rpb.acc_number) as payee_info	
+            concat('振込先口座　　',rb.name,rpb.x_bank_branch,'（',CASE When rpb.acc_type = 'bank' then '普通' ELSE '当座' END,'）',rpb.acc_number) as payee_info	
         from res_partner_bank rpb
         left join res_bank rb on rpb.bank_id = rb.id
         where rpb.organization_id is not null
@@ -618,7 +594,7 @@ class AccountMove(models.Model):
         sum_tax_10 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/10)) tax_amount_rate10, 
+        ROUND(sum(aml.price_subtotal*0.1)) tax_amount_rate10, 
         ROUND(sum(aml.price_subtotal)) price_total_tax_rate10 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
@@ -629,7 +605,7 @@ class AccountMove(models.Model):
         sum_tax_8 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/8)) tax_amount_rate8, 
+        ROUND(sum(aml.price_subtotal*0.08)) tax_amount_rate8, 
         ROUND(sum(aml.price_subtotal)) price_total_tax_rate8 
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
@@ -640,8 +616,8 @@ class AccountMove(models.Model):
         sum_reduce_tax_8 as (
         select am.id move_id,
         amlat.account_tax_id tax_id, 
-        ROUND(sum(aml.price_subtotal/8)) price_total_reduced_tax_rate8, 
-        ROUND(sum(aml.price_subtotal)) tax_amount_reduced_tax_rate8 
+        ROUND(sum(aml.price_subtotal*0.08)) tax_amount_reduced_tax_rate8, 
+        ROUND(sum(aml.price_subtotal)) price_total_reduced_tax_rate8
         from account_move_line aml
         left join account_move am ON am.id = aml.move_id
         left join account_move_line_account_tax_rel amlat ON amlat.account_move_line_id = aml.id
@@ -806,32 +782,27 @@ class AccountMove(models.Model):
             raise UserError(_("出力対象のデータがありませんでした。"))
 
         seq_number = 1
-        slip_num = data_query[0]['slip_number']
-        for daq in data_query:
+        for line in data_query:
             one_line_data = ""
-            if slip_num != daq['slip_number']:
-                seq_number = 1
-            slip_num = daq['slip_number']
-            for da in daq:
-                if daq[da] is not None:
-                    if da in ['this_month_amount', 'previous_month_amount', 'deposit_amount', 'previous_month_balance',
+            for key, values in line.items():
+                if values is not None:
+                    if key in ['this_month_amount', 'previous_month_amount', 'deposit_amount', 'previous_month_balance',
                               'this_month_purchase', 'consumption_tax', 'price_total_tax_rate10', "price",
                               'price_total_tax_rate8', 'price_total_reduced_tax_rate8', 'price_total_no_tax',
                               'tax_amount_rate10', 'tax_amount_rate8', 'tax_amount_reduced_tax_rate8',
                               'tax_amount_no_tax', 'price_total', 'price_total_tax']:
-                        one_line_data += '"' + "￥" + "{:,}".format(int(daq[da])) + '",'
-                    elif da == "unit_price":
-                        if int(daq[da]) == 0:
-                            one_line_data += '"",'
-                        else:
-                            one_line_data += '"' + "{:,}".format(int(daq[da])) + '",'
-                    elif da == 'detail_number':
-                        one_line_data += '"' + str(seq_number) + '",'
+                        one_line_data += '"' + "￥" + "{:,}".format(int(line[key])) + '",'
+                    elif key == "unit_price":
+                        one_line_data += '"",' if int(line[key]) == 0 else '"' + "{:,}".format(int(line[key])) + '",'
+
                     else:
-                        one_line_data += '"' + str(daq[da]) + '",'
+                        one_line_data += '"' + str(line[key]) + '",'
                 else:
-                    one_line_data += '"",'
-            seq_number += 1
+                    if key == 'detail_number' and line['quantity'] is not None and line['quantity'] != 0:
+                        one_line_data += '"' + str(seq_number) + '",'
+                        seq_number += 1
+                    else:
+                        one_line_data += '"",'
             data_send.append(one_line_data)
         data_file = "\n".join(data_send)
         data_file = data_file[0:-1]

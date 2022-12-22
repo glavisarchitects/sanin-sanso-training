@@ -143,15 +143,15 @@ class YoukiKanri(models.Model):
 
             if not line.customer_branch_code.isdigit():
                 if error_message:
-                    error_message += '顧支店Ｃが連絡先マスタに存在しません。'
+                    error_message += '顧支店Ｃが組織マスタに存在しません。'
                 else:
-                    error_message = '顧支店Ｃが連絡先マスタに存在しません。'
+                    error_message = '顧支店Ｃが組織マスタに存在しません。'
             else:
                 if int(line.customer_branch_code) not in organization_list:
                     if error_message:
-                        error_message += '顧支店Ｃが連絡先マスタに存在しません。'
+                        error_message += '顧支店Ｃが組織マスタに存在しません。'
                     else:
-                        error_message = '顧支店Ｃが連絡先マスタに存在しません。'
+                        error_message = '顧支店Ｃが組織マスタに存在しません。'
 
             if not branch_dict.get(line.codeommercial_branch_code):
                 if error_message:

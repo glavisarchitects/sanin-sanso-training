@@ -10,8 +10,30 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='show_confirmation_button']" position="after">
                     <button name="action_print_estimation" type="object" string="工事見積書"
-                                confirm="工事見積書を作成します。"
-                                attrs="{'invisible':[('state','in',['draft','lost'])],}"/>
+                            confirm="工事見積書を作成します。"
+                            attrs="{'invisible':[('state','in',['draft','lost'])],}"/>
+
+                    <button name="order_confirm_svf_template_export" type="object" string="注文請書"
+                            attrs="{'invisible':[('state','in',['draft','lost'])],}"/>
+                </xpath>
+
+                <xpath expr="//page[@name='estimation']" position="after">
+                    <page name="order_confirm" string="注文請書">
+                        <group string="注文請書 帳票設定">
+                            <group>
+                                <!--                                        <field name="form_type" readonly="1"/>-->
+                                <field name="export_type" widget="radio"/>
+                                <field name="receipt_type"/>
+                            </group>
+                            <group>
+                                <field name="order_number"/>
+                                <field name="delivery_location"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="other_conditions"/>
+                        </group>
+                    </page>
                 </xpath>
             </field>
         </record>
