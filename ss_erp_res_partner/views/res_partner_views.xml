@@ -6,7 +6,9 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <form position="attributes">
-                <attribute name="confirm_partner_custom">申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。保存してよろしいですか</attribute>
+                <attribute name="confirm_partner_custom">
+                    申請対象の取引先は、顧客または仕入先として既に登録済みの可能性があります。保存してよろしいですか
+                </attribute>
             </form>
             <xpath expr="//field[@name='name']" position="after">
                 <field name="has_parent_id" invisible="1"/>
@@ -101,7 +103,7 @@
                        attrs="{'required': [('x_is_vendor', '=', True)], 'invisible': [('x_is_vendor', '!=', True)]}"
 
                 />
-                <field name="id" string="ID" />
+                <field name="id" string="ID"/>
                 <field name="ref" string="取引先コード" attrs="{
                     'invisible': [('has_ref', '=', 'no')],
                     'required': [('has_ref', '=', 'required')]
@@ -114,7 +116,8 @@
                 <attribute name="attrs">{
                     'invisible': [('has_phone', '=', 'no')],
                     'required': [('has_phone', '=', 'required')],
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//label[@for='phone']" position="attributes">
                 <attribute name="string">TEL代表</attribute>
@@ -123,7 +126,8 @@
                 <attribute name="attrs">{
                     'invisible': [('has_mobile', '=', 'no')],
                     'required': [('has_mobile', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//label[@for='mobile']" position="attributes">
                 <attribute name="string">TEL直通</attribute>
@@ -138,69 +142,78 @@
 
             <xpath expr="//span[@name='address_name']" position="replace">
                 <span class="o_form_label o_td_label" name="address_name" attrs="{'': [('has_address', '=', 'no')]}">
-                    <b attrs="{'invisible': ['&amp;', ('parent_id', '!=', False), ('type', '!=', False)]  }">取引先住所</b>
+                    <b attrs="{'invisible': ['&amp;', ('parent_id', '!=', False), ('type', '!=', False)]  }">
+                        取引先住所
+                    </b>
                 </span>
             </xpath>
 
-            <xpath expr="//field[@name='street']" position="attributes">
-                <attribute name="force_save">1</attribute>
-                <attribute name="attrs">{
-                    'invisible': [('has_address', '=', 'no')],
-                    'required': [('has_address', '=', 'required')]
-                }</attribute>
-            </xpath>
             <xpath expr="//field[@name='street2']" position="attributes">
-                <attribute name="force_save">1</attribute>
-                <attribute name="attrs">{
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='street']" position="replace">
+                <field name="street2" placeholder="町名番地2…" attrs="{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
-                }</attribute>
+                }" force_save="1"/>
+                <field name="street" placeholder="町名番地…" attrs="{
+                    'invisible': [('has_address', '=', 'no')],
+                    'required': [('has_address', '=', 'required')]
+                }" force_save="1"/>
             </xpath>
+
             <xpath expr="//field[@name='city']" position="attributes">
                 <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='state_id']" position="attributes">
                 <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='zip']" position="attributes">
                 <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='country_id']" position="attributes">
                 <attribute name="force_save">1</attribute>
                 <attribute name="attrs">{
                     'invisible': [('has_address', '=', 'no')],
                     'required': [('has_address', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='vat']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_vat', '=', 'no')],
                     'required': [('has_vat', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='function']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_function', '=', 'no')],
                     'required': [('has_function', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='website']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_website', '=', 'no')],
                     'required': [('has_website', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
 
             <xpath expr="//field[@name='category_id']" position="before">
@@ -212,7 +225,8 @@
                 <attribute name="attrs">{
                     'invisible': [('has_title', '=', 'no')],
                     'required': [('has_title', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
 
             </xpath>
 
@@ -220,33 +234,38 @@
                 <attribute name="attrs">{
                     'invisible': [('has_category_id', '=', 'no')],
                     'required': [('has_category_id', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//group[@name='sale']/field[@name='user_id']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_user_id', '=', 'no')],
                     'required': [('has_user_id', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
 
             <xpath expr="//page[@name='sales_purchases']//field[@name='team_id']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_team_id', '=', 'no')],
                     'required': [('has_team_id', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='property_payment_term_id']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_property_payment_term_id', '=', 'no')],
                     'required': [('has_property_payment_term_id', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
 
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_property_supplier_payment_term_id', '=', 'no')],
                     'required': [('has_property_supplier_payment_term_id', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='user_ids']" position="before">
                 <field name="x_fax" attrs="{
@@ -271,13 +290,15 @@
                 <attribute name="attrs">{
                     'invisible': [('has_parent_id', '=', 'no')],
                     'required': [('has_parent_id', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='industry_id']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_industry_id', '=', 'no')],
                     'required': [('has_industry_id', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//page[@name='contact_addresses']" position="after">
                 <page string="取引先概要" name="business_partner_overview" attrs="{
@@ -460,7 +481,18 @@
             <xpath expr="//page/field[@name='child_ids']/form/sheet/field[@name='type']" position="after">
                 <field name="x_contact_categ" widget="radio" options="{'horizontal': true, 'no_create_edit': True}"
                        required="1"/>
-            </xpath>            
+            </xpath>
+
+            <xpath expr="//field[@name='child_ids']/form/sheet/group/group[1]/div[1]/div[1]/field[@name='street2']"
+                       position="attributes">
+                    <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='child_ids']/form/sheet/group/group[1]/div[1]/div[1]/field[@name='street']"
+                       position="replace">
+                <field name="street2" placeholder="町名番地2…" />
+                <field name="street" placeholder="町名番地…" force_save="1"/>
+            </xpath>
+
             <xpath expr="//page/field[@name='child_ids']/form/sheet/group" position="after">
                 <group string="ローリー業務" col="12">
                     <group colspan="6">
@@ -489,19 +521,19 @@
         </field>
     </record>
 
-<!--    <record model="ir.ui.view" id="res_partner_delivery_inherit_form">-->
-<!--        <field name="name">res.partner.delivery.inherit.form</field>-->
-<!--        <field name="model">res.partner</field>-->
-<!--        <field name="inherit_id" ref="delivery.view_partner_property_form"/>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <xpath expr="//field[@name='property_delivery_carrier_id']" position="attributes">-->
-<!--                <attribute name="attrs">{-->
-<!--                    'invisible': [('has_property_delivery_carrier_id', '=', 'no')],-->
-<!--                    'required': [('has_property_delivery_carrier_id', '=', 'required')]-->
-<!--                }</attribute>-->
-<!--            </xpath>-->
-<!--        </field>-->
-<!--    </record>-->
+    <!--    <record model="ir.ui.view" id="res_partner_delivery_inherit_form">-->
+    <!--        <field name="name">res.partner.delivery.inherit.form</field>-->
+    <!--        <field name="model">res.partner</field>-->
+    <!--        <field name="inherit_id" ref="delivery.view_partner_property_form"/>-->
+    <!--        <field name="arch" type="xml">-->
+    <!--            <xpath expr="//field[@name='property_delivery_carrier_id']" position="attributes">-->
+    <!--                <attribute name="attrs">{-->
+    <!--                    'invisible': [('has_property_delivery_carrier_id', '=', 'no')],-->
+    <!--                    'required': [('has_property_delivery_carrier_id', '=', 'required')]-->
+    <!--                }</attribute>-->
+    <!--            </xpath>-->
+    <!--        </field>-->
+    <!--    </record>-->
 
     <record model="ir.ui.view" id="res_partner_view_form_inherit_mail">
         <field name="name">res.partner.inherit.form</field>
@@ -511,13 +543,15 @@
             <xpath expr="//label[@for='email']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_email', '=', 'no')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
             <xpath expr="//field[@name='email']" position="attributes">
                 <attribute name="attrs">{
                     'invisible': [('has_email', '=', 'no')],
                     'required': [('has_email', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </xpath>
         </field>
     </record>
@@ -531,7 +565,8 @@
                 <attribute name="attrs">{
                     'invisible': [('has_property_product_pricelist', '=', 'no')],
                     'required': [('has_property_product_pricelist', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </field>
             <xpath expr="//field[@name='property_product_pricelist']" position="after">
                 <field name="x_responsible_person_printing"/>
@@ -550,7 +585,8 @@
                 <attribute name="attrs">{
                     'invisible': [('has_property_account_position_id', '=', 'no')],
                     'required': [('has_property_account_position_id', '=', 'required')]
-                }</attribute>
+                    }
+                </attribute>
             </field>
         </field>
     </record>
