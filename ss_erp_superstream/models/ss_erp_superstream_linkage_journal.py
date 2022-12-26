@@ -122,13 +122,11 @@ class SSSuperStreamLinkageJournal(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
-        if vals.get('materials_grouping'):
-            res.categ_product_id_char = res.sudo()._recalculate_product_category_char(
-                is_materials_groupingvals=vals.get('materials_grouping'))
+        res.categ_product_id_char = res.sudo()._recalculate_product_category_char(
+            is_materials_groupingvals=res.materials_grouping)
 
-        if vals.get('sanhot_point'):
-            res.sanhot_product_id_char = res.sudo()._recalculate_sanhot_product_id_char(
-                is_sanhot_point=vals.get('sanhot_point'))
+        res.sanhot_product_id_char = res.sudo()._recalculate_sanhot_product_id_char(
+            is_sanhot_point=res.sanhot_point)
         return res
 
     def write(self, vals):
