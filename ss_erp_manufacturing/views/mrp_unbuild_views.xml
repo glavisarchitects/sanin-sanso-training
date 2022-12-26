@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ss_erp_mrp_unbuild_tree_inherit" model="ir.ui.view">
+            <field name="name">ss_erp_mrp_unbuild_tree_inherit</field>
+            <field name="model">mrp.unbuild</field>
+            <field name="inherit_id" ref="mrp.mrp_unbuild_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="x_organization_id" required="1"/>
+                    <field name="x_responsible_dept_id" required="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="ss_erp_mrp_unbuild_form_inherit" model="ir.ui.view">
+            <field name="name">ss_erp_mrp_unbuild_form_inherit</field>
+            <field name="model">mrp.unbuild</field>
+            <field name="inherit_id" ref="mrp.mrp_unbuild_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='mo_id']" position="before">
+                    <field name="x_organization_id" required="1"/>
+                    <field name="x_responsible_dept_id" required="1"/>
+                    <field name="x_organization_root_location_id" invisible="1"/>
+                </xpath>
+<!--                <xpath expr="//field[@name='location_id']" position="replace">-->
+<!--                <field name="location_id" options="{'no_create': True}" groups="stock.group_stock_multi_locations"-->
+<!--                domain="['&amp;', '|', ('usage','=','internal'), ('id','=',x_organization_root_location_id), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"-->
+<!--                />-->
+<!--            </xpath>-->
+
+                <xpath expr="//field[@name='location_id']" position="attributes">
+                <attribute name="domain">[('usage','=','internal'), ('id','child_of',x_organization_root_location_id)]</attribute>
+            </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

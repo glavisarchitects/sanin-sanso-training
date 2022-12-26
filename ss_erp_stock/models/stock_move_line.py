@@ -10,6 +10,11 @@ class StockMoveLine(models.Model):
         'res.users', string="連絡先名", required=False, )
     x_organization_id = fields.Many2one('ss_erp.organization',
                                         string='組織名', store=True)
+    x_responsible_dept_id = fields.Many2one(
+        'ss_erp.responsible.department', string="管轄部門")
+
+    x_responsible_user_id = fields.Many2one('res.users',
+                                            string='業務担当',)
 
     @api.model
     def create(self, vals):
