@@ -10,8 +10,8 @@ import base64
 class PayVendorNotice(models.TransientModel):
     _name = 'pay.vendor.notice'
 
-    partner_type = fields.Selection([('all', '全て'), ('manual_select', '手動選択'), ],
-                                    string='サプライヤー選択タイプ', default='manual_select')
+    partner_type = fields.Selection([('all', '全て'), ('manual_select', '選択'), ],
+                                    string='支払先', default='manual_select')
     vendor_ids = fields.Many2many('res.partner', string='支払先')
     date_start = fields.Date(string='期日（開始）')
     date_end = fields.Date(string='期日（終了）')

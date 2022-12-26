@@ -364,7 +364,9 @@ class PurchaseOrder(models.Model):
             consumption_tax = "{:,}".format(int(self.amount_tax)) if self.amount_tax else ""
             without_tax_amount = "{:,}".format(int(self.amount_untaxed)) if self.amount_untaxed else ""
             receipt_method = self.receipt_type if self.receipt_type else ""
-            due_date = self.payment_term_id.name if self.payment_term_id else ""
+
+            due_date_term = self.x_construction_order_id._compute_payment_terms()[0][0]
+            due_date = due_date_term
             contract_term_notice = ""
             param_term_notice = self.env['ir.config_parameter'].sudo().get_param('r008_contraction_other_term_notice')
             other_term_notice = param_term_notice if param_term_notice else ''
