@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="account_move_r002_form_ss_erp" model="ir.ui.view">
+            <field name="name">account.move.r002.ss.erp</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_register_payment']" position="before">
+                    <button name="svf_template_export"
+                            attrs="{'invisible': [('move_type', '!=', 'out_invoice')]}"
+                            string="請求書出力" class="oe_highlight" type="object"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

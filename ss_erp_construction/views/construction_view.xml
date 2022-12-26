@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- cost structure report -->
+        <record id="action_cost_struct_construction" model="ir.actions.report">
+            <field name="name">原価分析</field>
+            <field name="model">ss.erp.construction</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">ss_erp_construction.construction_cost_structure</field>
+            <field name="report_file">ss_erp_construction.construction_cost_structure</field>
+            <field name="print_report_name">' %s - 原価分析' % object.name</field>
+            <field name="binding_model_id" ref="ss_erp_construction.model_ss_erp_construction"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="ss_erp_construction_form_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.form</field>
+            <field name="model">ss.erp.construction</field>
+            <field name="arch" type="xml">
+                <form string="工事">
+                    <header>
+                        <field name="show_confirmation_button" invisible="1"/>
+<!--                        <button name="action_print_estimation" type="object" string="工事見積書"-->
+<!--                                confirm="工事見積書を作成します。"-->
+<!--                                attrs="{'invisible':[('state','in',['draft','lost'])],}"/>-->
+                        <button name="action_confirm" type="object" string="確認"
+                                attrs="{'invisible':['|',('show_confirmation_button','=',False),('state','!=','draft')],}"/>
+                        <button name="action_pending" string="保留" type="object"
+                                attrs="{'invisible':[('state','!=','confirmed')],}"/>
+                        <button name="action_receive_order" string="受注" class="oe_highlight" type="object"
+                                attrs="{'invisible':[('state','not in',['confirmed','pending'])],}"/>
+                        <button name="action_mark_lost" string="失注" type="object"
+                                attrs="{'invisible':[('state','not in',['confirmed','pending'])],}"/>
+                        <button name="action_back_to_draft" string="ドラフトへ戻す" type="object"
+                                attrs="{'invisible':[('state','!=','lost')],}"/>
+                        <button name="action_cancel" string="取消" type="object"
+                                attrs="{'invisible':[('state','!=','draft')],}"/>
+                        <button name="action_start" string="開始" class="oe_highlight" type="object"
+                                attrs="{'invisible':[('state','not in',['order_received'])],}"/>
+                        <button name="action_validate" string="検証" class="oe_highlight" type="object"
+                                attrs="{'invisible':['|',('state','not in',['progress']), ('validate_approval_status','!=','approved')],}"/>
+                        <button name="action_purchase" string="購買発注" class="oe_highlight" type="object"
+                                attrs="{'invisible':[('state','not in',['order_received','progress'])],}"/>
+                        <button name="action_picking_from_warehouse" string="出荷" class="oe_highlight" type="object"
+                                attrs="{'invisible':[('state','not in',['order_received','progress'])],}"/>
+                        <button name="%(action_view_construction_advance_payment_inv)d" string="請求書作成"
+                                type="action" class="btn-primary"
+                                attrs="{'invisible': [('invoice_status', '!=', 'to_invoice')]}"/>
+                        <field name="state" widget="statusbar" nolabel="1"
+                               attrs="{'invisible':[('show_confirmation_button','=',False)],}"
+                               statusbar_visible="draft,request_approve,confirmed,pending,order_received,progress,done"/>
+                        <field name="state" widget="statusbar" nolabel="1"
+                               attrs="{'invisible':[('show_confirmation_button','=',True)],}"
+                               statusbar_visible="draft,confirmed,pending,order_received,progress,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <field name="picking_ids" invisible="1"/>
+                            <button type="object"
+                                    name="action_view_delivery"
+                                    class="oe_stat_button"
+                                    icon="fa-truck"
+                                    attrs="{'invisible': [('delivery_count', '=', 0)]}" groups="base.group_user">
+                                <field name="delivery_count" widget="statinfo" string="工事出荷"/>
+                            </button>
+                            <button type="object"
+                                    name="action_view_purchase_order"
+                                    class="oe_stat_button"
+                                    icon="fa-truck"
+                                    attrs="{'invisible': [('delivery_purchase_order_count', '=', 0)]}"
+                                    groups="base.group_user">
+                                <field name="delivery_purchase_order_count" widget="statinfo" string="購買発注"/>
+                            </button>
+                            <button type="object"
+                                    name="action_view_invoice"
+                                    class="oe_stat_button"
+                                    attrs="{'invisible': [('invoice_count', '=', 0)]}"
+                                    icon="fa-pencil-square-o">
+                                <field name="invoice_count" widget="statinfo" string="請求書"
+                                       modifiers="{'readonly':true}" id="invoice_count"/>
+                            </button>
+                            <!--                            <button name="%(ss_erp_construction.action_cost_struct_construction)d" type="action"-->
+                            <!--                                    class="oe_stat_button" icon="fa-dollar" string="原価分析">-->
+                            <!--                            </button>-->
+                        </div>
+
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="invoice_status" invisible="1"/>
+                                <field name="warehouse_id" invisible="1"/>
+
+                                <field name="construction_name" required="1"
+                                       attrs="{'readonly':[('state','!=','draft')],}"/>
+                                <field name="estimate_approval_status" invisible="1"/>
+                                <field name="validate_approval_status" invisible="1"/>
+                                <field name="partner_id" required="1" attrs="{'readonly':[('state','!=','draft')],}"/>
+                                <field name="template_id" attrs="{'readonly':[('state','!=','draft')],}"
+                                       domain="[('state', '=', 'approved')]"/>
+                                <field name="category_id" required="1" attrs="{'readonly':[('state','!=','draft')],}"/>
+                            </group>
+                            <group>
+                                <field name="organization_id" required="1"
+                                       attrs="{'readonly':[('state','!=','draft')],}"/>
+                                <field name="responsible_dept_id" required="1"
+                                       attrs="{'readonly':[('state','!=','draft')],}"/>
+                                <field name="plan_date"/>
+                                <field name="date_planed_finished"/>
+                                <field name="user_id" required="1" attrs="{'readonly':[('state','!=','draft')],}"/>
+                                <field name="all_margin_rate" widget="percentage"/>
+                                <field name="payment_term_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="construction_component" string="構成品">
+                                <field name="construction_component_ids"
+                                       widget="section_and_note_one2many"
+                                       context="{'default_margin_rate':all_margin_rate,}"
+                                       mode="tree"
+                                       default_order="sequence"
+                                       attrs="{'readonly':[('state','in',('done','lost','cancel'))],}">
+                                    <tree editable="bottom">
+                                        <field name="display_type" invisible="1"/>
+                                        <control>
+                                            <create name="add_line_control" string="プロダクト追加"/>
+                                            <create name="add_section_control" string="セクション追加"
+                                                    context="{'default_display_type': 'line_section'}"/>
+                                            <create name="add_note_control" string="ノート追加"
+                                                    context="{'default_display_type': 'line_note'}"/>
+                                        </control>
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="product_id" attrs="{'required': [('display_type', '=', False)],}"
+                                               context="{'construction_component':True,'warehouse_id':parent.warehouse_id}"/>
+                                        <field name="name" widget="section_and_note_text" optional="show"/>
+                                        <field name="product_uom_qty" attrs="{'required': [('display_type', '=', False)],}"/>
+                                        <field name="product_uom_id" attrs="{'required': [('display_type', '=', False)],}"/>
+                                        <field name="partner_id"/>
+                                        <field name="payment_term_id"/>
+                                        <field name="product_uom_category_id" attrs="{'column_invisible':1}"/>
+                                        <field name="standard_price"/>
+                                        <field name="currency_id" attrs="{'column_invisible':1}"/>
+                                        <field name="tax_id"/>
+                                        <field name="sale_price" attrs="{'required': [('display_type', '=', False)],}"/>
+                                        <field name="margin" readonly="1"/>
+                                        <field name="margin_rate" widget="percentage"/>
+                                        <!--                                        <field name="subtotal_exclude_tax" readonly="1"/>-->
+                                        <field name="subtotal" readonly="1"/>
+                                    </tree>
+                                </field>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0" modifiers="{}">
+                                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total"
+                                           modifiers="{}">
+                                        <field name="amount_untaxed" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}" on_change="1"
+                                               modifiers="{'readonly':true}" id="amount_untaxed"/>
+                                        <field name="amount_tax" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}" modifiers="{'readonly':true}"
+                                               id="amount_tax"/>
+                                        <div class="oe_subtotal_footer_separator oe_inline o_td_label" modifiers="{}">
+                                            <label for="amount_total" modifiers="{}"/>
+                                        </div>
+                                        <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                               widget="monetary" options="{'currency_field': 'currency_id'}"
+                                               modifiers="{'readonly':true}" id="amount_total"/>
+                                        <label for="margin" modifiers="{}"/>
+                                        <div class="text-nowrap" modifiers="{}">
+                                            <field name="margin" class="oe_inline" modifiers="{'readonly':true}"
+                                                   id="margin"/>
+                                            <span class="oe_inline" attrs="{'invisible': [('amount_untaxed', '=', 0)]}"
+                                                  modifiers="{'invisible':[['amount_untaxed','=',0]]}">
+
+                                                (
+                                                <field name="margin_percent" nolabel="1" class="oe_inline" readonly="1"
+                                                       widget="percentage" modifiers="{'readonly':true}"
+                                                       id="margin_percent"/>
+                                                )
+                                            </span>
+                                        </div>
+                                    </group>
+                                    <div class="oe_clear" modifiers="{}"/>
+                                </group>
+                            </page>
+                            <page name="construction_workorder" string="作業オーダ">
+                                <field name="construction_workorder_ids" widget="one2many" nolabel="1"
+                                       attrs="{'readonly':[('state','in',('done','lost','cancel'))],}">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="workcenter_id" readonly="1"/>
+                                        <field name="planned_labor_costs"/>
+                                        <field name="result_labor_costs"/>
+                                        <field name="planned_expenses"/>
+                                        <field name="result_expenses"/>
+                                        <field name="construction_work_notes"/>
+                                        <field name="date_planned_start"/>
+                                        <field name="date_planned_finished"/>
+                                        <field name="date_start"/>
+                                        <field name="date_end"/>
+                                        <field name="duration_expected"/>
+                                        <field name="duration"/>
+                                        <field name="state" readonly="1"/>
+                                        <field name="currency_id" attrs="{'column_invisible':1}"/>
+                                    </tree>
+                                </field>
+
+                            </page>
+                            <page name="other_info" string="その他情報">
+                                <group>
+                                    <group string="その他">
+                                        <field name="client_order_ref"/>
+                                        <field name="fiscal_position_id"/>
+                                        <field name="company_id" readonly="1"/>
+                                    </group>
+                                    <group>
+
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="estimation" string="見積書">
+                                <group string="帳票設定">
+                                    <group>
+                                        <field name="print_type" widget="radio"/>
+                                        <field name="is_tax_exclude" widget="radio"/>
+                                        <field name="printed_user"/>
+                                    </group>
+                                    <group>
+                                        <field name="name" string="文書番号" readonly="1"/>
+                                        <field name="output_date"/>
+                                        <field name="expire_date"/>
+                                        <field name="estimation_note"/>
+                                    </group>
+                                </group>
+                                <div>
+                                    <label for="red_notice">
+                                        <H1>注記欄</H1>
+                                    </label>
+                                    <field name="red_notice" nolabel="1"/>
+                                </div>
+                            </page>
+
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter" modifiers="{}">
+                        <field name="message_follower_ids" modifiers="{}" id="message_follower_ids"/>
+                        <field name="activity_ids" modifiers="{}" id="activity_ids"/>
+                        <field name="message_ids" modifiers="{}" id="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_tree_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.tree</field>
+            <field name="model">ss.erp.construction</field>
+            <field name="arch" type="xml">
+                <tree string="工事">
+                    <field name="name"/>
+                    <field name="construction_name"/>
+                    <field name="organization_id"/>
+                    <field name="responsible_dept_id"/>
+                    <field name="partner_id"/>
+                    <field name="plan_date"/>
+                    <field name="user_id"/>
+                    <field name="company_id"/>
+
+                    <field name="currency_id" invisible="1"/>
+                    <field name="amount_total" sum="金額" widget="monetary"
+                           options="{'currency_field': 'currency_id'}"/>
+                    <field name="state"
+                           decoration-success="state == 'done'" decoration-info="state == 'draft'"
+                           widget="badge"
+
+                    />
+                    <field name="invoice_status" widget="badge" decoration-success="invoice_status == 'invoiced'"
+                           decoration-info="invoice_status == 'to_invoice'"
+                           decoration-muted="(invoice_status == 'no')"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ss_erp_construction_search_view" model="ir.ui.view">
+            <field name="name">ss.erp.construction.search</field>
+            <field name="model">ss.erp.construction</field>
+            <field name="arch" type="xml">
+                <search string="工事">
+                    <field name="construction_name"/>
+                    <field name="organization_id"/>
+                    <field name="partner_id"/>
+                    <field name="user_id"/>
+                    <group expand="0" string="Group By">
+                        <filter name="organization" string="組織" context="{'group_by':'organization_id'}"/>
+                    </group>
+                    <filter name="draft" string="ドラフト" domain="[('state', '=', 'draft')]"/>
+                    <filter name="pending" string="保留" domain="[('state', '=', 'pending')]"/>
+                    <filter name="order_received" string="受注" domain="[('state', '=', 'order_received')]"/>
+                    <filter name="lost" string="失注" domain="[('state', '=', 'lost')]"/>
+                </search>
+            </field>
+        </record>
+
+
+        <record id="ss_erp_construction_act_window" model="ir.actions.act_window">
+            <field name="name">工事オーダ</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ss.erp.construction</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+    </data>
+</odoo>

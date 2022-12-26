@@ -1,0 +1,66 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_inventory_form_inherit">
+            <field name="name">stock.inventory.inherit.form</field>
+            <field name="model">stock.inventory</field>
+            <field name="inherit_id" ref="stock.view_inventory_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="attributes">
+                    <attribute name="create">0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='product_ids']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_print']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_validate'][1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_validate'][2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel_draft'][2]" position="replace">
+<!--                    <button name="action_cancel" states="confirm,approval" string="棚卸取消" type="object"-->
+<!--                            confirm="If you cancel this inventory adjustment, all its inventory adjustment lines will be lost.-->
+<!--                            State of inventory adjustment will change to cancel-->
+<!--                             Are you sure you want to discard it ?"/>                    -->
+                    <button name="action_cancel" states="confirm,approval" string="棚卸取消" type="object"/>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="attributes">
+                    <attribute name="statusbar_visible">draft,confirm,approval,done,cancel</attribute>
+                </xpath>
+                <xpath expr="//field[@name='product_ids']" position="after">
+                    <field name="organization_id"/>
+                    <field name="responsible_dept_id"/>
+                    <field name="responsible_user_id"/>
+                    <!--                    <field name="type_id"/>-->
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_inventory_tree_inherit">
+            <field name="name">stock.inventory.inherit.tree</field>
+            <field name="model">stock.inventory</field>
+            <field name="inherit_id" ref="stock.view_inventory_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='date']" position="after">
+                    <field name="organization_id"/>
+                    <field name="responsible_dept_id"/>
+                    <field name="responsible_user_id"/>
+                    <!--                    <field name="type_id"/>-->
+                    <field name="location_ids" widget="many2many_tags"/>
+                </xpath>
+                <xpath expr="//field[@name='date']" position="before">
+                    <field name="name" string="棚卸伝票番号"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

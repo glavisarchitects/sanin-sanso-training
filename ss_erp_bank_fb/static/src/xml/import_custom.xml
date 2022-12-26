@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="CustomBaseImport" t-inherit="base_import.ImportView.buttons" t-inherit-mode="extension" owl="1">
+        <xpath expr="//button[hasclass('o_import_cancel')]" position="after">
+            <!--      account transfer result [seikei] button      -->
+            <button
+                t-if="res_model=='ss_erp.account.transfer.result.line'"
+                type="button"
+                class="btn btn-primary o_account_transfer_import_transform d-none">
+                整形
+            </button>
+            <button
+                    t-if="res_model=='ss_erp.account.receipt.notification.line'"
+                    type="button"
+                    class="btn btn-primary o_account_receipt_import_transform d-none">
+                整形
+            </button>
+        </xpath>
+    </t>
+
+</templates>

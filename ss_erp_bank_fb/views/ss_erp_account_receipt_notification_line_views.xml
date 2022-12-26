@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--    View is used to display receipt notification search results    -->
+
+<!--        <record id="ss_erp_receipt_notification_search_account_move_list" model="ir.ui.view">-->
+<!--            <field name="name">ss_erp.receipt.notification.search.account.move.list</field>-->
+<!--            <field name="model">account.move</field>-->
+<!--            <field name="priority" eval="1000"/>-->
+<!--            <field name="inherit_id" ref="account.view_invoice_tree"/>-->
+<!--            &lt;!&ndash;            <field name="mode">primary</field>&ndash;&gt;-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='name']" position="after">-->
+<!--                    <field name="partner_id"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+<!--        &lt;!&ndash;        <record id="ss_erp_view_account_invoice_filter_receipt_notification" model="ir.ui.view">&ndash;&gt;-->
+<!--        &lt;!&ndash;            <field name="name">account.move.filter.receipt.notification</field>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <field name="model">account.move</field>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <field name="inherit_id" ref="account.view_account_invoice_filter"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;            <field name="arch" type="xml">&ndash;&gt;-->
+<!--        &lt;!&ndash;                <field name="name" position="after">&ndash;&gt;-->
+<!--        &lt;!&ndash;&lt;!&ndash;                    <field name="l10n_id_tax_number"/>&ndash;&gt;&ndash;&gt;-->
+<!--        &lt;!&ndash;&lt;!&ndash;                    <field name="l10n_id_attachment_id"/>&ndash;&gt;&ndash;&gt;-->
+<!--        &lt;!&ndash;                    <group>&ndash;&gt;-->
+<!--        &lt;!&ndash;                        <filter string="Match Customer Receipt Notification" name="account_receipt_notification" domain="[('partner_name', '=', 'partner_name_search')]"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;                    </group>&ndash;&gt;-->
+<!--        &lt;!&ndash;                </field>&ndash;&gt;-->
+<!--        &lt;!&ndash;            </field>&ndash;&gt;-->
+<!--        &lt;!&ndash;        </record>&ndash;&gt;-->
+
+<!--        <record id="ss_erp_receipt_notification_search_account_move_action" model="ir.actions.act_window">-->
+<!--            <field name="name">請求書検索結果</field>-->
+<!--            <field name="res_model">account.move</field>-->
+<!--            <field name="view_mode">tree</field>-->
+<!--            <field name="view_id" ref="ss_erp_receipt_notification_search_account_move_list"/>-->
+<!--            &lt;!&ndash;            <field name="search_view_id" ref="ss_erp_view_account_invoice_filter_receipt_notification"/>&ndash;&gt;-->
+<!--            <field name="context">{'default_move_type': 'out_invoice'}</field>-->
+<!--            &lt;!&ndash;            <field name="view_id" ref="ss_erp_receipt_notification_search_account_move_list"/>&ndash;&gt;-->
+<!--        </record>-->
+
+        <record id="ss_erp_account_receipt_notification_line_tree_view" model="ir.ui.view">
+            <field name="name">ss_erp.account.receipt.notification.line.tree</field>
+            <field name="model">ss_erp.account.receipt.notification.line</field>
+            <field name="arch" type="xml">
+                <tree string="全銀口座振替結果FB取込データ" create="0">
+                    <field name="status" readonly="1"
+                           widget="badge"
+                           decoration-info="status=='success'"
+                           decoration-warning="status=='wait'"
+                           decoration-danger="status=='error'"/>
+                    <field name="processing_date" readonly="1"/>
+                    <field name="account_date" readonly="1"/>
+                    <field name="starting_date" readonly="1"/>
+                    <field name="transfer_client_name" readonly="1"/>
+                    <field name="transfer_amount" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ss_erp_account_receipt_notification_line_form_view" model="ir.ui.view">
+            <field name="name">ss_erp.account.receipt.notification.line.form</field>
+            <field name="model">ss_erp.account.receipt.notification.line</field>
+            <field name="arch" type="xml">
+                <form string="全銀口座振替結果FB取込データ">
+                    <header>
+                        <button name="processing_execution" string="消込実行" type="object"
+                                class="oe_highlight"/>
+                    </header>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                        </group>
+
+                    </group>
+                    <group>
+                        <group>
+                            <field name="account_date" readonly="1"/>
+                            <field name="starting_date" readonly="1"/>
+                            <field name="status" readonly="1"/>
+                            <field name="transfer_client_name" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="branch_id" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="transfer_amount" readonly="1"/>
+                            <field name="payment_ids" widget="many2many_tags" readonly="1"
+                                   attrs="{'invisible': [('payment_ids', '=', [])]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="請求書検索結果">
+                            <field name="result_account_move_ids" attrs="{'readonly': [('status', '!=', 'wait')]}"
+                                   options="{'no_open':True, 'no_create':True}"
+                                   context="{'default_move_type': 'out_invoice',}"
+                                   domain="[('state', '=', 'posted'), ('payment_state', 'in', ('not_paid','partial'))]">
+                                <tree>
+                                    <field name="name" string="番号"/>
+                                    <field name="state"/>
+                                    <field name="payment_state"/>
+                                    <field name="partner_id" string="顧客"/>
+                                    <field name="invoice_date" string="請求日"/>
+                                    <field name="invoice_date_due" string="期日"/>
+                                    <field name="amount_total_signed" sum="合計"
+                                           optional="show"/>
+                                    <field name="amount_residual" sum="未消込合計金額"
+                                           optional="show"/>
+                                </tree>
+                            </field>
+
+                        </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_account_receipt_notification_line" model="ir.actions.act_window">
+            <field name="name">全銀振込入金通知ファイルのインポート</field>
+            <field name="res_model">ss_erp.account.receipt.notification.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="ss_erp_account_receipt_notification_line_tree_view"/>
+        </record>
+
+    </data>
+</odoo>
+

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ss_erp_view_location_form_inherit" model="ir.ui.view">
+            <field name="name">ss_erp.stock.location.form.inherit</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='additional_info']" position="after">
+                    <group string="LPガス情報">
+                        <field name="x_inventory_type"/>
+                        <field name="x_total_installation_quantity"  attrs="{'required':[('x_inventory_type','in',('cylinder','minibulk'))]}"/>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='return_location']" position="after">
+                    <field name="x_stored_location"/>
+                </xpath>
+<!--                <xpath expr="//field[@name='valuation_in_account_id']" position="attributes">-->
+<!--                    <attribute name="attrs">{'required': [('x_stored_location', '=', True]}</attribute>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//field[@name='valuation_out_account_id']" position="attributes">-->
+<!--                    <attribute name="attrs">{'required': [('x_stored_location', '=', True]}</attribute>-->
+<!--                </xpath>-->
+            </field>
+        </record>
+    </data>
+</odoo>

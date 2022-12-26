@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_account_transfer_result_line_tree_view" model="ir.ui.view">
+            <field name="name">ss_erp.account.transfer.result.header.line.form</field>
+            <field name="model">ss_erp.account.transfer.result.line</field>
+            <field name="arch" type="xml">
+                <tree string="全銀口座振替結果FB取込データ" create="0">
+                    <field name="processing_date"/>
+                    <field name="withdrawal_bank_number"/>
+                    <field name="withdrawal_bank_name"/>
+                    <field name="withdrawal_branch_number"/>
+                    <field name="withdrawal_branch_name"/>
+                    <field name="status"
+                           widget="badge"
+                           decoration-info="status=='success'"
+                           decoration-warning="status=='wait'"
+                           decoration-danger="status=='error'"
+                    />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_account_transfer_result_line" model="ir.actions.act_window">
+            <field name="name">全銀口座振替結果FB取込データ</field>
+            <field name="res_model">ss_erp.account.transfer.result.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="ss_erp_account_transfer_result_line_tree_view"/>
+            <field name="context">{}</field>
+        </record>
+
+    </data>
+</odoo>
+

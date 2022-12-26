@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="ss_erp_construction_root_menu" name="工事" sequence="100"
+                  web_icon="ss_erp_construction,static/description/icon.png"/>
+        <menuitem id="ss_erp_construction_config_menu" name="設定" parent="ss_erp_construction_root_menu"
+                  sequence="500"/>
+        <menuitem name="工事テンプレート" id="ss_erp_construction_template_menu"
+                  parent="ss_erp_construction_config_menu"
+                  sequence="1"
+                  action="ss_erp_construction_template_act_window"/>
+
+        <menuitem id="ss_erp_construction_order_menu" name="工事オーダ" parent="ss_erp_construction_root_menu"
+                  action="ss_erp_construction_act_window"/>
+
+        <menuitem name="作業区" id="ss_erp_construction_workcenter_menu" parent="ss_erp_construction_config_menu"
+                  sequence="2"
+                  action="ss_erp_construction_workcenter_act_window"/>
+<!--        <menuitem name="作業オーダ" id="ss_erp_construction_workorder_menu" parent="ss_erp_construction_root_menu"-->
+<!--                  action="ss_erp_construction_workorder_act_window"/>-->
+        <menuitem name="工事種別" id="construction_category_setting_menu" parent="ss_erp_construction_config_menu" sequence="3"
+                  action="ss_erp_construction_category_act_window"/>
+
+    </data>
+</odoo>

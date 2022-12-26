@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="CustomBaseImport" t-inherit="base_import.ImportView.buttons" t-inherit-mode="extension" owl="1">
+        <xpath expr="//button[hasclass('o_import_cancel')]" position="after">
+            <button type="button" 
+                class="btn btn-secondary oe_autogas_import_transform d-none">
+                整形
+            </button>
+            <button type="button"
+                class="btn btn-secondary oe_powernet_import_transform d-none">
+                整形
+            </button>
+            <button type="button"
+                class="btn btn-secondary oe_youki_kanri_import_transform d-none">
+                整形
+            </button>
+            <button type="button"
+                class="btn btn-secondary oe_youki_kensa_import_transform d-none">
+                整形
+            </button>
+            <button type="button"
+                class="btn btn-secondary oe_propane_import_transform d-none">
+                整形
+            </button>
+            <button 
+                t-if="res_model=='ss_erp.ifdb.yg.summary' or res_model=='ss_erp.ifdb.yg.detail'"
+                type="button"
+                class="btn btn-primary o_import_transform d-none">
+                整形
+            </button>
+        </xpath>
+    </t>
+
+</templates>

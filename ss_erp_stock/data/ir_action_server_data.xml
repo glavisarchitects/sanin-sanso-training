@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="model_stock_inventory_action_approval_request" model="ir.actions.server">
+            <field name="name">承認依頼</field>
+            <field name="model_id" ref="model_stock_inventory"/>
+            <field name="binding_model_id" ref="model_stock_inventory"/>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    act = env.ref('approvals.approval_request_action').read()[0]
+                    request_category_id = env['approval.category'].search([('has_x_inventory_order_ids','in',('required','optional'))], limit=1).id
+                    act.update({'views': [(env.ref('approvals.approval_request_view_form').id, 'form')],'context':{'default_category_id':request_category_id,'default_x_inventory_order_ids': [(6, 0, records.ids)]}})
+                    action = act
+            </field>
+        </record>
+        <record id="model_stock_inventory_instruction_action_approval_request" model="ir.actions.server">
+            <field name="name">承認依頼</field>
+            <field name="model_id" ref="model_ss_erp_instruction_order"/>
+            <field name="binding_model_id" ref="model_ss_erp_instruction_order"/>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    act = env.ref('approvals.approval_request_action').read()[0]
+                    request_category_id = env['approval.category'].search([('has_x_inventory_instruction_ids','in',('required','optional'))], limit=1).id
+                    act.update({'views': [(env.ref('approvals.approval_request_view_form').id, 'form')],'context':{'default_category_id':request_category_id,'default_x_inventory_instruction_ids': [(6, 0, records.ids)]}})
+                    action = act
+            </field>
+        </record>
+
+        <!--  Request approval - change to 承認待ち  -->
+        <record id="model_lpgas_request_approval" model="ir.actions.server">
+            <field name="name">承認依頼</field>
+            <field name="model_id" ref="model_ss_erp_lpgas_order"/>
+            <field name="binding_model_id" ref="model_ss_erp_lpgas_order"/>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    records.approval_request()
+                    act = env.ref('approvals.approval_request_action').read()[0]
+                    request_category_id = env['approval.category'].search([('has_lp_gas_inventory_ids','in',('required','optional'))], limit=1).id
+                    act.update({'views': [(env.ref('approvals.approval_request_view_form').id, 'form')],'context':{'default_category_id':request_category_id,'default_x_lpgas_inventory_ids': [(6, 0, records.ids)]}})
+                    action = act
+            </field>        </record>
+<!--        <record id="base_automation_update_organization" model="base.automation" forcecreate="True">-->
+<!--            <field name="name">組織及び管轄部門更新</field>-->
+<!--            <field name="model_id" ref="ss_erp_stock.model_stock_move"/>-->
+<!--            <field name="state">code</field>-->
+<!--            <field name="trigger">on_create</field>-->
+<!--            <field name="code">-->
+<!--                if record.picking_id:-->
+<!--                    record.update({'x_organization_id':record.picking_id.x_organization_id, 'x_responsible_dept_id': record.picking_id.x_responsible_dept_id})-->
+<!--            </field>-->
+<!--        </record>-->
+    </data>
+</odoo>

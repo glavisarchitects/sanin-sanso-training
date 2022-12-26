@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ss_erp_stock_adjustment" model="ir.config_parameter">
+            <field name="key">ss_erp_stock_adjustment</field>
+            <field name="value"></field>
+        </record>
+        <record id="ss_erp_stock_expense" model="ir.config_parameter">
+            <field name="key">ss_erp_stock_expense</field>
+            <field name="value"></field>
+        </record>
+
+    </data>
+</odoo>

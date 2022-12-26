@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="account_invoice_list_history_menu" name="請求書一覧表" action="account_invoice_list_history_action"
+                  parent="account_reports.account_reports_partners_reports_menu" sequence="13"/>
+    </data>
+</odoo>

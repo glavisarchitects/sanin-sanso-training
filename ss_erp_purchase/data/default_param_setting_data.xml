@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="ss_erp_purchase_definition_param_settings" model="res.config.settings">
+            <!--Purchase Param-->
+            <field name="po_order_approval" eval="False"/>
+            <field name="lock_confirmed_po" eval="False"/>
+            <field name="group_warning_purchase" eval="False"/>
+            <field name="module_purchase_requisition" eval="False"/>
+            <field name="group_send_reminder" eval="False"/>
+             <field name="default_purchase_method">receive</field>
+            <field name="module_account_3way_match" eval="False"/>
+            <field name="group_product_variant" eval="False"/>
+            <field name="module_purchase_product_matrix" eval="False"/>
+            <field name="module_stock_dropshipping" eval="True"/>
+        </record>
+
+        <function model="res.config.settings" name="execute">
+            <value model="res.config.settings"
+                   search="[('id', '=', ref('ss_erp_purchase_definition_param_settings'))]"/>
+        </function>
+    </data>
+</odoo>

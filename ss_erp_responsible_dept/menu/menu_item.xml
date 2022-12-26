@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--管轄部門-->
+        <menuitem id="responsible_department_view_action_menu" name="管轄部門"
+                  action="responsible_department_view_action" parent="base.menu_users" sequence="10"/>
+    </data>
+</odoo>

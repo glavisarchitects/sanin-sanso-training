@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Menu Stock -->
+        <menuitem id="menu_ss_erp_instruction_order_action" name="棚卸計画" parent="stock.menu_stock_warehouse_mgmt"
+                  action="ss_erp_instruction_order_action" sequence="99"/>
+
+        <menuitem id="menu_ss_erp_lpgas_order" name="LPガス棚卸伝票" parent="stock.menu_stock_warehouse_mgmt"
+                  action="ss_erp_lpgas_order_action" sequence="200"/>
+        <menuitem
+                id="ss_erp_inventory_order_menu"
+                action="ss_erp_inventory_order_action"
+                parent="stock.menu_stock_warehouse_mgmt"
+                sequence="200"/>
+
+        <menuitem name="廃棄種別" id="ss_erp_stock_scrap_category_menu" parent="stock.menu_warehouse_config"
+                  action="ss_erp_stock_scrap_category_act_window"/>
+
+
+        <!--    INVENTORY PRODUCT CONFIG-->
+        <menuitem
+                id="ss_erp_product_detail_classification_in_menu_stock_config"
+                action="ss_erp_product_template.ss_erp_product_detail_classification_action"
+                parent="stock.menu_product_in_config_stock"
+                sequence="45"/>
+        <menuitem
+                id="ss_erp_product_major_classification_in_menu_stock_config"
+                action="ss_erp_product_template.ss_erp_product_major_classification_action"
+                parent="stock.menu_product_in_config_stock"
+                sequence="42"/>
+
+        <menuitem
+                id="ss_erp_product_medium_classification_in_menu_stock_config"
+                action="ss_erp_product_template.ss_erp_product_medium_classification_action"
+                parent="stock.menu_product_in_config_stock"
+                sequence="43"/>
+
+        <menuitem
+                id="ss_erp_product_minor_classification_in_menu_stock_config"
+                action="ss_erp_product_template.ss_erp_product_minor_classification_action"
+                parent="stock.menu_product_in_config_stock"
+                sequence="44"/>
+
+        <menuitem
+                id="product_template_form_stock_menu"
+                action="ss_erp_product_template.product_template_form_action"
+                parent="stock.menu_stock_inventory_control"
+                sequence="0"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="ss_erp_hr_definition_param_settings" model="res.config.settings">
+            <!-- Employee Param-->
+<!--            TODO-->
+            <field name="hr_presence_control_login" eval="False"/>
+            <field name="module_hr_skills" eval="False"/>
+            <field name="module_hr_presence" eval="False"/>
+            <field name="resource_calendar_id" ref="resource.resource_calendar_std"/>
+            <field name="hr_employee_self_edit" eval="False"/>
+
+        </record>
+
+
+
+        <function model="res.config.settings" name="execute">
+            <value model="res.config.settings"
+                   search="[('id', '=', ref('ss_erp_hr_definition_param_settings'))]"/>
+        </function>
+    </data>
+</odoo>

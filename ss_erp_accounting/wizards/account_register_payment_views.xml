@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_view_account_payment_register_form" model="ir.ui.view">
+            <field name="name">account.payment.register.form.inherit</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='partner_bank_id']" position="before">
+                        <field name="x_journal_sub_account" invisible="1"/>
+                        <field name="x_organization_id" readonly="1"/>
+                        <field name="x_responsible_dept_id" readonly="1"/>
+                        <field name="x_sub_account_id" domain="[('id','in',x_journal_sub_account)]"/>
+                        <field name="x_receipt_type" attrs="{'invisible': [('payment_type','=','outbound')]}"/>
+                        <field name="x_payment_type" attrs="{'invisible': [('payment_type','=','inbound')]}"/>
+                    </xpath>
+                    <xpath expr="//group[@name='group3']" position="replace">
+
+                        <group name="group3"
+                               attrs="{'invisible': ['|', ('payment_difference', '=', 0.0), '|', ('can_edit_wizard', '=', False), '&amp;', ('can_group_payments', '=', True), ('group_payment', '=', False)]}"
+                               groups="account.group_account_readonly">
+                            <label for="payment_difference"/>
+                            <div>
+                                <field name="payment_difference"/>
+                                <field name="payment_difference_handling" widget="radio" nolabel="1"/>
+                                <div attrs="{'invisible': [('payment_difference_handling','=','open')]}">
+                                    <field name="x_line_ids">
+                                        <tree editable="bottom" >
+                                            <field name="currency_id" invisible="1"/>
+                                            <field name="writeoff_account_id" required="1"/>
+                                            <field name="writeoff_label" required="1"/>
+                                            <field name="payment_money" required="1"/>
+                                        </tree>
+                                    </field>
+                                </div>
+                            </div>
+                        </group>
+                        <group name="group4" attrs="{'invisible': [('payment_difference_handling','=','open')]}">
+                            <field name="x_total_fraction" />
+                        </group>
+
+                    </xpath>
+
+                </data>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,56 @@
+<odoo>
+    <data>
+        <record id="ss_erp_instruction_order_line_tree" model="ir.ui.view">
+            <field name="name">ss_erp.instruction.order.line.tree</field>
+            <field name="model">ss_erp.instruction.order.line</field>
+            <field name="arch" type="xml">
+                <tree default_order="location_id,product_id" editable="top" create="false"
+                      decoration-danger="product_qty != theoretical_qty"
+                      decoration-muted="product_qty == theoretical_qty"
+                      js_class="instruction_create_inventory_button" string="指示明細">
+                    <field name="company_id" invisible="1"/>
+                    <field name="organization_id"/>
+                    <field name="responsible_dept_id"/>
+                    <field name="responsible_user_id"/>
+<!--                    <field name="type_id"/>-->
+                    <field name="location_id" options="{'no_create': True}"/>
+                    <field name="product_id"/>
+                    <field name="prod_lot_id"/>
+                    <field name="theoretical_qty" width="0.5" force_save="1" optional="show"/>
+                    <field name="product_qty" width="0.5"/>
+                    <field name="difference_qty" optional="show" width="0.5"/>
+                    <field name="product_uom_id" width="0.3" force_save="1"/>
+                    <field name="product_cost"/>
+                    <field name="order_id" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="ss_erp_instruction_order_line_tree_non_edit" model="ir.ui.view">
+            <field name="name">ss_erp.instruction.order.line.tree.non_edit</field>
+            <field name="model">ss_erp.instruction.order.line</field>
+            <field name="arch" type="xml">
+                <tree default_order="location_id,product_id" editable="top" create="false" edit="false"
+                      decoration-danger="product_qty != theoretical_qty"
+                      decoration-muted="product_qty == theoretical_qty"
+                      js_class="instruction_create_inventory_button" string="指示明細">
+                    <field name="company_id" invisible="1"/>
+                    <field name="organization_id"/>
+                    <field name="responsible_dept_id"/>
+                    <field name="responsible_user_id"/>
+<!--                    <field name="type_id"/>-->
+                    <field name="location_id" options="{'no_create': True}"/>
+                    <field name="product_id"/>
+                    <field name="prod_lot_id"/>
+                    <field name="theoretical_qty" width="0.5" force_save="1" optional="show"/>
+                    <field name="product_qty" width="0.5"/>
+                    <field name="difference_qty" optional="show" width="0.5"/>
+                    <field name="product_uom_id" width="0.3" force_save="1"/>
+                    <field name="product_cost" readonly="1"/>
+                    <field name="order_id" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>

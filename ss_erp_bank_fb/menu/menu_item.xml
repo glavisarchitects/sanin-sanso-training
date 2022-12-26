@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem name="FBデータ" id="ss_erp_invoices" parent="account.menu_finance_receivables" sequence="1000"/>
+<!--        <menuitem-->
+<!--                name="全銀口座振替依頼FB作成"-->
+<!--                id="ss_erp_account_transfer_request_fb_menu"-->
+<!--                parent="ss_erp_invoices"-->
+<!--                sequence="1"/>-->
+
+        <menuitem
+                id="ss_erp_zengin_account_transfer_request_fb"
+                action="action_zengin_account_transfer_request_fb"
+                parent="ss_erp_invoices"
+                sequence="1"/>
+
+        <menuitem
+                id="ss_erp_account_transfer_result_header_menu"
+                action="action_account_transfer_result_header"
+                parent="ss_erp_invoices"
+                sequence="2"/>
+
+<!--        <menuitem-->
+<!--                id="ss_erp_account_transfer_result_menu"-->
+<!--                action="action_account_transfer_result_line"-->
+<!--                parent="ss_erp_invoices"-->
+<!--                sequence="3"/>-->
+        <menuitem
+                id="ss_erp_account_receipt_notofication_header_menu"
+                action="action_account_receipt_notification_result_header"
+                parent="ss_erp_invoices"
+                sequence="4"/>
+        <menuitem
+                id="ss_erp_comprehensive_create_zengin_fb_menu"
+                action="action_comprehensive_create_zengin_fb_wizard"
+                parent="account.menu_finance_payables"
+                sequence="21"/>
+    </data>
+</odoo>

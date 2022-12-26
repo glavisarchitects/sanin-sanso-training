@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="ss_erp_svf_intergration.account_receivable_customer_ledger_form" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="ss_erp_svf_intergration.account_list_receivable_form" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="ss_erp_svf_intergration.account_invoice_list_history_form" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+
+        <!--  update AR005 27/10/2022      -->
+        <record id="ss_erp_svf_intergration.account_receivable_balance_confirm_form" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+
+        <record id="ss_erp_bank_fb.zengin_account_transfer_request_fb_wizard" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+
+        <record id="ss_erp_bank_fb.comprehensive_create_zengin_fb_wizard" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="ss_erp_accounting.payment_term_change_view" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="ss_erp_construction.view_construction_po_advance_payment_inv" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+
+        <record id="ss_erp_construction.view_construction_po_advance_payment_inv" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="ss_erp_construction.view_construction_advance_payment_inv" model="ir.ui.view">
+            <field name="groups_id" eval="[
+            (4, ref('group_branch_general')),
+            (4, ref('group_branch_middle_manager')),
+            (4, ref('group_branch_manager')),
+            (4, ref('group_head_quarter_general')),
+            (4, ref('group_head_quarter_middle_general')),
+            (4, ref('group_head_quarter'))
+            ]"/>
+        </record>
+
+
+
+    </data>
+</odoo>

@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # sanin-sanso-training
+=======
+# sanin-sanso-it
+>>>>>>> 3d07c15a22afefbbfc2f844399a06278a804a87b
 =======
 # sanin-sanso
 
@@ -31,4 +35,8 @@
 	
 	4. Thêm trường mới
 		x_fieldName
+<<<<<<< HEAD
 >>>>>>> 34734a1cd343ab0f4831adc02bd0cb9673eade71
+=======
+>>>>>>> c71b866529dbfedca80807927506044965315b62
+>>>>>>> 3d07c15a22afefbbfc2f844399a06278a804a87b

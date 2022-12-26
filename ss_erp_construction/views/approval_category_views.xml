@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="construction_approval_category_form_views_inherit">
+        <field name="name">approval.category.form</field>
+        <field name="model">approval.category</field>
+        <field name="inherit_id" ref="approvals.approval_category_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="construction" string="工事">
+                    <group string="工事関連項目">
+                        <field name="has_construction_order_id" widget="radio" options="{'horizontal': true}"/>
+                        <field name="has_construction_order_id2" widget="radio" options="{'horizontal': true}"/>
+                        <field name="has_construction_template_id" widget="radio" options="{'horizontal': true}"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

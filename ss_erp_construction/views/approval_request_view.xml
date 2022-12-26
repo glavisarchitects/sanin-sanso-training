@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="ss_erp_construction_approval_request_form_inherit" model="ir.ui.view">
+            <field name="name">ss.erp.construction.approval.request.form</field>
+            <field name="model">approval.request</field>
+            <field name="inherit_id" ref="ss_erp_approval.approval_request_view_form_inherit"/>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='request_owner_id']" position="after">
+                    <field name="has_construction_order_id" invisible="1"/>
+                    <field name="has_construction_order_id2" invisible="1"/>
+                    <field name="has_construction_template_id" invisible="1"/>
+                </xpath>
+                <xpath expr="//group[@name='request_details']" position="inside">
+                    <field name="x_construction_order_id" attrs="{
+                    'invisible': [('has_construction_order_id', '=', 'no')],
+                    'required': [('has_construction_order_id', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }" options="{'no_quick_create': True}"
+                           context="{'request_id': active_id}"
+                           domain="[('state', '=', 'progress')]"
+                    />
+                    <field name="x_construction_template_id" attrs="{
+                    'invisible': [('has_construction_template_id', '=', 'no')],
+                    'required': [('has_construction_template_id', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }" options="{'no_quick_create': True}"
+                           context="{'request_id': active_id}"
+                           domain="[('state', '=', 'new')]"
+                    />
+                    <field name="x_construction_order_id2" attrs="{
+                    'invisible': [('has_construction_order_id2', '=', 'no')],
+                    'required': [('has_construction_order_id2', '=', 'required')],
+                    'readonly':[('request_status','!=','new')]
+                }" options="{'no_quick_create': True}"
+                           context="{'request_id': active_id}"
+                           domain="[('state', '=', 'draft')]"
+                    />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ss_erp_product_price_view_tree" model="ir.ui.view">
+        <field name="name">ss_erp.product.price.view.tree</field>
+        <field name="model">ss_erp.product.price</field>
+        <field name="arch" type="xml">
+            <tree string="Product Price List">
+                <field name="company_id"/>
+                <field name="pricelist_class"/>
+                <field name="name"/>
+                <field name="organization_id"/>
+                <field name="partner_id"/>
+                <field name="product_id"/>
+                <field name="uom_id"/>
+                <field name="product_uom_qty_min"/>
+                <field name="product_uom_qty_max"/>
+                <field name="price_unit"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ss_erp_product_price_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.product.price.view.form</field>
+        <field name="model">ss_erp.product.price</field>
+        <field name="arch" type="xml">
+            <form string="Product Price Form">
+                <sheet>
+                    <!--invisible element-->
+                    <widget name="web_ribbon" title="アーカイブ済み" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="active" invisible="1"/>
+                    <field name="has_organization" invisible="1"/>
+                    <field name="has_partner" invisible="1"/>
+                    <field name="has_uom" invisible="1"/>
+                    <field name="has_product_uom_qty_min" invisible="1"/>
+                    <field name="has_product_uom_qty_max" invisible="1"/>
+                    <!--end region-->
+                    <group>
+                        <group>
+
+                            <field name="company_id" required="1"/>
+                            <field name="pricelist_class" required="1"/>
+                            <field name="name" required="1"/>
+                            <field name="partner_id"
+                                   attrs="{'required': [('has_partner', '=', 'required')], 'invisible': [('has_partner', '=', 'no')]}"/>
+                            <field name="product_id" required="1"/>
+                            <field name="uom_id"/>
+                            <field name="price_unit" required="1"/>
+                        </group>
+                        <group>
+                            <field name="organization_id"
+                                   attrs="{'required': [('has_organization', '=', 'required')], 'invisible': [('has_organization', '=', 'no')]}"/>
+                            <field name="product_uom_qty_min"
+                                   attrs="{'required': [('has_product_uom_qty_min', '=', 'required')], 'invisible': [('has_product_uom_qty_min', '=', 'no')]}"/>
+                            <field name="product_uom_qty_max"
+                                   attrs="{'required': [('has_product_uom_qty_max', '=', 'required')], 'invisible': [('has_product_uom_qty_max', '=', 'no')]}"/>
+
+                            <field name="start_date" required="1"/>
+                            <field name="end_date" required="1"/>
+                        </group>
+                        <label for="description"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="ss_erp_product_price_action" model="ir.actions.act_window">
+        <field name="name">プロダクト価格</field>
+        <field name="res_model">ss_erp.product.price</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+
+</odoo>

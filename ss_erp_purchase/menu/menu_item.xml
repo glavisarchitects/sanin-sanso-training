@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--    リベート条件-->
+        <menuitem id="ss_erp_partner_rebate_action_management_menu" name="リベート条件"
+                  action="ss_erp_partner_rebate_action" parent="purchase.menu_procurement_management" sequence="10"/>
+        <menuitem id="ss_erp_partner_rebate_finance_action_menu" name="リベート条件"
+                  action="ss_erp_partner_rebate_action" parent="account.menu_finance_payables" sequence="400"/>
+
+        <!--    取引区分-->
+<!--        <menuitem id="transaction_classification_menu" name="取引区分" action="ss_erp_bis_category_action"-->
+<!--                  parent="contacts.res_partner_menu_config" sequence="7"/>-->
+
+
+        <!--  PURCHASE PRODUCT CONFIG  -->
+        <menuitem
+                id="ss_erp_product_detail_classification_in_menu_purchase_config"
+                action="ss_erp_product_template.ss_erp_product_detail_classification_action"
+                parent="purchase.menu_product_in_config_purchase"
+                sequence="8"/>
+        <menuitem
+                id="ss_erp_product_major_classification_in_menu_purchase_config"
+                action="ss_erp_product_template.ss_erp_product_major_classification_action"
+                parent="purchase.menu_product_in_config_purchase"
+                sequence="5"/>
+
+        <menuitem
+                id="ss_erp_product_medium_classification_in_menu_purchase_config"
+                action="ss_erp_product_template.ss_erp_product_medium_classification_action"
+                parent="purchase.menu_product_in_config_purchase"
+                sequence="6"/>
+
+        <menuitem
+                id="ss_erp_product_minor_classification_in_menu_purchase_config"
+                action="ss_erp_product_template.ss_erp_product_minor_classification_action"
+                parent="purchase.menu_product_in_config_purchase"
+                sequence="7"/>
+
+        <menuitem
+                id="product_template_form_purchase_menu"
+                action="ss_erp_product_template.product_template_form_action"
+                parent="purchase.menu_purchase_products"
+                sequence="0"/>
+    </data>
+</odoo>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        move this record to ss_account module-->
+<!--        <record id="view_move_form_purchase_ss_erp" model="ir.ui.view">-->
+<!--            <field name="name">account.move.purchase.ss.erp</field>-->
+<!--            <field name="model">account.move</field>-->
+<!--            <field name="inherit_id" ref="account.view_move_form"/>-->
+<!--            <field name="arch" type="xml">-->
+
+<!--                <xpath expr="//group[@id='header_left_group']//field[@name='purchase_vendor_bill_id']" position="after">-->
+<!--                    <field name="x_receipt_type" attrs="{'invisible': [('move_type', 'not in', ['out_invoice','out_refund'])]}"/>-->
+<!--                    <field name="x_payment_type" attrs="{'invisible': [('move_type', 'not in', ['in_invoice','in_refund'])]}"/>-->
+<!--                </xpath>-->
+
+
+<!--                <xpath expr="//field[@name='edi_state']" position="before">-->
+<!--                    <field name="x_is_not_create_fb" attrs="{'invisible': [('x_receipt_type', 'not in', ('bank','transfer')), ('x_payment_type', '!=', 'bank')]}"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+
+    </data>
+</odoo>

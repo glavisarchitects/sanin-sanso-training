@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ss_erp_partner_rebate_form" model="ir.ui.view">
+            <field name="name">ss_erp.partner.rebate.form</field>
+            <field name="model">ss_erp.partner.rebate</field>
+            <field name="arch" type="xml">
+                <form string="リベート条件">
+                    <header>
+                        <button name="action_add_attachment" string="ドキュメントを添付" type="object" icon="fa-paperclip" />
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_get_attachment_view"
+                                class="oe_stat_button"
+                                icon="fa-file-text-o"
+                                type="object">
+                                <field name="attachment_number" widget="statinfo" string="ドキュメント" options="{'reload_on_button': true}"/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="company_id" string="会社情報" required="1"/>
+                                <field name="organization_id" options="{'no_create': True}" string="組織情報" required="1"/>
+                                <field name="responsible_id" options="{'no_create': True}" required="1"/>
+                                <field name="partner_ref" invisible="1" required="1"/>
+                                <field name="date_start" required="1"/>
+                                <field name="date_end" required="1"/>
+                            </group>
+                            <group>
+                                <field name="partner_id" options="{'no_create': True}" required="1" domain="[('x_is_vendor','=',True)]"/>
+                                <field name="register_id" options="{'no_create': True}" readonly="0" required="1"/>
+                                
+                                <field name="currency_id" groups="base.group_multi_currency"/>
+                            </group>
+                        </group>
+                        <group string="契約内容">
+                            <group>
+                                <field name="rebate_price" widget="monetary" options="{'currency_field': 'currency_id'}" required="1"/>
+                                <field name="rebate_standard"/>
+                                <field name="memo" string="備考"/>
+                            </group>
+                            <group>
+                                <field name="rebate_goal"/>
+                                <field name="rebate_products"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="ss_erp_partner_rebate_tree" model="ir.ui.view">
+            <field name="name">ss_erp.partner.rebate.tree</field>
+            <field name="model">ss_erp.partner.rebate</field>
+            <field name="arch" type="xml">
+                <tree string="" decoration-danger="date_end and date_end &lt; datetime.date.today().strftime('%Y-%m-%d')">
+                    <field name="sequence" widget="handle"/>
+                    <field name="responsible_id"/>
+                    <field name="partner_ref"/>
+                    <field name="partner_id" string="仕入先（メーカー）"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="rebate_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="rebate_standard"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="ss_erp_partner_rebate_search" model="ir.ui.view">
+            <field name="name">ss_erp.partner.rebate.search</field>
+            <field name="model">ss_erp.partner.rebate</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="name" string="No." filter_domain="['|', '|', ('name', 'ilike', self), ('partner_ref', 'ilike', self), ('partner_id', 'child_of', self)]"/>
+                    <field name="partner_id" operator="child_of"/>
+                    <field name="responsible_id"/>
+                    <separator/>
+                    <filter string="有効リベート条件" name="valid_condition" domain="[('date_start', '&lt;=', context_today().strftime('%Y-%m-%d')),('date_end', '&gt;=', datetime.date.today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="期間満了" name="invalid_condition" domain="[('date_end', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                    <group expand="0" string="グループ化">
+                        <filter string="仕入先" name="supplier" domain="[]" context="{'group_by': 'partner_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="ss_erp_partner_rebate_action" model="ir.actions.act_window">
+            <field name="name">リベート条件</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ss_erp.partner.rebate</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{
+                'search_default_valid_condition': 1,
+            }</field>
+            <field name="search_view_id" ref="ss_erp_partner_rebate_search"/>
+        </record>
+
+        <record model="ir.ui.view" id="purchase.view_partner_property_form">
+            <field name="active">False</field>
+        </record>
+
+    </data>
+</odoo>

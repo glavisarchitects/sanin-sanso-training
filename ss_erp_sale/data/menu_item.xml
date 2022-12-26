@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+    <!--  SALE PRODUCT CONFIG  -->
+    <menuitem
+            id="ss_erp_product_detail_classification_in_menu_sale_config"
+            action="ss_erp_product_template.ss_erp_product_detail_classification_action"
+            parent="sale.prod_config_main"
+            sequence="12"/>
+    <menuitem
+            id="ss_erp_product_major_classification_in_menu_sale_config"
+            action="ss_erp_product_template.ss_erp_product_major_classification_action"
+            parent="sale.prod_config_main"
+            sequence="9"/>
+
+    <menuitem
+            id="ss_erp_product_medium_classification_in_menu_sale_config"
+            action="ss_erp_product_template.ss_erp_product_medium_classification_action"
+            parent="sale.prod_config_main"
+            sequence="10"/>
+
+    <menuitem
+            id="ss_erp_product_minor_classification_in_menu_sale_config"
+            action="ss_erp_product_template.ss_erp_product_minor_classification_action"
+            parent="sale.prod_config_main"
+            sequence="11"/>
+
+    <menuitem
+            id="product_template_form_sale_menu"
+            action="ss_erp_product_template.product_template_form_action"
+            parent="sale.product_menu_catalog"
+            sequence="0"/>
+
+        <menuitem
+                id="ss_erp_product_price_list_menu"
+                action="ss_erp_product_template.ss_erp_product_price_action"
+                parent="sale.product_menu_catalog"
+                sequence="7"/>
+
+        <menuitem
+                id="ss_erp_product_price_list_class_menu"
+                action="ss_erp_product_template.ss_erp_product_price_class_action"
+                parent="sale.product_menu_catalog"
+                sequence="8"/>
+
+    </data>
+</odoo>

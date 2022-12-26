@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="organization_ss_erp_stock_view_form" model="ir.ui.view">
+        <field name="name">ss_erp.organization.stock.view.form</field>
+        <field name="model">ss_erp.organization</field>
+        <field name="inherit_id" ref="ss_erp_organization.organization_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='organization_contact_info']" position="after">
+                <group>
+                    <group>
+                        <field name="warehouse_id"/>
+                    </group>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ss_erp_construction_estimate_report" model="ir.config_parameter">
+            <field name="key">ss_erp_construction_estimate_report</field>
+            <field name="value">10000</field>
+        </record>
+
+        <record id="r008_contraction_contract_term_notice" model="ir.config_parameter">
+            <field name="key">r008_contraction_contract_term_notice</field>
+            <field name="value">abcd</field>
+        </record>
+
+        <record id="r008_contraction_other_term_notice" model="ir.config_parameter">
+            <field name="key">r008_contraction_other_term_notice</field>
+            <field name="value">abcd</field>
+        </record>
+    </data>
+</odoo>

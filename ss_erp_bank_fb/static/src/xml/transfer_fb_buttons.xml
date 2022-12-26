@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+<!--    <t t-extend="ListView.buttons">-->
+<!--        <t t-jquery="div.o_list_buttons" t-operation="append">-->
+<!--           <button t-if="widget.modelName=='account.payment'" type="button" class="btn btn-primary o_list_button_fb_general_transfer" accesskey="u">-->
+<!--                全銀総合振込FB作成-->
+<!--            </button>-->
+<!--        </t>-->
+<!--    </t>-->
+<!--    <t t-extend="BillsListView.buttons">-->
+<!--        <t t-jquery="button.o_list_export_xlsx" t-operation="after">-->
+<!--             <button t-if="widget.modelName=='account.move'"  type="button" class="btn btn-primary o_list_button_account_transfer_request_fb">-->
+<!--                全銀口座振替依頼FB作成-->
+<!--            </button>-->
+<!--        </t>-->
+<!--    </t>-->
+</templates>

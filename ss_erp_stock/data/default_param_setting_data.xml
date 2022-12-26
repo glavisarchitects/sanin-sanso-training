@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="ss_erp_stock_definition_param_settings" model="res.config.settings">
+
+            <!--      Inventory Parameter      -->
+            <field name="group_stock_tracking_lot" eval="False"/>
+            <field name="group_warning_stock" eval="False"/>
+            <field name="module_stock_picking_batch" eval="False"/>
+            <field name="module_procurement_jit">1</field>
+            <field name="default_picking_policy">direct</field>
+            <field name="module_stock_barcode" eval="False"/>
+            <field name="stock_move_email_validation" eval="False"/>
+            <field name="module_stock_sms" eval="False"/>
+            <field name="group_stock_sign_delivery" eval="False"/>
+            <field name="module_delivery_dhl" eval="False"/>
+            <field name="group_stock_production_lot" eval="True"/>
+            <field name="module_product_expiry" eval="True"/>
+            <field name="group_lot_on_delivery_slip" eval="True"/>
+            <field name="group_lot_on_invoice" eval="True"/>
+            <field name="group_stock_tracking_owner" eval="False"/>
+            <field name="module_stock_landed_costs" eval="True"/>
+            <field name="group_stock_multi_locations" eval="True"/>
+            <field name="group_stock_adv_location" eval="True"/>
+            <field name="use_security_lead" eval="False"/>
+            <field name="use_po_lead" eval="False"/>
+        </record>
+
+
+
+        <function model="res.config.settings" name="execute">
+            <value model="res.config.settings"
+                   search="[('id', '=', ref('ss_erp_stock_definition_param_settings'))]"/>
+        </function>
+    </data>
+</odoo>
