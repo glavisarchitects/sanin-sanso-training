@@ -20,3 +20,4 @@ def post_init_hook(cr, registry):
     default_user.write({'groups_id': [(4, env.ref('base.group_user').id),
                                       ]})
 
+    default_user.groups_id._update_user_groups_view()

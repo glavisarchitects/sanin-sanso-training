@@ -436,8 +436,9 @@ class StreamPaymentJournalExport(models.TransientModel):
 
         count = 0
         for index, all_data in enumerate(all_pattern_data):
-            all_am_rec_id.append(all_data['move_id'])
-            all_data.pop('move_id')
+            if 'move_id' in all_data:
+                all_am_rec_id.append(all_data['move_id'])
+                all_data.pop('move_id')
             if all_data['deb_cre_division'] == '1':
                 continue
             # Document data header record
@@ -463,6 +464,9 @@ class StreamPaymentJournalExport(models.TransientModel):
             # clean_dict_data.pop('partner_name')
             debit_line = ','.join(map(str, all_data.values())) + '\r\n'
 
+            if 'move_id' in all_pattern_data[index + 1]:
+                all_am_rec_id.append(all_pattern_data[index + 1]['move_id'])
+                all_pattern_data[index + 1].pop('move_id')
             cre_line = all_pattern_data[index + 1]
             # clean_dict_data = deepcopy(cre_line)
             # clean_dict_data.pop('move_id')
