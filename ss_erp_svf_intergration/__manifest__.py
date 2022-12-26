@@ -31,7 +31,7 @@
         'menu/menu_item.xml',
 
         # DATA
-        # 'data/svf_cloud_config_data.xml',
+        'data/svf_cloud_config_data.xml',
     ],
     "application": False,
     "installable": True,

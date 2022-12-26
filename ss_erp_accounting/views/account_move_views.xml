@@ -38,6 +38,16 @@
                     <attribute name="context">{'pypass_confirm': True}</attribute>
                 </xpath>
 
+                <xpath expr="//group[@id='header_left_group']//field[@name='purchase_vendor_bill_id']" position="after">
+                    <field name="x_receipt_type" attrs="{'invisible': [('move_type', 'not in', ['out_invoice','in_refund'])]}"/>
+                    <field name="x_payment_type" attrs="{'invisible': [('move_type', 'not in', ['in_invoice','out_refund'])]}"/>
+                </xpath>
+
+
+                <xpath expr="//field[@name='edi_state']" position="before">
+                    <field name="x_is_not_create_fb" attrs="{'invisible': [('x_receipt_type', 'not in', ('bank','transfer')), ('x_payment_type', '!=', 'bank')]}"/>
+                </xpath>
+
             </field>
         </record>
 

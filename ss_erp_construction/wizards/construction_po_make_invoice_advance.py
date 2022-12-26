@@ -95,6 +95,7 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
             'invoice_origin': order.name,
             'x_organization_id': head_office_organization.id, #TODO: 確認必要
             'x_responsible_dept_id': order.x_responsible_dept_id.id,
+            'x_business_organization_id': order.x_organization_id.id,
             'x_construction_order_id': order.x_construction_order_id.id,
             'invoice_user_id': order.user_id.id,
             'partner_id': order.partner_id.id,

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
+from datetime import datetime
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -87,6 +88,10 @@ class StockPicking(models.Model):
                 'location_id': False,
                 'location_dest_id': False,
             })
+            for move in self.move_ids_without_package:
+                move.update({
+                    'x_organization_id': self.x_organization_id
+                })
             return {'domain': {'picking_type_id': ['|', ('warehouse_id', '=', False),
                                                    ('warehouse_id', '=', self.x_organization_id.warehouse_id.id)],
                                }}
@@ -94,10 +99,10 @@ class StockPicking(models.Model):
     @api.onchange('picking_type_id')
     def _onchange_picking_type_id(self):
         if self.picking_type_code == 'incoming':
-            return {'domain': {'location_dest_id': [('usage', '=', 'internal'), (
+            return {'domain': {'location_dest_id': ['|', ('usage', '=', 'internal'), ('x_stored_location', '=', True), (
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'outgoing':
-            return {'domain': {'location_id': [('usage', '=', 'internal'), (
+            return {'domain': {'location_id': ['|', ('usage', '=', 'internal'), ('x_stored_location', '=', True), (
                 'id', 'child_of', self.picking_type_id.warehouse_id.view_location_id.id)]}}
         elif self.picking_type_code == 'internal':
             return {'domain': {
@@ -111,17 +116,16 @@ class StockPicking(models.Model):
                     }
 
     def write(self, vals):
-        res = super().write(vals)
-        if self.move_lines:
-            self.move_lines.update({'x_organization_id': self.x_organization_id.id})
-        if self.move_ids_without_package:
-            self.move_ids_without_package.update({'x_organization_id': self.x_organization_id.id})
-        if self.move_line_ids:
-            self.move_line_ids.update({'x_organization_id': self.x_organization_id.id})
-        if self.move_line_ids_without_package:
-            self.move_line_ids_without_package.update({'x_organization_id': self.x_organization_id.id})
-        if self.move_line_nosuggest_ids:
-            self.move_line_nosuggest_ids.update({'x_organization_id': self.x_organization_id.id})
+        res = super(StockPicking, self).write(vals)
+        for picking in self:
+            if picking.state != 'draft':
+                # for some reason moves added after state = 'done' won't save group_id, reference if added in
+                # "stock_move.default_get()"
+                picking.move_ids_without_package.write({
+                    'x_organization_id': picking.x_organization_id.id,
+                    'x_responsible_dept_id': picking.x_responsible_dept_id.id,
+                    'x_responsible_user_id': picking.user_id.id
+                })
         return res
 
 

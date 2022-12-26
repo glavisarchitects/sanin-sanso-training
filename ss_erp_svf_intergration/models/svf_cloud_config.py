@@ -140,9 +140,9 @@ class SvfCloudConfig(models.Model):
         # if type_report == 'R002':
         #     title_pdf = '請求書_' + title_pdf
 
-        title_pdf = fields.Datetime.now().strftime("%Y%m%d")
-        if type_report == 'R002':
-            title_pdf = 'invoice_' + title_pdf
+        title_pdf = specific_params['form_title'] + fields.Datetime.now().strftime("%Y%m%d")
+        # if type_report == 'R002':
+        #     title_pdf = 'invoice_' + title_pdf
 
         data_key = 'data%2F' + title_pdf
         res = requests.post(
