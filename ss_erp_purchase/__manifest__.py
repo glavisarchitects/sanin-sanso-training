@@ -16,7 +16,7 @@
         'views/partner_rebate_views.xml',
         'views/purchase_order_views.xml',
         # 'views/ss_erp_bis_category_views.xml',
-        'views/account_move_views.xml',
+        # 'views/account_move_views.xml',
         'wizards/partner_rebate_attachment_wizard_views.xml',
         'menu/menu_item.xml',
 
