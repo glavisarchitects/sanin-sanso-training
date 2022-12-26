@@ -451,22 +451,22 @@ class PayVendorNotice(models.TransientModel):
         data_send = "\n".join(data_file)
         data_send = data_send[0:-1]
 
-        b = data_send.encode('Shift-JIS')
-        vals = {
-            'name': '支払通知書' '.csv',
-            'datas': base64.b64encode(b).decode('Shift-JIS'),
-            'type': 'binary',
-            'res_model': 'ir.ui.view',
-            'x_no_need_save': True,
-            'res_id': False,
-        }
+        # b = data_send.encode('Shift-JIS')
+        # vals = {
+        #     'name': '支払通知書' '.csv',
+        #     'datas': base64.b64encode(b).decode('Shift-JIS'),
+        #     'type': 'binary',
+        #     'res_model': 'ir.ui.view',
+        #     'x_no_need_save': True,
+        #     'res_id': False,
+        # }
+        #
+        # file_txt = self.env['ir.attachment'].create(vals)
+        #
+        # return {
+        #     'type': 'ir.actions.act_url',
+        #     'url': '/web/content/' + str(file_txt.id) + '?download=true',
+        #     'target': 'new',
+        # }
 
-        file_txt = self.env['ir.attachment'].create(vals)
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/' + str(file_txt.id) + '?download=true',
-            'target': 'new',
-        }
-
-        # return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R012')
+        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R012')

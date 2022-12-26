@@ -241,22 +241,7 @@
                                     <field name="red_notice" nolabel="1"/>
                                 </div>
                             </page>
-                            <page name="order_confirm" string="注文請書">
-                                <group string="注文請書 帳票設定">
-                                    <group>
-<!--                                        <field name="form_type" readonly="1"/>-->
-                                        <field name="export_type" widget="radio"/>
-                                        <field name="receipt_type"/>
-                                    </group>
-                                    <group>
-                                        <field name="order_number"/>
-                                        <field name="delivery_location"/>
-                                    </group>
-                                </group>
-                                <group>
-                                    <field name="other_conditions"/>
-                                </group>
-                            </page>
+
                         </notebook>
                     </sheet>
                     <div class="oe_chatter" modifiers="{}">

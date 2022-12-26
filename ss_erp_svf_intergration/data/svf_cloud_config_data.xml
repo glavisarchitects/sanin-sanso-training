@@ -198,7 +198,7 @@ RyWfUHb5pHQ159c4ndQcXuk=
 
         <record id="r008_form_format_path" model="ir.config_parameter">
             <field name="key">R008_form_format_path</field>
-            <field name="value">xx</field>
+            <field name="value">form/Sample/ga_test/R008_confirmation_of_order_fromSS.xml</field>
         </record>
 
         <record id="r008_form_title" model="ir.config_parameter">
@@ -216,9 +216,29 @@ RyWfUHb5pHQ159c4ndQcXuk=
             <field name="value">aa</field>
         </record>
 
+        <record id="r008_toSS_form_format_path" model="ir.config_parameter">
+            <field name="key">R008_toSS_form_format_path</field>
+            <field name="value">form/Sample/ga_test/R008_confirmation_of_order_toSS.xml</field>
+        </record>
+
+        <record id="r008_toSS_form_title" model="ir.config_parameter">
+            <field name="key">R008_toSS_form_title</field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r008_toSS_form_storage_dest_path" model="ir.config_parameter">
+            <field name="key">R008_toSS_form_storage_dest_path</field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r008_toSS_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R008_toSS_form_img_resource_path</field>
+            <field name="value">aa</field>
+        </record>
+
         <record id="r009_form_format_path" model="ir.config_parameter">
             <field name="key">R009_form_format_path</field>
-            <field name="value">xx</field>
+            <field name="value">form/Sample/ga_test/R009_delivery_note.xml</field>
         </record>
 
         <record id="r009_form_title" model="ir.config_parameter">
@@ -230,40 +250,93 @@ RyWfUHb5pHQ159c4ndQcXuk=
             <field name="key">R009_form_storage_dest_path</field>
             <field name="value">aa</field>
         </record>
+
         <record id="r009_form_form_img_resource_path" model="ir.config_parameter">
             <field name="key">R009_form_img_resource_path</field>
             <field name="value">aa</field>
         </record>
 
-<!--        &lt;!&ndash;        R010 Common&ndash;&gt;-->
-<!--        <record id="r010_form_format_path" model="ir.config_parameter">-->
-<!--            <field name="key">R010_form_format_path</field>-->
-<!--            <field name="value">aa</field>-->
-<!--        </record>-->
+        <!--        R010 Common-->
+        <record id="r010_form_format_path" model="ir.config_parameter">
+            <field name="key">R010_form_format_path</field>
+            <field name="value">form/Sample/ga_test/R010_request_of_quotation.xml</field>
+        </record>
 
-<!--        <record id="r010_form_title" model="ir.config_parameter">-->
-<!--            <field name="key">R010_form_title</field>-->
-<!--            <field name="value">aa</field>-->
-<!--        </record>-->
+        <record id="r010_form_title" model="ir.config_parameter">
+            <field name="key">R010_form_title</field>
+            <field name="value">aa</field>
+        </record>
 
-<!--        <record id="r010_form_storage_dest_path" model="ir.config_parameter">-->
-<!--            <field name="key">R010_form_storage_dest_path</field>-->
-<!--            <field name="value">aa</field>-->
-<!--        </record>-->
-<!--        <record id="r010_form_form_img_resource_path" model="ir.config_parameter">-->
-<!--            <field name="key">R010_form_img_resource_path</field>-->
-<!--            <field name="value">aa</field>-->
-<!--        </record>-->
+        <record id="r010_form_storage_dest_path" model="ir.config_parameter">
+            <field name="key">R010_form_storage_dest_path</field>
+            <field name="value">aa</field>
+        </record>
+        <record id="r010_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R010_form_img_resource_path</field>
+            <field name="value">aa</field>
+        </record>
 
-<!--        &lt;!&ndash;        R010 Construction&ndash;&gt;-->
-<!--        <record id="r010_construction_form_format_path" model="ir.config_parameter">-->
-<!--            <field name="key">R010_construction_form_format_path</field>-->
-<!--            <field name="value">aa</field>-->
-<!--        </record>-->
+        <!--        R010 Construction-->
+        <record id="r010_construction_form_format_path" model="ir.config_parameter">
+            <field name="key">R010_construction_form_format_path</field>
+            <field name="value">form/Sample/ga_test/R010_request_of_quotation_construction.xml</field>
+        </record>
+
+        <record id="r010_construction_form_title" model="ir.config_parameter">
+            <field name="key">R010_construction_form_title</field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r010_construction_form_storage_dest_path" model="ir.config_parameter">
+            <field name="key">R010_construction_form_storage_dest_path</field>
+            <field name="value">aa</field>
+        </record>
+        <record id="r010_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R010_construction_form_img_resource_path</field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r011_1_form_format_path" model="ir.config_parameter">
+            <field name="key">R011_1_form_format_path</field>
+            <field name="value">form/Sample/ga_test/R011_purchase_order.xml</field>
+        </record>
+
+        <record id="R011_1_form_title" model="ir.config_parameter">
+            <field name="key">R011_1_form_title</field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r011_1_form_storage_dest_path" model="ir.config_parameter">
+            <field name="key">R011_1_form_storage_dest_path</field>
+            <field name="value">aa</field>
+        </record>
+        <record id="r011_1_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R011_1_form_img_resource_path</field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r011_2_form_format_path" model="ir.config_parameter">
+            <field name="key">R011_2_form_format_path</field>
+            <field name="value">form/Sample/ga_test/R011_purchase_order_construction.xml</field>
+        </record>
+
+        <record id="r011_2_form_title" model="ir.config_parameter">
+            <field name="key">R011_2_form_title</field>
+            <field name="value">aa</field>
+        </record>
+
+        <record id="r011_2_form_storage_dest_path" model="ir.config_parameter">
+            <field name="key">R011_2_form_storage_dest_path</field>
+            <field name="value">aa</field>
+        </record>
+        <record id="r011_2_form_form_img_resource_path" model="ir.config_parameter">
+            <field name="key">R011_2_form_img_resource_path</field>
+            <field name="value">aa</field>
+        </record>
 
         <record id="r012_form_format_path" model="ir.config_parameter">
             <field name="key">R012_form_format_path</field>
-            <field name="value">xx</field>
+            <field name="value">form/Sample/ga_test/R012_payment_notification.xml</field>
         </record>
 
         <record id="r012_form_title" model="ir.config_parameter">

@@ -43,8 +43,8 @@
                         <group>
                             <label for="organization_street" string="組織所在アドレス"/>
                             <div class="o_address_format">
-                                <field name="organization_street" placeholder="町名番地" class="o_address_street"/>
                                 <field name="organization_street2" placeholder="町名番地2" class="o_address_street"/>
+                                <field name="organization_street" placeholder="町名番地" class="o_address_street"/>
                                 <field name="organization_city" placeholder="市区町村" class="o_address_city"/>
                                 <field name="organization_state_id" class="o_address_state" placeholder="都道府県" options="{'no_open': True, 'no_quick_create': True}" domain="[('country_id', '=', organization_country_id)]"/>
                                 <field name="organization_zip" placeholder="郵便番号" class="o_address_zip"/>
