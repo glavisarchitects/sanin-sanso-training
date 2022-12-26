@@ -142,3 +142,9 @@ class StockMoveLine(models.Model):
         comodel_name='res.partner',
         string='連絡先名',
         required=False)
+
+class StockPickingType(models.Model):
+    _inherit = 'stock.picking.type'
+
+    x_organization_id = fields.Many2one(
+        'ss_erp.organization', string="組織")
