@@ -7,6 +7,7 @@ from lxml import etree
 from odoo.tools.float_utils import float_round
 import math
 
+
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
@@ -316,13 +317,25 @@ class SaleOrderLine(models.Model):
                 if rec.x_expected_delivery_date < current_date:
                     raise ValidationError(_("納期は現在より過去の日付は設定できません。"))
 
+    @api.constrains('discount','x_remarks')
+    def _validate_discount(self):
+        for rec in self:
+            if rec.discount != 0:
+                if not rec.x_remarks:
+                    raise ValidationError(_("「値引%」を入力する場合は、「備考」に理由を入力してください。"))
+                elif len(rec.x_remarks)==0:
+                        raise ValidationError(_("「値引%」を入力する場合は、「備考」に理由を入力してください。"))
+
     @api.model
     def create(self, vals):
         if self.x_pricelist:
             vals.update({
                 'price_unit': self.x_pricelist.price_unit,
             })
+        # if vals.get('discount') and not vals.get('x_remarks'):
+        #     raise ValidationError(_("「値引%」を入力した場合は、「備考」に理由を入力してください。"))
         res = super(SaleOrderLine, self).create(vals)
+
         return res
 
     def write(self, vals):
@@ -330,4 +343,10 @@ class SaleOrderLine(models.Model):
             vals.update({
                 'price_unit': self.x_pricelist.price_unit,
             })
+        # TODO
+        # discount = vals['discount'] if vals.has_key(discount) else self.discount
+        # remarks = vals['x_remarks'] if vals.has_key(x_remarks) else self.x_remarks
+        # if discount != 0 and not remarks:
+        #     raise ValidationError(_("「値引%」を入力した場合は、「備考」に理由を入力してください。"))
+
         return super(SaleOrderLine, self).write(vals)
