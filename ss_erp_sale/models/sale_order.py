@@ -314,7 +314,13 @@ class SaleOrderLine(models.Model):
             if rec.x_expected_delivery_date:
                 current_date = fields.Date.today()
                 if rec.x_expected_delivery_date < current_date:
-                    raise ValidationError(_("納期は現在より過去の日付は設定できません。"))
+                    raise ValidationError(_("納期は現在より過去の日付は設定できません。"))  @api.constrains('x_expected_delivery_date')
+    @api.constrains('discount')
+    def _validate_discount(self):
+        for rec in self:
+            if rec.discount != 0 and not rec.x_remarks:
+                raise ValidationError(_("「値引%」を入力した場合は、「備考」に理由を入力してください。"))
+
 
     @api.model
     def create(self, vals):
@@ -331,3 +337,4 @@ class SaleOrderLine(models.Model):
                 'price_unit': self.x_pricelist.price_unit,
             })
         return super(SaleOrderLine, self).write(vals)
+
