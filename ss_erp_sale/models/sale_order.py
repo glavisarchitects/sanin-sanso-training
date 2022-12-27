@@ -322,9 +322,9 @@ class SaleOrderLine(models.Model):
         for rec in self:
             if rec.discount != 0:
                 if not rec.x_remarks:
-                    raise ValidationError(_("「値引%」を入力した場合は、「備考」に理由を入力してください。"))
+                    raise ValidationError(_("「値引%」を入力する場合は、「備考」に理由を入力してください。"))
                 elif len(rec.x_remarks)==0:
-                        raise ValidationError(_("「値引%」を入力した場合は、「備考」に理由を入力してください。"))
+                        raise ValidationError(_("「値引%」を入力する場合は、「備考」に理由を入力してください。"))
 
     @api.model
     def create(self, vals):
