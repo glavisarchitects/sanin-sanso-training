@@ -811,7 +811,7 @@
             <field name="name">SS Stock Inventory Branch Records Update</field>
             <field name="model_id" ref="stock.model_stock_inventory"/>
             <field name="domain_force">
-                ['|',('x_organization_id','in',[organization.id for organization in user.organization_ids]),
+                ['|',('organization_id','in',[organization.id for organization in user.organization_ids]),
                 ('create_uid','=',user.id)]
             </field>
             <field name="groups" eval="[
