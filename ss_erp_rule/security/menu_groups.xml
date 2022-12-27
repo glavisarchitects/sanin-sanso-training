@@ -153,6 +153,18 @@
             (4, ref('ss_erp_rule.group_head_quarter'))
             ]"/>
         </record>
+        <record id="account.menu_product_product_categories" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('ss_erp_rule.group_head_quarter_middle_general')),
+            (4, ref('ss_erp_rule.group_head_quarter'))
+            ]"/>
+        </record>
+        <record id="purchase.menu_product_category_config_purchase" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+            (4, ref('ss_erp_rule.group_head_quarter_middle_general')),
+            (4, ref('ss_erp_rule.group_head_quarter'))
+            ]"/>
+        </record>
         <record id="ss_erp_stock.ss_erp_product_major_classification_in_menu_stock_config" model="ir.ui.menu">
             <field name="groups_id" eval="[
             (4, ref('ss_erp_rule.group_head_quarter_middle_general')),
@@ -360,6 +372,11 @@
             ]"/>
         </record>
         <record id="purchase.menu_product_pricelist_action2_purchase" model="ir.ui.menu">
+            <field name="groups_id" eval="[
+                (6, 0 ,[ref('purchase.group_purchase_user')])
+            ]"/>
+        </record>
+        <record id="purchase.purchase_report" model="ir.ui.menu">
             <field name="groups_id" eval="[
                 (6, 0 ,[ref('purchase.group_purchase_user')])
             ]"/>
