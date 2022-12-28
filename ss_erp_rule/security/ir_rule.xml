@@ -838,7 +838,7 @@
             <field name="model_id" ref="account.model_account_move"/>
             <field name="domain_force">
                 ['|','|',('x_organization_id', 'in',[organization.id for organization in user.organization_ids]),
-                ('invoice_user_id', '=', user.id), (x_business_organization_id,'in',[organization.id for organization in user.organization_ids])]
+                ('invoice_user_id', '=', user.id), ('x_business_organization_id','in',[organization.id for organization in user.organization_ids])]
             </field>
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_my_org_only_sale')),
