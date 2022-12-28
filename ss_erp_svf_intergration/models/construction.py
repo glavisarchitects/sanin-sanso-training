@@ -7,165 +7,15 @@ from datetime import datetime
 class Construction(models.Model):
     _inherit = 'ss.erp.construction'
 
+    # date_due = fields.Date(string='Due Date', readonly=True, index=True, copy=False,
+    #     states={'draft': [('readonly', False)]})
+
     def action_print_estimation(self):
         if self.print_type == 'detail':
             return self._prepare_data_file()
         else:
             return self._prepare_data_file_set()
-        # data_file = self._prepare_data_file()
-        # if not data_file:
-        #     raise UserError("出力対象のデータがありませんでした。")
-        # return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_file, type_report='R002')
-
-    def _get_estimation_detail(self):
-
-        fee_product_list = [
-            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_material_cost')),
-            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_labor_cost')),
-            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_outsourcing_cost')),
-            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_direct_expense_cost')),
-            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_material_cost')),
-            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_labor_cost')),
-            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_outsourcing_cost')),
-            int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_indirect_expense_cost')),
-        ]
-
-        fee_product_list_str = f"({','.join(map(str, fee_product_list))})"
-
-        not_com_list = fee_product_list
-
-        if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_legal_welfare_expenses'):
-            raise UserError(
-                "法定福利費プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_legal_welfare_expenses)")
-        else:
-            ss_erp_construction_legal_welfare_expenses_product = self.env['product.product'].browse(
-                int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_legal_welfare_expenses')))
-            not_com_list.append(ss_erp_construction_legal_welfare_expenses_product.id)
-
-        if not self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price'):
-            raise UserError(
-                "値引きプロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_discount_price)")
-        else:
-            ss_erp_construction_discount_price_product = self.env['product.product'].browse(
-                int(self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_discount_price')))
-            not_com_list.append(ss_erp_construction_discount_price_product.id)
-
-        not_com_list_str = f"({','.join(map(str, not_com_list))})"
-
-        query = f'''
-               WITH exp AS (
-               SELECT 
-                    scc.construction_id,
-                    '法定福利費' AS product_name,
-                    NULL AS specification,
-                    1 AS quantity,
-                    '式' AS unit,
-                    NULL AS unit_price,
-                    scc.subtotal AS amount_of_money,
-                    NULL AS subtotal
-                FROM ss_erp_construction_component scc
-                WHERE scc.product_id = '{ss_erp_construction_legal_welfare_expenses_product.id}' and scc.construction_id = '{self.id}'        
-                ),
-                fee AS (
-                SELECT
-                    scc.construction_id,
-                    '諸経費' AS product_name,
-                    NULL AS specification,
-                    1 AS quantity,
-                    '式' AS unit,
-                    NULL AS unit_price,
-                    SUM(scc.subtotal) AS amount_of_money,
-                    NULL AS subtotal
-                FROM ss_erp_construction_component scc
-                WHERE scc.product_id in {fee_product_list_str}
-                GROUP BY scc.construction_id
-                ),
-                dis AS (
-                SELECT 
-                    scc.construction_id,
-                    '値引き' AS product_name,
-                    NULL AS specification,
-                    1 AS quantity,
-                    '式' AS unit,
-                    NULL AS unit_price,
-                    scc.subtotal AS amount_of_money,
-                    NULL AS subtotal
-                FROM ss_erp_construction_component scc
-                WHERE scc.product_id = '{ss_erp_construction_discount_price_product.id}' and scc.construction_id = '{self.id}'
-                ),
-                com AS (
-                SELECT
-                    scc.construction_id,
-                    (CASE WHEN scc.product_id is NULL THEN scc.name ELSE pt.name END) as product_name,
-                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE pt.x_name_specification END) as specification,
-                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE scc.product_uom_qty END) as quantity,
-                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE uu.name END) as unit,
-                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE scc.sale_price END) as unit_price,
-                    (CASE WHEN scc.product_id is NULL THEN NULL ELSE scc.subtotal END) as amount_of_money,
-                    sec.amount_total AS subtotal                    
-                FROM ss_erp_construction_component scc
-                LEFT JOIN ss_erp_construction sec ON sec.id = scc.construction_id
-                LEFT JOIN product_product pp ON scc.product_id = pp.id
-                LEFT JOIN product_template pt ON pp.product_tmpl_id = pt.id
-                LEFT JOIN uom_uom uu on scc.product_uom_id = uu.id                
-                WHERE (scc.product_id is NULL) or (scc.product_id not in {not_com_list_str}) and scc.construction_id = '{self.id}'
-                ),
-                detail AS 
-                (
-                    SELECT * FROM com
-                    UNION ALL 
-                    SELECT * FROM fee
-                    UNION ALL 
-                    SELECT * FROM dis
-                    UNION ALL 
-                    SELECT * FROM exp
-                )
-                
-                SELECT
-                rp.NAME AS customer_name,
-                sec.name AS department_id,
-                to_char( sec.output_date, 'YYYY年MM月DD日' ),
-                sec.amount_total AS total,
-                concat ( seo.organization_city, seo.organization_street, seo.organization_street2 ) AS address,
-                concat ( 'TEL ', seo.organization_phone ) AS tel,
-                concat ( 'FAX ', seo.organization_fax ) AS fax,
-                concat ( '作成者 ', rp2.NAME ) AS author,
-                sec.construction_name,
-                '別途協議' AS finish_date,
-                tb2.value AS transaction_type,
-                to_char( sec.expire_date, 'YYYY年MM月DD日' ) AS date_of_expiry,
-                sec.estimation_note AS remarks,
-                sec.construction_name AS product_name_head,
-                '' AS specification_head,
-                1 AS quantity_head,
-                '式' AS unit_head,
-                '' AS unit_price_head,
-                sec.amount_untaxed as amount_of_money_head,
-                sec.amount_untaxed as subtotal_head,
-                sec.amount_tax as tax_of_money_head,
-                sec.amount_total as total_head,
-                sec.red_notice as comment_text,
-                '' as page_title,
-                detail.product_name,
-                detail.specification,
-                detail.quantity,
-                detail.unit,
-                detail.unit_price,
-                detail.amount_of_money,
-                detail.subtotal                
-            FROM
-                detail 
-                LEFT JOIN ss_erp_construction sec ON detail.construction_id = sec.id
-                LEFT JOIN res_partner rp ON sec.partner_id = rp.ID 
-                LEFT JOIN ss_erp_organization seo ON sec.organization_id = seo.ID 
-                LEFT JOIN res_users ru ON sec.printed_user = ru.ID 
-                LEFT JOIN res_partner rp2 ON ru.partner_id = rp2.ID 
-                LEFT JOIN account_payment_term apt ON sec.payment_term_id = apt.ID
-                LEFT JOIN (SELECT * FROM ir_translation where name = 'account.payment.term,name')tb2 on tb2.res_id = apt.id
-                WHERE sec.id = '{self.id}'
-        '''
-        self.env.cr.execute(query)
-        return self.env.cr.dictfetchall()
+        # data_file = self._prepare_data_file() if self.print_type == 'detail' else self._prepare_data_file_set()
 
     def _prepare_data_file_set(self):
 
@@ -194,7 +44,7 @@ class Construction(models.Model):
         remarks = self.estimation_note if self.estimation_note else ''
 
         data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
-            self.partner_id.display_name,  # customer_name
+            self.partner_id.display_name + "　殿",  # customer_name
             self.name,  # department_id
             output_date_str,  # output_date
             "{:,}".format(int(self.amount_total)),  # total
@@ -229,22 +79,7 @@ class Construction(models.Model):
 
         file_data = "\n".join(new_data)
 
-        b = file_data.encode('shift-jis')
-        vals = {
-            'name': '工事見積書' '.csv',
-            'datas': base64.b64encode(b).decode('shift-jis'),
-            'type': 'binary',
-            'res_model': 'ir.ui.view',
-            'res_id': False,
-        }
-
-        file_txt = self.env['ir.attachment'].create(vals)
-
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/' + str(file_txt.id) + '?download=true',
-            'target': 'new',
-        }
+        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=file_data, type_report='R001')
 
     def _prepare_data_file(self):
 
@@ -315,7 +150,7 @@ class Construction(models.Model):
                 welfare = line.subtotal
             else:
                 data_line = '"%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s"' % (
-                    self.partner_id.display_name,  # customer_name
+                    self.partner_id.display_name + "　殿",  # customer_name
                     self.name,  # department_id
                     output_date_str,  # output_date
                     "{:,}".format(int(self.amount_total)),  # total
@@ -458,22 +293,41 @@ class Construction(models.Model):
 
         file_data = "\n".join(new_data)
 
-        b = file_data.encode('shift-jis')
-        vals = {
-            'name': '工事見積書' '.csv',
-            'datas': base64.b64encode(b).decode('shift-jis'),
-            'type': 'binary',
-            'res_model': 'ir.ui.view',
-            'res_id': False,
-        }
+        return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=file_data, type_report='R001')
 
-        file_txt = self.env['ir.attachment'].create(vals)
 
-        return {
-            'type': 'ir.actions.act_url',
-            'url': '/web/content/' + str(file_txt.id) + '?download=true',
-            'target': 'new',
-        }
+    #
+    # @api.onchange('plan_date')
+    # def _onchange_invoice_date(self):
+    #     if self.plan_date:
+    #         if not self.payment_term_id and (not self.date_due or self.date_due < self.plan_date):
+    #             self.date_due = self.plan_date
+
+    def _compute_payment_terms(self):
+        ''' Compute the payment terms.
+        :param self:                    The current account.move record.
+        :param date:                    The date computed by '_get_payment_terms_computation_date'.
+        :param total_balance:           The invoice's total in company's currency.
+        :param total_amount_currency:   The invoice's total in invoice's currency.
+        :return:                        A list <to_pay_company_currency, to_pay_invoice_currency, due_date>.
+
+        '''
+
+        date = self.plan_date
+        total_balance = 0
+        total_amount_currency = self.amount_total
+
+        if self.payment_term_id:
+            to_compute = self.payment_term_id.compute(total_balance, date_ref=date, currency=self.env.company.currency_id)
+            if self.currency_id == self.env.company.currency_id:
+                # Single-currency.
+                return [(b[0], b[1], b[1]) for b in to_compute]
+            else:
+                # Multi-currencies.
+                to_compute_currency = self.invoice_payment_term_id.compute(total_amount_currency, date_ref=date, currency=self.env.currency_id)
+                return [(b[0], b[1], ac[1]) for b, ac in zip(to_compute, to_compute_currency)]
+        else:
+            return [(fields.Date.to_string(date), total_balance, total_amount_currency)]
 
     def order_confirm_svf_template_export(self):
         data_file = [
@@ -493,21 +347,23 @@ class Construction(models.Model):
                       + (str( self.organization_id.organization_street) if self.organization_id.organization_street else "") \
                       + (str(self.organization_id.organization_street2) if self.organization_id.organization_street2 else "")
 
-            tel = self.organization_id.organization_phone if self.organization_id.organization_phone else ""
-            fax = self.organization_id.organization_fax if self.organization_id.organization_fax else ""
-            author = self.user_id.name if self.user_id.name else ""
+            tel = "TEL．" + self.organization_id.organization_phone if self.organization_id.organization_phone else ""
+            fax = "FAX．" + self.organization_id.organization_fax if self.organization_id.organization_fax else ""
+            author = "担当者：" + self.user_id.name if self.user_id.name else ""
             supplier_code = self.partner_id.ref if self.partner_id.ref else ""
             order_number = self.order_number if self.order_number else ""
             construction_number = self.sequence_number if self.sequence_number else ""
-            construction_name = self.name if self.name else ""
+            construction_name = self.construction_name if self.construction_name else ""
             delivery_location = self.delivery_location if self.delivery_location else ""
             construction_date_start = self.plan_date.strftime("%Y年%m月%d日") if self.plan_date else ""
             date_planed_finished = self.date_planed_finished.strftime("%Y年%m月%d日") if self.date_planed_finished else ""
-            order_amount = "{:,}".format(int(self.amount_total)) if self.amount_total else ""
-            consumption_tax = "{:,}".format(int(self.amount_tax)) if self.amount_tax else ""
-            without_tax_amount = "{:,}".format(int(self.amount_untaxed)) if self.amount_untaxed else ""
-            receipt_method = self.receipt_type if self.receipt_type else ""
-            due_date = self.payment_term_id.name if self.payment_term_id else ""
+            order_amount = "￥" + "{:,}".format(int(self.amount_total)) if self.amount_total else ""
+            consumption_tax = "￥" + "{:,}".format(int(self.amount_tax)) if self.amount_tax else ""
+            without_tax_amount = "￥" + "{:,}".format(int(self.amount_untaxed)) if self.amount_untaxed else ""
+            receipt_method = dict(self._fields['receipt_type'].selection).get(self.receipt_type) if self.receipt_type else ""
+
+            due_date_term = self._compute_payment_terms()[0][0]
+            due_date = due_date_term
             contract_term_notice = ""
             param_term_notice = self.env['ir.config_parameter'].sudo().get_param('r008_contraction_other_term_notice')
             other_term_notice = param_term_notice if param_term_notice else ''
@@ -566,21 +422,4 @@ class Construction(models.Model):
             data_file.append(str_data_line)
 
         data_send = "\n".join(data_file)
-        # b = data_send.encode('shift-jis')
-        # vals = {
-        #     'name': '注文請書(SS→発注者)' '.csv',
-        #     'datas': base64.b64encode(b).decode('shift-jis'),
-        #     'type': 'binary',
-        #     'res_model': 'ir.ui.view',
-        #     'x_no_need_save': True,
-        #     'res_id': False,
-        # }
-        #
-        # file_txt = self.env['ir.attachment'].create(vals)
-        #
-        # return {
-        #     'type': 'ir.actions.act_url',
-        #     'url': '/web/content/' + str(file_txt.id) + '?download=true',
-        #     'target': 'new',
-        # }
         return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R008')

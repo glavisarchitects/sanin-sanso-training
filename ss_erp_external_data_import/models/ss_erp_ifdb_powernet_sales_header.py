@@ -109,6 +109,13 @@ class IFDBPowerNetSalesHeader(models.Model):
             raise UserError(
                 _('設定しているプロダクトIDは、プロダクトマスタに存在しません。プロダクトマスタを確認してください。'))
 
+        gas_product_id = self.env['product.product'].search([('product_tmpl_id', '=', int(gas_product_id))],
+                                                              limit=1).id
+
+        gas_usage_product_id = self.env['product.product'].search([('product_tmpl_id', '=', int(gas_usage_product_id))],
+                                                              limit=1).id
+
+
         exe_data = self.powernet_sale_record_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
             key=lambda k: (k['sales_date'], k['customer_code'], k['data_types']))
 
@@ -132,18 +139,21 @@ class IFDBPowerNetSalesHeader(models.Model):
         for tax in tax_ids:
             tax_dict[tax.external_code] = tax.internal_code.id
 
-        list_product_ids = self.env['product.product'].search([])
-        product_product_ids = list_product_ids.mapped('id')
+        # list_product_ids = self.env['product.product'].search([])
+        # product_product_ids = list_product_ids.mapped('id')
 
-        base_gas_charge_id = list_product_ids.filtered(lambda x: x.product_tmpl_id.name == 'ガス基本料金').id
-        metered_gas_charge_id = list_product_ids.filtered(lambda x: x.product_tmpl_id.name == 'ガス従量料金').id
+        list_pt_ids = self.env['product.template'].search([])
+        product_template_ids = list_pt_ids.mapped('id')
+
+        # base_gas_charge_id = list_product_ids.filtered(lambda x: x.product_tmpl_id.name == 'ガス基本料金').id
+        # metered_gas_charge_id = list_product_ids.filtered(lambda x: x.product_tmpl_id.name == 'ガス従量料金').id
 
         failed_so = []
         success_dict = {}
         for line in exe_data:
             key = str(line.sales_date) + '_' + str(line.customer_code)
             error_message = False
-            if int(line.product_code) not in product_product_ids:
+            if int(line.product_code) not in product_template_ids:
                 line.status = 'error'
                 error_message = '商品コードがプロダクトマスタに存在しません。'
 
