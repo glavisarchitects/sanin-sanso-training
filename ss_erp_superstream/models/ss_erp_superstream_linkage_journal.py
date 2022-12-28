@@ -123,7 +123,7 @@ class SSSuperStreamLinkageJournal(models.Model):
     def create(self, vals):
         res = super().create(vals)
         res.categ_product_id_char = res.sudo()._recalculate_product_category_char(
-            is_materials_groupingvals=res.materials_grouping)
+            is_materials_grouping=res.materials_grouping)
 
         res.sanhot_product_id_char = res.sudo()._recalculate_sanhot_product_id_char(
             is_sanhot_point=res.sanhot_point)

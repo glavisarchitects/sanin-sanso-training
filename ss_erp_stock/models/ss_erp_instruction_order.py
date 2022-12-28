@@ -218,15 +218,17 @@ class InstructionOrder(models.Model):
         if not propane_gas_id:
             raise UserError(
                 _('プロダクトコードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。（lpgus.order.propane_gas_id）'))
-
         if not self.env['product.template'].browse(int(propane_gas_id)):
             raise UserError(
                 _('設定しているプロダクトIDは存在しません。'))
 
+        product_product_id = self.env['product.product'].search([('product_tmpl_id', '=', int(propane_gas_id))],
+                                                              limit=1)
+
         domain = [('company_id', '=', self.company_id.id),
                   ('quantity', '!=', '0'),
                   ('location_id', 'in', locations_ids),
-                  ('product_id', '!=', int(propane_gas_id))]
+                  ('product_id', '!=', int(product_product_id))]
 
         if self.prefill_counted_quantity == 'zero':
             domain.append(('product_id.active', '=', True))
