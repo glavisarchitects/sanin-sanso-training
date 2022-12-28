@@ -1666,9 +1666,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         , '{param['sstream_company_code']}' as company_code								
                         , '{param['sstream_slip_group']}' as slip_group
                         , CASE WHEN ojl.slip_date_edit = 'first_day' THEN
-                        to_char(date_trunc('month', sp.date) + '-1 month', 'YYYY/MM/DD')
+                        to_char(date_trunc('month', sp.x_inventory_journal_date) + '-1 month', 'YYYY/MM/DD')
                         ELSE
-                        to_char(date_trunc('month', sp.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
+                        to_char(date_trunc('month', sp.x_inventory_journal_date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
                         END  as slip_date			
                         , '1' as line_number 								
                         , '0' as deb_cre_division	
@@ -1687,16 +1687,16 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ElSE '' END as partner_employee_code	
                         ,seo.organization_code as organization_code	
                         , serd.code as department_code
-                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
-                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
+                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
+                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
                         , 0 as tax_amount						
                         , '000' as tax_id						
                         , '0' as tax_entry_division	
-                        , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分'
-                            when ojl.debit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
-                            when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
-                            when ojl.debit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || source_dep.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
-                            ELSE ojl.debit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
+                        , case when ojl.debit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.x_inventory_journal_date, 'MM') || '月分'
+                            when ojl.debit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.x_inventory_journal_date, 'MM') || '月分/' || seo.name 
+                            when ojl.debit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || source_seo.name || '->' || dest_seo.name || to_char(sp.x_inventory_journal_date, 'MM') || '月分'
+                            when ojl.debit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || source_dep.name || '->' || dest_seo.name || to_char(sp.x_inventory_journal_date, 'MM') || '月分'
+                            ELSE ojl.debit_application || ' ' || to_char(sp.x_inventory_journal_date, 'MM') || pt.name || '月分/' || seo.name
                             END
                             as summery1
                         , io.id as move_id
@@ -1747,7 +1747,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
 
                     where						
                     sp.state = 'done'  /* 完了を指定 */						
-                    and sp.date BETWEEN '{start_period}' and '{end_period}'					
+                    and sp.x_inventory_journal_date BETWEEN '{start_period}' and '{end_period}'					
                     and sp.x_organization_id = any(string_to_array(ojl.credit_related_org_id_char, ',')::int[])  /* 移動元組織（貸方関連組織を指定） */						
                     and sp.x_organization_dest_id = any(string_to_array(ojl.debit_related_org_id_char, ',')::int[]) /* 移動先組織（借方関連組織を指定） */	
                     and io.is_super_stream_linked = False																			
@@ -1764,9 +1764,9 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     , '{param['sstream_company_code']}' as company_code								
                     , '{param['sstream_slip_group']}' as slip_group
                     , CASE WHEN ojl.slip_date_edit = 'first_day' THEN
-                    to_char(date_trunc('month', sp.date) + '-1 month', 'YYYY/MM/DD')
+                    to_char(date_trunc('month', sp.x_inventory_journal_date) + '-1 month', 'YYYY/MM/DD')
                     ELSE
-                    to_char(date_trunc('month', sp.date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
+                    to_char(date_trunc('month', sp.x_inventory_journal_date) + '1 month' + '-1 Day', 'YYYY/MM/DD')
                     END  as slip_date			
                     , '2' as line_number 								
                     , '1' as deb_cre_division	
@@ -1785,16 +1785,16 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ElSE '' END as partner_employee_code	
                     ,seo.organization_code as organization_code	
                     , serd.code as department_code
-                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
-                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
+                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
+                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
                     , 0 as tax_amount						
                     , '000' as tax_id						
                     , '0' as tax_entry_division	
-                    , case when ojl.credit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分'
-                        when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.date, 'MM') || '月分/' || seo.name 
-                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || source_seo.name || '->' || dest_seo.name || to_char(sp.date, 'MM') || '月分'
-                        when ojl.credit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || source_dep.name || '->' || dest_dep.name || to_char(sp.date, 'MM') || '月分'
-                        ELSE ojl.credit_application || ' ' || to_char(sp.date, 'MM') || pt.name || '月分/' || seo.name
+                    , case when ojl.credit_application_edit_indicator = 'month' then ojl.debit_application || ' ' || to_char(sp.x_inventory_journal_date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'month_and_branch' then ojl.debit_application || ' ' || to_char(sp.x_inventory_journal_date, 'MM') || '月分/' || seo.name 
+                        when ojl.credit_application_edit_indicator = 'org_from_to_month' then ojl.debit_application || source_seo.name || '->' || dest_seo.name || to_char(sp.x_inventory_journal_date, 'MM') || '月分'
+                        when ojl.credit_application_edit_indicator = 'dept_from_to_month' then ojl.debit_application || source_dep.name || '->' || dest_dep.name || to_char(sp.x_inventory_journal_date, 'MM') || '月分'
+                        ELSE ojl.credit_application || ' ' || to_char(sp.x_inventory_journal_date, 'MM') || pt.name || '月分/' || seo.name
                         END
                         as summery1	
                     , io.id as move_id
@@ -1844,7 +1844,7 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     on sp.picking_type_id = spt.id                    		
                 where						
                 sp.state = 'done'  /* 完了を指定 */						
-                and sp.date BETWEEN '{start_period}' and '{end_period}'							
+                and sp.x_inventory_journal_date BETWEEN '{start_period}' and '{end_period}'							
                 and sp.x_organization_id = any(string_to_array(ojl.credit_related_org_id_char, ',')::int[])  /* 移動元組織（貸方関連組織を指定） */						
                 and sp.x_organization_dest_id = any(string_to_array(ojl.debit_related_org_id_char, ',')::int[]) /* 移動先組織（借方関連組織を指定） */	
                 and io.is_super_stream_linked = False	

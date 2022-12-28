@@ -9,7 +9,7 @@ class YoukiKanri(models.Model):
     _description = "容器管理ヘッダ"
 
     name = fields.Char(
-        string="名称"
+        string="名称", copy=False
     )
     upload_date = fields.Datetime(
         string="アップロード日時",
@@ -126,7 +126,8 @@ class YoukiKanri(models.Model):
                 uom_dict[uom['external_code']] = uom['internal_code'].id
 
         partner_list = self.env['res.partner'].search([]).mapped('id')
-        product_list = self.env['product.product'].search([]).mapped('id')
+        # issue 396, I006 update design
+        product_list = self.env['product.template'].search([]).mapped('id')
         organization_list = self.env['ss_erp.organization'].search([]).mapped('id')
 
         fail_list = []
@@ -138,7 +139,7 @@ class YoukiKanri(models.Model):
             if not line.customer_business_partner_code.isdigit():
                 error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
             else:
-                if int(line.customer_business_partner_code) not in partner_list:
+                if int(line.customer_business_partner_code) not in partner_list and line.slip_processing_classification not in ['8', '9']:
                     error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
 
             if not line.customer_branch_code.isdigit():

@@ -171,7 +171,7 @@ class SvfCloudConfig(models.Model):
             content_file_pdf = res_download.content
             vals = {
                 'name': title_pdf + '.pdf',
-                'datas': base64.b64encode(content_file_pdf).decode('utf-8'),
+                'datas': base64.b64encode(content_file_pdf).decode('shift-jis'),
                 'type': 'binary',
                 'res_model': 'account.move',
                 'res_id': self.id,
