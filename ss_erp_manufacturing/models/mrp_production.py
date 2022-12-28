@@ -27,6 +27,8 @@ class MrpProduction(models.Model):
             return False
 
     def write(self, vals):
+        if not self.check_access_rights('write', raise_exception=False):
+            return False
         res = super(MrpProduction, self).write(vals)
         for production in self:
             if production.state != 'draft':
