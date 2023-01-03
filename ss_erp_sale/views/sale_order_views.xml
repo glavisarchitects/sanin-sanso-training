@@ -220,6 +220,21 @@
         <field name="context">{'default_x_no_approval_required_flag': False}</field>
     </record>
 
+    <record id="ss_erp_sale_order_tree_inherit" model="ir.ui.view">
+        <field name="name">ss.erp.sale.order.tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <!-- Add new fields here -->
+                <field name="x_organization_id"/>
+                <field name="x_responsible_dept_id"/>
+            </xpath>
+
+        </field>
+    </record>
+
 </odoo>
 
 

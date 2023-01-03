@@ -18,9 +18,11 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
     @api.model
     def _default_product_id(self):
         downpayment_product_id = self.env['ir.config_parameter'].sudo().get_param('ss_erp_construction_downpayment_default_product_id')
-        if not downpayment_product_id:
+        downpayment_product_product = self.env['product.product'].search(
+            [('product_tmpl_id', '=', int(downpayment_product_id))])
+        if not downpayment_product_id or not downpayment_product_product:
             raise UserError("工事用の前受プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_construction_downpayment_default_product_id)")
-        return self.env['product.product'].browse(int(downpayment_product_id)).exists()
+        return self.env['product.product'].browse(downpayment_product_product.id).exists()
 
     @api.model
     def _default_deposit_account_id(self):
@@ -163,7 +165,7 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
             construction_component_obj = self.env['ss.erp.construction.component']
             for construction_order in construction_order_ids:
                 amount, name = self._get_advance_details(construction_order)
-                tax_ids = self.product_id.product_tmpl_id.taxes_id[0].id if self.product_id.product_tmpl_id.taxes_id else False,
+                tax_ids = self.product_id.product_tmpl_id.taxes_id[0].id if self.product_id.product_tmpl_id.taxes_id else None,
                 construction_component_values = self._prepare_construction_component(construction_order, tax_ids, amount)
                 construction_component = construction_component_obj.create(construction_component_values)
                 self._create_invoice(construction_order, construction_component, amount)
