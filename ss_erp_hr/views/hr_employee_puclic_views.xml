@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ss_erp_hr_employee_view_form_inherit" model="ir.ui.view">
+        <field name="name">ss_erp.hr.employee.public.view.form</field>
+        <field name="model">hr.employee.public</field>
+        <field name="inherit_id" ref="hr.hr_employee_public_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <group string="第一組織（主務）">
+                    <group>
+                        <field name="organization_first" string="組織" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="department_jurisdiction_first_char" readonly="1"/>
+                    </group>
+                </group>
+                <group string="第二組織（兼務）">
+                    <group>
+                        <field name="organization_second" string="組織" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="department_jurisdiction_second_char"/>
+                    </group>
+                </group>
+                <group string="第三組織（兼務）">
+                    <group>
+                        <field name="organization_third" string="組織" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="department_jurisdiction_third_char"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

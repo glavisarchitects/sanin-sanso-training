@@ -13,6 +13,7 @@
 
         # VIEWS
         'views/hr_employee_views.xml',
+        'views/hr_employee_puclic_views.xml',
         'menu/menu_item.xml',
     ],
     "application": False,

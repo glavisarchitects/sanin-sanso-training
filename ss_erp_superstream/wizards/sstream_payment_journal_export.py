@@ -432,6 +432,10 @@ class StreamPaymentJournalExport(models.TransientModel):
 
         #
         all_pattern_data = data_query_payment_p6p7
+
+        if not all_pattern_data:
+            raise UserError('出力するデータが見つかりませんでした。指定した期間内に出力対象データが存在しないか、既に出力済みの可能性があります。')
+
         all_am_rec_id = []
 
         count = 0

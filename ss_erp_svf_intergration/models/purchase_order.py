@@ -99,7 +99,7 @@ class PurchaseOrder(models.Model):
                     "%Y年%m月%d日") if self.x_construction_period_start else '' + '~' + self.x_construction_period_end.strftime(
                     "%Y年%m月%d日") if self.x_construction_period_end else ''
                 x_supplies_info = get_multi_character(3 * 4) + (self.x_supplies_info if self.x_supplies_info else "")
-                supplies_check = "あり" + x_supplies_info if self.x_supplies_check == 'exist' else "なし"
+                supplies_check = "有" + x_supplies_info if self.x_supplies_check == 'exist' else "無"
                 construction_payment_terms = "当社規定による、月末締切・翌月末支払\r\n" + "現金" + get_multi_character(
                     2 * 4) + str(
                     self.x_construction_payment_cash) + "%" + get_multi_character(3 * 4) + "手形" + get_multi_character(
