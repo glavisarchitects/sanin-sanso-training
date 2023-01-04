@@ -118,8 +118,8 @@ class ConstructionAdvancePaymentInv(models.TransientModel):
                 self.advance_payment_method == 'fixed' and self.fixed_amount <= 0.00):
             raise UserError(_('前受金の金額は正の値でなければなりません。'))
 
-        if not self.product_id.product_tmpl_id.taxes_id:
-            raise UserError(_('前受金の税は設定していません。'))
+        # if not self.product_id.product_tmpl_id.taxes_id:
+        #     raise UserError(_('前受金の税は設定していません。'))
 
         amount, name = self._get_advance_details(order)
 
