@@ -24,7 +24,7 @@ class StockPicking(models.Model):
 
     def delivery_order_svf_template_export(self):
         data_file = [
-            '"delivery_slip_number","zip","state_city","address","customer_name","output_date","name","responsible_person","organization_zip","organization_address","organization_phone","organization_fax","product_name","spacification_name","quantity","unit","unit_price","price","rprice_totalemarks","price_total"']
+            '"delivery_slip_number","zip","state_city","address","customer_name","output_date","name","responsible_person","organization_zip","organization_address","organization_phone","organization_fax","product_name","spacification_name","quantity","unit","unit_price","price","remarks","price_total"']
         # sale_order_rec = self.sale_id
 
         for order_line in self.move_ids_without_package:
