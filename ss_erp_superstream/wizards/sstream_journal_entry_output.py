@@ -1687,8 +1687,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ElSE '' END as partner_employee_code	
                         ,seo.organization_code as organization_code	
                         , serd.code as department_code
-                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
-                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
+                        ,sum(iol.product_uom_qty * COALESCE(prop.value_float, 0)) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
+                        ,sum(iol.product_uom_qty * COALESCE(prop.value_float, 0)) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
                         , 0 as tax_amount						
                         , '000' as tax_id						
                         , '0' as tax_entry_division	
@@ -1785,8 +1785,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ElSE '' END as partner_employee_code	
                     ,seo.organization_code as organization_code	
                     , serd.code as department_code
-                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
-                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
+                    ,sum(iol.product_uom_qty * COALESCE(prop.value_float, 0)) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
+                    ,sum(iol.product_uom_qty * COALESCE(prop.value_float, 0)) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
                     , 0 as tax_amount						
                     , '000' as tax_id						
                     , '0' as tax_entry_division	
