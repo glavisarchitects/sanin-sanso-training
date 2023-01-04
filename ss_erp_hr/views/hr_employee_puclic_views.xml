@@ -33,4 +33,17 @@
             </xpath>
         </field>
     </record>
+    <record id="ss_erp_hr_employee_view_tree_inherit" model="ir.ui.view">
+        <field name="name">ss_erp.hr.employee.public.view.tree</field>
+        <field name="model">hr.employee.public</field>
+        <field name="inherit_id" ref=""/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='name']" position="after">
+                <!-- Add new fields here -->
+                <field name="organization_first"/>
+            </xpath>
+
+        </field>
+    </record>
 </odoo>
