@@ -28,7 +28,7 @@ class PurchaseOrder(models.Model):
                 date_planned = self.date_planned.strftime("%Y年%m月%d日") if self.date_planned else ''
                 date_order = self.date_order.strftime("%Y年%m月%d日") if self.date_order else ''
 
-                header_organization_name = self.x_organization_id.name + '入荷'
+                dest_address = self.picking_type_id.display_name
                 purchase_user_name = self.user_id.name if self.user_id.name else ''
 
                 # detail
@@ -36,7 +36,9 @@ class PurchaseOrder(models.Model):
 
                 # footer
                 notes = self.notes if self.notes else ''
-                x_dest_address_info = self.x_dest_address_info if self.x_dest_address_info else ''
+
+                x_dest_address_info = '%s\r\n%s\r\n%s\r\n' % (self.dest_address_id.name,self.dest_address_id.contact_address_complete,self.x_dest_address_info)  if self.picking_type_id.default_location_dest_id.usage == 'customer' \
+                        and self.picking_type_id.default_location_src_id.usage == 'supplier' else ''
                 website = self.company_id.website if self.company_id.website else ''
                 data_line = [
                     rfq_issue_date
@@ -51,7 +53,7 @@ class PurchaseOrder(models.Model):
                     , date_planned
                     , date_order
                     , purchase_user_name
-                    , header_organization_name
+                    , dest_address
                     , "直送は下部の直送先情報参照"
                     , line.product_id.name
                     , product_note
@@ -86,7 +88,7 @@ class PurchaseOrder(models.Model):
                 date_planned = self.date_planned.strftime("%Y年%m月%d日") if self.date_planned else ''
                 date_order = self.date_order.strftime("%Y年%m月%d日") if self.date_order else ''
 
-                header_organization_name = self.x_organization_id.name + '入荷'
+                dest_address = self.picking_type_id.display_name
                 purchase_user_name = self.user_id.name if self.user_id.name else ''
 
                 # detail
@@ -99,7 +101,7 @@ class PurchaseOrder(models.Model):
                     "%Y年%m月%d日") if self.x_construction_period_start else '' + '~' + self.x_construction_period_end.strftime(
                     "%Y年%m月%d日") if self.x_construction_period_end else ''
                 x_supplies_info = get_multi_character(3 * 4) + (self.x_supplies_info if self.x_supplies_info else "")
-                supplies_check = "あり" + x_supplies_info if self.x_supplies_check == 'exist' else "なし"
+                supplies_check = "有" + x_supplies_info if self.x_supplies_check == 'exist' else "無"
                 construction_payment_terms = "当社規定による、月末締切・翌月末支払\r\n" + "現金" + get_multi_character(
                     2 * 4) + str(
                     self.x_construction_payment_cash) + "%" + get_multi_character(3 * 4) + "手形" + get_multi_character(
@@ -112,7 +114,9 @@ class PurchaseOrder(models.Model):
                 notes = self.notes if self.notes else ''
                 construction_spot = self.x_construction_spot if self.x_construction_spot else ''
                 # TODO Rewrite
-                x_dest_address_info = self.x_dest_address_info.replace('\n', '\r\n') if self.x_dest_address_info else ''
+                x_dest_address_info = '%s\r\n%s\r\n%s\r\n' % (self.dest_address_id.name,self.dest_address_id.contact_address_complete,self.x_dest_address_info)  if self.picking_type_id.default_location_dest_id.usage == 'customer' \
+                        and self.picking_type_id.default_location_src_id.usage == 'supplier' else ''
+
                 ss_erp_construction_subcontract = str(
                     self.x_construction_subcontract) if self.x_construction_subcontract else ""
 
@@ -129,7 +133,7 @@ class PurchaseOrder(models.Model):
                              date_planned,
                              date_order,
                              purchase_user_name,
-                             header_organization_name,
+                             dest_address,
                              "※直送先は下部の直送先情報を参照",
                              x_name_specification,
                              line.product_id.name,
@@ -140,8 +144,8 @@ class PurchaseOrder(models.Model):
                              construction_spot,
                              "別途設計書による",
                              construction_period_start,
-                             supplies_check,
                              "別途設計書、施工計画書による",
+                             supplies_check,
                              construction_payment_terms,
                              explanation_check,
                              notes,

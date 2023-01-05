@@ -118,7 +118,7 @@ class SaleOrder(models.Model):
 
                 elif len(product_pricelist) == 1:
                     line.price_unit = product_pricelist.price_unit
-                    line.x_pricelist = product_pricelist
+                    line.x_pricelist = product_pricelist.id
 
     @api.onchange('x_organization_id')
     def _onchange_x_organization_id(self):
@@ -223,7 +223,7 @@ class SaleOrderLine(models.Model):
         company_id = self.order_id.company_id.id
         date_order = self.order_id.date_order
 
-        product_pricelist = self.env['ss_erp.product.price'].search(
+        product_pricelist1 = self.env['ss_erp.product.price'].search(
             ['&', '&', '&', '&', '&',
              '|', ('organization_id', '=', organization_id), ('organization_id', '=', False),
              '|', ('uom_id', '=', self.product_uom.id), ('uom_id', '=', False),
@@ -242,8 +242,7 @@ class SaleOrderLine(models.Model):
              '|', ('partner_id', '=', partner_id), ('partner_id', '=', False),
              ('company_id', '=', company_id), ('product_id', '=', self.product_id.id),
              ('start_date', '<=', date_order), ('end_date', '>=', date_order)])
-
-        product_pricelist = product_pricelist + product_pricelist2
+        product_pricelist = product_pricelist1 + (product_pricelist2 - product_pricelist1)
 
         # set False for pricelist core
         self.order_id.pricelist_id = False
@@ -257,7 +256,7 @@ class SaleOrderLine(models.Model):
 
         elif len(product_pricelist) == 1:
             self.price_unit = product_pricelist.price_unit
-            self.x_pricelist = product_pricelist
+            self.x_pricelist = product_pricelist.id
         else:
             self.x_pricelist = False
             self.x_is_required_x_pricelist = True

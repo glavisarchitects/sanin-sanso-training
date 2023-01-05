@@ -331,7 +331,7 @@ class Construction(models.Model):
 
     def order_confirm_svf_template_export(self):
         data_file = [
-            '"output_date","orderer_address","orderer_name","address","tel","fax","author","supplier_code","order_number","construction_number","construction_name","delivery_location","construction_date_start","construction_date_end","order_amount","consumption_tax","without_tax_amount","receipt_method","due date","contract_term_notice","contract_term_notice","head_line_number","head_product_name","head_specification","head_quantity","head_unit","head_unit_price","head_amount_of_money","head_total_money","line_number","product_name","specification","quantity","unit","unit_price","amount_of_money","total_money"']
+            '"output_date","orderer_address","orderer_name","address","tel","fax","author","supplier_code","order_number","construction_number","construction_name","delivery_location","construction_date_start","construction_date_end","order_amount","consumption_tax","without_tax_amount","receipt_method","due date","contract_term_notice","other_term_notice","head_line_number","head_product_name","head_specification","head_quantity","head_unit","head_unit_price","head_amount_of_money","head_total_money","line_number","product_name","specification","quantity","unit","unit_price","amount_of_money","total_money"']
         num = 1
         for line in self.construction_component_ids:
             if not line.product_id:

@@ -36,7 +36,7 @@
         <record id="group_my_org_only_external_link" model="res.groups">
             <field name="name">自分の組織のみ (外部連携)</field>
             <field name="category_id" ref="ss_erp_rule.module_ss_other_authority_group"/>
-            <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user')),(4, ref('sales_team.group_sale_salesman'))
+            <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user')),(4, ref('sales_team.group_sale_salesman_all_leads'))
                                              ]"/>
         </record>
 
@@ -47,7 +47,7 @@
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[
                          (4, ref('base.group_allow_export')),
-                        (4, ref('sales_team.group_sale_salesman')),
+                        (4, ref('sales_team.group_sale_salesman_all_leads')),
                         (4, ref('purchase.group_purchase_user')),
                         (4, ref('stock.group_stock_user')),
                         (4, ref('account.group_account_user')),
@@ -64,7 +64,7 @@
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[
                                             (4, ref('base.group_allow_export')),
-                                            (4, ref('sales_team.group_sale_salesman')),
+                                            (4, ref('sales_team.group_sale_salesman_all_leads')),
                                             (4, ref('purchase.group_purchase_user')),
                                             (4, ref('stock.group_stock_user')),
                                             (4, ref('account.group_account_user')),
@@ -83,7 +83,7 @@
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[
             (4, ref('base.group_allow_export')),
-                                            (4, ref('sales_team.group_sale_salesman')),
+                                            (4, ref('sales_team.group_sale_salesman_all_leads')),
                                             (4, ref('purchase.group_purchase_user')),
                                             (4, ref('stock.group_stock_user')),
                                             (4, ref('account.group_account_user')),
@@ -101,7 +101,7 @@
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[
                                             (4, ref('base.group_allow_export')),
-                                            (4, ref('sales_team.group_sale_salesman')),
+                                            (4, ref('sales_team.group_sale_salesman_all_leads')),
                                             (4, ref('purchase.group_purchase_user')),
                                             (4, ref('stock.group_stock_user')),
                                             (4, ref('account.group_account_user')),
@@ -115,7 +115,7 @@
             <field name="name">本社:中間管理者</field>
             <field name="category_id" ref="category_authority"/>
             <field name="implied_ids" eval="[
-            (4, ref('base.group_allow_export')),
+                                            (4, ref('base.group_allow_export')),
                                             (4, ref('sales_team.group_sale_manager')),
                                             (4, ref('purchase.group_purchase_manager')),
                                             (4, ref('stock.group_stock_user')),
@@ -139,7 +139,7 @@
                                             (4, ref('account.group_account_manager')),
                                             (4, ref('mrp.group_mrp_manager')),
                                             (4, ref('approvals.group_approval_manager')),
-
+                                            (4, ref('base.group_partner_manager')),
                                             (4, ref('hr.group_hr_manager')),
                                             (4, ref('hr_contract.group_hr_contract_manager')),
                                             (4, ref('base.group_system')),

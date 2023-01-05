@@ -196,8 +196,7 @@
         </record>
         <record id="stock.product_uom_menu" model="ir.ui.menu">
             <field name="groups_id" eval="[
-            (4, ref('ss_erp_rule.group_head_quarter_middle_general')),
-            (4, ref('ss_erp_rule.group_head_quarter'))
+            (6,0, [ref('ss_erp_rule.group_head_quarter_middle_general'),ref('ss_erp_rule.group_head_quarter')])
             ]"/>
         </record>
         <record id="stock.menu_stock_uom_categ_form_action" model="ir.ui.menu">
@@ -388,7 +387,7 @@
         </record>
         <record id="sale.menu_sale_report" model="ir.ui.menu">
             <field name="groups_id" eval="[
-                (6, 0 ,[ref('sales_team.group_sale_salesman')])
+                (6, 0 ,[ref('sales_team.group_sale_salesman_all_leads')])
             ]"/>
         </record>
         <record id="sale.menu_sale_config" model="ir.ui.menu">
@@ -401,7 +400,7 @@
                 (6, 0 ,[ref('purchase.group_purchase_user')])
             ]"/>
         </record>
-        <record id="stock.menu_stock_config" model="ir.ui.menu">
+        <record id="stock.menu_stock_config_settings" model="ir.ui.menu">
             <field name="groups_id" eval="[
                 (6, 0 ,[ref('ss_erp_rule.group_head_quarter_middle_general'),ref('ss_erp_rule.group_head_quarter')])
             ]"/>
