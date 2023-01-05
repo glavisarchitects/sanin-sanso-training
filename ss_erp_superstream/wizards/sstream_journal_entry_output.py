@@ -1687,8 +1687,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                         ElSE '' END as partner_employee_code	
                         ,seo.organization_code as organization_code	
                         , serd.code as department_code
-                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
-                        ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
+                        ,sum(iol.product_uom_qty * COALESCE(prop.value_float, 0)) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
+                        ,sum(iol.product_uom_qty * COALESCE(prop.value_float, 0)) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
                         , 0 as tax_amount						
                         , '000' as tax_id						
                         , '0' as tax_entry_division	
@@ -1785,8 +1785,8 @@ class SStreamJournalEntryOutput(models.TransientModel):
                     ElSE '' END as partner_employee_code	
                     ,seo.organization_code as organization_code	
                     , serd.code as department_code
-                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
-                    ,sum(iol.product_uom_qty * prop.value_float) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
+                    ,sum(iol.product_uom_qty * COALESCE(prop.value_float, 0)) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as journal_amount		
+                    ,sum(iol.product_uom_qty * COALESCE(prop.value_float, 0)) OVER (PARTITION BY sp.x_inventory_journal_date,seo.organization_code, serd.code) :: BIGINT as tax_excluded_amount	
                     , 0 as tax_amount						
                     , '000' as tax_id						
                     , '0' as tax_entry_division	
@@ -1951,11 +1951,13 @@ class SStreamJournalEntryOutput(models.TransientModel):
             journal_header = "2," + param['sstream_company_code'] + "," + param['sstream_slip_group'] + ",," + all_data[
                 'slip_date'] + ',,0,1,,,,,0,0,,,,,,,,,,,,,' + '\r\n'
             file_data += journal_header
+            if tax_dict.get(all_data['tax_id']):
+                all_data['tax_id'] = tax_dict.get(all_data['tax_id'])
 
-            if all_data['pattern'] in (1, 2):
-                all_data['tax_id'] = '000' if all_data['tax_id'] == 0 else tax_dict.get(all_data['tax_id'])
-            else:
-                all_data['tax_id'] = ''
+            # if all_data['pattern'] in (1, 2):
+            #     all_data['tax_id'] = '000' if all_data['tax_id'] == 0 else tax_dict.get(all_data['tax_id'])
+            # else:
+            #     all_data['tax_id'] = ''
 
             # if all_data['tax_id'] != '000':
             #     if all_data['tax_id'] == 0:
@@ -1964,10 +1966,12 @@ class SStreamJournalEntryOutput(models.TransientModel):
             #         all_data['tax_id'] = tax_dict[all_data['tax_id']] if tax_dict.get(all_data['tax_id']) else ''
 
             cre_line = all_pattern_data[index + 1]
-            if cre_line['pattern'] in (1, 2):
-                cre_line['tax_id'] = '000' if cre_line['tax_id'] == 0 else tax_dict.get(cre_line['tax_id'])
-            else:
-                cre_line['tax_id'] = ''
+            if tax_dict.get(cre_line['tax_id']):
+                cre_line['tax_id'] = tax_dict.get(cre_line['tax_id'])
+            # if cre_line['pattern'] in (1, 2):
+            #     cre_line['tax_id'] = '000' if cre_line['tax_id'] in [0, '000'] else tax_dict.get(cre_line['tax_id'])
+            # else:
+            #     cre_line['tax_id'] = ''
 
             #
             # if cre_line['tax_id'] != '000':

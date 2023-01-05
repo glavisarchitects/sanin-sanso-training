@@ -106,11 +106,11 @@ class PartnerRebate(models.Model):
         for record in self:
             record.attachment_number = attachment.get(record.id, 0)
 
-    @api.constrains("register_id", "organization_id")
-    def _check_register_id(self):
-        for record in self:
-            if record.organization_id not in record.register_id.organization_ids:
-                raise ValidationError(_("登録者の所属組織と担当組織が異なるため保存できません。"))
+    # @api.constrains("register_id", "organization_id")
+    # def _check_register_id(self):
+    #     for record in self:
+    #         if record.organization_id not in record.register_id.organization_ids:
+    #             raise ValidationError(_("登録者の所属組織と担当組織が異なるため保存できません。"))
 
     @api.constrains("date_start", "date_end")
     def _check_dates(self):
