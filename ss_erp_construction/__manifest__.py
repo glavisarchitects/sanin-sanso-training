@@ -40,6 +40,8 @@
 
         # 'data/parameter_config_data.xml',
     ],
+    "images": ["static/description/icon.png"],
+
     "application": False,
     "installable": True,
 }
