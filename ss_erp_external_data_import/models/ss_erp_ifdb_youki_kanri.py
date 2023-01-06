@@ -97,6 +97,19 @@ class YoukiKanri(models.Model):
         for r in self:
             r._processing_execution()
 
+    def _get_product_template(self, product_list=None):
+        product_list_char = ','.join(str(item) for item in product_list)
+        _select_data = f"""
+            select id, product_tmpl_id from product_product 
+            where product_tmpl_id = any(string_to_array('{product_list_char}', ',')::int[])
+            """
+        self._cr.execute(_select_data)
+        retrive_data = self._cr.dictfetchall()
+        product_dict = {}
+        for line in retrive_data:
+            product_dict[line['product_tmpl_id']] = line['id']
+        return product_dict
+
     def _processing_execution(self):
         self.ensure_one()
         exe_data = self.youki_kanri_detail_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
@@ -128,13 +141,11 @@ class YoukiKanri(models.Model):
 
         partner_list = self.env['res.partner'].search([]).mapped('id')
         # issue 396, I006 update design
-        product_list = self.env['product.product'].search_read([], ['id', 'product_tmpl_id'])
-        product_dict = {}
-        for item in product_list:
-            product_dict[item['product_tmpl_id'][0]] = item['id']
-        # organization_list = self.env['ss_erp.organization'].search([]).mapped('id')
+        execute_product_list = list(set([int(line.codeommercial_product_code) for line in exe_data]))
+        product_dict = self._get_product_template(product_list=execute_product_list)
 
         fail_list = []
+
         so_dict = {}
         po_dict = {}
         inventoryorder_dict = {}
@@ -170,7 +181,7 @@ class YoukiKanri(models.Model):
                 else:
                     error_message = '商商品Ｃがプロダクトマスタに存在しません。'
             else:
-                if int(line.codeommercial_product_code) not in product_dict:
+                if product_dict.get(int(line.codeommercial_product_code)) is None:
                     if error_message:
                         error_message += '商商品Ｃがプロダクトマスタに存在しません。'
                     else:
