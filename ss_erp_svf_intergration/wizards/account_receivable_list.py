@@ -223,7 +223,7 @@ class AccountReceivableList(models.TransientModel):
                 if col in ["previous_month_balance", "correction", "receipts", "carried_forward", "earnings",
                            "consumption_tax", "this_month_balance"]:
                     if row[col] is not None:
-                        data_line += '"' + "{:,}".format(int(row[col])) + '",'
+                        data_line += '"' + str(int(row[col])) + '",'
                         total[col] += int(row[col])
                     else:
                         data_line += '"",'
@@ -242,13 +242,13 @@ class AccountReceivableList(models.TransientModel):
             invoice_history[-1]['output_date'],  # 出力日付
             '',  # 取引先コード
             '**  合　計　**',  # 取引先名称
-            "{:,}".format(total['previous_month_balance']),
-            "{:,}".format(total['correction']),
-            "{:,}".format(total['receipts']),
-            "{:,}".format(total['carried_forward']),
-            "{:,}".format(total['earnings']),
-            "{:,}".format(total['consumption_tax']),
-            "{:,}".format(total['this_month_balance']),
+            str(total['previous_month_balance']),
+            str(total['correction']),
+            str(total['receipts']),
+            str(total['carried_forward']),
+            str(total['earnings']),
+            str(total['consumption_tax']),
+            str(total['this_month_balance']),
             '',
             '',
             '',
@@ -262,13 +262,13 @@ class AccountReceivableList(models.TransientModel):
             invoice_history[-1]['output_date'],  # 出力日付
             '',  # 取引先コード
             '**  総合計　**',
-            "{:,}".format(total['previous_month_balance']),
-            "{:,}".format(total['correction']),
-            "{:,}".format(total['receipts']),
-            "{:,}".format(total['carried_forward']),
-            "{:,}".format(total['earnings']),
-            "{:,}".format(total['consumption_tax']),
-            "{:,}".format(total['this_month_balance']),
+            str(total['previous_month_balance']),
+            str(total['correction']),
+            str(total['receipts']),
+            str(total['carried_forward']),
+            str(total['earnings']),
+            str(total['consumption_tax']),
+            str(total['this_month_balance']),
             '',
             '',
             '',

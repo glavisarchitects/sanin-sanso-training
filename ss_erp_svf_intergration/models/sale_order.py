@@ -42,9 +42,9 @@ class SaleOrder(models.Model):
         organization_fax = 'TEL　' + self.x_organization_id.organization_fax if self.x_organization_id.organization_fax else ''
         organization_phone = 'FAX　' + self.x_organization_id.organization_phone if self.x_organization_id.organization_phone else ''
         amount_total = int(self.amount_total) if self.x_tax_type == 'include' else int(self.amount_untaxed)
-        amount_total = "￥" + "{:,}".format(amount_total) + "―"
-        amount_untaxed = "￥" + "{:,}".format(int(self.amount_untaxed)) if self.x_tax_type == 'include' else ''
-        amount_tax = "￥" + "{:,}".format(int(self.amount_tax)) if self.x_tax_type == 'include' else ''
+        amount_total = str(amount_total) + "―"
+        amount_untaxed = str(int(self.amount_untaxed)) if self.x_tax_type == 'include' else ''
+        amount_tax = str(int(self.amount_tax)) if self.x_tax_type == 'include' else ''
         # footer
         notes = self.x_remark if self.x_remark else ''
 
@@ -53,9 +53,9 @@ class SaleOrder(models.Model):
             if not line.product_id:
                 continue
 
-            product_uom_qty = "{:,}".format(int(line.product_uom_qty))
-            price_unit = "{:,}".format(int(line.price_unit))
-            price_subtotal = "{:,}".format(int(line.price_subtotal))
+            product_uom_qty = str(int(line.product_uom_qty))
+            price_unit = str(int(line.price_unit))
+            price_subtotal = str(int(line.price_subtotal))
 
             data_line = [
                 rfq_name

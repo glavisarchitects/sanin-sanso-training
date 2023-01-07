@@ -154,7 +154,7 @@ class AccountReceivableBalanceConfirm(models.TransientModel):
                 for col in row:
                     if row[col] is not None:
                         if col == 'total':
-                            data_line += '"￥' + "{:,}".format(int(row[col])) + '",'
+                            data_line += '"' + str(int(row[col])) + '",'
                         else:
                             if col == 'customer_barcode':
                                 data_line += '"' + _convert_customer_barcode(customer_barcode=row[col]) + '",'
