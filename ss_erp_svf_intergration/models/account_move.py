@@ -791,12 +791,12 @@ class AccountMove(models.Model):
                               'price_total_tax_rate8', 'price_total_reduced_tax_rate8', 'price_total_no_tax',
                               'tax_amount_rate10', 'tax_amount_rate8', 'tax_amount_reduced_tax_rate8',
                               'tax_amount_no_tax', 'price_total', 'price_total_tax']:
-                        one_line_data += '"' + "￥" + "{:,}".format(int(line[key])) + '",'
+                        one_line_data += '"' + str(line[key]) + '",'
                     elif key == "unit_price":
-                        one_line_data += '"",' if int(line[key]) == 0 else '"' + "{:,}".format(int(line[key])) + '",'
+                        one_line_data += '"",' if int(line[key]) == 0 else '"' + str(line[key]) + '",'
 
                     else:
-                        one_line_data += '"' + str(line[key]) + '",'
+                        one_line_data += '"' + line[key] + '",'
                 else:
                     if key == 'detail_number' and line['quantity'] is not None and line['quantity'] != 0:
                         one_line_data += '"' + str(seq_number) + '",'

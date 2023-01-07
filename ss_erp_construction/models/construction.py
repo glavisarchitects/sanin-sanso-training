@@ -82,7 +82,7 @@ class Construction(models.Model):
         if self.organization_id:
             return {'domain': {
                 'picking_type_id': [('x_organization_id', '=', self.organization_id.id), ('code', '=', 'outgoing')]
-                }}
+            }}
 
     warehouse_id = fields.Many2one('stock.warehouse', related='organization_id.warehouse_id',
                                    store=True, string='倉庫', copy=True)

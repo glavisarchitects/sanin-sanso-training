@@ -104,9 +104,9 @@ class YoukiKanri(models.Model):
             where product_tmpl_id = any(string_to_array('{product_list_char}', ',')::int[])
             """
         self._cr.execute(_select_data)
-        retrive_data = self._cr.dictfetchall()
+        retrieve_data = self._cr.dictfetchall()
         product_dict = {}
-        for line in retrive_data:
+        for line in retrieve_data:
             product_dict[line['product_tmpl_id']] = line['id']
         return product_dict
 
