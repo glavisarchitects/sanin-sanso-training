@@ -65,10 +65,10 @@ class StockPicking(models.Model):
                 order_line.product_id.product_tmpl_id.x_name_specification if order_line.product_id.product_tmpl_id.x_name_specification else ''
                 , f'{qty:.2f}'
                 , str(order_line.product_uom.name)
-                , "{:,}".format(int(price_unit))
-                , "{:,}".format(int(price_subtotal))
+                , str(int(price_unit))
+                , str(int(price_subtotal))
                 , str(order_line.sale_line_id.x_remarks) if order_line.sale_line_id.x_remarks else ''
-                , "￥" + "{:,}".format(int(self.x_delivery_amount)) if self.x_delivery_amount else ''
+                , str(int(self.x_delivery_amount)) if self.x_delivery_amount else ''
 
             ]
 

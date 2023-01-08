@@ -394,7 +394,7 @@
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_branch_general')),
                 (4, ref('ss_erp_rule.group_branch_middle_manager')),
-                (4, ref('ss_erp_rule.group_branch_middle_manager')),
+                (4, ref('ss_erp_rule.group_branch_manager')),
                 (4, ref('ss_erp_rule.group_head_quarter_general')),
             ]"/>
             <field name="perm_read" eval="False"/>
@@ -792,7 +792,6 @@
             <field name="groups" eval="[
                 (4, ref('ss_erp_rule.group_head_quarter_middle_general')),
                 (4, ref('ss_erp_rule.group_head_quarter')),
-                (4, ref('ss_erp_rule.group_my_org_only_sale')),
             ]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>

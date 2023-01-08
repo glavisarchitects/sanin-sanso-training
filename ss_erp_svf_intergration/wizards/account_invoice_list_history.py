@@ -198,7 +198,7 @@ class AccountInvoiceListHistory(models.TransientModel):
                 if col in ["previous_month_amount", "receipts", "previous_month_balance", "this_month_earnings",
                            "consumption_tax", "this_month_amount"]:
                     if row[col] is not None:
-                        data_line += '"' + "{:,}".format(int(row[col])) + '",'
+                        data_line += '"' + str(int(row[col])) + '",'
                         total[col] += int(row[col])
                     else:
                         data_line += '"0",'
@@ -217,12 +217,12 @@ class AccountInvoiceListHistory(models.TransientModel):
             invoice_history[-1]['output_date'],  # 出力日付
             '',  # 取引先コード
             '**  合　計　**',  # 取引先名称
-            "{:,}".format(total['previous_month_amount']),
-            "{:,}".format(total['receipts']),
-            "{:,}".format(total['previous_month_balance']),
-            "{:,}".format(total['this_month_earnings']),
-            "{:,}".format(total['consumption_tax']),
-            "{:,}".format(total['this_month_amount']),
+            str(total['previous_month_amount']),
+            str(total['receipts']),
+            str(total['previous_month_balance']),
+            str(total['this_month_earnings']),
+            str(total['consumption_tax']),
+            str(total['this_month_amount']),
         )
         new_data.append(total_line)
         # データ＜総合計＞
@@ -233,12 +233,12 @@ class AccountInvoiceListHistory(models.TransientModel):
             invoice_history[-1]['output_date'],  # 出力日付
             '',
             '**  総合計　**',
-            "{:,}".format(total['previous_month_amount']),
-            "{:,}".format(total['receipts']),
-            "{:,}".format(total['previous_month_balance']),
-            "{:,}".format(total['this_month_earnings']),
-            "{:,}".format(total['consumption_tax']),
-            "{:,}".format(total['this_month_amount']),
+            str(total['previous_month_amount']),
+            str(total['receipts']),
+            str(total['previous_month_balance']),
+            str(total['this_month_earnings']),
+            str(total['consumption_tax']),
+            str(total['this_month_amount']),
         )
         new_data.append(total_total_line)
         return "\n".join(new_data)
