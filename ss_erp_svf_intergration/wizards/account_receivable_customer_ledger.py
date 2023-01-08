@@ -331,7 +331,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 for col in row:
                     if row[col] is not None:
                         if col in ['unit_price', 'amount_of_money']:
-                            data_line += '"' + "{:,}".format(int(row[col])) + '",'
+                            data_line += '"' + str(int(row[col])) + '",'
                         elif col == 'line_division_name':
                             data_line += '"' + x_receipt_type_dict[str(row[col])] + '",'
                         elif col != 'order_sequence':
@@ -361,7 +361,7 @@ class AccountReceivableCustomerLedger(models.TransientModel):
                 '',
                 '',
                 '',
-                0 if total_amount is None else "{:,}".format(total_amount),
+                0 if total_amount is None else str(total_amount),
                 '',
                 '',
                 '',

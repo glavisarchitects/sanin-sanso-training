@@ -13,7 +13,7 @@
                             attrs="{'invisible': [('state', '!=', 'draft')]}"
                             string="見積依頼書"/>
                     <button name="order_confirm_coo_com_to_ss_svf_template_export" type="object"
-                            attrs="{'invisible': [('state', '=', 'draft')]}"
+                            attrs="{'invisible': ['|',('state', '=', 'draft'),('x_bis_categ_id','=','gas_material')]}"
                             string="注文請書"/>
                     <button name="po_svf_template_export" type="object"
                             attrs="{'invisible': [('state', '!=', 'purchase')]}"

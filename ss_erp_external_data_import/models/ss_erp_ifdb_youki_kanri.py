@@ -9,7 +9,7 @@ class YoukiKanri(models.Model):
     _description = "容器管理ヘッダ"
 
     name = fields.Char(
-        string="名称"
+        string="名称", copy=False
     )
     upload_date = fields.Datetime(
         string="アップロード日時",
@@ -97,6 +97,19 @@ class YoukiKanri(models.Model):
         for r in self:
             r._processing_execution()
 
+    def _get_product_template(self, product_list=None):
+        product_list_char = ','.join(str(item) for item in product_list)
+        _select_data = f"""
+            select id, product_tmpl_id from product_product 
+            where product_tmpl_id = any(string_to_array('{product_list_char}', ',')::int[])
+            """
+        self._cr.execute(_select_data)
+        retrieve_data = self._cr.dictfetchall()
+        product_dict = {}
+        for line in retrieve_data:
+            product_dict[line['product_tmpl_id']] = line['id']
+        return product_dict
+
     def _processing_execution(self):
         self.ensure_one()
         exe_data = self.youki_kanri_detail_ids.filtered(lambda line: line.status in ('wait', 'error')).sorted(
@@ -117,7 +130,8 @@ class YoukiKanri(models.Model):
                     branch_dict[branch['external_code']] = branch['internal_code'].id
 
         # convert unit code
-        convert_product_unit_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'product_unit')]).mapped('id')
+        convert_product_unit_ids = self.env['ss_erp.convert.code.type'].search([('code', '=', 'product_unit')]).mapped(
+            'id')
         unit_code_convert = self.env['ss_erp.code.convert'].search(
             [('external_system', 'in', youki_kanri_type_ids), ('convert_code_type', 'in', convert_product_unit_ids)])
         uom_dict = {}
@@ -126,10 +140,12 @@ class YoukiKanri(models.Model):
                 uom_dict[uom['external_code']] = uom['internal_code'].id
 
         partner_list = self.env['res.partner'].search([]).mapped('id')
-        product_list = self.env['product.product'].search([]).mapped('id')
-        organization_list = self.env['ss_erp.organization'].search([]).mapped('id')
+        # issue 396, I006 update design
+        execute_product_list = list(set([int(line.codeommercial_product_code) for line in exe_data]))
+        product_dict = self._get_product_template(product_list=execute_product_list)
 
         fail_list = []
+
         so_dict = {}
         po_dict = {}
         inventoryorder_dict = {}
@@ -138,7 +154,8 @@ class YoukiKanri(models.Model):
             if not line.customer_business_partner_code.isdigit():
                 error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
             else:
-                if int(line.customer_business_partner_code) not in partner_list:
+                if int(line.customer_business_partner_code) not in partner_list and line.slip_processing_classification not in [
+                    '8', '9']:
                     error_message = '顧取引先Ｃが連絡先マスタに存在しません。'
 
             if not line.customer_branch_code.isdigit():
@@ -147,7 +164,7 @@ class YoukiKanri(models.Model):
                 else:
                     error_message = '顧支店Ｃが組織マスタに存在しません。'
             else:
-                if int(line.customer_branch_code) not in organization_list:
+                if line.customer_branch_code not in branch_dict:
                     if error_message:
                         error_message += '顧支店Ｃが組織マスタに存在しません。'
                     else:
@@ -164,7 +181,7 @@ class YoukiKanri(models.Model):
                 else:
                     error_message = '商商品Ｃがプロダクトマスタに存在しません。'
             else:
-                if int(line.codeommercial_product_code) not in product_list:
+                if product_dict.get(int(line.codeommercial_product_code)) is None:
                     if error_message:
                         error_message += '商商品Ｃがプロダクトマスタに存在しません。'
                     else:
@@ -196,12 +213,13 @@ class YoukiKanri(models.Model):
                 else:
                     if line.slip_processing_classification == '6' or line.slip_processing_classification == 'A':
                         order_line = {
-                            'product_id': int(line.codeommercial_product_code),
+                            'product_id': product_dict[int(line.codeommercial_product_code)],
                             'product_uom_qty': line.quantity if line.slip_processing_classification == '6' else 1,
                             'product_uom': uom_dict.get(line.unit_code)
                         }
                         if not so_dict.get(key, 0):
-                            org = self.env['ss_erp.organization'].browse(branch_dict.get(line.codeommercial_branch_code))
+                            org = self.env['ss_erp.organization'].browse(
+                                branch_dict.get(line.codeommercial_branch_code))
                             so = {
                                 'x_organization_id': branch_dict.get(line.codeommercial_branch_code),
                                 'partner_id': int(line.customer_business_partner_code),
@@ -220,7 +238,7 @@ class YoukiKanri(models.Model):
                             so_dict[key]['order']['order_line'].append((0, 0, order_line))
                     elif line.slip_processing_classification == '7':
                         order_line = {
-                            'product_id': int(line.codeommercial_product_code),
+                            'product_id': product_dict[int(line.codeommercial_product_code)],
                             'product_qty': line.quantity,
                             'product_uom': uom_dict.get(line.unit_code),
                             'date_planned': datetime.strptime(line.slip_date, '%Y/%m/%d')
@@ -239,16 +257,16 @@ class YoukiKanri(models.Model):
                             po_dict[key]['order']['order_line'].append((0, 0, order_line))
 
                     elif line.slip_processing_classification == '9':
-                        org = self.env['ss_erp.organization'].browse(int(line.codeommercial_branch_code))
+                        org = self.env['ss_erp.organization'].browse(branch_dict.get(line.codeommercial_branch_code))
                         order_line = {
-                            'organization_id':org.id,
-                            'location_dest_id':org.warehouse_id.lot_stock_id.id,
-                            'product_id': int(line.codeommercial_product_code),
+                            'organization_id': org.id,
+                            'location_dest_id': org.warehouse_id.lot_stock_id.id,
+                            'product_id': product_dict[int(line.codeommercial_product_code)],
                             'product_uom_qty': float(line.quantity),
                             'product_uom': uom_dict.get(line.unit_code)
                         }
                         if not inventoryorder_dict.get(key, 0):
-                            org = self.env['ss_erp.organization'].browse(int(line.customer_branch_code))
+                            org = self.env['ss_erp.organization'].browse(branch_dict.get(line.customer_branch_code))
                             inv_order = {
                                 'organization_id': org.id,
                                 'state': 'draft',
@@ -288,18 +306,21 @@ class YoukiKanri(models.Model):
             if so_dict.get(key):
                 line.write({
                     'status': 'success',
+                    'error_message': '',
                     'processing_date': datetime.now(),
                     'sale_id': so_dict[key]['sale_id']
                 })
             if po_dict.get(key):
                 line.write({
                     'status': 'success',
+                    'error_message': '',
                     'processing_date': datetime.now(),
                     'purchase_id': po_dict[key]['po_id']
                 })
             if inventoryorder_dict.get(key):
                 line.write({
                     'status': 'success',
+                    'error_message': '',
                     'processing_date': datetime.now(),
                     'inventory_order_id': inventoryorder_dict[key]['inv_order_id']
                 })

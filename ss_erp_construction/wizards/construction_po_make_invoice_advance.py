@@ -22,17 +22,20 @@ class ConstructionPurchaseAdvancePaymentInv(models.TransientModel):
         if len(po_ids.filtered(lambda x: x.x_bis_categ_id == 'construction')) > 0:
             downpayment_product_id = self.env['ir.config_parameter'].sudo().get_param(
                 'ss_erp_po_construction_downpayment_default_product_id')
-            if not downpayment_product_id:
+            downpayment_product_product = self.env['product.product'].search([('product_tmpl_id', '=', int(downpayment_product_id))])
+            if not downpayment_product_id or not downpayment_product_product:
                 raise UserError(
                     "工事用の前払プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_po_construction_downpayment_default_product_id)")
-            return self.env['product.product'].browse(int(downpayment_product_id))
+
         else:
             downpayment_product_id = self.env['ir.config_parameter'].sudo().get_param(
                 'ss_erp_po_downpayment_default_product_id')
-            if not downpayment_product_id:
+            downpayment_product_product = self.env['product.product'].search(
+                [('product_tmpl_id', '=', int(downpayment_product_id))])
+            if not downpayment_product_product:
                 raise UserError(
                     "前払プロダクトの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。(ss_erp_po_downpayment_default_product_id)")
-            return self.env['product.product'].browse(int(downpayment_product_id))
+        return self.env['product.product'].browse(downpayment_product_product.id)
 
     @api.model
     def _default_deposit_account_id(self):

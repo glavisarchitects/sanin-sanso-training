@@ -24,7 +24,7 @@ class StockPicking(models.Model):
 
     def delivery_order_svf_template_export(self):
         data_file = [
-            '"delivery_slip_number","zip","state_city","address","customer_name","output_date","name","responsible_person","organization_zip","organization_address","organization_phone","organization_fax","product_name","spacification_name","quantity","unit","unit_price","price","rprice_totalemarks","price_total"']
+            '"delivery_slip_number","zip","state_city","address","customer_name","output_date","name","responsible_person","organization_zip","organization_address","organization_phone","organization_fax","product_name","spacification_name","quantity","unit","unit_price","price","remarks","price_total"']
         # sale_order_rec = self.sale_id
 
         for order_line in self.move_ids_without_package:
@@ -37,7 +37,7 @@ class StockPicking(models.Model):
                 self.partner_id.street2) if self.partner_id.street2 else "")
             shipping_name = str(self.partner_id.name) + ' 様'
             output_date = fields.Datetime.now().strftime("%Y年%m月%d日")
-            responsible_person = self.x_organization_id.responsible_person.name if self.partner_id.x_responsible_stamp == 'yes' else ''
+            responsible_person = '支店長　' + self.x_organization_id.responsible_person.name if self.partner_id.x_responsible_stamp == 'yes' else ''
             organization_name = self.x_organization_id.name
             organization_zip = "〒" + self.x_organization_id.organization_zip if self.x_organization_id.organization_zip else ''
             organization_address = self.x_organization_id.organization_address if self.x_organization_id.organization_address else ''
@@ -65,10 +65,10 @@ class StockPicking(models.Model):
                 order_line.product_id.product_tmpl_id.x_name_specification if order_line.product_id.product_tmpl_id.x_name_specification else ''
                 , f'{qty:.2f}'
                 , str(order_line.product_uom.name)
-                , "{:,}".format(int(price_unit))
-                , "{:,}".format(int(price_subtotal))
+                , str(int(price_unit))
+                , str(int(price_subtotal))
                 , str(order_line.sale_line_id.x_remarks) if order_line.sale_line_id.x_remarks else ''
-                , "￥" + "{:,}".format(int(self.x_delivery_amount)) if self.x_delivery_amount else ''
+                , str(int(self.x_delivery_amount)) if self.x_delivery_amount else ''
 
             ]
 

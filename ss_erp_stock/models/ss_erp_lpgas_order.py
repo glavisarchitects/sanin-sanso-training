@@ -35,12 +35,22 @@ class LPGasOrder(models.Model):
     lpgas_order_line_ids = fields.One2many('ss_erp.lpgas.order.line', 'lpgas_order_id', ondelete="cascade",
                                            string='集計結果')
 
+    def _select_product_product_id(self, lpgas_product_tmp_id):
+        query = f"""SELECT id FROM product_product WHERE product_tmpl_id = '{int(lpgas_product_tmp_id)}'"""
+        self._cr.execute(query)
+        return self._cr.dictfetchall()
+
     def make_inventory_adjustment(self):
+
         lpgas_product_tmp_id = self.env['ir.config_parameter'].sudo().get_param('lpgus.order.propane_gas_id')
         if lpgas_product_tmp_id == '':
             raise UserError(_("プロダクトコードの取得失敗しました。システムパラメータに次のキーが設定されているか確認してください。"))
-        lpgas_product_id = self.env['product.product'].search([('product_tmpl_id', '=', int(lpgas_product_tmp_id))],
-                                                              limit=1)
+        #
+        # lpgas_product_id = self.env['product.product'].search([('product_tmpl_id', '=', int(lpgas_product_tmp_id))],
+        #                                                      limit=1)
+
+        pp_query_id = self._select_product_product_id(lpgas_product_tmp_id)[0]['id']
+        lpgas_product_id = self.env['product.product'].browse(int(pp_query_id))
         branch_loss_location = self.env['stock.location'].search(
             [('usage', '=', 'inventory'), ('id', 'child_of', self.organization_id.warehouse_id.view_location_id.id), ],
             limit=1)
@@ -106,8 +116,8 @@ class LPGasOrder(models.Model):
         if int(lpgas_product_tmp_id) not in self.env['product.template'].search([]).ids:
             raise UserError(_("設定しているプロダクトIDは存在しません。"))
 
-        lpgas_product_id = self.env['product.product'].search([('product_tmpl_id', '=', int(lpgas_product_tmp_id))],
-                                                              limit=1).id
+        pp_query_id = self._select_product_product_id(lpgas_product_tmp_id)[0]['id']
+        lpgas_product_id = int(pp_query_id)
 
         branch_warehouse = self.organization_id.warehouse_id
         warehouse_location = branch_warehouse.lot_stock_id

@@ -17,9 +17,9 @@ class StockMove(models.Model):
                 date = self.picking_id.x_inventory_journal_date
             new_account_move = AccountMove.sudo().create({
                 'journal_id': journal_id,
-                'x_organization_id': self.x_organization_id.id,
-                'x_responsible_dept_id': self.x_responsible_dept_id.id,
-                'x_responsible_user_id': self.x_responsible_user_id.id,
+                'x_organization_id': self.x_organization_id.id or self.picking_id.x_organization_id.id,
+                'x_responsible_dept_id': self.x_responsible_dept_id.id or self.picking_id.x_responsible_dept_id.id,
+                'x_responsible_user_id': self.x_responsible_user_id.id or self.picking_id.user_id.id,
                 'x_account_modify': self.picking_id.x_account_modify,
                 'line_ids': move_lines,
                 'date': date,

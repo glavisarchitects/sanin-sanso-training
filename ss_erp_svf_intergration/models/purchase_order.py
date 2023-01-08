@@ -28,7 +28,7 @@ class PurchaseOrder(models.Model):
                 date_planned = self.date_planned.strftime("%Y年%m月%d日") if self.date_planned else ''
                 date_order = self.date_order.strftime("%Y年%m月%d日") if self.date_order else ''
 
-                header_organization_name = self.x_organization_id.name + '入荷'
+                dest_address = self.picking_type_id.display_name
                 purchase_user_name = self.user_id.name if self.user_id.name else ''
 
                 # detail
@@ -36,7 +36,9 @@ class PurchaseOrder(models.Model):
 
                 # footer
                 notes = self.notes if self.notes else ''
-                x_dest_address_info = self.x_dest_address_info if self.x_dest_address_info else ''
+
+                x_dest_address_info = '%s\r\n%s\r\n%s\r\n' % (self.dest_address_id.name,self.dest_address_id.contact_address_complete,self.x_dest_address_info)  if self.picking_type_id.default_location_dest_id.usage == 'customer' \
+                        and self.picking_type_id.default_location_src_id.usage == 'supplier' else ''
                 website = self.company_id.website if self.company_id.website else ''
                 data_line = [
                     rfq_issue_date
@@ -51,7 +53,7 @@ class PurchaseOrder(models.Model):
                     , date_planned
                     , date_order
                     , purchase_user_name
-                    , header_organization_name
+                    , dest_address
                     , "直送は下部の直送先情報参照"
                     , line.product_id.name
                     , product_note
@@ -86,7 +88,7 @@ class PurchaseOrder(models.Model):
                 date_planned = self.date_planned.strftime("%Y年%m月%d日") if self.date_planned else ''
                 date_order = self.date_order.strftime("%Y年%m月%d日") if self.date_order else ''
 
-                header_organization_name = self.x_organization_id.name + '入荷'
+                dest_address = self.picking_type_id.display_name
                 purchase_user_name = self.user_id.name if self.user_id.name else ''
 
                 # detail
@@ -99,7 +101,7 @@ class PurchaseOrder(models.Model):
                     "%Y年%m月%d日") if self.x_construction_period_start else '' + '~' + self.x_construction_period_end.strftime(
                     "%Y年%m月%d日") if self.x_construction_period_end else ''
                 x_supplies_info = get_multi_character(3 * 4) + (self.x_supplies_info if self.x_supplies_info else "")
-                supplies_check = "あり" + x_supplies_info if self.x_supplies_check == 'exist' else "なし"
+                supplies_check = "有" + x_supplies_info if self.x_supplies_check == 'exist' else "無"
                 construction_payment_terms = "当社規定による、月末締切・翌月末支払\r\n" + "現金" + get_multi_character(
                     2 * 4) + str(
                     self.x_construction_payment_cash) + "%" + get_multi_character(3 * 4) + "手形" + get_multi_character(
@@ -112,7 +114,9 @@ class PurchaseOrder(models.Model):
                 notes = self.notes if self.notes else ''
                 construction_spot = self.x_construction_spot if self.x_construction_spot else ''
                 # TODO Rewrite
-                x_dest_address_info = self.x_dest_address_info.replace('\n', '\r\n') if self.x_dest_address_info else ''
+                x_dest_address_info = '%s\r\n%s\r\n%s\r\n' % (self.dest_address_id.name,self.dest_address_id.contact_address_complete,self.x_dest_address_info)  if self.picking_type_id.default_location_dest_id.usage == 'customer' \
+                        and self.picking_type_id.default_location_src_id.usage == 'supplier' else ''
+
                 ss_erp_construction_subcontract = str(
                     self.x_construction_subcontract) if self.x_construction_subcontract else ""
 
@@ -129,7 +133,7 @@ class PurchaseOrder(models.Model):
                              date_planned,
                              date_order,
                              purchase_user_name,
-                             header_organization_name,
+                             dest_address,
                              "※直送先は下部の直送先情報を参照",
                              x_name_specification,
                              line.product_id.name,
@@ -140,8 +144,8 @@ class PurchaseOrder(models.Model):
                              construction_spot,
                              "別途設計書による",
                              construction_period_start,
-                             supplies_check,
                              "別途設計書、施工計画書による",
+                             supplies_check,
                              construction_payment_terms,
                              explanation_check,
                              notes,
@@ -153,23 +157,6 @@ class PurchaseOrder(models.Model):
                 str_data_line = '"' + str_data_line + '"'
                 data_file.append(str_data_line)
             data_send = "\n".join(data_file)
-        # b = data_send.encode('shift-jis')
-        # vals = {
-        #     'name': '見積依頼書' '.csv',
-        #     'datas': base64.b64encode(b).decode('shift-jis'),
-        #     'type': 'binary',
-        #     'res_model': 'ir.ui.view',
-        #     'x_no_need_save': True,
-        #     'res_id': False,
-        # }
-        #
-        # file_txt = self.env['ir.attachment'].create(vals)
-        #
-        # return {
-        #     'type': 'ir.actions.act_url',
-        #     'url': '/web/content/' + str(file_txt.id) + '?download=true',
-        #     'target': 'new',
-        # }
         return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report=type_report)
 
     def po_svf_template_export(self):
@@ -324,93 +311,73 @@ class PurchaseOrder(models.Model):
         return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report=type_report)
 
     def order_confirm_coo_com_to_ss_svf_template_export(self):
-        if self.x_bis_categ_id != 'construction':
-            raise UserError(
-                'Puchase Order 工事のみが「注文請書」を生成できます')
         data_file = [
-            '"output_date","orderer_address","orderer_name","address","tel","fax","author","supplier_code","order_number","construction_number","construction_name","delivery_location","construction_date_start","construction_date_end","order_amount","consumption_tax","without_tax_amount","receipt_method","due date","contract_term_notice","contract_term_notice","head_line_number","head_product_name","head_specification","head_quantity","head_unit","head_unit_price","head_amount_of_money","head_total_money","line_number","product_name","specification","quantity","unit","unit_price","amount_of_money","total_money"']
+            '"output_date","orderer_address","orderer_name","address","tel","fax","author","supplier_code",'
+            '"order_number","construction_number","construction_name","delivery_location","construction_date_start",'
+            '"construction_date_end","order_amount","consumption_tax","without_tax_amount","receipt_method","due_date",'
+            '"contract_term_notice","other_term_notice","head_line_number","head_product_name","head_specification",'
+            '"head_quantity","head_unit","head_unit_price","head_amount_of_money","head_total_money","line_number",'
+            '"product_name","specification","quantity","unit","unit_price","amount_of_money","total_money"']
         num = 1
-        for line in self.order_line:
-            if not line.product_id:
-                continue
-            output_date = datetime.now().strftime("%Y年%m月%d日")
-            orderer_address = (
-                                  str(self.x_organization_id.organization_state_id.name) if self.x_organization_id.organization_state_id.name else "") \
-                              + (
-                                  str(self.x_organization_id.organization_city) if self.x_organization_id.organization_city else "") \
-                              + (
-                                  str(self.x_organization_id.organization_street) if self.x_organization_id.organization_street else "") \
-                              + (
-                                  str(self.x_organization_id.organization_street2) if self.x_organization_id.organization_street2 else "")
-            orderer_name = self.partner_id.x_purchase_user_id.company_id.name + "　殿" if self.partner_id.x_purchase_user_id.company_id.name else ''
-            address = (str(self.partner_id.state_id.name) if self.partner_id.state_id.name else "") \
-                      + (str(self.partner_id.city) if self.partner_id.city else "") \
-                      + (str(self.partner_id.street) if self.partner_id.street else "") \
-                      + (str(self.partner_id.street2) if self.partner_id.street2 else "")
+        output_date = datetime.now().strftime("%Y年%m月%d日")
+        orderer_address = (
+                              str(self.x_organization_id.organization_state_id.name) if self.x_organization_id.organization_state_id.name else "") \
+                          + (
+                              str(self.x_organization_id.organization_city) if self.x_organization_id.organization_city else "") \
+                          + (
+                              str(self.x_organization_id.organization_street) if self.x_organization_id.organization_street else "") \
+                          + (
+                              str(self.x_organization_id.organization_street2) if self.x_organization_id.organization_street2 else "")
+        orderer_name = self.company_id.name
+        address = (str(self.partner_id.state_id.name) if self.partner_id.state_id.name else "") \
+                  + (str(self.partner_id.city) if self.partner_id.city else "") \
+                  + (str(self.partner_id.street) if self.partner_id.street else "") \
+                  + (str(self.partner_id.street2) if self.partner_id.street2 else "")
 
-            tel = ""
-            fax = ""
-            author = self.user_id.name if self.user_id.name else ""
-            supplier_code = self.partner_id.ref if self.partner_id.ref else ""
-            order_number = self.order_number if self.order_number else ""
-            construction_number = self.x_construction_order_id.sequence_number if self.x_construction_order_id.sequence_number else ""
-            construction_name = self.name if self.name else ""
-            delivery_location = self.delivery_location if self.delivery_location else ""
-            construction_date_start = self.x_construction_period_start.strftime(
-                "%Y年%m月%d日") if self.x_construction_period_start else ""
-            date_planed_finished = self.x_construction_period_end.strftime(
-                "%Y年%m月%d日") if self.x_construction_period_end else ""
-            order_amount = "{:,}".format(int(self.amount_total)) if self.amount_total else ""
-            consumption_tax = "{:,}".format(int(self.amount_tax)) if self.amount_tax else ""
-            without_tax_amount = "{:,}".format(int(self.amount_untaxed)) if self.amount_untaxed else ""
-            receipt_method = self.receipt_type if self.receipt_type else ""
+        tel = ""
+        fax = ""
+        author = self.user_id.name if self.user_id.name else ""
+        supplier_code = self.partner_id.ref if self.partner_id.ref else ""
+        order_number = self.order_number if self.order_number else ""
+        construction_number = self.x_construction_order_id.sequence_number if self.x_construction_order_id.sequence_number else ""
+        construction_name = self.name if self.name else ""
+        delivery_location = self.delivery_location if self.delivery_location else ""
+        construction_date_start = self.x_construction_period_start.strftime(
+            "%Y年%m月%d日") if self.x_construction_period_start else ""
+        date_planed_finished = self.x_construction_period_end.strftime(
+            "%Y年%m月%d日") if self.x_construction_period_end else ""
+        order_amount = str(int(self.amount_total)) if self.amount_total else ""
+        consumption_tax = str(int(self.amount_tax)) if self.amount_tax else ""
+        without_tax_amount = str(int(self.amount_untaxed)) if self.amount_untaxed else ""
+        receipt_method = dict(self._fields['receipt_type'].selection).get(
+            self.receipt_type) if self.receipt_type else ""
 
-            due_date_term = self.x_construction_order_id._compute_payment_terms()[0][0]
-            due_date = due_date_term
-            contract_term_notice = ""
-            param_term_notice = self.env['ir.config_parameter'].sudo().get_param('r008_contraction_other_term_notice')
-            other_term_notice = param_term_notice if param_term_notice else ''
-            if self.export_type == 'complete_set':
-                # 一式
-                head_line_number = '1'
-                head_product_name = self.name if self.name else ''
-                head_specification = ''
-                head_quantity = '1'
-                head_unit = '式'
-                head_unit_price = ''
-                head_amount_of_money = "{:,}".format(int(self.amount_untaxed)) if self.amount_untaxed else ""
-                head_total_money = "{:,}".format(int(self.amount_untaxed)) if self.amount_untaxed else ""
+        due_date_term = self.x_construction_order_id._compute_payment_terms()[0][0].split('-')
+        due_date = "%s年%s月%s日" % (due_date_term[0], due_date_term[1], due_date_term[2])
+        contract_term_notice = self.terms_of_contract if self.terms_of_contract else ''
+        # param_term_notice = self.env['ir.config_parameter'].sudo().get_param('r008_contraction_other_term_notice')
+        other_term_notice = self.other_conditions if self.other_conditions else ''
 
-                # 　明細
-                line_number = ''
-                product_name = ''
-                specification = ''
-                quantity = ''
-                unit = ''
-                unit_price = ''
-                amount_of_money = ''
-                total_money = ''
-            else:
-                head_line_number = ''
-                head_product_name = ''
-                head_specification = ''
-                head_quantity = ''
-                head_unit = ''
-                head_unit_price = ''
-                head_amount_of_money = ""
-                head_total_money = ""
+        if self.export_type == 'complete_set':
+            # 一式
+            head_line_number = '1'
+            head_product_name = self.x_construction_name if self.x_construction_name else ''
+            head_specification = ''
+            head_quantity = '1'
+            head_unit = '式'
+            head_unit_price = ''
+            head_amount_of_money = str(int(self.amount_untaxed)) if self.amount_untaxed else ""
+            head_total_money = str(int(self.amount_untaxed)) if self.amount_untaxed else ""
 
-                # 　明細
-                line_number = str(num)
-                product_name = line.product_id.name
-                specification = line.product_id.x_name_specification if line.product_id.x_name_specification else ''
-                quantity = str(line.product_uom_qty) if line.product_uom_qty else ''
-                unit = line.product_uom_id.name if line.product_uom_id.name else ''
-                unit_price = str(line.sale_price) if line.sale_price else ''
-                amount_of_money = "{:,}".format(int(line.subtotal)) if line.subtotal else ""
-                total_money = "{:,}".format(int(self.amount_untaxed)) if self.amount_untaxed else ""
-
-                num += 1
+            # 　明細
+            line_number = ''
+            product_name = ''
+            specification = ''
+            quantity = ''
+            unit = ''
+            unit_price = ''
+            amount_of_money = ''
+            total_money = ''
 
             data_line = [output_date, orderer_address, orderer_name, address, tel, fax, author, supplier_code,
                          order_number, construction_number, construction_name, delivery_location,
@@ -423,6 +390,65 @@ class PurchaseOrder(models.Model):
             str_data_line = '","'.join(data_line)
             str_data_line = '"' + str_data_line + '"'
             data_file.append(str_data_line)
+        else:
+
+            for line in self.order_line:
+                if not line.product_id:
+                    continue
+
+                if self.export_type == 'complete_set':
+                    # 一式
+                    head_line_number = '1'
+                    head_product_name = self.name if self.name else ''
+                    head_specification = ''
+                    head_quantity = '1'
+                    head_unit = '式'
+                    head_unit_price = ''
+                    head_amount_of_money = str(int(self.amount_untaxed)) if self.amount_untaxed else ""
+                    head_total_money = str(int(self.amount_untaxed)) if self.amount_untaxed else ""
+
+                    # 　明細
+                    line_number = ''
+                    product_name = ''
+                    specification = ''
+                    quantity = ''
+                    unit = ''
+                    unit_price = ''
+                    amount_of_money = ''
+                    total_money = ''
+                else:
+                    head_line_number = ''
+                    head_product_name = ''
+                    head_specification = ''
+                    head_quantity = ''
+                    head_unit = ''
+                    head_unit_price = ''
+                    head_amount_of_money = ""
+                    head_total_money = ""
+
+                    # 　明細
+                    line_number = str(num)
+                    product_name = line.product_id.name
+                    specification = line.product_id.x_name_specification if line.product_id.x_name_specification else ''
+                    quantity = str(line.product_uom_qty) if line.product_uom_qty else ''
+                    unit = line.product_uom_id.name if line.product_uom_id.name else ''
+                    unit_price = str(line.sale_price) if line.sale_price else ''
+                    amount_of_money = str(int(line.subtotal)) if line.subtotal else ""
+                    total_money = str(int(self.amount_untaxed)) if self.amount_untaxed else ""
+
+                    num += 1
+
+                data_line = [output_date, orderer_address, orderer_name, address, tel, fax, author, supplier_code,
+                             order_number, construction_number, construction_name, delivery_location,
+                             construction_date_start, date_planed_finished, order_amount, consumption_tax,
+                             without_tax_amount, receipt_method, due_date, contract_term_notice, other_term_notice,
+                             head_line_number, head_product_name, head_specification, head_quantity, head_unit,
+                             head_unit_price, head_amount_of_money, head_total_money, line_number, product_name,
+                             specification, quantity, unit, unit_price, amount_of_money, total_money]
+
+                str_data_line = '","'.join(data_line)
+                str_data_line = '"' + str_data_line + '"'
+                data_file.append(str_data_line)
 
         data_send = "\n".join(data_file)
         return self.env['svf.cloud.config'].sudo().svf_template_export_common(data=data_send, type_report='R008_toSS')

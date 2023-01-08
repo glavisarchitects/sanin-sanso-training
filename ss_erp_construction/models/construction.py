@@ -66,15 +66,23 @@ class Construction(models.Model):
         else:
             return False
 
-    company_id = fields.Many2one('res.company', string='会社', default=lambda self: self.env.user.company_id.id, copy=True)
+    company_id = fields.Many2one('res.company', string='会社', default=lambda self: self.env.user.company_id.id,
+                                 copy=True)
 
     currency_id = fields.Many2one('res.currency', '通貨', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id, copy=True)
 
     partner_id = fields.Many2one('res.partner', string='顧客', domain=[('x_is_customer', '=', True)], copy=True, )
 
-    picking_type_id = fields.Many2one('stock.picking.type', related='organization_id.warehouse_id.out_type_id',
-                                      store=True, string='オペレーションタイプ', copy=True)
+    picking_type_id = fields.Many2one('stock.picking.type', store=True, string='オペレーションタイプ', copy=True)
+
+    @api.onchange('organization_id')
+    def _onchange_organization_id(self):
+        self.picking_type_id = None
+        if self.organization_id:
+            return {'domain': {
+                'picking_type_id': [('x_organization_id', '=', self.organization_id.id), ('code', '=', 'outgoing')]
+            }}
 
     warehouse_id = fields.Many2one('stock.warehouse', related='organization_id.warehouse_id',
                                    store=True, string='倉庫', copy=True)
@@ -110,7 +118,8 @@ class Construction(models.Model):
 
     # 注文請書 tab field
     # form_type = fields.Selection([('ss_to_orderer', 'SS→発注者'), ('coo_company_to_ss', '努力会社→SS')], default='ss_to_orderer', string='帳票タイプ')
-    export_type = fields.Selection([('complete_set', '一式'), ('detail', '明細')], default='complete_set', string='出力タイプ')
+    export_type = fields.Selection([('complete_set', '一式'), ('detail', '明細')], default='complete_set',
+                                   string='出力タイプ')
     receipt_type = fields.Selection(
         string='入金手段',
         selection=[
@@ -195,10 +204,11 @@ class Construction(models.Model):
                     'product_uom_qty': component.product_uom_qty,
                     'product_id': component.product_id.id,
                     'product_uom_id': component.product_uom_id.id,
-                    'standard_price':component.product_id.product_tmpl_id.standard_price,
-                    'tax_id':component.product_id.product_tmpl_id.taxes_id[0].id if component.product_id.product_tmpl_id.taxes_id else False,
+                    'standard_price': component.product_id.product_tmpl_id.standard_price,
+                    'tax_id': component.product_id.product_tmpl_id.taxes_id[
+                        0].id if component.product_id.product_tmpl_id.taxes_id else False,
                     'margin_rate': self.all_margin_rate,
-                    'sale_price':component.product_id.product_tmpl_id.standard_price / (1 - self.all_margin_rate),
+                    'sale_price': component.product_id.product_tmpl_id.standard_price / (1 - self.all_margin_rate),
                     'name': component.product_id.name,
                 }
             else:
@@ -336,6 +346,9 @@ class Construction(models.Model):
     output_date = fields.Date(string='出力日付', copy=True)
     expire_date = fields.Date(string='有効期限', copy=True)
     estimation_note = fields.Char(string='備考', copy=True)
+
+    # 社内用
+    is_in_house = fields.Boolean('社内用', default=False, copy=False)
 
     @api.onchange('all_margin_rate')
     def _onchange_all_margin_rate(self):
@@ -587,7 +600,7 @@ class Construction(models.Model):
 
             stock_picking.action_assign()
         else:
-            if self.state in ['order_received','progress']:
+            if self.state in ['order_received', 'progress']:
                 raise UserError('手持数量がないため、出荷できませんでした。対象の構成品を正しい数量で購買発注してください。')
 
     def action_picking_from_warehouse(self):
@@ -595,6 +608,3 @@ class Construction(models.Model):
             raise UserError('出荷するものは何もありません！')
         else:
             self._prepare_stock_picking()
-
-
-

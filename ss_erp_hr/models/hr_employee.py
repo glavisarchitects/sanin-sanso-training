@@ -6,17 +6,17 @@ from odoo.exceptions import UserError, ValidationError
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    employee_number = fields.Char(string='従業員番号', )
-
-    organization_first = fields.Many2one('ss_erp.organization', string='第一組織', )
-    department_jurisdiction_first = fields.Many2many('ss_erp.responsible.department', 'dept_juris_first_rel',
-                                                     string='第一組織管轄部門', )
-    organization_second = fields.Many2one('ss_erp.organization', string='第二組織')
-    department_jurisdiction_second = fields.Many2many('ss_erp.responsible.department', 'dept_juris_second_rel',
-                                                      string='第二組織管轄部門')
-    organization_third = fields.Many2one('ss_erp.organization', string='第三組織')
-    department_jurisdiction_third = fields.Many2many('ss_erp.responsible.department', 'dept_juris_third_rel',
-                                                     string='第三組織管轄部門')
+    # employee_number = fields.Char(string='従業員番号', )
+    #
+    # organization_first = fields.Many2one('ss_erp.organization', string='第一組織', )
+    # department_jurisdiction_first = fields.Many2many('ss_erp.responsible.department', 'dept_juris_first_rel',
+    #                                                  string='第一組織管轄部門', )
+    # organization_second = fields.Many2one('ss_erp.organization', string='第二組織')
+    # department_jurisdiction_second = fields.Many2many('ss_erp.responsible.department', 'dept_juris_second_rel',
+    #                                                   string='第二組織管轄部門')
+    # organization_third = fields.Many2one('ss_erp.organization', string='第三組織')
+    # department_jurisdiction_third = fields.Many2many('ss_erp.responsible.department', 'dept_juris_third_rel',
+    #                                                  string='第三組織管轄部門')
 
     @api.constrains("employee_number", )
     def _check_same_employee_number(self):
